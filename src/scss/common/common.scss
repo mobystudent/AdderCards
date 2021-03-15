@@ -1,0 +1,32 @@
+body {
+	background: $white;
+	margin: 0 auto;
+	display: flex;
+	flex-flow: column;
+}
+
+.wrapper {
+	display: flex;
+	flex-flow: column;
+	min-height: 100vh;
+	background: $deepDarkBlue;
+
+	&--hidden {
+		overflow: hidden;
+	}
+}
+
+.main {
+	flex: 1 0 auto;
+	position: relative;
+	z-index: 0;
+	overflow: hidden;
+	padding: 80px 0;
+
+	&__title {
+		@extend %text--large;
+		color: $white;
+		text-align: center;
+		margin-bottom: 40px;
+	}
+}

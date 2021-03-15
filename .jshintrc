@@ -1,0 +1,8 @@
+{
+  "strict": "global",
+  "esversion": 10,
+  "unused": true,
+  "browser" : true,
+  "node": true,
+  "devel": true
+}

@@ -1,0 +1,14 @@
+{
+	"extends": "eslint:recommended",
+	"parserOptions": {
+		"allowImportExportEverywhere": true,
+		"sourceType": "module",
+		"ecmaVersion": 2020
+	},
+
+	"env": {
+		"es6": true,
+		"browser": true,
+		"node": true
+	}
+}

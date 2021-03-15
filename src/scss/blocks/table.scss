@@ -1,0 +1,38 @@
+.table {
+	border: 2px solid $lightBeige;
+
+	&__header {
+		display: flex;
+		padding: 10px 0;
+		background: $darkerDeepBlue;
+	}
+
+	&__row {
+		display: flex;
+
+		&:nth-child(2n) {
+			background: $lightDeepBlue;
+		}
+	}
+
+	&__cell {
+		padding: 10px 20px;
+		@extend %text--medium;
+		color: $white;
+
+		&[data-title='FIO'] {
+			width: 480px;
+		}
+		&[data-title='Department'] {
+			width: 400px;
+		}
+		&[data-title='Post'] {
+			width: 400px;
+		}
+		&[data-title='CardID'],
+		&[data-title='CardName'] {
+			text-align: center;
+			width: 170px;
+		}
+	}
+}

@@ -1,0 +1,112 @@
+extends includes/layout
+
+block title
+	title Главная
+
+block content
+			
+	.wrapper
+		include includes/header
+		
+		main.main
+			.container
+				h1.main__title
+					| Добавление карт пользователям
+				.table
+					header.table__header
+						.table__cell(data-title="FIO")
+							| Фамилия Имя Отчество
+						.table__cell(data-title="Department")
+							| Отдел/Факультет
+						.table__cell(data-title="Post")
+							| Должность
+						.table__cell(data-title="CardID")
+							| ID карты
+						.table__cell(data-title="CardName")
+							| Имя карты
+							
+					-
+						const peoples = [
+							{
+								name: 'Семеренський Олександр Володимирович',
+								dep: 'Химический факультет',
+								post: 'Старший механик управляющего'
+							},
+							{
+								name: 'Горбунова-Рубан Свiтлана Олександрiвна',
+								dep: 'Химический факультет',
+								post: 'Старший механик управляющего'
+							},
+							{
+								name: 'Гарькавенко Володимир Володимирович',
+								dep: 'Логический факультет',
+								post: 'Инженер 2-й категории'
+							},
+							{
+								name: 'Скоринiна-Погребна Ольга Володимирiвна',
+								dep: 'Логический факультет',
+								post: 'Инженер 2-й категории'
+							},
+							{
+								name: 'Суворова-Григорович Ганна Олександрiвна',
+								dep: 'Химический факультет',
+								post: 'Охранник'
+							},
+							{
+								name: 'Сотнiкова-Мелешкiна Жанна Владиславiвна',
+								dep: 'Химический факультет',
+								post: 'Охранник'
+							},
+							{
+								name: 'Бельорин-Еррера Олександра Михайлiвна',
+								dep: 'Химический факультет',
+								post: 'Охранник'
+							},
+							{
+								name: 'Корженевський Станiслав Володимирович',
+								dep: 'Химический факультет',
+								post: 'Охранник'
+							},
+							{
+								name: 'Добровольський Олександр В\'ячеславович',
+								dep: 'Химический факультет',
+								post: 'Охранник'
+							},
+							{
+								name: 'Пасiчник-Ледянко Валентина Миколаївна',
+								dep: 'Химический факультет',
+								post: 'Охранник'
+							},
+							{
+								name: 'Дем\'яновська-Кононова Наталiя Михайлiвна',
+								dep: 'Химический факультет',
+								post: 'Охранник'
+							},
+							{
+								name: 'Тесленко-Пономаренко Надiя Дмитрiвна',
+								dep: 'Химический факультет',
+								post: 'Охранник'
+							},
+							{
+								name: 'Станиславський Олександр Олександрович',
+								dep: 'Химический факультет',
+								post: 'Охранник'
+							}
+						];
+							
+					.table__body
+						
+						each item in peoples
+							.table__row
+								.table__cell(data-title="FIO")
+									!=item.name
+								.table__cell(data-title="Department")
+									!=item.dep
+								.table__cell(data-title="Post")
+									!=item.post
+								.table__cell(data-title="CardID")
+									| 0002547896
+								.table__cell(data-title="CardName")
+									| 097-12597
+			
+		include includes/footer
