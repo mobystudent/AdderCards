@@ -1,0 +1,57 @@
+
+<main class="main" data-name="time">
+  <div class="container">
+    <h1 class="main__title">Добавление временных карт</h1>
+    <div class="wrap wrap--content wrap--content-time">
+      <div class="main__wrap">
+        <div class="main__cards">
+          <p class="main__count-wrap"><span class="main__count-text">Количество карт:&nbsp</span><span class="main__count main__count--time">0</span></p>
+        </div>
+        <button class="main__btn" type="button">
+          <svg class="icon icon--plus">
+            <use class="icon__item" xlink:href="#plus"></use>
+          </svg><span class="main__btn-text">Добавить карту</span>
+        </button>
+      </div>
+      <div class="wrap wrap--table">
+        <div class="table table--time">
+          <header class="table__header">
+            <div class="table__cell table__cell--header table__cell--nametitle"><span class="table__text table__text--header">Название</span></div>
+            <div class="table__cell table__cell--header table__cell--cardid"><span class="table__text table__text--header">ID карты</span></div>
+            <div class="table__cell table__cell--header table__cell--cardname"><span class="table__text table__text--header">Номер карты</span></div>
+            <div class="table__cell table__cell--header table__cell--clear"></div>
+            <div class="table__cell table__cell--header table__cell--delete"></div>
+          </header>
+          <div class="table__body" id="tableTime">
+            <div class="table__content table__content--time table__content--active">
+              <div class="table__row table__row--time">
+                <div class="table__cell table__cell--body table__cell--nametitle"><span class="table__text table__text--body">Временная карта</span></div>
+                <div class="table__cell table__cell--body table__cell--cardid">
+                  <input class="table__input"/>
+                </div>
+                <div class="table__cell table__cell--body table__cell--cardname"><span class="table__text table__text--body"></span></div>
+                <div class="table__cell table__cell--body table__cell--clear">
+                  <button class="table__btn table__btn--clear" type="button">
+                    <svg class="icon icon--clear">
+                      <use class="icon__item" xlink:href="#clear"></use>
+                    </svg>
+                  </button>
+                </div>
+                <div class="table__cell table__cell--body table__cell--delete">
+                  <button class="table__btn table__btn--delete" type="button">
+                    <svg class="icon icon--delete">
+                      <use class="icon__item" xlink:href="#delete"></use>
+                    </svg>
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="main__btns">
+      <button class="btn btn--add btn--disable" type="button">Добавить</button>
+    </div>
+  </div>
+</main>

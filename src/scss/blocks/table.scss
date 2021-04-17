@@ -1,38 +1,229 @@
 .table {
-	border: 2px solid $lightBeige;
+	border-bottom-left-radius: 10px;
+	border-bottom-right-radius: 10px;
+	overflow: hidden;
+
+	@media print {
+		border: 1px solid $spaceBlack;
+		border-bottom: none;
+		border-radius: 0;
+	}
 
 	&__header {
 		display: flex;
-		padding: 10px 0;
-		background: $darkerDeepBlue;
+		background: $deepDarkBlue;
+
+		@media print {
+			border-bottom: 1px solid $spaceBlack;
+		}
+	}
+
+	&__body {
+		padding-bottom: 10px;
+		background: $gray;
+
+		@media print {
+			padding-bottom: 0;
+		}
+	}
+
+	&__content {
+		height: 370px;
+		overflow: auto;
+		transition: height .25s ease;
+
+		&--const {
+			display: none;
+		}
+
+		@media print {
+			height: auto;
+		}
+
+		&--active {
+			display: block;
+		}
 	}
 
 	&__row {
 		display: flex;
+		border-bottom: 1px solid $deepDarkBlue;
+		transition: background .25s ease;
+		cursor: pointer;
+
+		&:not(:last-child) {
+			@media print {
+				border-bottom: 1px solid $spaceBlack;
+			}
+		}
+
+		&:hover {
+			background: $darkerGray;
+		}
 
 		&:nth-child(2n) {
-			background: $lightDeepBlue;
+			background: $darkGray;
+
+			&:hover {
+				background: $darkerGray;
+			}
 		}
 	}
 
 	&__cell {
-		padding: 10px 20px;
-		@extend %text--medium;
-		color: $white;
+		text-overflow: ellipsis;
+		white-space: nowrap;
+		overflow: hidden;
 
-		&[data-title='FIO'] {
-			width: 480px;
+		@media print {
+			&:not(:last-child) {
+				border-right: 1px solid $deepDarkBlue;
+			}
 		}
-		&[data-title='Department'] {
-			width: 400px;
+
+		&--header {
+			&:not(:last-child),
+			&--delete {
+				border-right: 1px solid $white;
+			}
 		}
-		&[data-title='Post'] {
-			width: 400px;
+
+		&--body {
+			&:not(:last-child) {
+				border-right: 1px solid $spaceBlack;
+			}
 		}
-		&[data-title='CardID'],
-		&[data-title='CardName'] {
+
+		&--delete,
+		&--clear {
+			flex: 0 0 auto;
+			width: 40px;
+
+			@media print {
+				display: none;
+			}
+		}
+
+		&--signature {
+			display: none;
 			text-align: center;
-			width: 170px;
+			justify-content: center;
+			flex: 0 0 auto;
+			width: 120px;
+		}
+
+		&--fio,
+		&--nametitle {
+			width: 500px;
+		}
+
+		&--post {
+			width: 430px;
+		}
+
+		&--cardid,
+		&--cardname,
+		&--statusid {
+			text-align: center;
+			justify-content: center;
+			width: 210px;
+		}
+
+		&--nameid {
+			display: none;
+		}
+
+		&--cardname,
+		&--statusid {
+			.table__text {
+				justify-content: center;
+			}
+		}
+
+		@media print {
+			&--cardid,
+			&--statusid {
+				display: none;
+			}
+
+			&--signature {
+				display: inline-flex;
+				border-right: none;
+			}
+		}
+	}
+
+	&__text {
+		&--header {
+			display: inline-block;
+			padding: 15px 20px;
+			@extend %text--medium;
+			color: $white;
+
+			@media print {
+				padding: 15px 10px;
+				font-size: 14px;
+				line-height: 16px;
+				color: $spaceBlack;
+			}
+		}
+
+		&--body {
+			display: flex;
+			padding: 10px 20px;
+			@extend %text--premedium;
+			color: $spaceBlack;
+			height: 40px;
+			width: 100%;
+
+			@media print {
+				padding: 10px;
+				font-size: 12px;
+				line-height: 14px;
+			}
+		}
+	}
+
+	&__input {
+		display: flex;
+		text-align: center;
+		padding: 10px 20px;
+		@extend %text--premedium;
+		color: $spaceBlack;
+		height: 40px;
+		width: 100%;
+
+		&:focus {
+			box-shadow: inset 0 0 5px 1px $yellow;
+		}
+
+		@media print {
+			padding: 10px;
+			font-size: 12px;
+			line-height: 14px;
+		}
+	}
+
+	&__nothing {
+		display: none;
+		padding: 20px;
+		@extend %text--medium;
+		text-align: center;
+		transform: translateY(140px);
+	}
+
+	&__btn {
+		display: flex;
+		width: 100%;
+		height: 100%;
+		transition: transform .25s ease;
+
+		&:hover {
+			transform: scale(1.1);
+
+			.icon {
+				fill: $darkRed;
+			}
 		}
 	}
 }

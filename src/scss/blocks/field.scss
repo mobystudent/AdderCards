@@ -1,0 +1,15 @@
+.field {
+	&__textarea {
+		display: block;
+		@extend %text--uppermedium;
+		color: $white;
+		margin: 0 auto;
+		text-align: center;
+		padding: 20px 30px;
+		width: 750px;
+		height: 370px;
+		overflow: auto;
+		resize: none;
+		border: 1px solid $white;
+	}
+}

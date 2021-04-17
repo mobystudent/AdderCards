@@ -12,152 +12,175 @@
     <script defer src="js/script.min.js"></script>
   </head>
   <body>
-    <svg xmlns="http://www.w3.org/2000/svg" width="0" height="0" style="position:absolute;" aria-hidden="true" focusable="false"></svg>
+    <svg xmlns="http://www.w3.org/2000/svg" width="0" height="0" style="position:absolute;" aria-hidden="true" focusable="false">
+      <symbol id="plus" viewBox="0 0 448 448">
+        <path d="M408 184H272a8 8 0 01-8-8V40c0-22.09-17.91-40-40-40s-40 17.91-40 40v136a8 8 0 01-8 8H40c-22.09 0-40 17.91-40 40s17.91 40 40 40h136a8 8 0 018 8v136c0 22.09 17.91 40 40 40s40-17.91 40-40V272a8 8 0 018-8h136c22.09 0 40-17.91 40-40s-17.91-40-40-40zm0 0"></path>
+      </symbol>
+      <symbol id="delete" viewBox="0 0 512 512">
+        <path d="M424 64h-88V48c0-26.467-21.533-48-48-48h-64c-26.467 0-48 21.533-48 48v16H88c-22.056 0-40 17.944-40 40v56c0 8.836 7.164 16 16 16h8.744l13.823 290.283C87.788 491.919 108.848 512 134.512 512h242.976c25.665 0 46.725-20.081 47.945-45.717L439.256 176H448c8.836 0 16-7.164 16-16v-56c0-22.056-17.944-40-40-40zM208 48c0-8.822 7.178-16 16-16h64c8.822 0 16 7.178 16 16v16h-96zM80 104c0-4.411 3.589-8 8-8h336c4.411 0 8 3.589 8 8v40H80zm313.469 360.761A15.98 15.98 0 01377.488 480H134.512a15.98 15.98 0 01-15.981-15.239L104.78 176h302.44z"></path>
+        <path d="M256 448c8.836 0 16-7.164 16-16V224c0-8.836-7.164-16-16-16s-16 7.164-16 16v208c0 8.836 7.163 16 16 16zm80 0c8.836 0 16-7.164 16-16V224c0-8.836-7.164-16-16-16s-16 7.164-16 16v208c0 8.836 7.163 16 16 16zm-160 0c8.836 0 16-7.164 16-16V224c0-8.836-7.164-16-16-16s-16 7.164-16 16v208c0 8.836 7.163 16 16 16z"></path>
+      </symbol>
+      <symbol id="clear" viewBox="0 0 365.696 365.696">
+        <path d="M243.188 182.86L356.32 69.726c12.5-12.5 12.5-32.766 0-45.247L341.238 9.398c-12.504-12.503-32.77-12.503-45.25 0L182.86 122.528 69.727 9.374c-12.5-12.5-32.766-12.5-45.247 0L9.375 24.457c-12.5 12.504-12.5 32.77 0 45.25l113.152 113.152L9.398 295.99c-12.503 12.503-12.503 32.769 0 45.25l15.082 15.08c12.5 12.5 32.766 12.5 45.247 0l113.132-113.132L295.99 356.32c12.503 12.5 32.769 12.5 45.25 0l15.081-15.082c12.5-12.504 12.5-32.77 0-45.25zm0 0"></path>
+      </symbol>
+    </svg>
     <div class="wrapper">
-      <header class="header"></header>
-      <main class="main">
+      <header class="header">
         <div class="container">
-          <h1 class="main__title">Добавление карт пользователям</h1>
-          <div class="table">
-            <header class="table__header">
-              <div class="table__cell" data-title="FIO">Фамилия Имя Отчество</div>
-              <div class="table__cell" data-title="Department">Отдел/Факультет</div>
-              <div class="table__cell" data-title="Post">Должность</div>
-              <div class="table__cell" data-title="CardID">ID карты</div>
-              <div class="table__cell" data-title="CardName">Имя карты</div>
-            </header>
-            <div class="table__body">
-              <div class="table__row">
-                <div class="table__cell" data-title="FIO">Семеренський Олександр Володимирович
+          <div class="header__btns">
+            <button class="btn btn--control" type="button" data-name="const">Добавить постоянную карту</button>
+            <button class="btn btn--control" type="button" data-name="time">Добавить временную карту</button>
+            <button class="btn btn--control" type="button" data-name="qr">Добавить QR-код</button>
+            <button class="btn btn--control" type="button" data-name="download">Загрузить QR-код</button>
+          </div>
+        </div>
+      </header>
+      <main class="main" data-name="const">
+        <div class="container">
+          <h1 class="main__title">Добавление карт пользователям</h1><span class="main__depart main__depart--const"></span>
+          <div class="wrap wrap--content wrap--content-const">
+            <div class="main__cards main__cards--main">
+              <p class="main__count-wrap main__count-wrap--depart"><span class="main__count-text">Количество карт:&nbsp</span><span class="main__count main__count--const">0</span></p>
+              <p class="main__count-wrap main__count-wrap--main"><span class="main__count-text">Общее количество карт:&nbsp</span><span class="main__count main__count--all-const">0</span></p>
+            </div>
+            <div class="wrap wrap--table">
+              <header class="tab tab--const"></header>
+              <div class="table table--const">
+                <header class="table__header">
+                  <div class="table__cell table__cell--header table__cell--fio"><span class="table__text table__text--header">Фамилия Имя Отчество</span></div>
+                  <div class="table__cell table__cell--header table__cell--post"><span class="table__text table__text--header">Должность</span></div>
+                  <div class="table__cell table__cell--header table__cell--cardid"><span class="table__text table__text--header">ID карты</span></div>
+                  <div class="table__cell table__cell--header table__cell--cardname"><span class="table__text table__text--header">Номер карты</span></div>
+                  <div class="table__cell table__cell--header table__cell--statusid"><span class="table__text table__text--header">Статус</span></div>
+                  <div class="table__cell table__cell--header table__cell--clear"></div>
+                  <div class="table__cell table__cell--header table__cell--signature"><span class="table__text table__text--header">Подпись</span></div>
+                </header>
+                <div class="table__body" id="tableConst">
+                  <p class="table__nothing">Новых данных нет</p>
                 </div>
-                <div class="table__cell" data-title="Department">Химический факультет
-                </div>
-                <div class="table__cell" data-title="Post">Старший механик управляющего
-                </div>
-                <div class="table__cell" data-title="CardID">0002547896</div>
-                <div class="table__cell" data-title="CardName">097-12597</div>
-              </div>
-              <div class="table__row">
-                <div class="table__cell" data-title="FIO">Горбунова-Рубан Свiтлана Олександрiвна
-                </div>
-                <div class="table__cell" data-title="Department">Химический факультет
-                </div>
-                <div class="table__cell" data-title="Post">Старший механик управляющего
-                </div>
-                <div class="table__cell" data-title="CardID">0002547896</div>
-                <div class="table__cell" data-title="CardName">097-12597</div>
-              </div>
-              <div class="table__row">
-                <div class="table__cell" data-title="FIO">Гарькавенко Володимир Володимирович
-                </div>
-                <div class="table__cell" data-title="Department">Логический факультет
-                </div>
-                <div class="table__cell" data-title="Post">Инженер 2-й категории
-                </div>
-                <div class="table__cell" data-title="CardID">0002547896</div>
-                <div class="table__cell" data-title="CardName">097-12597</div>
-              </div>
-              <div class="table__row">
-                <div class="table__cell" data-title="FIO">Скоринiна-Погребна Ольга Володимирiвна
-                </div>
-                <div class="table__cell" data-title="Department">Логический факультет
-                </div>
-                <div class="table__cell" data-title="Post">Инженер 2-й категории
-                </div>
-                <div class="table__cell" data-title="CardID">0002547896</div>
-                <div class="table__cell" data-title="CardName">097-12597</div>
-              </div>
-              <div class="table__row">
-                <div class="table__cell" data-title="FIO">Суворова-Григорович Ганна Олександрiвна
-                </div>
-                <div class="table__cell" data-title="Department">Химический факультет
-                </div>
-                <div class="table__cell" data-title="Post">Охранник
-                </div>
-                <div class="table__cell" data-title="CardID">0002547896</div>
-                <div class="table__cell" data-title="CardName">097-12597</div>
-              </div>
-              <div class="table__row">
-                <div class="table__cell" data-title="FIO">Сотнiкова-Мелешкiна Жанна Владиславiвна
-                </div>
-                <div class="table__cell" data-title="Department">Химический факультет
-                </div>
-                <div class="table__cell" data-title="Post">Охранник
-                </div>
-                <div class="table__cell" data-title="CardID">0002547896</div>
-                <div class="table__cell" data-title="CardName">097-12597</div>
-              </div>
-              <div class="table__row">
-                <div class="table__cell" data-title="FIO">Бельорин-Еррера Олександра Михайлiвна
-                </div>
-                <div class="table__cell" data-title="Department">Химический факультет
-                </div>
-                <div class="table__cell" data-title="Post">Охранник
-                </div>
-                <div class="table__cell" data-title="CardID">0002547896</div>
-                <div class="table__cell" data-title="CardName">097-12597</div>
-              </div>
-              <div class="table__row">
-                <div class="table__cell" data-title="FIO">Корженевський Станiслав Володимирович
-                </div>
-                <div class="table__cell" data-title="Department">Химический факультет
-                </div>
-                <div class="table__cell" data-title="Post">Охранник
-                </div>
-                <div class="table__cell" data-title="CardID">0002547896</div>
-                <div class="table__cell" data-title="CardName">097-12597</div>
-              </div>
-              <div class="table__row">
-                <div class="table__cell" data-title="FIO">Добровольський Олександр В'ячеславович
-                </div>
-                <div class="table__cell" data-title="Department">Химический факультет
-                </div>
-                <div class="table__cell" data-title="Post">Охранник
-                </div>
-                <div class="table__cell" data-title="CardID">0002547896</div>
-                <div class="table__cell" data-title="CardName">097-12597</div>
-              </div>
-              <div class="table__row">
-                <div class="table__cell" data-title="FIO">Пасiчник-Ледянко Валентина Миколаївна
-                </div>
-                <div class="table__cell" data-title="Department">Химический факультет
-                </div>
-                <div class="table__cell" data-title="Post">Охранник
-                </div>
-                <div class="table__cell" data-title="CardID">0002547896</div>
-                <div class="table__cell" data-title="CardName">097-12597</div>
-              </div>
-              <div class="table__row">
-                <div class="table__cell" data-title="FIO">Дем'яновська-Кононова Наталiя Михайлiвна
-                </div>
-                <div class="table__cell" data-title="Department">Химический факультет
-                </div>
-                <div class="table__cell" data-title="Post">Охранник
-                </div>
-                <div class="table__cell" data-title="CardID">0002547896</div>
-                <div class="table__cell" data-title="CardName">097-12597</div>
-              </div>
-              <div class="table__row">
-                <div class="table__cell" data-title="FIO">Тесленко-Пономаренко Надiя Дмитрiвна
-                </div>
-                <div class="table__cell" data-title="Department">Химический факультет
-                </div>
-                <div class="table__cell" data-title="Post">Охранник
-                </div>
-                <div class="table__cell" data-title="CardID">0002547896</div>
-                <div class="table__cell" data-title="CardName">097-12597</div>
-              </div>
-              <div class="table__row">
-                <div class="table__cell" data-title="FIO">Станиславський Олександр Олександрович
-                </div>
-                <div class="table__cell" data-title="Department">Химический факультет
-                </div>
-                <div class="table__cell" data-title="Post">Охранник
-                </div>
-                <div class="table__cell" data-title="CardID">0002547896</div>
-                <div class="table__cell" data-title="CardName">097-12597</div>
               </div>
             </div>
+          </div>
+          <div class="main__btns">
+            <button class="btn btn--add btn--disable" type="button">Добавить</button>
+            <button class="btn btn--print" id="print" type="button">Распечатать отчет</button>
+          </div>
+        </div>
+      </main>
+      <main class="main" data-name="time">
+        <div class="container">
+          <h1 class="main__title">Добавление временных карт</h1>
+          <div class="wrap wrap--content wrap--content-time">
+            <div class="main__wrap">
+              <div class="main__cards">
+                <p class="main__count-wrap"><span class="main__count-text">Количество карт:&nbsp</span><span class="main__count main__count--time">0</span></p>
+              </div>
+              <button class="main__btn" type="button">
+                <svg class="icon icon--plus">
+                  <use class="icon__item" xlink:href="#plus"></use>
+                </svg><span class="main__btn-text">Добавить карту</span>
+              </button>
+            </div>
+            <div class="wrap wrap--table">
+              <div class="table table--time">
+                <header class="table__header">
+                  <div class="table__cell table__cell--header table__cell--nametitle"><span class="table__text table__text--header">Название</span></div>
+                  <div class="table__cell table__cell--header table__cell--cardid"><span class="table__text table__text--header">ID карты</span></div>
+                  <div class="table__cell table__cell--header table__cell--cardname"><span class="table__text table__text--header">Номер карты</span></div>
+                  <div class="table__cell table__cell--header table__cell--clear"></div>
+                  <div class="table__cell table__cell--header table__cell--delete"></div>
+                </header>
+                <div class="table__body" id="tableTime">
+                  <div class="table__content table__content--time table__content--active">
+                    <div class="table__row table__row--time">
+                      <div class="table__cell table__cell--body table__cell--nametitle"><span class="table__text table__text--body">Временная карта</span></div>
+                      <div class="table__cell table__cell--body table__cell--cardid">
+                        <input class="table__input">
+                      </div>
+                      <div class="table__cell table__cell--body table__cell--cardname"><span class="table__text table__text--body"></span></div>
+                      <div class="table__cell table__cell--body table__cell--clear">
+                        <button class="table__btn table__btn--clear" type="button">
+                          <svg class="icon icon--clear">
+                            <use class="icon__item" xlink:href="#clear"></use>
+                          </svg>
+                        </button>
+                      </div>
+                      <div class="table__cell table__cell--body table__cell--delete">
+                        <button class="table__btn table__btn--delete" type="button">
+                          <svg class="icon icon--delete">
+                            <use class="icon__item" xlink:href="#delete"></use>
+                          </svg>
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="main__btns">
+            <button class="btn btn--add btn--disable" type="button">Добавить</button>
+          </div>
+        </div>
+      </main>
+      <main class="main" data-name="download">
+        <div class="container">
+          <h1 class="main__title">Загрузка QR-кодов</h1>
+          <div class="wrap wrap--content wrap--content-download">
+            <div class="main__wrap main__wrap--download">
+              <div class="main__cards">
+                <p class="main__count-wrap"><span class="main__count-text">Количество qr-кодов:&nbsp</span><span class="main__count main__count--download">0</span></p>
+              </div>
+            </div>
+            <div class="field">
+              <textarea class="field__textarea">474F8B6C443F3D21
+25459BD971FA4987
+BF16073D057E19E2
+DB75D3D33826A0DB
+4D4D370EFA7E82D4
+B7BF0A6F36BE0CBA
+CC5932294953A5AC
+FC94DCCA3EFE99F7
+7BB91A1496680564
+3C7BF4CDB88712D7
+364527EE226D2B75
+70A13F3F8A24AD13
+2473F2BE34842B98
+88903F4005D02DE3
+126F34667D98F1B2</textarea>
+            </div>
+          </div>
+        </div>
+      </main>
+      <main class="main" data-name="qr">
+        <div class="container">
+          <h1 class="main__title">Добавление QR-кодов пользователям</h1><span class="main__depart main__depart--qr"></span>
+          <div class="wrap wrap--content wrap--content-const">
+            <div class="main__cards main__cards--main">
+              <p class="main__count-wrap main__count-wrap--depart"><span class="main__count-text">Количество qr-кодов:&nbsp</span><span class="main__count main__count--qr">0</span></p>
+              <p class="main__count-wrap main__count-wrap--main"><span class="main__count-text">Общее количество qr-кодов:&nbsp</span><span class="main__count main__count--all-qr">0</span></p>
+            </div>
+            <div class="wrap wrap--table">
+              <header class="tab tab--qr"></header>
+              <div class="table table--qr">
+                <header class="table__header">
+                  <div class="table__cell table__cell--header table__cell--fio"><span class="table__text table__text--header">Фамилия Имя Отчество</span></div>
+                  <div class="table__cell table__cell--header table__cell--post"><span class="table__text table__text--header">Должность</span></div>
+                  <div class="table__cell table__cell--header table__cell--cardid"><span class="table__text table__text--header">ID qr-кода</span></div>
+                  <div class="table__cell table__cell--header table__cell--cardname"><span class="table__text table__text--header">Номер qr-кода</span></div>
+                  <div class="table__cell table__cell--header table__cell--statusid"><span class="table__text table__text--header">Статус</span></div>
+                  <div class="table__cell table__cell--header table__cell--clear"></div>
+                  <div class="table__cell table__cell--header table__cell--signature"><span class="table__text table__text--header">Подпись</span></div>
+                </header>
+                <div class="table__body" id="tableQR">
+                  <p class="table__nothing">Новых данных нет</p>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="main__btns">
+            <button class="btn btn--add btn--disable" type="button">Добавить</button>
+            <button class="btn btn--print" id="print" type="button">Распечатать отчет</button>
           </div>
         </div>
       </main>

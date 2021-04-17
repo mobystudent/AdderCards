@@ -1,3 +1,21 @@
 .icon {
-	
+	transition: fill .25s ease;
+
+	&--plus {
+		width: 17px;
+		height: 17px;
+		margin-right: 10px;
+	}
+
+	&--delete {
+		width: 20px;
+		height: 20px;
+		margin: auto;
+	}
+
+	&--clear {
+		width: 18px;
+		height: 18px;
+		margin: auto;
+	}
 }

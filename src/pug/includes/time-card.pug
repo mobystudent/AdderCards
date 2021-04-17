@@ -1,0 +1,53 @@
+main.main(data-name="time")
+	.container
+		h1.main__title
+			| Добавление временных карт
+		.wrap.wrap--content.wrap--content-time
+			.main__wrap
+				.main__cards
+					p.main__count-wrap
+						span.main__count-text
+							| Количество карт:&nbsp
+						span.main__count.main__count--time
+							| 0
+				button.main__btn(type="button")
+					svg.icon.icon--plus
+						use.icon__item(xlink:href="#plus")
+					span.main__btn-text
+						| Добавить карту
+			.wrap.wrap--table
+				.table.table--time
+					header.table__header
+						.table__cell.table__cell--header.table__cell--nametitle
+							span.table__text.table__text--header
+								| Название
+						.table__cell.table__cell--header.table__cell--cardid
+							span.table__text.table__text--header
+								| ID карты
+						.table__cell.table__cell--header.table__cell--cardname
+							span.table__text.table__text--header
+								| Номер карты
+						.table__cell.table__cell--header.table__cell--clear
+						.table__cell.table__cell--header.table__cell--delete
+					.table__body#tableTime
+						.table__content.table__content--time.table__content--active
+							.table__row.table__row--time
+								.table__cell.table__cell--body.table__cell--nametitle
+									span.table__text.table__text--body
+										| Временная карта
+								.table__cell.table__cell--body.table__cell--cardid
+									input.table__input
+								.table__cell.table__cell--body.table__cell--cardname
+									span.table__text.table__text--body
+								.table__cell.table__cell--body.table__cell--clear
+									button.table__btn.table__btn--clear(type="button")
+										svg.icon.icon--clear
+											use.icon__item(xlink:href="#clear")
+								.table__cell.table__cell--body.table__cell--delete
+									button.table__btn.table__btn--delete(type="button")
+										svg.icon.icon--delete
+											use.icon__item(xlink:href="#delete")
+						
+		.main__btns
+			button.btn.btn--add.btn--disable(type='button')
+				| Добавить

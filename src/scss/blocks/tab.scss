@@ -1,0 +1,26 @@
+.tab {
+	display: flex;
+
+	@media print {
+		display: none;
+	}
+
+	&__item {
+		padding: 10px 20px;
+		border: 2px solid $lightBeige;
+		border-top-left-radius: 10px;
+		border-top-right-radius: 10px;
+		border-bottom: none;
+		background: $gray;
+		cursor: pointer;
+
+		&--active {
+			background: $lightBeige;
+		}
+	}
+
+	&__name {
+		@extend %text--premedium;
+		color: $spaceBlack;
+	}
+}

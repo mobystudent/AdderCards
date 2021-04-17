@@ -1,9 +1,21 @@
 %text {
 	&--large {
-		font: 48px/54px $roboto;
+		font: 34px/40px $roboto;
+	}
+
+	&--prelarge {
+		font: 28px/34px $roboto;
+	}
+
+	&--uppermedium {
+		font: 20px/26px $roboto;
 	}
 
 	&--medium {
-		font: 20px/24px $roboto;
+		font: 18px/22px $roboto;
+	}
+
+	&--premedium {
+		font: 16px/20px $roboto;
 	}
 }

@@ -1,0 +1,17 @@
+.wrap {
+	&--table {
+		margin-bottom: 40px;
+	}
+
+	&--content {
+		margin: 0 auto;
+
+		&-const {
+			max-width: 1600px;
+		}
+
+		&-time {
+			max-width: 1000px;
+		}
+	}
+}

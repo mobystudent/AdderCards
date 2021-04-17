@@ -1,0 +1,27 @@
+.btn {
+	display: flex;
+	@extend %text--premedium;
+	color: $white;
+	text-align: center;
+	padding: 15px 20px;
+	border-radius: 10px;
+	background: $green;
+	text-transform: uppercase;
+
+	@media print {
+		display: none;
+	}
+
+	&--add {
+		margin-right: 20px;
+	}
+
+	&--control:not(:last-child) {
+		margin-right: 20px;
+	}
+
+	&--disable {
+		background: $gray;
+		cursor: default;
+	}
+}

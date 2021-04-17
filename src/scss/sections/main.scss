@@ -1,0 +1,110 @@
+.main {
+	display: none;
+	flex: 1 0 auto;
+	position: relative;
+	z-index: 0;
+	overflow: hidden;
+	padding: 60px 0;
+
+	@media print {
+		padding: 20px 0;
+	}
+
+	&__title {
+		@extend %text--large;
+		color: $white;
+		text-align: center;
+		margin-bottom: 25px;
+
+		@media print {
+			display: none;
+		}
+	}
+
+	&__depart {
+		display: block;
+		@extend %text--prelarge;
+		color: $white;
+		text-align: center;
+		margin-bottom: 20px;
+
+		@media print {
+			font-size: 20px;
+			line-height: 24px;
+			color: $spaceBlack;
+		}
+	}
+
+	&__btns {
+		display: flex;
+		justify-content: center;
+	}
+
+	&__cards {
+		display: flex;
+		flex-flow: column;
+		align-items: flex-start;
+
+		&--main {
+			margin-bottom: 20px;
+
+			@media print {
+				margin-bottom: 10px;
+			}
+		}
+	}
+
+	&__count-wrap {
+		text-align: center;
+
+		&--depart {
+			margin-bottom: 10px;
+
+			@media print {
+				margin-bottom: 0;
+			}
+		}
+
+		&--main {
+			@media print {
+				display: none;
+			}
+		}
+	}
+
+	&__count-text,
+	&__count {
+		@extend %text--premedium;
+		color: $white;
+
+		@media print {
+			font-size: 14px;
+			line-height: 18px;
+			color: $spaceBlack;
+		}
+	}
+
+	&__wrap {
+		display: flex;
+		justify-content: space-between;
+		align-items: center;
+		margin-bottom: 15px;
+
+		&--download {
+			justify-content: center;
+		}
+	}
+
+	&__btn {
+		display: flex;
+		align-items: center;
+		padding: 10px 15px;
+		border-radius: 10px;
+		background: $gray;
+	}
+
+	&__btn-text {
+		@extend %text--medium;
+		color: $deepDarkBlue;
+	}
+}

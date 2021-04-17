@@ -1,7 +1,7 @@
 {
-  "name": "projectname",
-  "version": "1.2.1",
-  "description": "Front-end Kit",
+  "name": "AdderCards",
+  "version": "1.0.0",
+  "description": "",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
@@ -43,6 +43,7 @@
   },
   "dependencies": {
     "jquery": "^3.5.1",
+    "qrcode": "^1.4.4",
     "slick-carousel": "^1.8.1"
   }
 }

@@ -1,0 +1,49 @@
+main.main(data-name="qr")
+	.container
+		h1.main__title
+			| Добавление QR-кодов пользователям
+		span.main__depart.main__depart--qr
+		.wrap.wrap--content.wrap--content-const
+			.main__cards.main__cards--main
+				p.main__count-wrap.main__count-wrap--depart
+					span.main__count-text
+						| Количество qr-кодов:&nbsp
+					span.main__count.main__count--qr
+						| 0
+				p.main__count-wrap.main__count-wrap--main
+					span.main__count-text
+						| Общее количество qr-кодов:&nbsp
+					span.main__count.main__count--all-qr
+						| 0
+			.wrap.wrap--table
+				header.tab.tab--qr
+				.table.table--qr
+					header.table__header
+						.table__cell.table__cell--header.table__cell--fio
+							span.table__text.table__text--header
+								| Фамилия Имя Отчество
+						.table__cell.table__cell--header.table__cell--post
+							span.table__text.table__text--header
+								| Должность
+						.table__cell.table__cell--header.table__cell--cardid
+							span.table__text.table__text--header
+								| ID qr-кода
+						.table__cell.table__cell--header.table__cell--cardname
+							span.table__text.table__text--header
+								| Номер qr-кода
+						.table__cell.table__cell--header.table__cell--statusid
+							span.table__text.table__text--header
+								| Статус
+						.table__cell.table__cell--header.table__cell--clear
+						.table__cell.table__cell--header.table__cell--signature
+							span.table__text.table__text--header
+								| Подпись
+					.table__body#tableQR
+						p.table__nothing
+							| Новых данных нет
+	
+		.main__btns
+			button.btn.btn--add.btn--disable(type='button')
+				| Добавить
+			button.btn.btn--print#print(type='button')
+				| Распечатать отчет
