@@ -1,3 +1,11 @@
 .footer {
-	
+	&__wrap {
+		padding: 10px 0;
+		text-align: right;
+	}
+
+	&__version {
+		@extend %text--tiny;
+		color: $white;
+	}
 }

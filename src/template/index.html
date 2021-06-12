@@ -47,7 +47,9 @@
               <header class="tab tab--const"></header>
               <div class="table table--const">
                 <header class="table__header">
-                  <div class="table__cell table__cell--header table__cell--fio"><span class="table__text table__text--header">Фамилия Имя Отчество</span></div>
+                  <div class="table__cell table__cell--header table__cell--fio"><span class="table__text table__text--header">Фамилия Имя Отчество</span>
+                    <button class="btn btn--sort" type="button" data-direction="true"></button>
+                  </div>
                   <div class="table__cell table__cell--header table__cell--post"><span class="table__text table__text--header">Должность</span></div>
                   <div class="table__cell table__cell--header table__cell--cardid"><span class="table__text table__text--header">ID карты</span></div>
                   <div class="table__cell table__cell--header table__cell--cardname"><span class="table__text table__text--header">Номер карты</span></div>
@@ -164,7 +166,13 @@ FC94DCCA3EFE99F7
               <header class="tab tab--qr"></header>
               <div class="table table--qr">
                 <header class="table__header">
-                  <div class="table__cell table__cell--header table__cell--fio"><span class="table__text table__text--header">Фамилия Имя Отчество</span></div>
+                  <div class="table__cell table__cell--header table__cell--fio"><span class="table__text table__text--header">Фамилия Имя Отчество</span>
+                    <button class="btn btn--sort" type="button">
+                      <svg class="icon icon--sort">
+                        <use class="icon__item" xlink:href="#sort"></use>
+                      </svg>
+                    </button>
+                  </div>
                   <div class="table__cell table__cell--header table__cell--post"><span class="table__text table__text--header">Должность</span></div>
                   <div class="table__cell table__cell--header table__cell--cardid"><span class="table__text table__text--header">ID qr-кода</span></div>
                   <div class="table__cell table__cell--header table__cell--cardname"><span class="table__text table__text--header">Номер qr-кода</span></div>
@@ -184,7 +192,11 @@ FC94DCCA3EFE99F7
           </div>
         </div>
       </main>
-      <footer class="footer"></footer>
+      <footer class="footer">
+        <div class="container">
+          <div class="footer__wrap"><small class="footer__version">v1.0.1</small></div>
+        </div>
+      </footer>
     </div>
   </body>
 </html>

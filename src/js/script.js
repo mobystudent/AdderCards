@@ -17,6 +17,7 @@ $(window).on('load', () => {
 	deleteTimeCard();
 	changeCountQRCodes();
 	addIDinDB();
+	sortPerson();
 
 	countItems('#tableTime .table__content', 'time');
 
@@ -404,4 +405,44 @@ function removeAndFocusActiveBlock(containerBl, block, nameTable) {
 	});
 
 	focusFirstCell(nameTable);
+}
+
+function sortPerson() {
+	$('.btn--sort').click((e) => {
+		const dataDepart = $(e.target).closest('.main').data('name');
+		const arrRows = $(`.table--${dataDepart} .table__content--active .table__row`);
+		const arrNames = arrRows.map((i, item) => {
+			const namePerson = $(item).find('.table__cell--fio').text().trim();
+
+			return {
+				item,
+				name: namePerson
+			};
+		});
+
+		// arrNames.sort((a, b) => a.name > b.name ? 1 : -1);
+		const sortItemsForNames = switchSortButton(arrNames, dataDepart);
+
+		[...sortItemsForNames].forEach((elem, j) => {
+			$(`.table--${dataDepart} .table__content--active`).append(elem.item);
+		});
+	});
+}
+
+function switchSortButton(arr, depart) {
+	if ($(`.table--${depart} .btn--sort`).data('direction')) {
+		arr.sort((a, b) => a.name > b.name ? 1 : -1);
+		$(`.table--${depart} .btn--sort`)
+		.addClass('btn--sort-up')
+		.removeClass('btn--sort-down')
+		.data('direction', false);
+	} else {
+		arr.sort((a, b) => a.name < b.name ? 1 : -1);
+		$(`.table--${depart} .btn--sort`)
+		.addClass('btn--sort-down')
+		.removeClass('btn--sort-up')
+		.data('direction', true);
+	}
+
+	return arr;
 }

@@ -82,6 +82,12 @@
 		}
 
 		&--header {
+			padding: 15px 20px;
+
+			@media print {
+				padding: 15px 10px;
+			}
+
 			&:not(:last-child),
 			&--delete {
 				border-right: 1px solid $white;
@@ -110,6 +116,12 @@
 			justify-content: center;
 			flex: 0 0 auto;
 			width: 120px;
+		}
+
+		&--fio {
+			display: flex;
+			align-items: center;
+			justify-content: space-between;
 		}
 
 		&--fio,
@@ -156,12 +168,10 @@
 	&__text {
 		&--header {
 			display: inline-block;
-			padding: 15px 20px;
 			@extend %text--medium;
 			color: $white;
 
 			@media print {
-				padding: 15px 10px;
 				font-size: 14px;
 				line-height: 16px;
 				color: $spaceBlack;

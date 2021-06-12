@@ -24,4 +24,53 @@
 		background: $gray;
 		cursor: default;
 	}
+
+	&--sort {
+		position: relative;
+		width: 30px;
+		height: 30px;
+		padding: 5px;
+		justify-content: center;
+		align-items: center;
+
+		&:before,
+		&:after {
+			content: '';
+			position: absolute;
+			left: 50%;
+			border-left: 8px solid transparent;
+			border-right: 8px solid transparent;
+			transform: translateX(-50%);
+		}
+
+		&:before {
+			top: 6px;
+			border-bottom: 8px solid $black;
+		}
+
+		&:after {
+			bottom: 6px;
+			border-top: 8px solid $black;
+		}
+
+		&-up {
+			&:before {
+				border-bottom-color: $darkRed;
+			}
+
+			&:after {
+				opacity: .4;
+			}
+		}
+
+		&-down {
+			&:before {
+				opacity: .4;
+			}
+
+			&:after {
+				border-top-color: $lightGreen;
+			}
+		}
+	}
 }
