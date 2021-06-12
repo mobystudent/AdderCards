@@ -1,6 +1,6 @@
 'use strict';
 
-import $ from 'jquery';
+import $ from 'jquery.js';
 import { json } from './data.js';
 import { shortNameDepart } from './shortNameDepart.js';
 // import Convert from './convert.js';
@@ -195,7 +195,7 @@ function createTable(nameTable) {
 			CardID,
 			CardName,
 			StatusID
-		}
+		};
 	});
 
 	limitUser.forEach((item) => {
@@ -420,10 +420,9 @@ function sortPerson() {
 			};
 		});
 
-		// arrNames.sort((a, b) => a.name > b.name ? 1 : -1);
 		const sortItemsForNames = switchSortButton(arrNames, dataDepart);
 
-		[...sortItemsForNames].forEach((elem, j) => {
+		[...sortItemsForNames].forEach((elem) => {
 			$(`.table--${dataDepart} .table__content--active`).append(elem.item);
 		});
 	});
