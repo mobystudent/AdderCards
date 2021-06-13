@@ -1,6 +1,7 @@
 'use strict';
 
-import $ from 'jquery.js';
+import $ from 'jquery';
+import QRCode from 'qrcode';
 import { json } from './data.js';
 import { shortNameDepart } from './shortNameDepart.js';
 // import Convert from './convert.js';
@@ -18,6 +19,7 @@ $(window).on('load', () => {
 	changeCountQRCodes();
 	addIDinDB();
 	sortPerson();
+	createQRCode();
 
 	countItems('#tableTime .table__content', 'time');
 
@@ -366,6 +368,7 @@ function countQRCodes(elem) {
 	const countQRs = filterItems.length;
 
 	$('.main__count--download').text(countQRs);
+	createQRCode(filterItems);
 }
 
 // Добавление
@@ -407,6 +410,7 @@ function removeAndFocusActiveBlock(containerBl, block, nameTable) {
 	focusFirstCell(nameTable);
 }
 
+// Сортировка
 function sortPerson() {
 	$('.btn--sort').click((e) => {
 		const dataDepart = $(e.target).closest('.main').data('name');
@@ -444,4 +448,20 @@ function switchSortButton(arr, depart) {
 	}
 
 	return arr;
+}
+
+function createQRCode(arrCodes) {
+	const canvasArray = $('.canvas__code');
+	// console.log(canvas);
+
+	[...canvasArray].forEach((item, i) => {
+		console.log(typeof(arrCodes[i]));
+		QRCode.toDataURL(arrCodes[i])
+		.then(url => {
+			$(item).attr('src', url);
+		})
+		.catch(err => {
+			console.error(err);
+		})
+	});
 }

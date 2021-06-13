@@ -44,6 +44,13 @@ main.main(data-name="qr")
 					.table__body#tableQR
 						p.table__nothing
 							| Новых данных нет
+
+		section.canvas
+			.canvas__grid
+				
+				- for (let i = 0; i < 14; i++)
+					article.canvas__item(class=`canvas__item--${i + 1}`)
+						img.canvas__code(src="" alt="qr code")
 	
 		.main__btns
 			button.btn.btn--add.btn--disable(type='button')
