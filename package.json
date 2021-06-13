@@ -42,8 +42,10 @@
     "rollup-plugin-node-resolve": "^5.2.0"
   },
   "dependencies": {
+    "buffer": "^6.0.3",
     "jquery": "^3.5.1",
     "qrcode": "^1.4.4",
+    "rollup-plugin-node-polyfills": "^0.2.1",
     "slick-carousel": "^1.8.1"
   }
 }

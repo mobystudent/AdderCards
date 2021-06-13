@@ -29,6 +29,7 @@ const rollup = require('gulp-better-rollup'),
 	commonjs = require('@rollup/plugin-commonjs'),
 	babel = require('rollup-plugin-babel'),
 	nodeResolve = require('rollup-plugin-node-resolve'),
+	polyfills = require('rollup-plugin-node-polyfills'),
 	minify = require('gulp-minify');
 
 /* settings */
@@ -176,13 +177,17 @@ function gulpJS() {
 		.pipe(sourcemaps.init())
 		.pipe(rollup({
 			plugins: [
-				nodeResolve(),
+				nodeResolve({
+					preferBuiltins: true,
+					mainFields: ['browser']
+				}),
 				commonjs(),
 				babel({
 					presets: [
 						"@babel/env"
 					]
-				})
+				}),
+				polyfills()
 			]
 		}, {
 			format: 'umd'
