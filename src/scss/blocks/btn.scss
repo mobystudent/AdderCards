@@ -77,9 +77,18 @@
 	&--allow {
 		background: $lightGreen;
 		margin-right: 30px;
+
+		&-disabled {
+			background: $disabledGreen;
+			color: $gray;
+		}
 	}
 
-	&--disallow {
+	&--blocking{
 		background: $darkRed;
+	}
+
+	&--cancel {
+		background: $middleGray;
 	}
 }

@@ -19,6 +19,7 @@ $(window).on('load', () => {
 	addIDinDB();
 	sortPerson();
 	permissionAdd();
+	addDisallowPermiss();
 
 	countItems('#tableTime .table__content', 'time');
 
@@ -73,18 +74,6 @@ function delegationID() {
 		addCountCards(filterArrQRs, '#tableQR', 'qr');
 		focusFirstCell('qr');
 	}
-}
-
-function permissionAdd() {
-	const dataArr = JSON.parse(stringifyJSON());
-	const depart = Object.values(dataArr).map((item) => item);
-
-	addTabs(depart, '#tablePermiss', 'permission');
-	viewAllCountAndTitleDefault(depart, 'permission');
-	changeTabs('#tablePermiss', 'permission');
-	createTable('#tablePermiss', 'permission');
-	addCountCards(depart, '#tablePermiss', 'permission');
-	focusFirstCell('permission');
 }
 
 function addTabs(filterIDItems, nameTable, modDepart) {
@@ -286,11 +275,11 @@ function createTable(nameTable, tabName = '') {
 			`);
 		} else {
 			tableContent.find(`.table__row:nth-child(${countRows})`).append(`
-				<div class="table__cell table__cell--buttons">
+				<div class="table__cell table__cell--body table__cell--buttons">
 					<button class="btn btn--allow" type="button">
 						Разрешить
 					</button>
-					<button class="btn btn--disallow" type="button">
+					<button class="btn btn--disallow btn--blocking" data-cancel="Отменить" data-blocking="Запретить" type="button">
 						Запретить
 					</button>
 				</div>
@@ -463,4 +452,38 @@ function switchSortButton(arr, depart) {
 	}
 
 	return arr;
+}
+
+// Вкладка разрешение на добавление
+function permissionAdd() {
+	const dataArr = JSON.parse(stringifyJSON());
+	const depart = Object.values(dataArr).map((item) => item);
+
+	addTabs(depart, '#tablePermiss', 'permission');
+	viewAllCountAndTitleDefault(depart, 'permission');
+	changeTabs('#tablePermiss', 'permission');
+	createTable('#tablePermiss', 'permission');
+	addCountCards(depart, '#tablePermiss', 'permission');
+	focusFirstCell('permission');
+}
+
+function addDisallowPermiss() {
+	$('.btn--disallow').click((e) => {
+		$(e.target).parents('.table__row').toggleClass('table__row--disabled');
+		$(e.target).siblings('.btn--allow').toggleClass('btn--allow-disabled')
+
+		if ($(e.target).hasClass('btn--blocking')) {
+			changeStatusDisallowBtn(e.target, 'addClass', 'removeClass', true, 'cancel');
+		} else {
+			changeStatusDisallowBtn(e.target, 'removeClass', 'addClass', false, 'blocking');
+		}
+	});
+}
+
+function changeStatusDisallowBtn(elem, nextClassStatus, prevClassStatus, disabled, nextText) {
+	$(elem).siblings('.btn--allow').attr('disabled', disabled);
+	$(elem)[nextClassStatus]('btn--cancel')[prevClassStatus]('btn--blocking');
+
+	const textBtn = $(elem).data(nextText);
+	$(elem).text(textBtn);
 }
