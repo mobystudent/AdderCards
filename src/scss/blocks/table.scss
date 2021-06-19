@@ -82,6 +82,8 @@
 		}
 
 		&--header {
+			display: inline-flex;
+			align-items: center;
 			padding: 15px 20px;
 
 			@media print {
@@ -95,6 +97,9 @@
 		}
 
 		&--body {
+			display: flex;
+			align-items: center;
+
 			&:not(:last-child) {
 				border-right: 1px solid $spaceBlack;
 			}
@@ -102,8 +107,7 @@
 
 		&--delete,
 		&--clear {
-			flex: 0 0 auto;
-			width: 40px;
+			flex: 0 0 40px;
 
 			@media print {
 				display: none;
@@ -115,7 +119,7 @@
 			text-align: center;
 			justify-content: center;
 			flex: 0 0 auto;
-			width: 120px;
+			flex: 0 0 120px;
 		}
 
 		&--fio {
@@ -126,11 +130,16 @@
 
 		&--fio,
 		&--nametitle {
-			width: 500px;
+			flex: 0 0 500px;
 		}
 
 		&--post {
-			width: 430px;
+			flex: 0 0 430px;
+		}
+
+		&--control {
+			justify-content: center;
+			flex: 0 0 460px;
 		}
 
 		&--cardid,
@@ -138,11 +147,17 @@
 		&--statusid {
 			text-align: center;
 			justify-content: center;
-			width: 210px;
+			flex: 0 0 210px;
 		}
 
 		&--nameid {
 			display: none;
+		}
+
+		&--buttons {
+			padding: 10px 20px;
+			width: 100%;
+			justify-content: center;
 		}
 
 		&--cardname,

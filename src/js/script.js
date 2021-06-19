@@ -1,11 +1,11 @@
 'use strict';
 
 import $ from 'jquery';
-import QRCode from 'qrcode';
 import { json } from './data.js';
 import { shortNameDepart } from './shortNameDepart.js';
 // import Convert from './convert.js';
 import convert from './convert.js';
+import qrcodes from './qrcodes.js';
 
 $(window).on('load', () => {
 	getData();
@@ -16,13 +16,14 @@ $(window).on('load', () => {
 	switchControl();
 	addTimeCard();
 	deleteTimeCard();
-	changeCountQRCodes();
 	addIDinDB();
 	sortPerson();
+	permissionAdd();
 
 	countItems('#tableTime .table__content', 'time');
 
 	convert.viewConvertCardId();
+	qrcodes.changeCountQRCodes();
 });
 
 function getData() {
@@ -72,6 +73,18 @@ function delegationID() {
 		addCountCards(filterArrQRs, '#tableQR', 'qr');
 		focusFirstCell('qr');
 	}
+}
+
+function permissionAdd() {
+	const dataArr = JSON.parse(stringifyJSON());
+	const depart = Object.values(dataArr).map((item) => item);
+
+	addTabs(depart, '#tablePermiss', 'permission');
+	viewAllCountAndTitleDefault(depart, 'permission');
+	changeTabs('#tablePermiss', 'permission');
+	createTable('#tablePermiss', 'permission');
+	addCountCards(depart, '#tablePermiss', 'permission');
+	focusFirstCell('permission');
 }
 
 function addTabs(filterIDItems, nameTable, modDepart) {
@@ -162,7 +175,7 @@ function changeTabs(nameTable, modDepart) {
 	});
 }
 
-function createTable(nameTable) {
+function createTable(nameTable, tabName = '') {
 	const dataArr = JSON.parse(stringifyJSON());
 
 	const user = Object.values(dataArr).map((item) => item);
@@ -189,14 +202,23 @@ function createTable(nameTable) {
 			StatusID = ''
 		} = item;
 
-		return {
-			FIO,
-			Post,
-			NameID,
-			CardID,
-			CardName,
-			StatusID
-		};
+		if (!tabName) {
+			return {
+				FIO,
+				Post,
+				NameID,
+				CardID,
+				CardName,
+				StatusID
+			};
+		} else {
+			return {
+				FIO,
+				Post,
+				NameID,
+				StatusID
+			};
+		}
 	});
 
 	limitUser.forEach((item) => {
@@ -249,18 +271,31 @@ function createTable(nameTable) {
 			}
 		}
 
-		tableContent.find(`.table__row:nth-child(${countRows})`).append(
-			`<div class="table__cell table__cell--clear">
-				<button class="table__btn table__btn--clear" type="button">
-					<svg class="icon icon--clear">
-						<use class="icon__item" xlink:href="#clear"></use>
-					</svg>
-				</button>
-			</div>
-			<div class="table__cell table__cell--signature">
-				<span class="table__text table__text--body"></span>
-			</div>`
-		);
+		if (!tabName) {
+			tableContent.find(`.table__row:nth-child(${countRows})`).append(`
+				<div class="table__cell table__cell--clear">
+					<button class="table__btn table__btn--clear" type="button">
+						<svg class="icon icon--clear">
+							<use class="icon__item" xlink:href="#clear"></use>
+						</svg>
+					</button>
+				</div>
+				<div class="table__cell table__cell--signature">
+					<span class="table__text table__text--body"></span>
+				</div>
+			`);
+		} else {
+			tableContent.find(`.table__row:nth-child(${countRows})`).append(`
+				<div class="table__cell table__cell--buttons">
+					<button class="btn btn--allow" type="button">
+						Разрешить
+					</button>
+					<button class="btn btn--disallow" type="button">
+						Запретить
+					</button>
+				</div>
+			`);
+		}
 	});
 }
 
@@ -428,77 +463,4 @@ function switchSortButton(arr, depart) {
 	}
 
 	return arr;
-}
-
-// Закрузка QR-кодов
-function changeCountQRCodes() {
-	countQRCodes('.field__textarea');
-	generateQRCode('.field__textarea');
-
-	$('.field__textarea').bind('input', (e) => {
-		countQRCodes(e.target);
-		generateQRCode(e.target);
-	});
-}
-
-function arrayQRCodes(elem) {
-	const itemCodesContext = $(elem).val();
-	const itemCodes = itemCodesContext.split('\n');
-	const filterItems = itemCodes.filter((item) => item ? true : false);
-
-	return filterItems;
-}
-
-function countQRCodes(elem) {
-	const filterItems = arrayQRCodes(elem);
-	const countQRs = filterItems.length;
-
-	$('.main__count--download').text(countQRs);
-}
-
-function generateQRCode(elem) {
-	const filterItems = arrayQRCodes(elem);
-
-	createQRCode(filterItems);
-	assignUserQRCode(filterItems);
-}
-
-function createQRCode(arrCodes) {
-	const canvasArray = $('.canvas__code');
-
-	[...canvasArray].forEach((item, i) => {
-		QRCode.toDataURL(arrCodes[i])
-		.then(url => {
-			$(item).attr('src', url);
-		})
-		.catch(err => {
-			console.error(err);
-		})
-	});
-}
-
-function assignUserQRCode(arrCodes) {
-	const dataArr = JSON.parse(stringifyJSON());
-	const depart = Object.values(dataArr).map((item) => item);
-	const filterArrQRs = depart.filter((item) => {
-		if (item.StatusID == 'newQR' || item.StatusID == 'changeQR') return item;
-	});
-	const countUserHasCode = filterArrQRs.length;
-	const fieldsQRCodes = $('.table--qr .table__cell--cardid input');
-
-	filterArrQRs.forEach((item, i) => {
-		item.CardID = arrCodes[i];
-		$(fieldsQRCodes[i]).val(arrCodes[i])
-	});
-
-	remoteAddedCodes(countUserHasCode);
-}
-
-function remoteAddedCodes(count) {
-	const filterItems = arrayQRCodes('.field__textarea');
-	filterItems.splice(0, count);
-	const joinnewArrCodes = filterItems.join('\n');
-
-	$('.field__textarea').val(joinnewArrCodes);
-	countQRCodes('.field__textarea');
 }

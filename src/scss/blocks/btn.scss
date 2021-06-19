@@ -73,4 +73,13 @@
 			}
 		}
 	}
+
+	&--allow {
+		background: $lightGreen;
+		margin-right: 30px;
+	}
+
+	&--disallow {
+		background: $darkRed;
+	}
 }
