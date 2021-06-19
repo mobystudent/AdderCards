@@ -26,24 +26,14 @@ main.main(data-name="permission")
 						.table__cell.table__cell--header.table__cell--post
 							span.table__text.table__text--header
 								| Должность
-						//- .table__cell.table__cell--header.table__cell--cardid
-						//- 	span.table__text.table__text--header
-						//- 		| ID карты
-						//- .table__cell.table__cell--header.table__cell--cardname
-						//- 	span.table__text.table__text--header
-						//- 		| Номер карты
 						.table__cell.table__cell--header.table__cell--statusid
 							span.table__text.table__text--header
 								| Статус
 						.table__cell.table__cell--header.table__cell--control
 							button.btn.btn--allow(type='button' data-type="all allow")
 								| Разрешить все
-							button.btn.btn--disallow(type='button' data-type="all disallow")
+							button.btn.btn--disallow.btn--blocking(type='button' data-type="all disallow")
 								| Запретить все
-						//- .table__cell.table__cell--header.table__cell--clear
-						.table__cell.table__cell--header.table__cell--signature
-							span.table__text.table__text--header
-								| Подпись
 					.table__body#tablePermiss
 						p.table__nothing
 							| Новых данных нет
