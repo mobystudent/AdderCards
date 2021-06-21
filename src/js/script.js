@@ -19,7 +19,8 @@ $(window).on('load', () => {
 	addIDinDB();
 	sortPerson();
 	permissionAdd();
-	addDisallowPermiss();
+	clickAllowDisallowPermiss();
+	confirmPermission();
 
 	countItems('#tableTime .table__content', 'time');
 
@@ -50,6 +51,7 @@ function stringifyJSON() {
 function delegationID() {
 	const dataArr = JSON.parse(stringifyJSON());
 	const depart = Object.values(dataArr).map((item) => item);
+
 	const filterArrCards = depart.filter((item) => {
 		if (item.StatusID == 'newCard' || item.StatusID == 'changeCard') return item;
 	});
@@ -188,7 +190,8 @@ function createTable(nameTable, tabName = '') {
 			EmployeeNumber = '',
 			Post = '',
 			NameID = '',
-			StatusID = ''
+			StatusID = '',
+			IDUser = ''
 		} = item;
 
 		if (!tabName) {
@@ -198,21 +201,23 @@ function createTable(nameTable, tabName = '') {
 				NameID,
 				CardID,
 				CardName,
-				StatusID
+				StatusID,
+				IDUser
 			};
 		} else {
 			return {
 				FIO,
 				Post,
 				NameID,
-				StatusID
+				StatusID,
+				IDUser
 			};
 		}
 	});
 
 	limitUser.forEach((item) => {
 		const tableContent = $(`${nameTable} .table__content--const[data-content=${item.NameID}]`);
-		tableContent.append(`<div class="table__row"></div>`);
+		tableContent.append(`<div class="table__row" data-id=${item.IDUser}></div>`);
 
 		const countRows = $(`${nameTable} .table__content--const[data-content=${item.NameID}] .table__row`).length;
 
@@ -249,7 +254,7 @@ function createTable(nameTable, tabName = '') {
 						<input class="table__input" />
 					</div>
 				`);
-			} else {
+			} else if (itemValue !== 'iduser') {
 				tableContent.find(`.table__row:nth-child(${countRows})`).append(`
 					<div class="table__cell table__cell--body table__cell--${itemValue}">
 						<span class="table__text table__text--body">
@@ -276,10 +281,10 @@ function createTable(nameTable, tabName = '') {
 		} else {
 			tableContent.find(`.table__row:nth-child(${countRows})`).append(`
 				<div class="table__cell table__cell--body table__cell--buttons">
-					<button class="btn btn--allow" type="button">
+					<button class="btn btn--allow" data-type="allow" data-cancel="Отменить" data-allow="Разрешить" type="button">
 						Разрешить
 					</button>
-					<button class="btn btn--disallow btn--blocking" data-cancel="Отменить" data-blocking="Запретить" type="button">
+					<button class="btn btn--disallow" data-type="disallow" data-cancel="Отменить" data-disallow="Запретить" type="button">
 						Запретить
 					</button>
 				</div>
@@ -467,23 +472,59 @@ function permissionAdd() {
 	focusFirstCell('permission');
 }
 
-function addDisallowPermiss() {
-	$('.btn--disallow').click((e) => {
-		$(e.target).parents('.table__row').toggleClass('table__row--disabled');
-		$(e.target).siblings('.btn--allow').toggleClass('btn--allow-disabled')
+function clickAllowDisallowPermiss() {
+	$('.btn--disallow, .btn--allow').click((e) => {
+		const typeBtn = $(e.target).data('type');
+		const diffBtn = typeBtn === 'disallow' ? 'allow' : 'disallow';
 
-		if ($(e.target).hasClass('btn--blocking')) {
-			changeStatusDisallowBtn(e.target, 'addClass', 'removeClass', true, 'cancel');
+		$(e.target).parents('.table__row').toggleClass('table__row--disabled');
+		$(e.target).siblings(`.btn--${diffBtn}`).toggleClass(`btn--${diffBtn}-disabled`);
+
+		if ($(e.target).hasClass(`btn--${typeBtn}-cancel`)) {
+			changeStatusDisallowBtn(e.target, 'removeClass', false, typeBtn, typeBtn, diffBtn);
 		} else {
-			changeStatusDisallowBtn(e.target, 'removeClass', 'addClass', false, 'blocking');
+			changeStatusDisallowBtn(e.target, 'addClass', true, 'cancel', typeBtn, diffBtn);
 		}
 	});
 }
 
-function changeStatusDisallowBtn(elem, nextClassStatus, prevClassStatus, disabled, nextText) {
-	$(elem).siblings('.btn--allow').attr('disabled', disabled);
-	$(elem)[nextClassStatus]('btn--cancel')[prevClassStatus]('btn--blocking');
+function changeStatusDisallowBtn(elem, classStatus, disabled, valText, typeBtn, diffBtn) {
+	$(elem).siblings(`.btn--${diffBtn}`).attr('disabled', disabled);
+	$(elem).parents('.table__row');
+	$(elem)[classStatus](`btn--${typeBtn}-cancel`);
 
-	const textBtn = $(elem).data(nextText);
+	if (valText === 'cancel') {
+		$(elem).parents('.table__row').attr('data-type', typeBtn);
+	} else {
+		$(elem).parents('.table__row').removeAttr('data-type');
+	}
+
+	const textBtn = $(elem).data(valText);
 	$(elem).text(textBtn);
+}
+
+function confirmPermission() {
+	const dataArr = JSON.parse(stringifyJSON());
+	const depart = Object.values(dataArr).map((item) => item);
+	const permissArray = [];
+	let allowItems = [];
+
+	$('.btn--confirm').click(() => {
+		const typeItems = $('#tablePermiss .table__content--active').find('.table__row');
+		const checkedItems = [...typeItems].every((item) => $(item).is('[data-type]'));
+
+		if (checkedItems) {
+			allowItems = [...typeItems].filter((item) => {
+				const typePerson = $(item).data('type');
+
+				$(item).remove();
+
+				if (typePerson === 'allow') return item;
+			});
+		} else {
+			console.log('Не все пользователи отмечены');
+		}
+
+		return allowItems;
+	});
 }

@@ -82,13 +82,22 @@
 			background: $disabledGreen;
 			color: $gray;
 		}
+
+		&-cancel {
+			background: $middleGray;
+		}
 	}
 
-	&--blocking{
+	&--disallow {
 		background: $darkRed;
-	}
 
-	&--cancel {
-		background: $middleGray;
+		&-disabled {
+			background: $disabledRed;
+			color: $gray;
+		}
+
+		&-cancel {
+			background: $middleGray;
+		}
 	}
 }

@@ -20,7 +20,8 @@ export const json = {
 		"EmployeeNumber": "",
 		"Post": "Старший механик управляющего",
 		"NameID": "ChemDep",
-		"StatusID": "newCard"
+		"StatusID": "newCard",
+		"IDUser": "1"
 	},
 	"1": {
 		"FIO": "Горбунова-Рубан Свiтлана Олександрiвна",
@@ -41,7 +42,8 @@ export const json = {
 		"EmployeeNumber": "",
 		"Post": "Старший механик управляющего",
 		"NameID": "ChemDep",
-		"StatusID": "newCard"
+		"StatusID": "newCard",
+		"IDUser": "2"
 	},
 	"2": {
 		"FIO": "Гарькавенко Володимир Володимирович",
@@ -62,7 +64,8 @@ export const json = {
 		"EmployeeNumber": "",
 		"Post": "Инженер 2-й категории",
 		"NameID": "CSDep",
-		"StatusID": "newCard"
+		"StatusID": "newCard",
+		"IDUser": "3"
 	},
 	"3": {
 		"FIO": "Скоринiна-Погребна Ольга Володимирiвна",
@@ -83,7 +86,8 @@ export const json = {
 		"EmployeeNumber": "",
 		"Post": "Инженер 2-й категории",
 		"NameID": "PhTechDep",
-		"StatusID": "newCard"
+		"StatusID": "newCard",
+		"IDUser": "4"
 	},
 	// "4": {
 	// 	"FIO": "Суворова-Григорович Ганна Олександрiвна",
@@ -104,7 +108,8 @@ export const json = {
 	// 	"EmployeeNumber": "",
 	// 	"Post": "Инженер 1-й категории",
 	// 	"NameID": "PhDep",
-	// 	"StatusID": "newCard"
+	// 	"StatusID": "newCard",
+	// "IDUser": "5"
 	// },
 	// "5": {
 	// 	"FIO": "Сотнiкова-Мелешкiна Жанна Владиславiвна",
@@ -125,7 +130,8 @@ export const json = {
 	// 	"EmployeeNumber": "",
 	// 	"Post": "Инженер",
 	// 	"NameID": "BioDep",
-	// 	"StatusID": "newCard"
+	// 	"StatusID": "newCard",
+	// "IDUser": "6"
 	// },
 	// "6": {
 	// 	"FIO": "Бельорин-Еррера Олександра Михайлiвна",
@@ -146,7 +152,8 @@ export const json = {
 	// 	"EmployeeNumber": "",
 	// 	"Post": "Инженер",
 	// 	"NameID": "BioDep",
-	// 	"StatusID": "newCard"
+	// 	"StatusID": "newCard",
+	// "IDUser": "7"
 	// },
 	// "7": {
 	// 	"FIO": "Корженевський Станiслав Володимирович",
@@ -167,7 +174,8 @@ export const json = {
 	// 	"EmployeeNumber": "",
 	// 	"Post": "Ст. преподаватель",
 	// 	"NameID": "PhysEnDep",
-	// 	"StatusID": "newCard"
+	// 	"StatusID": "newCard",
+	// "IDUser": "8"
 	// },
 	// "8": {
 	// 	"FIO": "Добровольський Олександр В'ячеславович",
@@ -188,7 +196,8 @@ export const json = {
 	// 	"EmployeeNumber": "",
 	// 	"Post": "Ст. преподаватель",
 	// 	"NameID": "EcoDep",
-	// 	"StatusID": "newCard"
+	// 	"StatusID": "newCard",
+	// "IDUser": "9"
 	// },
 	// "9": {
 	// 	"FIO": "Пасiчник-Ледянко Валентина Миколаївна",
@@ -209,7 +218,8 @@ export const json = {
 	// 	"EmployeeNumber": "",
 	// 	"Post": "Ст. преподаватель",
 	// 	"NameID": "PsyDep",
-	// 	"StatusID": "newCard"
+	// 	"StatusID": "newCard",
+	// "IDUser": "10"
 	// },
 	// "10": {
 	// 	"FIO": "Дем'яновська-Кононова Наталiя Михайлiвна",
@@ -230,7 +240,8 @@ export const json = {
 	// 	"EmployeeNumber": "",
 	// 	"Post": "Преподаватель",
 	// 	"NameID": "PhilolDep",
-	// 	"StatusID": "newCard"
+	// 	"StatusID": "newCard",
+	// "IDUser": "11"
 	// },
 	// "11": {
 	// 	"FIO": "Тесленко-Пономаренко Надiя Дмитрiвна",
@@ -251,7 +262,8 @@ export const json = {
 	// 	"EmployeeNumber": "",
 	// 	"Post": "Преподаватель",
 	// 	"NameID": "EconomDep",
-	// 	"StatusID": "newCard"
+	// 	"StatusID": "newCard",
+	// "IDUser": "12"
 	// },
 	// "12": {
 	// 	"FIO": "Станиславський Олександр Олександрович",
@@ -272,7 +284,8 @@ export const json = {
 	// 	"EmployeeNumber": "",
 	// 	"Post": "Секретарь",
 	// 	"NameID": "SocDep",
-	// 	"StatusID": "newCard"
+	// 	"StatusID": "newCard",
+	// "IDUser": "13"
 	// }
 	"13": {
 		"FIO": "Станиславський Олександр Олександрович",
@@ -293,7 +306,8 @@ export const json = {
 		"EmployeeNumber": "",
 		"Post": "Секретарь",
 		"NameID": "SocDep",
-		"StatusID": "newQR"
+		"StatusID": "newQR",
+		"IDUser": "14"
 	},
 	"14": {
 		"FIO": "Станиславський Олександр Олександрович",
@@ -314,7 +328,8 @@ export const json = {
 		"EmployeeNumber": "",
 		"Post": "Секретарь",
 		"NameID": "ChemDep",
-		"StatusID": "changeCard"
+		"StatusID": "changeCard",
+		"IDUser": "15"
 	},
 	"15": {
 		"FIO": "Станиславський Олександр Олександрович",
@@ -335,7 +350,8 @@ export const json = {
 		"EmployeeNumber": "",
 		"Post": "Секретарь",
 		"NameID": "BioDep",
-		"StatusID": "changeQR"
+		"StatusID": "changeQR",
+		"IDUser": "16"
 	},
 	"16": {
 		"FIO": "Ткаченко Володимир Володимирович",
@@ -356,7 +372,8 @@ export const json = {
 		"EmployeeNumber": "",
 		"Post": "Старший механик управляющего",
 		"NameID": "ChemDep",
-		"StatusID": "newCard"
+		"StatusID": "newCard",
+		"IDUser": "17"
 	},
 	"17": {
 		"FIO": "Сидоренко Дмитро Юрiйович",
@@ -377,155 +394,163 @@ export const json = {
 		"EmployeeNumber": "",
 		"Post": "Старший механик управляющего",
 		"NameID": "ChemDep",
-		"StatusID": "newCard"
+		"StatusID": "newCard",
+		"IDUser": "18"
 	},
-	"18": {
-		"FIO": "Рябчунова Анастасiя Валерiївна",
-		"Department": "Химический факультет",
-		"FieldGroup": "",
-		"Badge": "",
-		"CardName": "",
-		"CardID": "",
-		"CardValidTo": "",
-		"PIN": "",
-		"CardStatus": "1",
-		"Security": "0",
-		"Disalarm": "0",
-		"VIP": "0",
-		"DayNightCLM": "0",
-		"AntipassbackDisabled": "0",
-		"PhotoFile": "",
-		"EmployeeNumber": "",
-		"Post": "Старший механик управляющего",
-		"NameID": "ChemDep",
-		"StatusID": "newCard"
-	},
-	"19": {
-		"FIO": "Чуприна Юлiя Юрiївна",
-		"Department": "Химический факультет",
-		"FieldGroup": "",
-		"Badge": "",
-		"CardName": "",
-		"CardID": "",
-		"CardValidTo": "",
-		"PIN": "",
-		"CardStatus": "1",
-		"Security": "0",
-		"Disalarm": "0",
-		"VIP": "0",
-		"DayNightCLM": "0",
-		"AntipassbackDisabled": "0",
-		"PhotoFile": "",
-		"EmployeeNumber": "",
-		"Post": "Старший механик управляющего",
-		"NameID": "ChemDep",
-		"StatusID": "newCard"
-	},
-	"20": {
-		"FIO": "Шайтуро Ольга Павлiвна",
-		"Department": "Химический факультет",
-		"FieldGroup": "",
-		"Badge": "",
-		"CardName": "",
-		"CardID": "",
-		"CardValidTo": "",
-		"PIN": "",
-		"CardStatus": "1",
-		"Security": "0",
-		"Disalarm": "0",
-		"VIP": "0",
-		"DayNightCLM": "0",
-		"AntipassbackDisabled": "0",
-		"PhotoFile": "",
-		"EmployeeNumber": "",
-		"Post": "Старший механик управляющего",
-		"NameID": "ChemDep",
-		"StatusID": "newCard"
-	},
-	"21": {
-		"FIO": "Хабарова Тетяна Володимирiвна",
-		"Department": "Химический факультет",
-		"FieldGroup": "",
-		"Badge": "",
-		"CardName": "",
-		"CardID": "",
-		"CardValidTo": "",
-		"PIN": "",
-		"CardStatus": "1",
-		"Security": "0",
-		"Disalarm": "0",
-		"VIP": "0",
-		"DayNightCLM": "0",
-		"AntipassbackDisabled": "0",
-		"PhotoFile": "",
-		"EmployeeNumber": "",
-		"Post": "Старший механик управляющего",
-		"NameID": "ChemDep",
-		"StatusID": "newCard"
-	},
-	"22": {
-		"FIO": "Оганесян Марина Оганесiвна",
-		"Department": "Химический факультет",
-		"FieldGroup": "",
-		"Badge": "",
-		"CardName": "",
-		"CardID": "",
-		"CardValidTo": "",
-		"PIN": "",
-		"CardStatus": "1",
-		"Security": "0",
-		"Disalarm": "0",
-		"VIP": "0",
-		"DayNightCLM": "0",
-		"AntipassbackDisabled": "0",
-		"PhotoFile": "",
-		"EmployeeNumber": "",
-		"Post": "Старший механик управляющего",
-		"NameID": "ChemDep",
-		"StatusID": "newCard"
-	},
-	"23": {
-		"FIO": "Мурза Олена Віталіївна",
-		"Department": "Химический факультет",
-		"FieldGroup": "",
-		"Badge": "",
-		"CardName": "",
-		"CardID": "",
-		"CardValidTo": "",
-		"PIN": "",
-		"CardStatus": "1",
-		"Security": "0",
-		"Disalarm": "0",
-		"VIP": "0",
-		"DayNightCLM": "0",
-		"AntipassbackDisabled": "0",
-		"PhotoFile": "",
-		"EmployeeNumber": "",
-		"Post": "Старший механик управляющего",
-		"NameID": "ChemDep",
-		"StatusID": "newCard"
-	},
-	"24": {
-		"FIO": "Мурза Олена Віталіївич",
-		"Department": "Химический факультет",
-		"FieldGroup": "",
-		"Badge": "",
-		"CardName": "",
-		"CardID": "",
-		"CardValidTo": "",
-		"PIN": "",
-		"CardStatus": "1",
-		"Security": "0",
-		"Disalarm": "0",
-		"VIP": "0",
-		"DayNightCLM": "0",
-		"AntipassbackDisabled": "0",
-		"PhotoFile": "",
-		"EmployeeNumber": "",
-		"Post": "Старший механик управляющего",
-		"NameID": "ChemDep",
-		"StatusID": "newCard"
-	},
+	// "18": {
+	// 	"FIO": "Рябчунова Анастасiя Валерiївна",
+	// 	"Department": "Химический факультет",
+	// 	"FieldGroup": "",
+	// 	"Badge": "",
+	// 	"CardName": "",
+	// 	"CardID": "",
+	// 	"CardValidTo": "",
+	// 	"PIN": "",
+	// 	"CardStatus": "1",
+	// 	"Security": "0",
+	// 	"Disalarm": "0",
+	// 	"VIP": "0",
+	// 	"DayNightCLM": "0",
+	// 	"AntipassbackDisabled": "0",
+	// 	"PhotoFile": "",
+	// 	"EmployeeNumber": "",
+	// 	"Post": "Старший механик управляющего",
+	// 	"NameID": "ChemDep",
+	// 	"StatusID": "newCard",
+	// 	"IDUser": "19"
+	// },
+	// "19": {
+	// 	"FIO": "Чуприна Юлiя Юрiївна",
+	// 	"Department": "Химический факультет",
+	// 	"FieldGroup": "",
+	// 	"Badge": "",
+	// 	"CardName": "",
+	// 	"CardID": "",
+	// 	"CardValidTo": "",
+	// 	"PIN": "",
+	// 	"CardStatus": "1",
+	// 	"Security": "0",
+	// 	"Disalarm": "0",
+	// 	"VIP": "0",
+	// 	"DayNightCLM": "0",
+	// 	"AntipassbackDisabled": "0",
+	// 	"PhotoFile": "",
+	// 	"EmployeeNumber": "",
+	// 	"Post": "Старший механик управляющего",
+	// 	"NameID": "ChemDep",
+	// 	"StatusID": "newCard",
+	// 	"IDUser": "20"
+	// },
+	// "20": {
+	// 	"FIO": "Шайтуро Ольга Павлiвна",
+	// 	"Department": "Химический факультет",
+	// 	"FieldGroup": "",
+	// 	"Badge": "",
+	// 	"CardName": "",
+	// 	"CardID": "",
+	// 	"CardValidTo": "",
+	// 	"PIN": "",
+	// 	"CardStatus": "1",
+	// 	"Security": "0",
+	// 	"Disalarm": "0",
+	// 	"VIP": "0",
+	// 	"DayNightCLM": "0",
+	// 	"AntipassbackDisabled": "0",
+	// 	"PhotoFile": "",
+	// 	"EmployeeNumber": "",
+	// 	"Post": "Старший механик управляющего",
+	// 	"NameID": "ChemDep",
+	// 	"StatusID": "newCard",
+	// 	"IDUser": "21"
+	// },
+	// "21": {
+	// 	"FIO": "Хабарова Тетяна Володимирiвна",
+	// 	"Department": "Химический факультет",
+	// 	"FieldGroup": "",
+	// 	"Badge": "",
+	// 	"CardName": "",
+	// 	"CardID": "",
+	// 	"CardValidTo": "",
+	// 	"PIN": "",
+	// 	"CardStatus": "1",
+	// 	"Security": "0",
+	// 	"Disalarm": "0",
+	// 	"VIP": "0",
+	// 	"DayNightCLM": "0",
+	// 	"AntipassbackDisabled": "0",
+	// 	"PhotoFile": "",
+	// 	"EmployeeNumber": "",
+	// 	"Post": "Старший механик управляющего",
+	// 	"NameID": "ChemDep",
+	// 	"StatusID": "newCard",
+	// 	"IDUser": "22"
+	// },
+	// "22": {
+	// 	"FIO": "Оганесян Марина Оганесiвна",
+	// 	"Department": "Химический факультет",
+	// 	"FieldGroup": "",
+	// 	"Badge": "",
+	// 	"CardName": "",
+	// 	"CardID": "",
+	// 	"CardValidTo": "",
+	// 	"PIN": "",
+	// 	"CardStatus": "1",
+	// 	"Security": "0",
+	// 	"Disalarm": "0",
+	// 	"VIP": "0",
+	// 	"DayNightCLM": "0",
+	// 	"AntipassbackDisabled": "0",
+	// 	"PhotoFile": "",
+	// 	"EmployeeNumber": "",
+	// 	"Post": "Старший механик управляющего",
+	// 	"NameID": "ChemDep",
+	// 	"StatusID": "newCard",
+	// 	"IDUser": "23"
+	// },
+	// "23": {
+	// 	"FIO": "Мурза Олена Віталіївна",
+	// 	"Department": "Химический факультет",
+	// 	"FieldGroup": "",
+	// 	"Badge": "",
+	// 	"CardName": "",
+	// 	"CardID": "",
+	// 	"CardValidTo": "",
+	// 	"PIN": "",
+	// 	"CardStatus": "1",
+	// 	"Security": "0",
+	// 	"Disalarm": "0",
+	// 	"VIP": "0",
+	// 	"DayNightCLM": "0",
+	// 	"AntipassbackDisabled": "0",
+	// 	"PhotoFile": "",
+	// 	"EmployeeNumber": "",
+	// 	"Post": "Старший механик управляющего",
+	// 	"NameID": "ChemDep",
+	// 	"StatusID": "newCard",
+	// 	"IDUser": "24"
+	// },
+	// "24": {
+	// 	"FIO": "Мурза Олена Віталіївич",
+	// 	"Department": "Химический факультет",
+	// 	"FieldGroup": "",
+	// 	"Badge": "",
+	// 	"CardName": "",
+	// 	"CardID": "",
+	// 	"CardValidTo": "",
+	// 	"PIN": "",
+	// 	"CardStatus": "1",
+	// 	"Security": "0",
+	// 	"Disalarm": "0",
+	// 	"VIP": "0",
+	// 	"DayNightCLM": "0",
+	// 	"AntipassbackDisabled": "0",
+	// 	"PhotoFile": "",
+	// 	"EmployeeNumber": "",
+	// 	"Post": "Старший механик управляющего",
+	// 	"NameID": "ChemDep",
+	// 	"StatusID": "newCard",
+	// 	"IDUser": "25"
+	// },
 	"25": {
 		"FIO": "Передерiй Олександр Сергiйович",
 		"Department": "Химический факультет",
@@ -545,6 +570,7 @@ export const json = {
 		"EmployeeNumber": "",
 		"Post": "Старший механик управляющего",
 		"NameID": "ChemDep",
-		"StatusID": "newCard"
+		"StatusID": "newCard",
+		"IDUser": "26"
 	},
 };

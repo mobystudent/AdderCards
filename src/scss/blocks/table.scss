@@ -71,7 +71,8 @@
 			}
 		}
 
-		&--disabled {
+		&--disabled,
+		&--disabled:nth-child(2n) {
 			background: $disabledGray;
 
 			#{$self}__text {
