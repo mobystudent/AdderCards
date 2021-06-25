@@ -30,9 +30,9 @@ main.main(data-name="permission")
 							span.table__text.table__text--header
 								| Статус
 						.table__cell.table__cell--header.table__cell--control
-							button.btn.btn--allow(type='button' data-type="all allow")
+							button.btn.btn--allow#allowAll(type='button' data-type="allow" data-cancel="Отменить" data-allow="Разрешить")
 								| Разрешить все
-							button.btn.btn--disallow.btn--blocking(type='button' data-type="all disallow")
+							button.btn.btn--disallow#disallowAll(type='button' data-type="disallow" data-cancel="Отменить" data-disallow="Запретить")
 								| Запретить все
 					.table__body#tablePermiss
 						p.table__nothing

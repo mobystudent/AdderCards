@@ -21,6 +21,7 @@ $(window).on('load', () => {
 	permissionAdd();
 	clickAllowDisallowPermiss();
 	confirmPermission();
+	confirmAllPermission();
 
 	countItems('#tableTime .table__content', 'time');
 
@@ -526,5 +527,19 @@ function confirmPermission() {
 		}
 
 		return allowItems;
+	});
+}
+
+function confirmAllPermission() {
+	$('#allowAll, #disallowAll').click((e) => {
+		const typeBtn = $(e.target).data('type');
+		const typeAttrItemsBtn = $(e.target).hasClass(`btn--${typeBtn}-cancel`) ? 'disabled'  : false;
+		const classBtns = ['allow', 'disallow'];
+
+		$('.table--permission .table__row').toggleClass('table__row--disabled');
+
+		classBtns.forEach((item) => {
+			$(`.table--permission .table__row .btn--${item}`).toggleClass(`btn--${item}-disabled`).attr('disabled', typeAttrItemsBtn);
+		});
 	});
 }
