@@ -1,0 +1,10 @@
+.info {
+	margin-bottom: 40px;
+
+	&__warn {
+		display: none;
+		@extend %text--premedium;
+		text-align: center;
+		color: $orange;
+	}
+}

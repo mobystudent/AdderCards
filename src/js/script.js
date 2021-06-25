@@ -384,18 +384,7 @@ function countItems(tableContent, modDepart) {
 // Добавление
 function addIDinDB() {
 	$('.btn--add').click((e) => {
-		const dataDepart = $(e.target).closest('.main').data('name');
-		const countTabs = $(`.tab--${dataDepart} .tab__item`);
-		const countContent = $(`.table--${dataDepart} .table__content`);
-
-		if (countTabs.length > 1) {
-			removeAndFocusActiveBlock(countTabs, 'tab__item', dataDepart);
-			removeAndFocusActiveBlock(countContent, 'table__content', dataDepart);
-		} else {
-			$(`.tab--${dataDepart} .tab__item--active`).remove();
-			$(`.table--${dataDepart} .table__content--active`).remove();
-			$(`.table--${dataDepart} .table__nothing`).show();
-		}
+		returnToNextTab(e.target);
 	});
 }
 
@@ -510,7 +499,7 @@ function confirmPermission() {
 	const permissArray = [];
 	let allowItems = [];
 
-	$('.btn--confirm').click(() => {
+	$('.btn--confirm').click((e) => {
 		const typeItems = $('#tablePermiss .table__content--active').find('.table__row');
 		const checkedItems = [...typeItems].every((item) => $(item).is('[data-type]'));
 
@@ -522,24 +511,52 @@ function confirmPermission() {
 
 				if (typePerson === 'allow') return item;
 			});
+
+			returnToNextTab(e.target);
+
+			const classBtns = ['#allowAll', '#disallowAll'];
+
+			classBtns.forEach((item) => {
+				const typeBtn = $(item).data('type');
+
+				$(item).removeClass(`btn--${typeBtn}-disabled btn--${typeBtn}-cancel`).removeAttr('disabled', 'disabled');
+			});
+
+			$('.info__warn').hide();
 		} else {
-			console.log('Не все пользователи отмечены');
+			$('.info__warn').show();
 		}
 
 		return allowItems;
 	});
 }
 
+function returnToNextTab(item) {
+	const dataDepart = $(item).closest('.main').data('name');
+	const countTabs = $(`.tab--${dataDepart} .tab__item`);
+	const countContent = $(`.table--${dataDepart} .table__content`);
+
+	if (countTabs.length > 1) {
+		removeAndFocusActiveBlock(countTabs, 'tab__item', dataDepart);
+		removeAndFocusActiveBlock(countContent, 'table__content', dataDepart);
+	} else {
+		$(`.tab--${dataDepart} .tab__item--active`).remove();
+		$(`.table--${dataDepart} .table__content--active`).remove();
+		$(`.table--${dataDepart} .table__nothing`).show();
+	}
+}
+
 function confirmAllPermission() {
 	$('#allowAll, #disallowAll').click((e) => {
 		const typeBtn = $(e.target).data('type');
 		const typeAttrItemsBtn = $(e.target).hasClass(`btn--${typeBtn}-cancel`) ? 'disabled'  : false;
+		const dataTypeItem = $(e.target).hasClass(`btn--${typeBtn}-cancel`) ? 'attr' : 'removeAttr';
 		const classBtns = ['allow', 'disallow'];
 
-		$('.table--permission .table__row').toggleClass('table__row--disabled');
+		$('.table--permission .table__content--active .table__row').toggleClass('table__row--disabled')[dataTypeItem]('data-type', typeBtn);
 
 		classBtns.forEach((item) => {
-			$(`.table--permission .table__row .btn--${item}`).toggleClass(`btn--${item}-disabled`).attr('disabled', typeAttrItemsBtn);
+			$(`.table--permission .table__content--active .table__row .btn--${item}`).toggleClass(`btn--${item}-disabled`).attr('disabled', typeAttrItemsBtn);
 		});
 	});
 }
