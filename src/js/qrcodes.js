@@ -1,6 +1,7 @@
 'use strict';
 
 import $ from 'jquery';
+import { json } from './data.js';
 import QRCode from 'qrcode';
 
 function stringifyJSON() {

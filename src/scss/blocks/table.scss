@@ -24,6 +24,10 @@
 		padding-bottom: 10px;
 		background: $gray;
 
+		&--empty {
+			height: 370px;
+		}
+
 		@media print {
 			padding-bottom: 0;
 		}

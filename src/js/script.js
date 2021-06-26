@@ -11,7 +11,6 @@ import qrcodes from './qrcodes.js';
 $(window).on('load', () => {
 	getData();
 	stringifyJSON();
-	delegationID();
 	clearNumberCard();
 	printReport();
 	switchControl();
@@ -21,6 +20,7 @@ $(window).on('load', () => {
 	clickAllowDisallowPermiss();
 	confirmPermission();
 	confirmAllPermission();
+	showDataInTable();
 
 	countItems('#tableTime .table__content', 'time');
 
@@ -50,22 +50,19 @@ function stringifyJSON() {
 	return strJson;
 }
 
-function delegationID() {
-	const dataArr = JSON.parse(stringifyJSON());
-	const depart = Object.values(dataArr).map((item) => item);
-
-	const filterArrCards = depart.filter((item) => {
+function delegationID(users) {
+	const filterArrCards = users.filter((item) => {
 		if (item.StatusID == 'newCard' || item.StatusID == 'changeCard') return item;
 	});
-	const filterArrQRs = depart.filter((item) => {
+	const filterArrQRs = users.filter((item) => {
 		if (item.StatusID == 'newQR' || item.StatusID == 'changeQR') return item;
 	});
 
 	if (filterArrCards) {
 		addTabs(filterArrCards, '#tableConst', 'const');
 		viewAllCountAndTitleDefault(filterArrCards, 'const');
-		changeTabs('#tableConst', 'const');
-		createTable('#tableConst');
+		changeTabs(users, '#tableConst', 'const');
+		createTable(dataArr, '#tableConst');
 		addCountCards(filterArrCards, '#tableConst', 'const');
 		focusFirstCell('const');
 	}
@@ -73,8 +70,8 @@ function delegationID() {
 	if (filterArrQRs) {
 		addTabs(filterArrQRs, '#tableQR', 'qr');
 		viewAllCountAndTitleDefault(filterArrQRs, 'qr');
-		changeTabs('#tableQR', 'qr');
-		createTable('#tableQR');
+		changeTabs(users, '#tableQR', 'qr');
+		createTable(dataArr, '#tableQR');
 		addCountCards(filterArrQRs, '#tableQR', 'qr');
 		focusFirstCell('qr');
 	}
@@ -148,10 +145,7 @@ function viewAllCountAndTitleDefault(filterIDItems, modDepart) {
 	});
 }
 
-function changeTabs(nameTable, modDepart) {
-	const dataArr = JSON.parse(stringifyJSON());
-	const depart = Object.values(dataArr).map((item) => item);
-
+function changeTabs(depart, nameTable, modDepart) {
 	$(`.tab--${modDepart} .tab__item`).click((e) => {
 		const nameDepart = $(e.target).closest('.tab__item').data('depart');
 
@@ -174,9 +168,7 @@ function changeTabs(nameTable, modDepart) {
 	});
 }
 
-function createTable(nameTable, tabName = '') {
-	const dataArr = JSON.parse(stringifyJSON());
-
+function createTable(dataArr, nameTable, tabName = '') {
 	const user = Object.values(dataArr).map((item) => item);
 	const limitUser = user.map((item) => {
 		const {
@@ -413,8 +405,8 @@ function permissionAdd() {
 
 	addTabs(depart, '#tablePermiss', 'permission');
 	viewAllCountAndTitleDefault(depart, 'permission');
-	changeTabs('#tablePermiss', 'permission');
-	createTable('#tablePermiss', 'permission');
+	changeTabs(depart ,'#tablePermiss', 'permission');
+	createTable(dataArr, '#tablePermiss', 'permission');
 	addCountCards(depart, '#tablePermiss', 'permission');
 	focusFirstCell('permission');
 }
@@ -451,8 +443,6 @@ function changeStatusDisallowBtn(elem, classStatus, disabled, valText, typeBtn, 
 }
 
 function confirmPermission() {
-	const dataArr = JSON.parse(stringifyJSON());
-	const depart = Object.values(dataArr).map((item) => item);
 	const permissArray = [];
 	let allowItems = [];
 
@@ -461,17 +451,34 @@ function confirmPermission() {
 		const checkedItems = [...typeItems].every((item) => $(item).is('[data-type]'));
 
 		if (checkedItems) {
-			allowItems = [...typeItems].filter((item) => {
+			const dataArr = JSON.parse(stringifyJSON());
+			const objectItem = Object.values(dataArr).map((item) => item);
+
+			const allowItems = [...typeItems].filter((item) => {
 				const typePerson = $(item).data('type');
 
 				$(item).remove();
 
 				if (typePerson === 'allow') return item;
 			});
-
-			returnToNextTab(e.target);
-
 			const classBtns = ['#allowAll', '#disallowAll'];
+			const returnUsers = allowItems.reduce((acc, elem, i) => {
+				const idObj = $(elem).data('id');
+
+				objectItem.forEach((obj) => {
+					if (obj.IDUser == idObj) acc.push(obj);
+				});
+
+				return acc;
+			}, []);
+			const nameTable = returnUsers.map((item) => {
+				return getTableID(item.StatusID);
+			});
+
+			nameTable.forEach((table) => {
+				$(`.table--${table} .table__body`).removeClass('table__body--empty');
+				$(`.table--${table} .table__nothing`).hide();
+			});
 
 			classBtns.forEach((item) => {
 				const typeBtn = $(item).data('type');
@@ -479,12 +486,38 @@ function confirmPermission() {
 				$(item).removeClass(`btn--${typeBtn}-disabled btn--${typeBtn}-cancel`).removeAttr('disabled', 'disabled');
 			});
 
+			returnToNextTab(e.target);
+			delegationID(returnUsers);
+
 			$('.info__warn').hide();
 		} else {
 			$('.info__warn').show();
 		}
 
 		return allowItems;
+	});
+}
+
+function getTableID(name) {
+	if (name === 'newCard' || name === 'changeCard') {
+		return 'const';
+	} else if (name === 'newQR' || name === 'changeQR') {
+		return 'qr';
+	}
+}
+
+function confirmAllPermission() {
+	$('#allowAll, #disallowAll').click((e) => {
+		const typeBtn = $(e.target).data('type');
+		const typeAttrItemsBtn = $(e.target).hasClass(`btn--${typeBtn}-cancel`) ? 'disabled'  : false;
+		const dataTypeItem = $(e.target).hasClass(`btn--${typeBtn}-cancel`) ? 'attr' : 'removeAttr';
+		const classBtns = ['allow', 'disallow'];
+
+		$('.table--permission .table__content--active .table__row').toggleClass('table__row--disabled')[dataTypeItem]('data-type', typeBtn);
+
+		classBtns.forEach((item) => {
+			$(`.table--permission .table__content--active .table__row .btn--${item}`).toggleClass(`btn--${item}-disabled`).attr('disabled', typeAttrItemsBtn);
+		});
 	});
 }
 
@@ -503,17 +536,17 @@ function returnToNextTab(item) {
 	}
 }
 
-function confirmAllPermission() {
-	$('#allowAll, #disallowAll').click((e) => {
-		const typeBtn = $(e.target).data('type');
-		const typeAttrItemsBtn = $(e.target).hasClass(`btn--${typeBtn}-cancel`) ? 'disabled'  : false;
-		const dataTypeItem = $(e.target).hasClass(`btn--${typeBtn}-cancel`) ? 'attr' : 'removeAttr';
-		const classBtns = ['allow', 'disallow'];
+//Показывать данные в таблицах о пользователях
+function showDataInTable() {
+	const nameTables = ['const', 'qr', 'permission'];
 
-		$('.table--permission .table__content--active .table__row').toggleClass('table__row--disabled')[dataTypeItem]('data-type', typeBtn);
-
-		classBtns.forEach((item) => {
-			$(`.table--permission .table__content--active .table__row .btn--${item}`).toggleClass(`btn--${item}-disabled`).attr('disabled', typeAttrItemsBtn);
-		});
+	nameTables.forEach((item) => {
+		if (!$(`.table--${item} .table__body .table__content`).length) {
+			$(`.table--${item} .table__body`).addClass('table__body--empty');
+			$(`.table--${item} .table__nothing`).show();
+		} else {
+			$(`.table--${item} .table__body`).removeClass('table__body--empty');
+			$(`.table--${item} .table__nothing`).hide();
+		}
 	});
 }
