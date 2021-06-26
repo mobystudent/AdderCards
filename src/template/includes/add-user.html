@@ -36,13 +36,34 @@
           </div>
         </div>
       </div>
-      <button class="btn btn--form" type="submit">Добавить</button>
+      <button class="btn btn--form" id="addUser" type="submit">Добавить</button>
     </form>
+    <div class="wrap wrap--content wrap--content-add">
+      <div class="main__cards main__cards--main">
+        <p class="main__count-wrap main__count-wrap--depart"><span class="main__count-text">Количество добавленых карт:&nbsp</span><span class="main__count main__count--add">0</span></p>
+      </div>
+      <div class="wrap wrap--table">
+        <header class="tab tab--add"></header>
+        <div class="table table--add">
+          <header class="table__header">
+            <div class="table__cell table__cell--header table__cell--fio"><span class="table__text table__text--header">Фамилия Имя Отчество</span>
+              <button class="btn btn--sort" type="button" data-direction="true"></button>
+            </div>
+            <div class="table__cell table__cell--header table__cell--post"><span class="table__text table__text--header">Должность</span></div>
+            <div class="table__cell table__cell--header table__cell--depart"><span class="table__text table__text--header">Подразделение/факультет</span></div>
+            <div class="table__cell table__cell--header table__cell--statusid"><span class="table__text table__text--header">Тип идентификатора</span></div>
+          </header>
+          <div class="table__body" id="tableAdd">
+            <p class="table__nothing">Не добавленно ни одного пользователя</p>
+          </div>
+        </div>
+      </div>
+    </div>
     <div class="info">
       <p class="info__warn">Предупреждение! Не все поля заполнены</p>
     </div>
     <div class="main__btns">
-      <button class="btn btn--add-user" type="button">Подтвердить</button>
+      <button class="btn btn--add-user" id="submitAddUser" type="button">Подтвердить и отправить</button>
     </div>
   </div>
 </main>

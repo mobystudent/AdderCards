@@ -544,7 +544,7 @@ function returnToNextTab(item) {
 
 //Показывать данные в таблицах о пользователях
 function showDataInTable() {
-	const nameTables = ['const', 'qr', 'permis'];
+	const nameTables = ['const', 'qr', 'permis', 'add'];
 
 	nameTables.forEach((item) => {
 		if (!$(`.table--${item} .table__body .table__content`).length) {
