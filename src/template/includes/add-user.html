@@ -6,12 +6,12 @@
       <div class="form__wrap">
         <div class="form__field">
           <label class="form__label"><span class="form__name">ФИО</span>
-            <input class="form__input" name="name" type="text" placeholder="Введите ФИО" required="required"/>
+            <input class="form__input form__item" data-field="FIO" name="name" type="text" placeholder="Введите ФИО" required="required"/>
           </label>
         </div>
         <div class="form__field"><span class="form__name">Подразделение/факультет</span>
-          <div class="form__select select" data-select="depart">
-            <header class="select__header"><span class="select__def-value">Выберите подразделение/факультет</span></header>
+          <div class="form__select form__item select" data-field="Department" data-type="NameID" data-select="depart">
+            <header class="select__header"><span class="select__value" data-title="title" data-name-id="name-id">Выберите подразделение/факультет</span></header>
             <ul class="select__list">
               <li class="select__item"><span class="select__name" data-title="Химический факультет" data-name-id="ChemDep">Химический факультет</span></li>
               <li class="select__item"><span class="select__name" data-title="Химический факультет" data-name-id="ChemDep">Химический факультет</span></li>
@@ -23,20 +23,20 @@
         </div>
         <div class="form__field">
           <label class="form__label"><span class="form__name">Должность</span>
-            <input class="form__input" name="name" type="text" placeholder="Введите должность" required="required"/>
+            <input class="form__input form__item" data-field="Post" name="post" type="text" placeholder="Введите должность" required="required"/>
           </label>
         </div>
         <div class="form__field"><span class="form__name">Тип идентификатора</span>
-          <div class="form__select select" data-select="type">
-            <header class="select__header"><span class="select__def-value">Выберите тип идентификатора</span></header>
+          <div class="form__select form__item select" data-field="TitleID" data-type="StatusID" data-select="type">
+            <header class="select__header"><span class="select__value" data-title="title" data-type="type">Выберите тип идентификатора</span></header>
             <ul class="select__list">
-              <li class="select__item"><span class="select__name" data-type="card" data-title="Пластиковая карта">Пластиковая карта</span></li>
-              <li class="select__item"><span class="select__name" data-type="qr" data-title="QR-код">QR-код</span></li>
+              <li class="select__item"><span class="select__name" data-title="Пластиковая карта" data-type="newCard">Пластиковая карта</span></li>
+              <li class="select__item"><span class="select__name" data-type="newQR" data-title="QR-код">QR-код</span></li>
             </ul>
           </div>
         </div>
       </div>
-      <button class="btn btn--form" id="addUser" type="submit">Добавить</button>
+      <button class="btn btn--form" id="addUser" type="button">Добавить</button>
     </form>
     <div class="wrap wrap--content wrap--content-add">
       <div class="main__cards main__cards--main">

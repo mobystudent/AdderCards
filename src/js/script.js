@@ -22,6 +22,7 @@ $(window).on('load', () => {
 	confirmAllAllowDisallow();
 	showDataInTable();
 	toggleSelect();
+	addUserInTable();
 
 	convert.viewConvertCardId();
 	qrcodes.changeCountQRCodes();
@@ -217,9 +218,6 @@ function createTable(users, nameTable, tabName = '') {
 			};
 		}
 	});
-
-	console.log(limitUser);
-	console.log(nameTable);
 
 	limitUser.forEach((item) => {
 		const tableContent = $(`${nameTable} .table__content--const[data-content=${item.NameID}]`);
@@ -563,10 +561,82 @@ function toggleSelect() {
 	});
 
 	$('.select__item').click((e) => {
+		const title = $(e.currentTarget).find('.select__name').data('title');
 		const select = $(e.currentTarget).parents('.select').data('select');
-		const value = $(e.currentTarget).find('.select__name').data('title');
 
-		$(e.currentTarget).parents('.select').find('.select__def-value').addClass('select__def-value--selected').text(value);
+		$(e.currentTarget).parents('.select').find('.select__value').addClass('select__value--selected').text(title);
 		$(e.currentTarget).parent().slideUp();
+
+		if (select === 'depart') {
+			const nameId = $(e.currentTarget).find('.select__name').data('name-id');
+
+			$(e.currentTarget).parents('.select').find('.select__value').attr({'data-title': title, 'data-name-id': nameId});
+		} else {
+			const type = $(e.currentTarget).find('.select__name').data('type');
+
+			$(e.currentTarget).parents('.select').find('.select__value').attr({'data-title': title, 'data-type': type});
+		}
 	});
+}
+
+function addUserInTable() {
+	$('#addUser').click((e) => {
+		const form = $(e.target).parents('.form');
+		const fields = $(form).find('.form__item');
+		const object = {
+			FIO: '',
+			Department: '',
+			FieldGroup: '',
+			Badge: '',
+			CardName: '',
+			CardID: '',
+			CardValidTo: '',
+			PIN: '',
+			CardStatus: 1,
+			Security: 0,
+			Disalarm: 0,
+			VIP: 0,
+			DayNightCLM: 0,
+			AntipassbackDisabled: 0,
+			PhotoFile: '',
+			EmployeeNumber: '',
+			Post: '',
+			NameID: '',
+			StatusID: '',
+			IDUser: '',
+			TitleID: ''
+		};
+
+		const addFields = [...fields].reduce((array, item) => {
+			const fieldName = $(item).data('field');
+
+			if ($(item).hasClass('select')) {
+				const fieldType = $(item).data('type');
+				const valueItem = $(item).find('.select__value--selected').data('title');
+				const typeSelect = $(item).data('select') == 'depart' ? 'name-id' : 'type';
+				const nameId = $(item).find('.select__value--selected').data(typeSelect);
+
+				array.push({[fieldName]: valueItem}, {[fieldType]: nameId});
+			} else {
+				const inputValue = $(item).val();
+
+				array.push({[fieldName]: inputValue});
+			}
+
+			return array;
+		}, []);
+
+		addFields.forEach((elem) => {
+			for (const itemField in object) {
+				for (const key in elem) {
+					if (itemField == key) {
+						object[itemField] = elem[key];
+					}
+				}
+			}
+		});
+
+		console.log(object);
+
+	})
 }

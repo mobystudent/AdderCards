@@ -9,13 +9,13 @@ main.main(data-name="add")
 					label.form__label
 						span.form__name
 							| ФИО
-						input.form__input(name="name" type="text" placeholder="Введите ФИО" required)
+						input.form__input.form__item(data-field="FIO" name="name" type="text" placeholder="Введите ФИО" required)
 				.form__field
 					span.form__name
 						| Подразделение/факультет
-					.form__select.select(data-select="depart")
+					.form__select.form__item.select(data-field="Department" data-type="NameID" data-select="depart")
 						header.select__header
-							span.select__def-value
+							span.select__value(data-title="title" data-name-id="name-id")
 								| Выберите подразделение/факультет
 						ul.select__list
 							
@@ -27,23 +27,23 @@ main.main(data-name="add")
 					label.form__label
 						span.form__name
 							| Должность
-						input.form__input(name="name" type="text" placeholder="Введите должность" required)
+						input.form__input.form__item(data-field="Post" name="post" type="text" placeholder="Введите должность" required)
 				.form__field
 					span.form__name
 						| Тип идентификатора
-					.form__select.select(data-select="type")
+					.form__select.form__item.select(data-field="TitleID" data-type="StatusID" data-select="type")
 						header.select__header
-							span.select__def-value
+							span.select__value(data-title="title" data-type="type")
 								| Выберите тип идентификатора
 						ul.select__list
 							li.select__item
-								span.select__name(data-type="card" data-title="Пластиковая карта")
+								span.select__name(data-title="Пластиковая карта" data-type="newCard")
 									| Пластиковая карта
 							li.select__item
-								span.select__name(data-type="qr" data-title="QR-код")
+								span.select__name(data-type="newQR" data-title="QR-код")
 									| QR-код
 									
-			button.btn.btn--form#addUser(type="submit")
+			button.btn.btn--form#addUser(type="button")
 				| Добавить
 
 		.wrap.wrap--content.wrap--content-add
