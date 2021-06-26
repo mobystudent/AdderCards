@@ -59,6 +59,7 @@ function createQRCode(arrCodes) {
 function assignUserQRCode(arrCodes) {
 	const dataArr = JSON.parse(stringifyJSON());
 	const depart = Object.values(dataArr).map((item) => item);
+	
 	const filterArrQRs = depart.filter((item) => {
 		if (item.StatusID == 'newQR' || item.StatusID == 'changeQR') return item;
 	});

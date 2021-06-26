@@ -18,8 +18,7 @@ $(window).on('load', () => {
 	sortPerson();
 	permissionAdd();
 	clickAllowDisallowPermiss();
-	confirmPermission();
-	confirmAllPermission();
+	confirmAllAllowDisallow();
 	showDataInTable();
 
 	countItems('#tableTime .table__content', 'time');
@@ -58,11 +57,12 @@ function delegationID(users) {
 		if (item.StatusID == 'newQR' || item.StatusID == 'changeQR') return item;
 	});
 
+
 	if (filterArrCards) {
 		addTabs(filterArrCards, '#tableConst', 'const');
 		viewAllCountAndTitleDefault(filterArrCards, 'const');
 		changeTabs(users, '#tableConst', 'const');
-		createTable(dataArr, '#tableConst');
+		createTable(users, '#tableConst');
 		addCountCards(filterArrCards, '#tableConst', 'const');
 		focusFirstCell('const');
 	}
@@ -71,7 +71,7 @@ function delegationID(users) {
 		addTabs(filterArrQRs, '#tableQR', 'qr');
 		viewAllCountAndTitleDefault(filterArrQRs, 'qr');
 		changeTabs(users, '#tableQR', 'qr');
-		createTable(dataArr, '#tableQR');
+		createTable(users, '#tableQR');
 		addCountCards(filterArrQRs, '#tableQR', 'qr');
 		focusFirstCell('qr');
 	}
@@ -168,9 +168,8 @@ function changeTabs(depart, nameTable, modDepart) {
 	});
 }
 
-function createTable(dataArr, nameTable, tabName = '') {
-	const user = Object.values(dataArr).map((item) => item);
-	const limitUser = user.map((item) => {
+function createTable(users, nameTable, tabName = '') {
+	const limitUser = users.map((item) => {
 		const {
 			FIO = '',
 			Department = '',
@@ -406,9 +405,11 @@ function permissionAdd() {
 	addTabs(depart, '#tablePermiss', 'permis');
 	viewAllCountAndTitleDefault(depart, 'permis');
 	changeTabs(depart ,'#tablePermiss', 'permis');
-	createTable(dataArr, '#tablePermiss', 'permis');
+	createTable(depart, '#tablePermiss', 'permis');
 	addCountCards(depart, '#tablePermiss', 'permis');
 	focusFirstCell('permis');
+
+	confirmPermission(depart);
 }
 
 function clickAllowDisallowPermiss() {
@@ -442,18 +443,16 @@ function changeStatusDisallowBtn(elem, classStatus, disabled, valText, typeBtn, 
 	$(elem).text(textBtn);
 }
 
-function confirmPermission() {
+function confirmPermission(objectItems) {
 	const permissArray = [];
 	let allowItems = [];
 
 	$('.btn--confirm').click((e) => {
+
 		const typeItems = $('#tablePermiss .table__content--active').find('.table__row');
 		const checkedItems = [...typeItems].every((item) => $(item).is('[data-type]'));
 
 		if (checkedItems) {
-			const dataArr = JSON.parse(stringifyJSON());
-			const objectItem = Object.values(dataArr).map((item) => item);
-
 			const allowItems = [...typeItems].filter((item) => {
 				const typePerson = $(item).data('type');
 
@@ -465,7 +464,7 @@ function confirmPermission() {
 			const returnUsers = allowItems.reduce((acc, elem, i) => {
 				const idObj = $(elem).data('id');
 
-				objectItem.forEach((obj) => {
+				objectItems.forEach((obj) => {
 					if (obj.IDUser == idObj) acc.push(obj);
 				});
 
@@ -506,7 +505,7 @@ function getTableID(name) {
 	}
 }
 
-function confirmAllPermission() {
+function confirmAllAllowDisallow() {
 	$('#allowAll, #disallowAll').click((e) => {
 		const typeBtn = $(e.target).data('type');
 		const typeAttrItemsBtn = $(e.target).hasClass(`btn--${typeBtn}-cancel`) ? 'disabled'  : false;
