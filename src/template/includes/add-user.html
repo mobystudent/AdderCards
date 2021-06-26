@@ -1,0 +1,48 @@
+
+<main class="main" data-name="add">
+  <div class="container">
+    <h1 class="main__title">Добавить нового пользователям</h1>
+    <form class="form" action="#" method="GET">
+      <div class="form__wrap">
+        <div class="form__field">
+          <label class="form__label"><span class="form__name">ФИО</span>
+            <input class="form__input" name="name" type="text" placeholder="Введите ФИО" required="required"/>
+          </label>
+        </div>
+        <div class="form__field"><span class="form__name">Подразделение/факультет</span>
+          <div class="form__select select" data-select="depart">
+            <header class="select__header"><span class="select__def-value">Выберите подразделение/факультет</span></header>
+            <ul class="select__list">
+              <li class="select__item"><span class="select__name" data-title="Химический факультет" data-name-id="ChemDep">Химический факультет</span></li>
+              <li class="select__item"><span class="select__name" data-title="Химический факультет" data-name-id="ChemDep">Химический факультет</span></li>
+              <li class="select__item"><span class="select__name" data-title="Химический факультет" data-name-id="ChemDep">Химический факультет</span></li>
+              <li class="select__item"><span class="select__name" data-title="Химический факультет" data-name-id="ChemDep">Химический факультет</span></li>
+              <li class="select__item"><span class="select__name" data-title="Химический факультет" data-name-id="ChemDep">Химический факультет</span></li>
+            </ul>
+          </div>
+        </div>
+        <div class="form__field">
+          <label class="form__label"><span class="form__name">Должность</span>
+            <input class="form__input" name="name" type="text" placeholder="Введите должность" required="required"/>
+          </label>
+        </div>
+        <div class="form__field"><span class="form__name">Тип идентификатора</span>
+          <div class="form__select select" data-select="type">
+            <header class="select__header"><span class="select__def-value">Выберите тип идентификатора</span></header>
+            <ul class="select__list">
+              <li class="select__item"><span class="select__name" data-type="card" data-title="Пластиковая карта">Пластиковая карта</span></li>
+              <li class="select__item"><span class="select__name" data-type="qr" data-title="QR-код">QR-код</span></li>
+            </ul>
+          </div>
+        </div>
+      </div>
+      <button class="btn btn--form" type="submit">Добавить</button>
+    </form>
+    <div class="info">
+      <p class="info__warn">Предупреждение! Не все поля заполнены</p>
+    </div>
+    <div class="main__btns">
+      <button class="btn btn--add-user" type="button">Подтвердить</button>
+    </div>
+  </div>
+</main>

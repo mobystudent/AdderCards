@@ -1,0 +1,52 @@
+.select {
+	position: relative;
+
+	&__header {
+		padding: 10px 45px 10px 15px;
+		border: 1px solid #b9b9b9;
+		border-radius: 5px;
+		cursor: pointer;
+	}
+
+	&__def-value {
+		@extend %text--premedium;
+		color: $darkGray;
+
+		&--selected {
+			color: $white;
+		}
+	}
+
+	&__name {
+		@extend %text--premedium;
+		color: $spaceBlack;
+	}
+
+	&__list {
+		display: none;
+		position: absolute;
+		top: 42px;
+		left: 0;
+		width: 100%;
+		padding: 10px 15px;
+		max-height: 120px;
+		overflow: auto;
+		border: 1px solid $gray;
+		border-radius: 5px;
+		background: $gray;
+	}
+
+	&__item {
+		padding: 2px 5px;
+		cursor: pointer;
+		transition: background .25s ease-out;
+
+		&:hover {
+			background: #0007e25e;
+		}
+
+		&:not(:last-child) {
+			margin-bottom: 5px;
+		}
+	}
+}

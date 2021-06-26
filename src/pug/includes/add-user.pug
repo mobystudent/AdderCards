@@ -1,0 +1,90 @@
+main.main(data-name="add")
+	.container
+		h1.main__title
+			| Добавить нового пользователям
+			
+		form.form(action="#" method="GET")
+			.form__wrap
+				.form__field
+					label.form__label
+						span.form__name
+							| ФИО
+						input.form__input(name="name" type="text" placeholder="Введите ФИО" required)
+				.form__field
+					span.form__name
+						| Подразделение/факультет
+					.form__select.select(data-select="depart")
+						header.select__header
+							span.select__def-value
+								| Выберите подразделение/факультет
+						ul.select__list
+							
+							- for (let i = 0; i < 5 ; i++)
+								li.select__item
+									span.select__name(data-title="Химический факультет" data-name-id="ChemDep")
+										| Химический факультет
+				.form__field
+					label.form__label
+						span.form__name
+							| Должность
+						input.form__input(name="name" type="text" placeholder="Введите должность" required)
+				.form__field
+					span.form__name
+						| Тип идентификатора
+					.form__select.select(data-select="type")
+						header.select__header
+							span.select__def-value
+								| Выберите тип идентификатора
+						ul.select__list
+							li.select__item
+								span.select__name(data-type="card" data-title="Пластиковая карта")
+									| Пластиковая карта
+							li.select__item
+								span.select__name(data-type="qr" data-title="QR-код")
+									| QR-код
+									
+			button.btn.btn--form(type="submit")
+				| Добавить
+		//- span.main__depart.main__depart--permis
+		//- .wrap.wrap--content.wrap--content-permis
+		//- 	.main__cards.main__cards--main
+		//- 		p.main__count-wrap.main__count-wrap--depart
+		//- 			span.main__count-text
+		//- 				| Количество карт:&nbsp
+		//- 			span.main__count.main__count--permis
+		//- 				| 0
+		//- 		p.main__count-wrap.main__count-wrap--main
+		//- 			span.main__count-text
+		//- 				| Общее количество карт:&nbsp
+		//- 			span.main__count.main__count--all-permis
+		//- 				| 0
+		//- 	.wrap.wrap--table
+		//- 		header.tab.tab--permis
+		//- 		.table.table--permis
+		//- 			header.table__header
+		//- 				.table__cell.table__cell--header.table__cell--fio
+		//- 					span.table__text.table__text--header
+		//- 						| Фамилия Имя Отчество
+		//- 					button.btn.btn--sort(type="button" data-direction="true")
+		//- 				.table__cell.table__cell--header.table__cell--post
+		//- 					span.table__text.table__text--header
+		//- 						| Должность
+		//- 				.table__cell.table__cell--header.table__cell--statusid
+		//- 					span.table__text.table__text--header
+		//- 						| Статус
+		//- 				.table__cell.table__cell--header.table__cell--control
+		//- 					button.btn.btn--allow#allowAll(type="button" data-type="allow" data-cancel="Отменить" data-allow="Разрешить")
+		//- 						| Разрешить все
+		//- 					button.btn.btn--disallow#disallowAll(type="button" data-type="disallow" data-cancel="Отменить" data-disallow="Запретить")
+		//- 						| Запретить все
+		//- 			.table__body#tablePermiss
+		//- 				p.table__nothing
+		//- 					| Новых данных нет
+	
+		.info
+			p.info__warn
+				| Предупреждение! Не все поля заполнены
+	
+		.main__btns
+			button.btn.btn--add-user(type="button")
+				| Подтвердить

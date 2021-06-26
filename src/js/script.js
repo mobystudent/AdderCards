@@ -21,6 +21,7 @@ $(window).on('load', () => {
 	clickAllowDisallowPermiss();
 	confirmAllAllowDisallow();
 	showDataInTable();
+	toggleSelect();
 
 	convert.viewConvertCardId();
 	qrcodes.changeCountQRCodes();
@@ -553,5 +554,19 @@ function showDataInTable() {
 			$(`.table--${item} .table__body`).removeClass('table__body--empty');
 			$(`.table--${item} .table__nothing`).hide();
 		}
+	});
+}
+
+function toggleSelect() {
+	$('.select__header').click((e) => {
+		$(e.currentTarget).next().slideToggle();
+	});
+
+	$('.select__item').click((e) => {
+		const select = $(e.currentTarget).parents('.select').data('select');
+		const value = $(e.currentTarget).find('.select__name').data('title');
+
+		$(e.currentTarget).parents('.select').find('.select__def-value').addClass('select__def-value--selected').text(value);
+		$(e.currentTarget).parent().slideUp();
 	});
 }
