@@ -403,12 +403,12 @@ function permissionAdd() {
 	const dataArr = JSON.parse(stringifyJSON());
 	const depart = Object.values(dataArr).map((item) => item);
 
-	addTabs(depart, '#tablePermiss', 'permission');
-	viewAllCountAndTitleDefault(depart, 'permission');
-	changeTabs(depart ,'#tablePermiss', 'permission');
-	createTable(dataArr, '#tablePermiss', 'permission');
-	addCountCards(depart, '#tablePermiss', 'permission');
-	focusFirstCell('permission');
+	addTabs(depart, '#tablePermiss', 'permis');
+	viewAllCountAndTitleDefault(depart, 'permis');
+	changeTabs(depart ,'#tablePermiss', 'permis');
+	createTable(dataArr, '#tablePermiss', 'permis');
+	addCountCards(depart, '#tablePermiss', 'permis');
+	focusFirstCell('permis');
 }
 
 function clickAllowDisallowPermiss() {
@@ -513,10 +513,10 @@ function confirmAllPermission() {
 		const dataTypeItem = $(e.target).hasClass(`btn--${typeBtn}-cancel`) ? 'attr' : 'removeAttr';
 		const classBtns = ['allow', 'disallow'];
 
-		$('.table--permission .table__content--active .table__row').toggleClass('table__row--disabled')[dataTypeItem]('data-type', typeBtn);
+		$('.table--permis .table__content--active .table__row').toggleClass('table__row--disabled')[dataTypeItem]('data-type', typeBtn);
 
 		classBtns.forEach((item) => {
-			$(`.table--permission .table__content--active .table__row .btn--${item}`).toggleClass(`btn--${item}-disabled`).attr('disabled', typeAttrItemsBtn);
+			$(`.table--permis .table__content--active .table__row .btn--${item}`).toggleClass(`btn--${item}-disabled`).attr('disabled', typeAttrItemsBtn);
 		});
 	});
 }
@@ -538,7 +538,7 @@ function returnToNextTab(item) {
 
 //Показывать данные в таблицах о пользователях
 function showDataInTable() {
-	const nameTables = ['const', 'qr', 'permission'];
+	const nameTables = ['const', 'qr', 'permis'];
 
 	nameTables.forEach((item) => {
 		if (!$(`.table--${item} .table__body .table__content`).length) {
