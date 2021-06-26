@@ -11,6 +11,7 @@ import qrcodes from './qrcodes.js';
 $(window).on('load', () => {
 	getData();
 	stringifyJSON();
+	defaultDataInTables();
 	clearNumberCard();
 	printReport();
 	switchControl();
@@ -20,8 +21,6 @@ $(window).on('load', () => {
 	clickAllowDisallowPermiss();
 	confirmAllAllowDisallow();
 	showDataInTable();
-
-	countItems('#tableTime .table__content', 'time');
 
 	convert.viewConvertCardId();
 	qrcodes.changeCountQRCodes();
@@ -47,6 +46,11 @@ function stringifyJSON() {
 	const strJson = JSON.stringify(json);
 
 	return strJson;
+}
+
+function defaultDataInTables() {
+	$(`.main[data-name="const"]`).show();
+	countItems('#tableTime .table__content', 'time');
 }
 
 function delegationID(users) {
@@ -135,7 +139,6 @@ function addCountCards(filterIDItems, nameTable, modDepart) {
 function viewAllCountAndTitleDefault(filterIDItems, modDepart) {
 	const activeTabDepart = $(`.tab--${modDepart} .tab__item--active`).data('depart');
 
-	$(`.main[data-name="const"]`).show();
 	$(`.main__count--all-${modDepart}`).text(filterIDItems.length);
 
 	filterIDItems.forEach((item) => {
@@ -213,6 +216,9 @@ function createTable(users, nameTable, tabName = '') {
 			};
 		}
 	});
+
+	console.log(limitUser);
+	console.log(nameTable);
 
 	limitUser.forEach((item) => {
 		const tableContent = $(`${nameTable} .table__content--const[data-content=${item.NameID}]`);
