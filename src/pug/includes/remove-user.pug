@@ -13,7 +13,7 @@ main.main(data-name="remove")
 				.form__field
 					span.form__name
 						| Подразделение/факультет
-					.form__select.form__item.select(data-field="Department" data-type="NameID" data-select="depart")
+					.form__select.form__item.select(data-field="Department" data-type="NameID" data-select="name-id")
 						header.select__header
 							span.select__value(data-title="title" data-name-id="name-id")
 								| Выберите подразделение/факультет
@@ -40,7 +40,7 @@ main.main(data-name="remove")
 				.form__field.form__field--depart
 					span.form__name
 						| Новое подразделение/факультет
-					.form__select.form__item.select(data-field="NewDepart" data-type="NewNameID" data-select="new-depart")
+					.form__select.form__item.select(data-field="NewDepart" data-type="NewNameID" data-select="new-name-id")
 						header.select__header
 							span.select__value(data-title="title" data-new-name-id="new-name-id")
 								| Выберите подразделение/факультет
@@ -48,7 +48,7 @@ main.main(data-name="remove")
 							
 							- for (let i = 0; i < 5 ; i++)
 								li.select__item
-									span.select__name(data-title="Химический факультет" data-new-name-id="ChemDep")
+									span.select__name(data-title="Факультет компьютерных наук" data-new-name-id="CSDep")
 										| Химический факультет
 									
 			button.btn.btn--form#removeUser(type="button" data-type="remove-user")

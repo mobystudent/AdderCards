@@ -13,7 +13,7 @@ main.main(data-name="edit")
 				.form__field
 					span.form__name
 						| Подразделение/факультет
-					.form__select.form__item.select(data-field="Department" data-type="NameID" data-select="depart")
+					.form__select.form__item.select(data-field="Department" data-type="NameID" data-select="name-id")
 						header.select__header
 							span.select__value(data-title="title" data-name-id="name-id")
 								| Выберите подразделение/факультет
@@ -68,6 +68,12 @@ main.main(data-name="edit")
 							span.table__text.table__text--header
 								| Фамилия Имя Отчество
 							button.btn.btn--sort(type="button" data-direction="true")
+						.table__cell.table__cell--header.table__cell--department
+							span.table__text.table__text--header
+								| Подразделение/факультет
+						.table__cell.table__cell--header.table__cell--titleid
+							span.table__text.table__text--header
+								| Тип изменения
 						.table__cell.table__cell--header.table__cell--fio
 							span.table__text.table__text--header
 								| Новое Фамилия Имя Отчество
@@ -75,12 +81,6 @@ main.main(data-name="edit")
 						.table__cell.table__cell--header.table__cell--post
 							span.table__text.table__text--header
 								| Новая должность
-						//- .table__cell.table__cell--header.table__cell--department
-						//- 	span.table__text.table__text--header
-						//- 		| Подразделение/факультет
-						.table__cell.table__cell--header.table__cell--statusid
-							span.table__text.table__text--header
-								| Тип изменения
 					.table__body#tableEdit
 						p.table__nothing
 							| Не добавленно ни одного пользователя

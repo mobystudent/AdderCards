@@ -176,6 +176,7 @@ function changeTabs(depart, nameTable, modDepart) {
 }
 
 function createTable(users, nameTable, tabName = '') {
+	console.log(users);
 	const limitUser = users.map((item) => {
 		const {
 			FIO = '',
@@ -199,7 +200,7 @@ function createTable(users, nameTable, tabName = '') {
 			StatusID = '',
 			IDUser = '',
 			TitleID = '',
-			NewFio = '',
+			NewFIO = '',
 			NewPost = '',
 			NewDepart = ''
 		} = item;
@@ -622,56 +623,88 @@ function toggleSelect() {
 
 		$(e.currentTarget).parents('.select').find('.select__value').addClass('select__value--selected').text(title);
 		$(e.currentTarget).parent().slideUp();
+		$(e.currentTarget).parents('.select').find('.select__header').removeClass('select__header--active');
 
-		if (select === 'depart') {
-			const nameId = $(e.currentTarget).find('.select__name').data('name-id');
-
-			$(e.currentTarget).parents('.select').find('.select__value').attr({'data-title': title, 'data-name-id': nameId});
-		} else if (select === 'type') {
-			const type = $(e.currentTarget).find('.select__name').data('type');
-
-			$(e.currentTarget).parents('.select').find('.select__value').attr({'data-title': title, 'data-type': type});
-		} else if (select === 'reason') {
-			const reason = $(e.currentTarget).find('.select__name').data('reason');
-
-			$(e.currentTarget).parents('.select').find('.select__value').attr({'data-title': title, 'data-reason': reason});
-
-			if (reason == 'changeDepart') {
-				$('.form__field--depart').show();
-
-				$(e.currentTarget).parents('.main').find('.wrap--content').addClass('wrap--content-remove-transfer').removeClass('wrap--content-remove-item');
-			} else {
-				$('.form__field--depart').hide();
-
-				$(e.currentTarget).parents('.main').find('.wrap--content').addClass('wrap--content-remove-item').removeClass('wrap--content-remove-transfer');
-			}
-		} else if (select === 'change') {
-			const change = $(e.currentTarget).find('.select__name').data('change');
-
-			$(e.currentTarget).parents('.select').find('.select__value').attr({'data-title': title, 'data-change': change});
-
-			if (change == 'changeFIO') {
-				$('.form__field--new-post').hide();
-				$('.form__field--new-fio').show();
-			} else if (change == 'changePost') {
-				$('.form__field--new-fio').hide();
-				$('.form__field--new-post').show();
-			} else {
-				$('.form__field--new-fio, .form__field--new-post').hide();
-			}
-		} else if (select === 'new-depart') {
-			const newNameID = $(e.currentTarget).find('.select__name').data('new-name-id');
-
-			$(e.currentTarget).parents('.select').find('.select__value').attr({'data-title': title, 'data-new-name-id': newNameID});
-		}
+		setDataAttrSelectedItem(title, select, e.currentTarget);
 	});
+}
+
+function setDataAttrSelectedItem(title, select, elem) {
+	const dataType = $(elem).find('.select__name').data(select);
+
+	console.log(dataType);
+
+	if (select == 'reason') {
+		if (dataType == 'changeDepart') {
+			$('.form__field--depart').show();
+
+			$(elem).parents('.main').find('.wrap--content').addClass('wrap--content-remove-transfer').removeClass('wrap--content-remove-item');
+		} else {
+			$('.form__field--depart').hide();
+
+			$(elem).parents('.main').find('.wrap--content').addClass('wrap--content-remove-item').removeClass('wrap--content-remove-transfer');
+		}
+	} else if (select == 'change') {
+		if (dataType == 'changeFIO') {
+			$('.form__field--new-post').hide();
+			$('.form__field--new-fio').show();
+		} else if (dataType == 'changePost') {
+			$('.form__field--new-fio').hide();
+			$('.form__field--new-post').show();
+		} else {
+			$('.form__field--new-fio, .form__field--new-post').hide();
+		}
+	}
+
+	$(elem).parents('.select').find('.select__value').attr({'data-title': title, [`data-${select}`]: dataType});
+
+	// if (select === 'name-id') {
+	// 	const nameId = $(elem).find('.select__name').data('name-id');
+	//
+	// 	$(elem).parents('.select').find('.select__value').attr({'data-title': title, 'data-name-id': nameId});
+	// } else if (select === 'type') {
+	// 	const type = $(elem).find('.select__name').data('type');
+	//
+	// 	$(elem).parents('.select').find('.select__value').attr({'data-title': title, 'data-type': type});
+	// } else if (select === 'reason') {
+	// 	const reason = $(elem).find('.select__name').data('reason');
+	//
+	// 	$(elem).parents('.select').find('.select__value').attr({'data-title': title, 'data-reason': reason});
+	//
+	// 	if (reason == 'changeDepart') {
+	// 		$('.form__field--depart').show();
+	//
+	// 		$(elem).parents('.main').find('.wrap--content').addClass('wrap--content-remove-transfer').removeClass('wrap--content-remove-item');
+	// 	} else {
+	// 		$('.form__field--depart').hide();
+	//
+	// 		$(elem).parents('.main').find('.wrap--content').addClass('wrap--content-remove-item').removeClass('wrap--content-remove-transfer');
+	// 	}
+	// } else if (select === 'change') {
+	// 	const change = $(elem).find('.select__name').data('change');
+	//
+	// 	$(elem).parents('.select').find('.select__value').attr({'data-title': title, 'data-change': change});
+	//
+	// 	if (change == 'changeFIO') {
+	// 		$('.form__field--new-post').hide();
+	// 		$('.form__field--new-fio').show();
+	// 	} else if (change == 'changePost') {
+	// 		$('.form__field--new-fio').hide();
+	// 		$('.form__field--new-post').show();
+	// 	} else {
+	// 		$('.form__field--new-fio, .form__field--new-post').hide();
+	// 	}
+	// } else if (select === 'new-name-id') {
+	// 	const newNameID = $(elem).find('.select__name').data('new-name-id');
+	//
+	// 	$(elem).parents('.select').find('.select__value').attr({'data-title': title, 'data-new-name-id': newNameID});
+	// }
 }
 
 function addNewUserInTable() {
 	$('#addUser, #removeUser, #editUser').click((e) => {
 		const form = $(e.target).parents('.form');
 		const fields = $(form).find('.form__item');
-		const fieldsActive = [...fields].filter((item) => $(item).parents('.form__field').css('display') != 'none');
 		const object = {
 			FIO: '',
 			Department: '',
@@ -694,7 +727,7 @@ function addNewUserInTable() {
 			StatusID: '',
 			IDUser: '',
 			TitleID: '',
-			NewFio: '',
+			NewFIO: '',
 			NewPost: '',
 			NewDepart: ''
 		};
@@ -716,7 +749,7 @@ function addNewUserInTable() {
 				break;
 		}
 
-		const addFields = fieldsActive.reduce((array, item) => {
+		const addFields = [...fields].reduce((array, item) => {
 			const fieldName = $(item).data('field');
 
 			if ($(item).hasClass('select')) {
