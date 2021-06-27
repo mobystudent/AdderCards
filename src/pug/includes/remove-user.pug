@@ -10,20 +10,33 @@ main.main(data-name="remove")
 						span.form__name
 							| ФИО
 						input.form__input.form__item(data-field="FIO" name="name" type="text" placeholder="Введите ФИО" required)
-				//- .form__field
+				.form__field
 					span.form__name
-						| Тип идентификатора
-					.form__select.form__item.select(data-field="TitleID" data-type="StatusID" data-select="type")
+						| Причина удаления
+					.form__select.form__item.select(data-field="TitleID" data-select="reason")
 						header.select__header
 							span.select__value(data-title="title" data-type="type")
-								| Выберите тип идентификатора
+								| Выберите причину удаления
 						ul.select__list
 							li.select__item
-								span.select__name(data-title="Пластиковая карта" data-type="newCard")
-									| Пластиковая карта
+								span.select__name(data-title="Перевод в другое подразделение" data-reason="transfer")
+									| Перевод в другое подразделение
 							li.select__item
-								span.select__name(data-title="QR-код" data-type="newQR")
-									| QR-код
+								span.select__name(data-title="Увольнение" data-reason="remove")
+									| Увольнение
+				.form__field.form__field--depart
+					span.form__name
+						| Подразделение/факультет
+					.form__select.form__item.select(data-field="Department" data-type="NameID" data-select="depart")
+						header.select__header
+							span.select__value(data-title="title" data-name-id="name-id")
+								| Выберите подразделение/факультет
+						ul.select__list
+							
+							- for (let i = 0; i < 5 ; i++)
+								li.select__item
+									span.select__name(data-title="Химический факультет" data-name-id="ChemDep")
+										| Химический факультет
 									
 			button.btn.btn--form#removeUser(type="button")
 				| Удалить

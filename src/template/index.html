@@ -327,6 +327,27 @@ FC94DCCA3EFE99F7
                   <input class="form__input form__item" data-field="FIO" name="name" type="text" placeholder="Введите ФИО" required>
                 </label>
               </div>
+              <div class="form__field"><span class="form__name">Причина удаления</span>
+                <div class="form__select form__item select" data-field="TitleID" data-select="reason">
+                  <header class="select__header"><span class="select__value" data-title="title" data-type="type">Выберите причину удаления</span></header>
+                  <ul class="select__list">
+                    <li class="select__item"><span class="select__name" data-title="Перевод в другое подразделение" data-reason="transfer">Перевод в другое подразделение</span></li>
+                    <li class="select__item"><span class="select__name" data-title="Увольнение" data-reason="remove">Увольнение</span></li>
+                  </ul>
+                </div>
+              </div>
+              <div class="form__field form__field--depart"><span class="form__name">Подразделение/факультет</span>
+                <div class="form__select form__item select" data-field="Department" data-type="NameID" data-select="depart">
+                  <header class="select__header"><span class="select__value" data-title="title" data-name-id="name-id">Выберите подразделение/факультет</span></header>
+                  <ul class="select__list">
+                    <li class="select__item"><span class="select__name" data-title="Химический факультет" data-name-id="ChemDep">Химический факультет</span></li>
+                    <li class="select__item"><span class="select__name" data-title="Химический факультет" data-name-id="ChemDep">Химический факультет</span></li>
+                    <li class="select__item"><span class="select__name" data-title="Химический факультет" data-name-id="ChemDep">Химический факультет</span></li>
+                    <li class="select__item"><span class="select__name" data-title="Химический факультет" data-name-id="ChemDep">Химический факультет</span></li>
+                    <li class="select__item"><span class="select__name" data-title="Химический факультет" data-name-id="ChemDep">Химический факультет</span></li>
+                  </ul>
+                </div>
+              </div>
             </div>
             <button class="btn btn--form" id="removeUser" type="button">Удалить</button>
           </form>

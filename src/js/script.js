@@ -588,6 +588,7 @@ function showDataInTable() {
 function toggleSelect() {
 	$('.select__header').click((e) => {
 		$(e.currentTarget).next().slideToggle();
+		$(e.currentTarget).toggleClass('select__header--active');
 	});
 
 	$('.select__item').click((e) => {
@@ -601,10 +602,16 @@ function toggleSelect() {
 			const nameId = $(e.currentTarget).find('.select__name').data('name-id');
 
 			$(e.currentTarget).parents('.select').find('.select__value').attr({'data-title': title, 'data-name-id': nameId});
-		} else {
+		} else if (select === 'type') {
 			const type = $(e.currentTarget).find('.select__name').data('type');
 
 			$(e.currentTarget).parents('.select').find('.select__value').attr({'data-title': title, 'data-type': type});
+		} else if (select === 'reason') {
+			const reason = $(e.currentTarget).find('.select__name').data('reason');
+
+			$(e.currentTarget).parents('.select').find('.select__value').attr({'data-title': title, 'data-reason': reason});
+
+			if (reason == 'transfer') $('.form__field--depart').show();
 		}
 	});
 }
@@ -666,14 +673,22 @@ function addUserInTable() {
 			}
 		});
 
-		// console.log(object);
-		// addTabs(, '#tablePermiss', 'permis');
-		// viewAllCountAndTitleDefault(depart, 'permis');
-		// changeTabs(depart ,'#tablePermiss', 'permis');
 		createTable([object], '#tableAdd', 'add');
 		addCountCards([object], '#tableAdd', 'add');
 
 		$('.table--add .table__body').removeClass('table__body--empty');
 		$('.table--add .table__nothing').hide();
 	})
+}
+
+function showDepartForRemove() {
+	// if ($('.select').attr('select') === 'reason') {
+	// 	const choiceSelect = $('.select').find('.select__value--selected').data('field');
+	//
+	// 	if (choiceSelect !== 'TitleID') {
+	//
+	// 	}
+	// }
+
+
 }
