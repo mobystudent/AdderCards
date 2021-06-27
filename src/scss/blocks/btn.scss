@@ -16,8 +16,12 @@
 		margin-right: 20px;
 	}
 
-	&--control:not(:last-child) {
-		margin-right: 20px;
+	&--control {
+		margin-bottom: 15px;
+
+		&:not(:last-child) {
+			margin-right: 20px;
+		}
 	}
 
 	&--disable {
