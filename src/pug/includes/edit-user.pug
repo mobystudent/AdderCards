@@ -1,7 +1,7 @@
-main.main(data-name="add")
+main.main(data-name="edit")
 	.container
 		h1.main__title
-			| Добавить нового пользователя
+			| Редактировать пользователя
 		
 		form.form(action="#" method="GET")
 			.form__wrap
@@ -24,38 +24,45 @@ main.main(data-name="add")
 									span.select__name(data-title="Химический факультет" data-name-id="ChemDep")
 										| Химический факультет
 				.form__field
+					span.form__name
+						| Тип изменения
+					.form__select.form__item.select(data-field="TitleID" data-type="StatusID" data-select="change")
+						header.select__header
+							span.select__value(data-title="title" data-change="type")
+								| Выберите тип изменения
+						ul.select__list
+							
+							- const arrChanges = ['Утеря пластиковой карты', 'Утеря QR-кода', 'Изменение ФИО', 'Изменение должности'];
+							- const arrTypeChanges = ['changeCard', 'changeQR', 'changeFIO', 'changePost'];
+							
+							- for (let i = 0; i < arrChanges.length; i++)
+								li.select__item
+									span.select__name(data-title=arrChanges[i] data-change=arrTypeChanges[i])
+										| #{arrChanges[i]}
+				.form__field.form__field--new-post
 					label.form__label
 						span.form__name
-							| Должность
-						input.form__input.form__item(data-field="Post" name="post" type="text" placeholder="Введите должность" required)
-				.form__field
-					span.form__name
-						| Тип идентификатора
-					.form__select.form__item.select(data-field="TitleID" data-type="StatusID" data-select="type")
-						header.select__header
-							span.select__value(data-title="title" data-type="type")
-								| Выберите тип идентификатора
-						ul.select__list
-							li.select__item
-								span.select__name(data-title="Пластиковая карта" data-type="newCard")
-									| Пластиковая карта
-							li.select__item
-								span.select__name(data-title="QR-код" data-type="newQR")
-									| QR-код
+							| Новая должность
+						input.form__input.form__item(data-field="Post" name="newPost" type="text" placeholder="Введите должность" required)
+				.form__field.form__field--new-fio
+					label.form__label
+						span.form__name
+							| Новое ФИО
+						input.form__input.form__item(data-field="FIO" name="newName" type="text" placeholder="Введите ФИО" required)
 									
-			button.btn.btn--form#addUser(type="button")
+			button.btn.btn--form#editUser(type="button")
 				| Добавить
 
-		.wrap.wrap--content.wrap--content-add
+		.wrap.wrap--content.wrap--content-edit
 			.main__cards.main__cards--main
 				p.main__count-wrap.main__count-wrap--depart
 					span.main__count-text
 						| Количество добавленых пользователей:&nbsp
-					span.main__count.main__count--add
+					span.main__count.main__count--edit
 						| 0
 			.wrap.wrap--table
-				header.tab.tab--add
-				.table.table--add
+				header.tab.tab--edit
+				.table.table--edit
 					header.table__header
 						.table__cell.table__cell--header.table__cell--fio
 							span.table__text.table__text--header
@@ -69,8 +76,8 @@ main.main(data-name="add")
 								| Подразделение/факультет
 						.table__cell.table__cell--header.table__cell--statusid
 							span.table__text.table__text--header
-								| Тип идентификатора
-					.table__body#tableAdd
+								| Тип изменения
+					.table__body#tableEdit
 						p.table__nothing
 							| Не добавленно ни одного пользователя
 	
@@ -79,5 +86,5 @@ main.main(data-name="add")
 				| Предупреждение! Не все поля заполнены
 	
 		.main__btns
-			button.btn.btn--add-user#submitAddUser(type="button")
+			button.btn.btn--edit-user#submitEditUser(type="button")
 				| Подтвердить и отправить

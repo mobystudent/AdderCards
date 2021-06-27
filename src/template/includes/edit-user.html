@@ -1,7 +1,7 @@
 
-<main class="main" data-name="add">
+<main class="main" data-name="edit">
   <div class="container">
-    <h1 class="main__title">Добавить нового пользователя</h1>
+    <h1 class="main__title">Редактировать пользователя</h1>
     <form class="form" action="#" method="GET">
       <div class="form__wrap">
         <div class="form__field">
@@ -21,39 +21,46 @@
             </ul>
           </div>
         </div>
-        <div class="form__field">
-          <label class="form__label"><span class="form__name">Должность</span>
-            <input class="form__input form__item" data-field="Post" name="post" type="text" placeholder="Введите должность" required="required"/>
-          </label>
-        </div>
-        <div class="form__field"><span class="form__name">Тип идентификатора</span>
-          <div class="form__select form__item select" data-field="TitleID" data-type="StatusID" data-select="type">
-            <header class="select__header"><span class="select__value" data-title="title" data-type="type">Выберите тип идентификатора</span></header>
+        <div class="form__field"><span class="form__name">Тип изменения</span>
+          <div class="form__select form__item select" data-field="TitleID" data-type="StatusID" data-select="change">
+            <header class="select__header"><span class="select__value" data-title="title" data-change="type">Выберите тип изменения</span></header>
             <ul class="select__list">
-              <li class="select__item"><span class="select__name" data-title="Пластиковая карта" data-type="newCard">Пластиковая карта</span></li>
-              <li class="select__item"><span class="select__name" data-title="QR-код" data-type="newQR">QR-код</span></li>
+              <li class="select__item"><span class="select__name" data-title="Утеря пластиковой карты" data-change="changeCard">Утеря пластиковой карты</span></li>
+              <li class="select__item"><span class="select__name" data-title="Утеря QR-кода" data-change="changeQR">Утеря QR-кода</span></li>
+              <li class="select__item"><span class="select__name" data-title="Изменение ФИО" data-change="changeFIO">Изменение ФИО</span></li>
+              <li class="select__item"><span class="select__name" data-title="Изменение должности" data-change="changePost">Изменение должности</span></li>
             </ul>
           </div>
         </div>
+        <div class="form__field form__field--new-post">
+          <label class="form__label"><span class="form__name">Новая должность</span>
+            <input class="form__input form__item" data-field="Post" name="newPost" type="text" placeholder="Введите должность" required="required"/>
+          </label>
+        </div>
+        <div class="form__field form__field--new-fio">
+          <label class="form__label"><span class="form__name">Новое ФИО</span>
+            <input class="form__input form__item" data-field="FIO" name="newName" type="text" placeholder="Введите ФИО" required="required"/>
+          </label>
+        </div>
       </div>
-      <button class="btn btn--form" id="addUser" type="button">Добавить</button>
+      <button class="btn btn--form" id="editUser" type="button">Добавить</button>
     </form>
-    <div class="wrap wrap--content wrap--content-add">
+    <div class="wrap wrap--content wrap--content-edit">
       <div class="main__cards main__cards--main">
-        <p class="main__count-wrap main__count-wrap--depart"><span class="main__count-text">Количество добавленых пользователей:&nbsp</span><span class="main__count main__count--add">0</span></p>
+        <p class="main__count-wrap main__count-wrap--depart"><span class="main__count-text">Количество добавленых пользователей:&nbsp</span><span class="main__count main__count--edit">0</span></p>
       </div>
       <div class="wrap wrap--table">
-        <header class="tab tab--add"></header>
-        <div class="table table--add">
+        <header class="tab tab--edit"></header>
+        <div class="table table--edit">
           <header class="table__header">
             <div class="table__cell table__cell--header table__cell--fio"><span class="table__text table__text--header">Фамилия Имя Отчество</span>
               <button class="btn btn--sort" type="button" data-direction="true"></button>
             </div>
             <div class="table__cell table__cell--header table__cell--post"><span class="table__text table__text--header">Должность</span></div>
             <div class="table__cell table__cell--header table__cell--department"><span class="table__text table__text--header">Подразделение/факультет</span></div>
-            <div class="table__cell table__cell--header table__cell--statusid"><span class="table__text table__text--header">Тип идентификатора</span></div>
+            <div class="table__cell table__cell--header table__cell--statusid"><span class="table__text table__text--header">Тип изменения</span></div>
           </header>
-          <div class="table__body" id="tableAdd">
+          <div class="table__body" id="tableEdit">
             <p class="table__nothing">Не добавленно ни одного пользователя</p>
           </div>
         </div>
@@ -63,7 +70,7 @@
       <p class="info__warn">Предупреждение! Не все поля заполнены</p>
     </div>
     <div class="main__btns">
-      <button class="btn btn--add-user" id="submitAddUser" type="button">Подтвердить и отправить</button>
+      <button class="btn btn--edit-user" id="submitEditUser" type="button">Подтвердить и отправить</button>
     </div>
   </div>
 </main>

@@ -266,14 +266,17 @@ function createTable(users, nameTable, tabName = '') {
 					case 'changeCard':
 						statusValue = 'Замена карты';
 						break;
-					case 'changeQR':
+					case 'newQR':
 						statusValue = 'Новый QR-код';
 						break;
-					case 'newQR':
+					case 'changeQR':
 						statusValue = 'Замена QR-кода';
 						break;
 					case 'changeFIO':
-						statusValue = 'Замена ФИО';
+						statusValue = 'Изменение ФИО';
+						break;
+					case 'changePost':
+						statusValue = 'Изменение должности';
 						break;
 				}
 			} else {
@@ -572,7 +575,7 @@ function returnToNextTab(item) {
 
 //Показывать данные в таблицах о пользователях
 function showDataInTable() {
-	const nameTables = ['const', 'qr', 'permis', 'add'];
+	const nameTables = ['const', 'qr', 'permis', 'add', 'remove', 'edit'];
 
 	nameTables.forEach((item) => {
 		if (!$(`.table--${item} .table__body .table__content`).length) {
@@ -612,6 +615,20 @@ function toggleSelect() {
 			$(e.currentTarget).parents('.select').find('.select__value').attr({'data-title': title, 'data-reason': reason});
 
 			if (reason == 'transfer') $('.form__field--depart').show();
+		} else if (select === 'change') {
+			const change = $(e.currentTarget).find('.select__name').data('change');
+
+			$(e.currentTarget).parents('.select').find('.select__value').attr({'data-title': title, 'data-change': change});
+
+			if (change == 'changeFIO') {
+				$('.form__field--new-post').hide();
+				$('.form__field--new-fio').show();
+			} else if (change == 'changePost') {
+				$('.form__field--new-fio').hide();
+				$('.form__field--new-post').show();
+			} else {
+				$('.form__field--new-fio, .form__field--new-post').hide();
+			}
 		}
 	});
 }

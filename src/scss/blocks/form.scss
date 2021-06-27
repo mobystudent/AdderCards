@@ -11,7 +11,9 @@
 			margin-bottom: 20px;
 		}
 
-		&--depart {
+		&--depart,
+		&--new-post,
+		&--new-fio {
 			display: none;
 		}
 	}
