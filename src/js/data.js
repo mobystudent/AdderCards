@@ -21,7 +21,8 @@ export const json = {
 		"Post": "Старший механик управляющего",
 		"NameID": "ChemDep",
 		"StatusID": "newCard",
-		"IDUser": "1"
+		"IDUser": "1",
+		"TitleID": "Пластиковая карта"
 	},
 	"1": {
 		"FIO": "Горбунова-Рубан Свiтлана Олександрiвна",
@@ -42,8 +43,9 @@ export const json = {
 		"EmployeeNumber": "",
 		"Post": "Старший механик управляющего",
 		"NameID": "ChemDep",
-		"StatusID": "newCard",
-		"IDUser": "2"
+		"StatusID": "newQR",
+		"IDUser": "2",
+		"TitleID": "QR-код"
 	},
 	"2": {
 		"FIO": "Гарькавенко Володимир Володимирович",
@@ -65,7 +67,8 @@ export const json = {
 		"Post": "Инженер 2-й категории",
 		"NameID": "CSDep",
 		"StatusID": "newCard",
-		"IDUser": "3"
+		"IDUser": "3",
+		"TitleID": "Пластиковая карта"
 	},
 	"3": {
 		"FIO": "Скоринiна-Погребна Ольга Володимирiвна",
@@ -87,7 +90,8 @@ export const json = {
 		"Post": "Инженер 2-й категории",
 		"NameID": "PhTechDep",
 		"StatusID": "newCard",
-		"IDUser": "4"
+		"IDUser": "4",
+		"TitleID": "Пластиковая карта"
 	},
 	// "4": {
 	// 	"FIO": "Суворова-Григорович Ганна Олександрiвна",
@@ -307,7 +311,8 @@ export const json = {
 		"Post": "Секретарь",
 		"NameID": "SocDep",
 		"StatusID": "newQR",
-		"IDUser": "14"
+		"IDUser": "14",
+		"TitleID": "QR-код"
 	},
 	"14": {
 		"FIO": "Станиславський Олександр Олександрович",
@@ -329,7 +334,8 @@ export const json = {
 		"Post": "Секретарь",
 		"NameID": "ChemDep",
 		"StatusID": "changeCard",
-		"IDUser": "15"
+		"IDUser": "15",
+		"TitleID": "Пластиковая карта"
 	},
 	"15": {
 		"FIO": "Станиславський Олександр Олександрович",
@@ -351,7 +357,8 @@ export const json = {
 		"Post": "Секретарь",
 		"NameID": "BioDep",
 		"StatusID": "changeQR",
-		"IDUser": "16"
+		"IDUser": "16",
+		"TitleID": "QR-код"
 	},
 	"16": {
 		"FIO": "Ткаченко Володимир Володимирович",
@@ -373,7 +380,8 @@ export const json = {
 		"Post": "Старший механик управляющего",
 		"NameID": "ChemDep",
 		"StatusID": "newCard",
-		"IDUser": "17"
+		"IDUser": "17",
+		"TitleID": "Пластиковая карта"
 	},
 	"17": {
 		"FIO": "Сидоренко Дмитро Юрiйович",
@@ -395,7 +403,8 @@ export const json = {
 		"Post": "Старший механик управляющего",
 		"NameID": "ChemDep",
 		"StatusID": "newCard",
-		"IDUser": "18"
+		"IDUser": "18",
+		"TitleID": "Пластиковая карта"
 	},
 	// "18": {
 	// 	"FIO": "Рябчунова Анастасiя Валерiївна",
@@ -571,6 +580,7 @@ export const json = {
 		"Post": "Старший механик управляющего",
 		"NameID": "ChemDep",
 		"StatusID": "newCard",
-		"IDUser": "26"
+		"IDUser": "26",
+		"TitleID": "Пластиковая карта"
 	},
 };

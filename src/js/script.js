@@ -83,12 +83,6 @@ function delegationID(users) {
 	}
 }
 
-function countItems(tableContent, modDepart) {
-	const countItemfromDep = $(tableContent).eq(0).find('.table__row').length;
-
-	$(`.main__count--${modDepart}`).text(countItemfromDep);
-}
-
 function addTabs(filterIDItems, nameTable, modDepart) {
 	const filterNameDepart = filterDepart(filterIDItems);
 
@@ -130,12 +124,20 @@ function filterDepart(filterIDItems) {
 
 function addCountCards(filterIDItems, nameTable, modDepart) {
 	const filterNameDepart = filterDepart(filterIDItems);
+	console.log(filterNameDepart.length);
 
-	if (filterNameDepart.length > 1) {
+	if (filterNameDepart.length) {
 		$(`${nameTable} .table__content--const`).eq(0).addClass('table__content--active');
+
 
 		countItems(`${nameTable} .table__content--active`, modDepart);
 	}
+}
+
+function countItems(tableContent, modDepart) {
+	const countItemfromDep = $(tableContent).eq(0).find('.table__row').length;
+
+	$(`.main__count--${modDepart}`).text(countItemfromDep);
 }
 
 function viewAllCountAndTitleDefault(filterIDItems, modDepart) {
@@ -195,7 +197,8 @@ function createTable(users, nameTable, tabName = '') {
 			Post = '',
 			NameID = '',
 			StatusID = '',
-			IDUser = ''
+			IDUser = '',
+			TitleID = ''
 		} = item;
 
 		if (!tabName) {
@@ -208,7 +211,7 @@ function createTable(users, nameTable, tabName = '') {
 				StatusID,
 				IDUser
 			};
-		} else {
+		} else if (tabName === 'permis') {
 			return {
 				FIO,
 				Post,
@@ -216,14 +219,41 @@ function createTable(users, nameTable, tabName = '') {
 				StatusID,
 				IDUser
 			};
+		} else if (tabName === 'add') {
+			return {
+				FIO,
+				Post,
+				Department,
+				TitleID,
+				IDUser
+			};
 		}
 	});
 
+	if (tabName === 'add') {
+		$(nameTable).append(`
+			<div class="table__content table__content--const"></div>
+		`);
+	}
+
 	limitUser.forEach((item) => {
-		const tableContent = $(`${nameTable} .table__content--const[data-content=${item.NameID}]`);
+		let tableContent = '';
+		let countRows = '';
+
+		if (tabName === 'add') {
+			tableContent = $(`${nameTable} .table__content--const`);
+			// $(`${nameTable} .table__content--const`).addClass('table__content--active');
+		} else {
+			tableContent = $(`${nameTable} .table__content--const[data-content=${item.NameID}]`);
+		}
+
 		tableContent.append(`<div class="table__row" data-id=${item.IDUser}></div>`);
 
-		const countRows = $(`${nameTable} .table__content--const[data-content=${item.NameID}] .table__row`).length;
+		if (tabName === 'add') {
+			countRows = $(`${nameTable} .table__content--const .table__row`).length;
+		} else {
+			countRows = $(`${nameTable} .table__content--const[data-content=${item.NameID}] .table__row`).length;
+		}
 
 		for (let itemValue in item) {
 			let statusValue;
@@ -282,7 +312,7 @@ function createTable(users, nameTable, tabName = '') {
 					<span class="table__text table__text--body"></span>
 				</div>
 			`);
-		} else {
+		} else if (tabName === 'permis') {
 			tableContent.find(`.table__row:nth-child(${countRows})`).append(`
 				<div class="table__cell table__cell--body table__cell--buttons">
 					<button class="btn btn--allow" data-type="allow" data-cancel="Отменить" data-allow="Разрешить" type="button">
@@ -636,7 +666,14 @@ function addUserInTable() {
 			}
 		});
 
-		console.log(object);
+		// console.log(object);
+		// addTabs(, '#tablePermiss', 'permis');
+		// viewAllCountAndTitleDefault(depart, 'permis');
+		// changeTabs(depart ,'#tablePermiss', 'permis');
+		createTable([object], '#tableAdd', 'add');
+		addCountCards([object], '#tableAdd', 'add');
 
+		$('.table--add .table__body').removeClass('table__body--empty');
+		$('.table--add .table__nothing').hide();
 	})
 }
