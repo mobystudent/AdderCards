@@ -12,20 +12,6 @@ main.main(data-name="remove")
 						input.form__input.form__item(data-field="FIO" name="name" type="text" placeholder="Введите ФИО" required)
 				.form__field
 					span.form__name
-						| Причина удаления
-					.form__select.form__item.select(data-field="TitleID" data-select="reason")
-						header.select__header
-							span.select__value(data-title="title" data-type="type")
-								| Выберите причину удаления
-						ul.select__list
-							li.select__item
-								span.select__name(data-title="Перевод в другое подразделение" data-reason="transfer")
-									| Перевод в другое подразделение
-							li.select__item
-								span.select__name(data-title="Увольнение" data-reason="remove")
-									| Увольнение
-				.form__field.form__field--depart
-					span.form__name
 						| Подразделение/факультет
 					.form__select.form__item.select(data-field="Department" data-type="NameID" data-select="depart")
 						header.select__header
@@ -37,11 +23,38 @@ main.main(data-name="remove")
 								li.select__item
 									span.select__name(data-title="Химический факультет" data-name-id="ChemDep")
 										| Химический факультет
+				.form__field
+					span.form__name
+						| Причина удаления
+					.form__select.form__item.select(data-field="TitleID" data-type="StatusID" data-select="reason")
+						header.select__header
+							span.select__value(data-title="title" data-reason="type")
+								| Выберите причину удаления
+						ul.select__list
+							li.select__item
+								span.select__name(data-title="Перевод в другое подразделение" data-reason="changeDepart")
+									| Перевод в другое подразделение
+							li.select__item
+								span.select__name(data-title="Увольнение" data-reason="remove")
+									| Увольнение
+				.form__field.form__field--depart
+					span.form__name
+						| Новое подразделение/факультет
+					.form__select.form__item.select(data-field="NewDepart" data-type="NewNameID" data-select="new-depart")
+						header.select__header
+							span.select__value(data-title="title" data-new-name-id="new-name-id")
+								| Выберите подразделение/факультет
+						ul.select__list
+							
+							- for (let i = 0; i < 5 ; i++)
+								li.select__item
+									span.select__name(data-title="Химический факультет" data-new-name-id="ChemDep")
+										| Химический факультет
 									
-			button.btn.btn--form#removeUser(type="button")
+			button.btn.btn--form#removeUser(type="button" data-type="remove-user")
 				| Удалить
 
-		.wrap.wrap--content.wrap--content-remove
+		.wrap.wrap--content.wrap--content-remove-item
 			.main__cards.main__cards--main
 				p.main__count-wrap.main__count-wrap--depart
 					span.main__count-text
@@ -56,12 +69,15 @@ main.main(data-name="remove")
 							span.table__text.table__text--header
 								| Фамилия Имя Отчество
 							button.btn.btn--sort(type="button" data-direction="true")
-						.table__cell.table__cell--header.table__cell--post
-							span.table__text.table__text--header
-								| Должность
 						.table__cell.table__cell--header.table__cell--department
 							span.table__text.table__text--header
 								| Подразделение/факультет
+						.table__cell.table__cell--header.table__cell--titleid
+							span.table__text.table__text--header
+								| Причина удаления
+						.table__cell.table__cell--header.table__cell--new-depart
+							span.table__text.table__text--header
+								| Новое подразделение/факультет
 					.table__body#tableRemove
 						p.table__nothing
 							| Не добавленно ни одного пользователя
@@ -71,5 +87,5 @@ main.main(data-name="remove")
 				| Предупреждение! Не все поля заполнены
 	
 		.main__btns
-			button.btn.btn--remove-user#submitRemoveUser(type="button")
+			button.btn#submitRemoveUser(type="button")
 				| Подтвердить и отправить

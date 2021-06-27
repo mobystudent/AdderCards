@@ -287,7 +287,7 @@ FC94DCCA3EFE99F7
                 </div>
               </div>
             </div>
-            <button class="btn btn--form" id="addUser" type="button">Добавить</button>
+            <button class="btn btn--form" id="addUser" type="button" data-type="add-user">Добавить</button>
           </form>
           <div class="wrap wrap--content wrap--content-add">
             <div class="main__cards main__cards--main">
@@ -314,7 +314,7 @@ FC94DCCA3EFE99F7
             <p class="info__warn">Предупреждение! Не все поля заполнены</p>
           </div>
           <div class="main__btns">
-            <button class="btn btn--add-user" id="submitAddUser" type="button">Подтвердить и отправить</button>
+            <button class="btn" id="submitAddUser" type="button">Подтвердить и отправить</button>
           </div>
         </div>
       </main>
@@ -328,16 +328,7 @@ FC94DCCA3EFE99F7
                   <input class="form__input form__item" data-field="FIO" name="name" type="text" placeholder="Введите ФИО" required>
                 </label>
               </div>
-              <div class="form__field"><span class="form__name">Причина удаления</span>
-                <div class="form__select form__item select" data-field="TitleID" data-select="reason">
-                  <header class="select__header"><span class="select__value" data-title="title" data-type="type">Выберите причину удаления</span></header>
-                  <ul class="select__list">
-                    <li class="select__item"><span class="select__name" data-title="Перевод в другое подразделение" data-reason="transfer">Перевод в другое подразделение</span></li>
-                    <li class="select__item"><span class="select__name" data-title="Увольнение" data-reason="remove">Увольнение</span></li>
-                  </ul>
-                </div>
-              </div>
-              <div class="form__field form__field--depart"><span class="form__name">Подразделение/факультет</span>
+              <div class="form__field"><span class="form__name">Подразделение/факультет</span>
                 <div class="form__select form__item select" data-field="Department" data-type="NameID" data-select="depart">
                   <header class="select__header"><span class="select__value" data-title="title" data-name-id="name-id">Выберите подразделение/факультет</span></header>
                   <ul class="select__list">
@@ -349,10 +340,31 @@ FC94DCCA3EFE99F7
                   </ul>
                 </div>
               </div>
+              <div class="form__field"><span class="form__name">Причина удаления</span>
+                <div class="form__select form__item select" data-field="TitleID" data-type="StatusID" data-select="reason">
+                  <header class="select__header"><span class="select__value" data-title="title" data-reason="type">Выберите причину удаления</span></header>
+                  <ul class="select__list">
+                    <li class="select__item"><span class="select__name" data-title="Перевод в другое подразделение" data-reason="changeDepart">Перевод в другое подразделение</span></li>
+                    <li class="select__item"><span class="select__name" data-title="Увольнение" data-reason="remove">Увольнение</span></li>
+                  </ul>
+                </div>
+              </div>
+              <div class="form__field form__field--depart"><span class="form__name">Новое подразделение/факультет</span>
+                <div class="form__select form__item select" data-field="NewDepart" data-type="NewNameID" data-select="new-depart">
+                  <header class="select__header"><span class="select__value" data-title="title" data-new-name-id="new-name-id">Выберите подразделение/факультет</span></header>
+                  <ul class="select__list">
+                    <li class="select__item"><span class="select__name" data-title="Химический факультет" data-new-name-id="ChemDep">Химический факультет</span></li>
+                    <li class="select__item"><span class="select__name" data-title="Химический факультет" data-new-name-id="ChemDep">Химический факультет</span></li>
+                    <li class="select__item"><span class="select__name" data-title="Химический факультет" data-new-name-id="ChemDep">Химический факультет</span></li>
+                    <li class="select__item"><span class="select__name" data-title="Химический факультет" data-new-name-id="ChemDep">Химический факультет</span></li>
+                    <li class="select__item"><span class="select__name" data-title="Химический факультет" data-new-name-id="ChemDep">Химический факультет</span></li>
+                  </ul>
+                </div>
+              </div>
             </div>
-            <button class="btn btn--form" id="removeUser" type="button">Удалить</button>
+            <button class="btn btn--form" id="removeUser" type="button" data-type="remove-user">Удалить</button>
           </form>
-          <div class="wrap wrap--content wrap--content-remove">
+          <div class="wrap wrap--content wrap--content-remove-item">
             <div class="main__cards main__cards--main">
               <p class="main__count-wrap main__count-wrap--depart"><span class="main__count-text">Количество удаленных пользователей:&nbsp</span><span class="main__count main__count--remove">0</span></p>
             </div>
@@ -363,8 +375,9 @@ FC94DCCA3EFE99F7
                   <div class="table__cell table__cell--header table__cell--fio"><span class="table__text table__text--header">Фамилия Имя Отчество</span>
                     <button class="btn btn--sort" type="button" data-direction="true"></button>
                   </div>
-                  <div class="table__cell table__cell--header table__cell--post"><span class="table__text table__text--header">Должность</span></div>
                   <div class="table__cell table__cell--header table__cell--department"><span class="table__text table__text--header">Подразделение/факультет</span></div>
+                  <div class="table__cell table__cell--header table__cell--titleid"><span class="table__text table__text--header">Причина удаления</span></div>
+                  <div class="table__cell table__cell--header table__cell--new-depart"><span class="table__text table__text--header">Новое подразделение/факультет</span></div>
                 </header>
                 <div class="table__body" id="tableRemove">
                   <p class="table__nothing">Не добавленно ни одного пользователя</p>
@@ -376,7 +389,7 @@ FC94DCCA3EFE99F7
             <p class="info__warn">Предупреждение! Не все поля заполнены</p>
           </div>
           <div class="main__btns">
-            <button class="btn btn--remove-user" id="submitRemoveUser" type="button">Подтвердить и отправить</button>
+            <button class="btn" id="submitRemoveUser" type="button">Подтвердить и отправить</button>
           </div>
         </div>
       </main>
@@ -415,16 +428,16 @@ FC94DCCA3EFE99F7
               </div>
               <div class="form__field form__field--new-post">
                 <label class="form__label"><span class="form__name">Новая должность</span>
-                  <input class="form__input form__item" data-field="Post" name="newPost" type="text" placeholder="Введите должность" required>
+                  <input class="form__input form__item" data-field="NewPost" name="newPost" type="text" placeholder="Введите новую должность" required>
                 </label>
               </div>
               <div class="form__field form__field--new-fio">
                 <label class="form__label"><span class="form__name">Новое ФИО</span>
-                  <input class="form__input form__item" data-field="FIO" name="newName" type="text" placeholder="Введите ФИО" required>
+                  <input class="form__input form__item" data-field="NewFIO" name="newName" type="text" placeholder="Введите новое ФИО" required>
                 </label>
               </div>
             </div>
-            <button class="btn btn--form" id="editUser" type="button">Добавить</button>
+            <button class="btn btn--form" id="editUser" type="button" data-type="edit-user">Редактировать</button>
           </form>
           <div class="wrap wrap--content wrap--content-edit">
             <div class="main__cards main__cards--main">
@@ -437,8 +450,10 @@ FC94DCCA3EFE99F7
                   <div class="table__cell table__cell--header table__cell--fio"><span class="table__text table__text--header">Фамилия Имя Отчество</span>
                     <button class="btn btn--sort" type="button" data-direction="true"></button>
                   </div>
-                  <div class="table__cell table__cell--header table__cell--post"><span class="table__text table__text--header">Должность</span></div>
-                  <div class="table__cell table__cell--header table__cell--department"><span class="table__text table__text--header">Подразделение/факультет</span></div>
+                  <div class="table__cell table__cell--header table__cell--fio"><span class="table__text table__text--header">Новое Фамилия Имя Отчество</span>
+                    <button class="btn btn--sort" type="button" data-direction="true"></button>
+                  </div>
+                  <div class="table__cell table__cell--header table__cell--post"><span class="table__text table__text--header">Новая должность</span></div>
                   <div class="table__cell table__cell--header table__cell--statusid"><span class="table__text table__text--header">Тип изменения</span></div>
                 </header>
                 <div class="table__body" id="tableEdit">
@@ -451,7 +466,7 @@ FC94DCCA3EFE99F7
             <p class="info__warn">Предупреждение! Не все поля заполнены</p>
           </div>
           <div class="main__btns">
-            <button class="btn btn--edit-user" id="submitEditUser" type="button">Подтвердить и отправить</button>
+            <button class="btn" id="submitEditUser" type="button">Подтвердить и отправить</button>
           </div>
         </div>
       </main>

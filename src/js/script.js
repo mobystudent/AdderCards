@@ -22,7 +22,7 @@ $(window).on('load', () => {
 	confirmAllAllowDisallow();
 	showDataInTable();
 	toggleSelect();
-	addUserInTable();
+	addNewUserInTable();
 
 	convert.viewConvertCardId();
 	qrcodes.changeCountQRCodes();
@@ -198,7 +198,10 @@ function createTable(users, nameTable, tabName = '') {
 			NameID = '',
 			StatusID = '',
 			IDUser = '',
-			TitleID = ''
+			TitleID = '',
+			NewFio = '',
+			NewPost = '',
+			NewDepart = ''
 		} = item;
 
 		if (!tabName) {
@@ -227,10 +230,27 @@ function createTable(users, nameTable, tabName = '') {
 				TitleID,
 				IDUser
 			};
+		} else if (tabName === 'remove') {
+			return {
+				FIO,
+				Department,
+				TitleID,
+				NewDepart,
+				IDUser
+			};
+		} else if (tabName === 'edit') {
+			return {
+				FIO,
+				Department,
+				TitleID,
+				NewFIO,
+				NewPost,
+				IDUser
+			};
 		}
 	});
 
-	if (tabName === 'add') {
+	if (tabName === 'add' || tabName === 'remove' || tabName === 'edit' ) {
 		$(nameTable).append(`
 			<div class="table__content table__content--const"></div>
 		`);
@@ -240,16 +260,15 @@ function createTable(users, nameTable, tabName = '') {
 		let tableContent = '';
 		let countRows = '';
 
-		if (tabName === 'add') {
+		if (tabName === 'add' || tabName === 'remove' || tabName === 'edit' ) {
 			tableContent = $(`${nameTable} .table__content--const`);
-			// $(`${nameTable} .table__content--const`).addClass('table__content--active');
 		} else {
 			tableContent = $(`${nameTable} .table__content--const[data-content=${item.NameID}]`);
 		}
 
 		tableContent.append(`<div class="table__row" data-id=${item.IDUser}></div>`);
 
-		if (tabName === 'add') {
+		if (tabName === 'add' || tabName === 'remove' || tabName === 'edit' ) {
 			countRows = $(`${nameTable} .table__content--const .table__row`).length;
 		} else {
 			countRows = $(`${nameTable} .table__content--const[data-content=${item.NameID}] .table__row`).length;
@@ -277,6 +296,9 @@ function createTable(users, nameTable, tabName = '') {
 						break;
 					case 'changePost':
 						statusValue = 'Изменение должности';
+						break;
+					case 'changeDepart':
+						statusValue = 'Перевод в другое подразделение';
 						break;
 				}
 			} else {
@@ -614,7 +636,15 @@ function toggleSelect() {
 
 			$(e.currentTarget).parents('.select').find('.select__value').attr({'data-title': title, 'data-reason': reason});
 
-			if (reason == 'transfer') $('.form__field--depart').show();
+			if (reason == 'changeDepart') {
+				$('.form__field--depart').show();
+
+				$(e.currentTarget).parents('.main').find('.wrap--content').addClass('wrap--content-remove-transfer').removeClass('wrap--content-remove-item');
+			} else {
+				$('.form__field--depart').hide();
+
+				$(e.currentTarget).parents('.main').find('.wrap--content').addClass('wrap--content-remove-item').removeClass('wrap--content-remove-transfer');
+			}
 		} else if (select === 'change') {
 			const change = $(e.currentTarget).find('.select__name').data('change');
 
@@ -629,14 +659,19 @@ function toggleSelect() {
 			} else {
 				$('.form__field--new-fio, .form__field--new-post').hide();
 			}
+		} else if (select === 'new-depart') {
+			const newNameID = $(e.currentTarget).find('.select__name').data('new-name-id');
+
+			$(e.currentTarget).parents('.select').find('.select__value').attr({'data-title': title, 'data-new-name-id': newNameID});
 		}
 	});
 }
 
-function addUserInTable() {
-	$('#addUser').click((e) => {
+function addNewUserInTable() {
+	$('#addUser, #removeUser, #editUser').click((e) => {
 		const form = $(e.target).parents('.form');
 		const fields = $(form).find('.form__item');
+		const fieldsActive = [...fields].filter((item) => $(item).parents('.form__field').css('display') != 'none');
 		const object = {
 			FIO: '',
 			Department: '',
@@ -658,16 +693,45 @@ function addUserInTable() {
 			NameID: '',
 			StatusID: '',
 			IDUser: '',
-			TitleID: ''
+			TitleID: '',
+			NewFio: '',
+			NewPost: '',
+			NewDepart: ''
 		};
+		const typeBtn = $(e.target).data('type');
+		let secondSelect = '';
 
-		const addFields = [...fields].reduce((array, item) => {
+		switch(typeBtn) {
+			case 'add-user':
+				secondSelect = 'type';
+
+				break;
+			case 'remove-user':
+				secondSelect = 'reason';
+
+				break;
+			case 'edit-user':
+				secondSelect = 'change';
+
+				break;
+		}
+
+		const addFields = fieldsActive.reduce((array, item) => {
 			const fieldName = $(item).data('field');
 
 			if ($(item).hasClass('select')) {
 				const fieldType = $(item).data('type');
 				const valueItem = $(item).find('.select__value--selected').data('title');
-				const typeSelect = $(item).data('select') == 'depart' ? 'name-id' : 'type';
+				let typeSelect = '';
+
+				if ($(item).data('select') == 'depart') {
+					typeSelect = 'name-id';
+				} else if ($(item).data('select') == 'new-depart') {
+					typeSelect = 'new-name-id';
+				} else {
+					typeSelect = secondSelect;
+				}
+
 				const nameId = $(item).find('.select__value--selected').data(typeSelect);
 
 				array.push({[fieldName]: valueItem}, {[fieldType]: nameId});
@@ -679,6 +743,7 @@ function addUserInTable() {
 
 			return array;
 		}, []);
+		const user = [];
 
 		addFields.forEach((elem) => {
 			for (const itemField in object) {
@@ -690,22 +755,29 @@ function addUserInTable() {
 			}
 		});
 
-		createTable([object], '#tableAdd', 'add');
-		addCountCards([object], '#tableAdd', 'add');
+		user.push(object);
 
-		$('.table--add .table__body').removeClass('table__body--empty');
-		$('.table--add .table__nothing').hide();
-	})
+		switch(typeBtn) {
+			case 'add-user':
+				addUsersInTable('#tableAdd', 'add', user);
+
+				break;
+			case 'remove-user':
+				addUsersInTable('#tableRemove', 'remove', user);
+
+				break;
+			case 'edit-user':
+				addUsersInTable('#tableEdit', 'edit', user);
+
+				break;
+		}
+	});
 }
 
-function showDepartForRemove() {
-	// if ($('.select').attr('select') === 'reason') {
-	// 	const choiceSelect = $('.select').find('.select__value--selected').data('field');
-	//
-	// 	if (choiceSelect !== 'TitleID') {
-	//
-	// 	}
-	// }
+function addUsersInTable(tableID, nameTable, user) {
+	createTable(user, tableID, nameTable);
+	addCountCards(user, tableID, nameTable);
 
-
+	$(`.table--${nameTable} .table__body`).removeClass('table__body--empty');
+	$(`.table--${nameTable} .table__nothing`).hide();
 }

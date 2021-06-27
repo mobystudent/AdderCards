@@ -144,16 +144,18 @@
 		}
 
 		&--fio,
-		&--nametitle {
-			flex: 0 0 500px;
+		&--nametitle,
+		&--newfio {
+			flex: 0 0 400px;
 		}
 
 		&--post {
 			flex: 0 0 430px;
 		}
 
-		&--department {
-			flex: 0 0 460px;
+		&--department,
+		&--new-depart {
+			flex: 0 0 450px;
 		}
 
 		&--control {
@@ -171,6 +173,10 @@
 
 		&--nameid {
 			display: none;
+		}
+
+		&--titleid {
+			flex: 0 0 300px;
 		}
 
 		&--buttons {
