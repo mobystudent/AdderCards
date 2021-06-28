@@ -704,42 +704,21 @@ function addNewUserInTable() {
 			NewDepart: ''
 		};
 		const typeBtn = $(e.target).data('type');
-		let secondSelect = '';
-
-		switch(typeBtn) {
-			case 'add-user':
-				secondSelect = 'type';
-
-				break;
-			case 'remove-user':
-				secondSelect = 'reason';
-
-				break;
-			case 'edit-user':
-				secondSelect = 'change';
-
-				break;
-		}
-
 		const addFields = [...fields].reduce((array, item) => {
 			const fieldName = $(item).data('field');
 
 			if ($(item).hasClass('select')) {
 				const fieldType = $(item).data('type');
 				const valueItem = $(item).find('.select__value--selected').data('title');
-				let typeSelect = '';
+				const typeSelect = $(item).data('select');
 
-				if ($(item).data('select') == 'depart') {
-					typeSelect = 'name-id';
-				} else if ($(item).data('select') == 'new-depart') {
-					typeSelect = 'new-name-id';
+				if (typeSelect == 'fio') {
+					const nameId = $(item).find('.select__value--selected').data(typeSelect);
+
+					array.push({[fieldName]: valueItem}, {[fieldType]: nameId});
 				} else {
-					typeSelect = secondSelect;
+					array.push({[fieldName]: valueItem});
 				}
-
-				const nameId = $(item).find('.select__value--selected').data(typeSelect);
-
-				array.push({[fieldName]: valueItem}, {[fieldType]: nameId});
 			} else {
 				const inputValue = $(item).val();
 
@@ -750,11 +729,9 @@ function addNewUserInTable() {
 		}, []);
 		let countId = 1; //delete
 
-
 		addFields.forEach((elem) => {
 			for (const itemField in object) {
 				for (const key in elem) {
-					// console.warn(key);
 					if (itemField == key) {
 						object[itemField] = elem[key];
 					}
@@ -764,7 +741,6 @@ function addNewUserInTable() {
 			object.IDUser = countId;
 			countId++;
 		});
-
 
 		switch(typeBtn) {
 			case 'add-user':
