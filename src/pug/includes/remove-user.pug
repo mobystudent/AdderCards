@@ -10,7 +10,7 @@ main.main(data-name="remove")
 						| Пользователь
 					.form__select.form__item.select(data-field="FIO" data-select="fio")
 						header.select__header
-							span.select__value(data-title="title")
+							span.select__value(data-title="title" data-placeholder="Выберите пользователя")
 								| Выберите пользователя
 						ul.select__list
 				.form__field
@@ -18,20 +18,23 @@ main.main(data-name="remove")
 						| Подразделение/факультет
 					.form__select.form__item.select(data-field="Department" data-type="NameID" data-select="name-id")
 						header.select__header
-							span.select__value(data-title="title" data-name-id="name-id")
+							span.select__value(data-title="title" data-name-id="name-id" data-placeholder="Выберите подразделение/факультет")
 								| Выберите подразделение/факультет
 						ul.select__list
 							
-							- for (let i = 0; i < 5 ; i++)
+							- for (let i = 0; i < 2 ; i++)
 								li.select__item
 									span.select__name(data-title="Химический факультет" data-name-id="ChemDep")
 										| Химический факультет
+								li.select__item
+									span.select__name(data-title="Биологический факультет" data-name-id="BioDep")
+										| Биологический факультет
 				.form__field
 					span.form__name
 						| Причина удаления
 					.form__select.form__item.select(data-field="TitleID" data-type="StatusID" data-select="reason")
 						header.select__header
-							span.select__value(data-title="title" data-reason="type")
+							span.select__value(data-title="title" data-reason="type" data-placeholder="Выберите причину удаления")
 								| Выберите причину удаления
 						ul.select__list
 							li.select__item
@@ -45,7 +48,7 @@ main.main(data-name="remove")
 						| Новое подразделение/факультет
 					.form__select.form__item.select(data-field="NewDepart" data-type="NewNameID" data-select="new-name-id")
 						header.select__header
-							span.select__value(data-title="title" data-new-name-id="new-name-id")
+							span.select__value(data-title="title" data-new-name-id="new-name-id" data-placeholder="Выберите подразделение/факультет")
 								| Выберите подразделение/факультет
 						ul.select__list
 							

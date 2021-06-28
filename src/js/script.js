@@ -178,8 +178,6 @@ function changeTabs(depart, nameTable, modDepart) {
 }
 
 function createTable(users, nameTable, tabName = '') {
-	console.log(users);
-
 	const limitUser = users.map((item) => {
 		const {
 			FIO = '',
@@ -661,22 +659,24 @@ function setDataAttrSelectedItem(title, select, elem) {
 	}
 
 	if (dataType) {
-		attr = {'data-title': title, [`data-${select}`]: dataType};
+		attr = {'title': title, [`${select}`]: dataType};
 	} else {
-		attr = {'data-title': title};
+		attr = {'title': title};
 	}
 
-	$(elem).parents('.select').find('.select__value').attr(attr);
+	$(elem).parents('.select').find('.select__value--selected').data(attr);
 }
 
 function addNewUserInTable() {
 	const userAdd = [];
 	const userRemove = [];
 	const userEdit = [];
+	let countId = 1; //delete
 
 	$('#addUser, #removeUser, #editUser').click((e) => {
 		const form = $(e.target).parents('.form');
 		const fields = $(form).find('.form__item');
+		const typeBtn = $(e.target).data('type');
 		const object = {
 			FIO: '',
 			Department: '',
@@ -703,16 +703,15 @@ function addNewUserInTable() {
 			NewPost: '',
 			NewDepart: ''
 		};
-		const typeBtn = $(e.target).data('type');
 		const addFields = [...fields].reduce((array, item) => {
 			const fieldName = $(item).data('field');
 
 			if ($(item).hasClass('select')) {
 				const fieldType = $(item).data('type');
-				const valueItem = $(item).find('.select__value--selected').data('title');
 				const typeSelect = $(item).data('select');
+				const valueItem = $(item).find('.select__value--selected').data('title');
 
-				if (typeSelect == 'fio') {
+				if (typeSelect != 'fio') {
 					const nameId = $(item).find('.select__value--selected').data(typeSelect);
 
 					array.push({[fieldName]: valueItem}, {[fieldType]: nameId});
@@ -727,7 +726,6 @@ function addNewUserInTable() {
 
 			return array;
 		}, []);
-		let countId = 1; //delete
 
 		addFields.forEach((elem) => {
 			for (const itemField in object) {
@@ -758,6 +756,31 @@ function addNewUserInTable() {
 				addUsersInTable('#tableEdit', 'edit', userEdit);
 
 				break;
+		}
+
+		clearFieldsForm(fields);
+	});
+}
+
+function clearFieldsForm(array) {
+	[...array].forEach((item) => {
+		if ($(item).hasClass('select')) {
+			const typeSelect = $(item).data('select');
+			const placeholder = $(item).find('.select__value').data('placeholder');
+			let attr = '';
+
+			if (typeSelect != 'fio') {
+				attr = {'title': 'title', [`${typeSelect}`]: typeSelect};
+			} else {
+				attr = {'title': 'title'};
+			}
+
+			$(item).find('.select__value--selected')
+				.removeClass('select__value--selected')
+				.data(attr)
+				.text(placeholder);
+		} else {
+			$(item).val('');
 		}
 	});
 }

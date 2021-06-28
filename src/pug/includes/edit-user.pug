@@ -10,7 +10,7 @@ main.main(data-name="edit")
 						| Пользователь
 					.form__select.form__item.select(data-field="FIO" data-select="fio")
 						header.select__header
-							span.select__value(data-title="title")
+							span.select__value(data-title="title" data-placeholder="Выберите пользователя")
 								| Выберите пользователя
 						ul.select__list
 				.form__field
@@ -18,7 +18,7 @@ main.main(data-name="edit")
 						| Подразделение/факультет
 					.form__select.form__item.select(data-field="Department" data-type="NameID" data-select="name-id")
 						header.select__header
-							span.select__value(data-title="title" data-name-id="name-id")
+							span.select__value(data-title="title" data-name-id="name-id" data-placeholder="Выберите подразделение/факультет")
 								| Выберите подразделение/факультет
 						ul.select__list
 							
@@ -31,7 +31,7 @@ main.main(data-name="edit")
 						| Тип изменения
 					.form__select.form__item.select(data-field="TitleID" data-type="StatusID" data-select="change")
 						header.select__header
-							span.select__value(data-title="title" data-change="type")
+							span.select__value(data-title="title" data-change="type" data-placeholder="Выберите тип изменения")
 								| Выберите тип изменения
 						ul.select__list
 							
