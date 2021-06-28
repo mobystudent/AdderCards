@@ -124,7 +124,7 @@ function filterDepart(filterIDItems) {
 
 function addCountCards(filterIDItems, nameTable, modDepart) {
 	const filterNameDepart = filterDepart(filterIDItems);
-	console.log(filterNameDepart.length);
+	// console.log(filterNameDepart.length);
 
 	if (filterNameDepart.length) {
 		$(`${nameTable} .table__content--const`).eq(0).addClass('table__content--active');
@@ -176,6 +176,8 @@ function changeTabs(depart, nameTable, modDepart) {
 }
 
 function createTable(users, nameTable, tabName = '') {
+	console.log(users);
+
 	const limitUser = users.map((item) => {
 		const {
 			FIO = '',
@@ -250,10 +252,14 @@ function createTable(users, nameTable, tabName = '') {
 		}
 	});
 
-	if (tabName === 'add' || tabName === 'remove' || tabName === 'edit' ) {
-		$(nameTable).append(`
-			<div class="table__content table__content--const"></div>
-		`);
+	if (tabName === 'add' || tabName === 'remove' || tabName === 'edit') {
+		if (!$(nameTable).find('.table__content').length) {
+			$(nameTable).append(`
+				<div class="table__content table__content--const"></div>
+			`);
+		} else {
+			$(nameTable).find('.table__row').remove();
+		}
 	}
 
 	limitUser.forEach((item) => {
@@ -504,7 +510,6 @@ function changeStatusDisallowBtn(elem, classStatus, disabled, valText, typeBtn, 
 }
 
 function confirmPermission(objectItems) {
-	const permissArray = [];
 	let allowItems = [];
 
 	$('.btn--confirm').click((e) => {
@@ -631,8 +636,6 @@ function toggleSelect() {
 function setDataAttrSelectedItem(title, select, elem) {
 	const dataType = $(elem).find('.select__name').data(select);
 
-	console.log(dataType);
-
 	if (select == 'reason') {
 		if (dataType == 'changeDepart') {
 			$('.form__field--depart').show();
@@ -659,6 +662,10 @@ function setDataAttrSelectedItem(title, select, elem) {
 }
 
 function addNewUserInTable() {
+	const userAdd = [];
+	const userRemove = [];
+	const userEdit = [];
+
 	$('#addUser, #removeUser, #editUser').click((e) => {
 		const form = $(e.target).parents('.form');
 		const fields = $(form).find('.form__item');
@@ -733,7 +740,6 @@ function addNewUserInTable() {
 
 			return array;
 		}, []);
-		const user = [];
 
 		addFields.forEach((elem) => {
 			for (const itemField in object) {
@@ -745,19 +751,21 @@ function addNewUserInTable() {
 			}
 		});
 
-		user.push(object);
 
 		switch(typeBtn) {
 			case 'add-user':
-				addUsersInTable('#tableAdd', 'add', user);
+				userAdd.push(object);
+				addUsersInTable('#tableAdd', 'add', userAdd);
 
 				break;
 			case 'remove-user':
-				addUsersInTable('#tableRemove', 'remove', user);
+				userRemove.push(object);
+				addUsersInTable('#tableRemove', 'remove', userRemove);
 
 				break;
 			case 'edit-user':
-				addUsersInTable('#tableEdit', 'edit', user);
+				userEdit.push(object);
+				addUsersInTable('#tableEdit', 'edit', userEdit);
 
 				break;
 		}
