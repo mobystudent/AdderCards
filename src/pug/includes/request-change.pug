@@ -1,23 +1,23 @@
-main.main(data-name="permis")
+main.main(data-name="request")
 	.container
 		h1.main__title
-			| Разрешение на добавление #[br] считывателей пользователям
-		span.main__depart.main__depart--permis
-		.wrap.wrap--content.wrap--content-permis
+			| Запрос на изменение данных
+		span.main__depart.main__depart--request
+		.wrap.wrap--content.wrap--content-request
 			.main__cards.main__cards--main
 				p.main__count-wrap.main__count-wrap--depart
 					span.main__count-text
 						| Количество карт:&nbsp
-					span.main__count.main__count--permis
+					span.main__count.main__count--request
 						| 0
 				p.main__count-wrap.main__count-wrap--main
 					span.main__count-text
 						| Общее количество карт:&nbsp
-					span.main__count.main__count--all-permis
+					span.main__count.main__count--all-request
 						| 0
 			.wrap.wrap--table
-				header.tab.tab--permis
-				.table.table--permis
+				header.tab.tab--request
+				.table.table--request
 					header.table__header
 						.table__cell.table__cell--header.table__cell--fio
 							span.table__text.table__text--header
@@ -26,22 +26,24 @@ main.main(data-name="permis")
 						.table__cell.table__cell--header.table__cell--post
 							span.table__text.table__text--header
 								| Должность
+						//- .table__cell.table__cell--header.table__cell--cardid
+						//- 	span.table__text.table__text--header
+						//- 		| ID карты
+						//- .table__cell.table__cell--header.table__cell--cardname
+						//- 	span.table__text.table__text--header
+						//- 		| Номер карты
 						.table__cell.table__cell--header.table__cell--statusid
 							span.table__text.table__text--header
 								| Статус
-						.table__cell.table__cell--header.table__cell--control
-							button.btn.btn--allow#allowAll(type='button' data-type="allow" data-cancel="Отменить" data-allow="Разрешить")
-								| Разрешить все
-							button.btn.btn--disallow#disallowAll(type='button' data-type="disallow" data-cancel="Отменить" data-disallow="Запретить")
-								| Запретить все
-					.table__body#tablePermiss
+						.table__cell.table__cell--header.table__cell--clear
+					.table__body#tableRequest
 						p.table__nothing
 							| Новых данных нет
-	
+							
 		.info
 			p.info__warn
-				| Предупреждение! Не все пользователи отмечены
+				| Предупреждение! Ни одного пользователя не выбрано.
 	
 		.main__btns
-			button.btn#submitPermis(type='button')
+			button.btn.btn--confirm(type='button')
 				| Подтвердить

@@ -23,6 +23,7 @@ $(window).on('load', () => {
 	showDataInTable();
 	toggleSelect();
 	addNewUserInTable();
+	transferRemoveUserToRequest();
 
 	convert.viewConvertCardId();
 	qrcodes.changeCountQRCodes();
@@ -315,13 +316,13 @@ function createTable(users, nameTable, tabName = '') {
 
 			if (itemValue === 'cardid') {
 				tableContent.find(`.table__row:nth-child(${countRows})`).append(`
-					<div class="table__cell table__cell--body table__cell--${itemValue}">
+					<div class="table__cell table__cell--body table__cell--${itemValue}" data-name="${itemValue}" data-value="">
 						<input class="table__input" />
 					</div>
 				`);
 			} else if (itemValue !== 'iduser') {
 				tableContent.find(`.table__row:nth-child(${countRows})`).append(`
-					<div class="table__cell table__cell--body table__cell--${itemValue}">
+					<div class="table__cell table__cell--body table__cell--${itemValue}" data-name="${itemValue}" data-value="${statusValue}">
 						<span class="table__text table__text--body">
 							${statusValue}
 						</span>
@@ -510,10 +511,7 @@ function changeStatusDisallowBtn(elem, classStatus, disabled, valText, typeBtn, 
 }
 
 function confirmPermission(objectItems) {
-	let allowItems = [];
-
-	$('.btn--confirm').click((e) => {
-
+	$('#submitPermis').click((e) => {
 		const typeItems = $('#tablePermiss .table__content--active').find('.table__row');
 		const checkedItems = [...typeItems].every((item) => $(item).is('[data-type]'));
 
@@ -526,7 +524,7 @@ function confirmPermission(objectItems) {
 				if (typePerson === 'allow') return item;
 			});
 			const classBtns = ['#allowAll', '#disallowAll'];
-			const returnUsers = allowItems.reduce((acc, elem, i) => {
+			const returnUsers = allowItems.reduce((acc, elem) => {
 				const idObj = $(elem).data('id');
 
 				objectItems.forEach((obj) => {
@@ -557,8 +555,6 @@ function confirmPermission(objectItems) {
 		} else {
 			$('.info__warn').show();
 		}
-
-		return allowItems;
 	});
 }
 
@@ -602,7 +598,7 @@ function returnToNextTab(item) {
 
 //Показывать данные в таблицах о пользователях
 function showDataInTable() {
-	const nameTables = ['const', 'qr', 'permis', 'add', 'remove', 'edit'];
+	const nameTables = ['const', 'qr', 'permis', 'add', 'remove', 'edit', 'request'];
 
 	nameTables.forEach((item) => {
 		if (!$(`.table--${item} .table__body .table__content`).length) {
@@ -740,15 +736,21 @@ function addNewUserInTable() {
 
 			return array;
 		}, []);
+		let countId = 1; //delete
+
 
 		addFields.forEach((elem) => {
 			for (const itemField in object) {
 				for (const key in elem) {
+					// console.warn(key);
 					if (itemField == key) {
 						object[itemField] = elem[key];
 					}
 				}
 			}
+
+			object.IDUser = countId;
+			countId++;
 		});
 
 
@@ -778,4 +780,62 @@ function addUsersInTable(tableID, nameTable, user) {
 
 	$(`.table--${nameTable} .table__body`).removeClass('table__body--empty');
 	$(`.table--${nameTable} .table__nothing`).hide();
+}
+
+function transferRemoveUserToRequest() {
+	$('#submitRemoveUser').click((e) => {
+		const dataArr = JSON.parse(stringifyJSON());
+		const depart = Object.values(dataArr).map((item) => item);
+
+		const itemUsers = $('#tableRemove .table__content--active').find('.table__row');
+		const object = {
+			FIO: '',
+			Department: '',
+			FieldGroup: '',
+			Badge: '',
+			CardName: '',
+			CardID: '',
+			CardValidTo: '',
+			PIN: '',
+			CardStatus: 1,
+			Security: 0,
+			Disalarm: 0,
+			VIP: 0,
+			DayNightCLM: 0,
+			AntipassbackDisabled: 0,
+			PhotoFile: '',
+			EmployeeNumber: '',
+			Post: '',
+			NameID: '',
+			StatusID: '',
+			IDUser: '',
+			TitleID: '',
+			NewFIO: '',
+			NewPost: '',
+			NewDepart: ''
+		};
+		const valueFields = [...itemUsers].map((row) => {
+			const cells = $(row).find('.table__cell');
+			const valueField = [...cells].map((cell) => {
+				const name = $(cell).data('name');
+				const value = $(cell).data('value');
+
+				return {[name]: value};
+			});
+
+			return valueField;
+		});
+
+		valueFields.flat(1).forEach((elem) => {
+			for (const itemField in object) {
+				for (const key in elem) {
+					if (itemField.toLocaleLowerCase() == key) {
+						object[itemField] = elem[key];
+					}
+				}
+			}
+		});
+
+		console.warn(object);
+	});
 }

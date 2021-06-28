@@ -83,8 +83,10 @@ main.main(data-name="remove")
 							| Не добавленно ни одного пользователя
 	
 		.info
-			p.info__warn
-				| Предупреждение! Не все поля заполнены
+			p.info__warn.info__warn--fields
+				| Предупреждение! Не все поля заполнены.
+			p.info__warn.info__warn--table
+				| Предупреждение! Ни одного пользователя не выбрано.
 	
 		.main__btns
 			button.btn#submitRemoveUser(type="button")
