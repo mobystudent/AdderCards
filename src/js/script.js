@@ -24,6 +24,7 @@ $(window).on('load', () => {
 	toggleSelect();
 	addNewUserInTable();
 	transferRemoveUserToRequest();
+	getUsersFromSelect();
 
 	convert.viewConvertCardId();
 	qrcodes.changeCountQRCodes();
@@ -617,6 +618,10 @@ function toggleSelect() {
 		$(e.currentTarget).toggleClass('select__header--active');
 	});
 
+	clickSelectItem();
+}
+
+function clickSelectItem() {
 	$('.select__item').click((e) => {
 		const title = $(e.currentTarget).find('.select__name').data('title');
 		const select = $(e.currentTarget).parents('.select').data('select');
@@ -631,6 +636,7 @@ function toggleSelect() {
 
 function setDataAttrSelectedItem(title, select, elem) {
 	const dataType = $(elem).find('.select__name').data(select);
+	let attr = '';
 
 	if (select == 'reason') {
 		if (dataType == 'changeDepart') {
@@ -654,7 +660,13 @@ function setDataAttrSelectedItem(title, select, elem) {
 		}
 	}
 
-	$(elem).parents('.select').find('.select__value').attr({'data-title': title, [`data-${select}`]: dataType});
+	if (dataType) {
+		attr = {'data-title': title, [`data-${select}`]: dataType};
+	} else {
+		attr = {'data-title': title};
+	}
+
+	$(elem).parents('.select').find('.select__value').attr(attr);
 }
 
 function addNewUserInTable() {
@@ -838,4 +850,23 @@ function transferRemoveUserToRequest() {
 
 		console.warn(object);
 	});
+}
+
+function getUsersFromSelect() {
+	const dataArr = JSON.parse(stringifyJSON());
+	const user = Object.values(dataArr).map((item) => item);
+
+	user.forEach((item) => {
+		const name = item.FIO;
+
+		$('.select[data-select="fio"]').find('.select__list').append(`
+			<li class="select__item">
+				<span class="select__name" data-title="${name}">
+					${name}
+				</span>
+			</li>
+		`);
+	});
+
+	clickSelectItem();
 }

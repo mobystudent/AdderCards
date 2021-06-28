@@ -324,10 +324,11 @@ FC94DCCA3EFE99F7
           <h1 class="main__title">Удалить пользователя</h1>
           <form class="form" action="#" method="GET">
             <div class="form__wrap">
-              <div class="form__field">
-                <label class="form__label"><span class="form__name">ФИО</span>
-                  <input class="form__input form__item" data-field="FIO" name="name" type="text" placeholder="Введите ФИО" required>
-                </label>
+              <div class="form__field"><span class="form__name">Пользователь</span>
+                <div class="form__select form__item select" data-field="FIO" data-select="fio">
+                  <header class="select__header"><span class="select__value" data-title="title">Выберите пользователя</span></header>
+                  <ul class="select__list"></ul>
+                </div>
               </div>
               <div class="form__field"><span class="form__name">Подразделение/факультет</span>
                 <div class="form__select form__item select" data-field="Department" data-type="NameID" data-select="name-id">
@@ -400,10 +401,11 @@ FC94DCCA3EFE99F7
           <h1 class="main__title">Редактировать пользователя</h1>
           <form class="form" action="#" method="GET">
             <div class="form__wrap">
-              <div class="form__field">
-                <label class="form__label"><span class="form__name">ФИО</span>
-                  <input class="form__input form__item" data-field="FIO" name="name" type="text" placeholder="Введите ФИО" required>
-                </label>
+              <div class="form__field"><span class="form__name">Пользователь</span>
+                <div class="form__select form__item select" data-field="FIO" data-select="fio">
+                  <header class="select__header"><span class="select__value" data-title="title">Выберите пользователя</span></header>
+                  <ul class="select__list"></ul>
+                </div>
               </div>
               <div class="form__field"><span class="form__name">Подразделение/факультет</span>
                 <div class="form__select form__item select" data-field="Department" data-type="NameID" data-select="name-id">
@@ -508,7 +510,7 @@ FC94DCCA3EFE99F7
       </main>
       <footer class="footer">
         <div class="container">
-          <div class="footer__wrap"><small class="footer__version">v1.6.0</small></div>
+          <div class="footer__wrap"><small class="footer__version">v1.6.1</small></div>
         </div>
       </footer>
     </div>

@@ -6,10 +6,13 @@ main.main(data-name="remove")
 		form.form(action="#" method="GET")
 			.form__wrap
 				.form__field
-					label.form__label
-						span.form__name
-							| ФИО
-						input.form__input.form__item(data-field="FIO" name="name" type="text" placeholder="Введите ФИО" required)
+					span.form__name
+						| Пользователь
+					.form__select.form__item.select(data-field="FIO" data-select="fio")
+						header.select__header
+							span.select__value(data-title="title")
+								| Выберите пользователя
+						ul.select__list
 				.form__field
 					span.form__name
 						| Подразделение/факультет
