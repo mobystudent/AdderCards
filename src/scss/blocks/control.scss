@@ -1,0 +1,16 @@
+.control {
+	grid-area: aside;
+	margin-right: 20px;
+	padding: 50px 0;
+	background: $gray;
+
+	&__item {
+		@extend %text--premedium;
+		font-weight: 300;
+		color: $spaceBlack;
+		text-align: left;
+		width: 100%;
+		padding: 15px;
+		background: $gray;
+	}
+}
