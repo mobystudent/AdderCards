@@ -15,7 +15,7 @@ $(window).on('load', () => {
 	printReport();
 	switchControl();
 	addIDinDB();
-	sortPerson();
+	sortItems();
 	permissionAdd();
 	clickAllowDisallowPermiss();
 	confirmAllAllowDisallow();
@@ -423,12 +423,13 @@ function removeAndFocusActiveBlock(containerBl, block, nameTable) {
 }
 
 // Сортировка
-function sortPerson() {
+function sortItems() {
 	$('.btn--sort').click((e) => {
-		const dataDepart = $(e.target).closest('.main').data('name');
-		const arrRows = $(`.table--${dataDepart} .table__content--active .table__row`);
+		const pageName = $(e.target).closest('.main').data('name');
+		const arrRows = $(e.target).parents('.table').find('.table__content--active .table__row');
+		const nameField = $(e.target).parent().data('name');
 		const arrNames = arrRows.map((i, item) => {
-			const namePerson = $(item).find('.table__cell--fio').text().trim();
+			const namePerson = $(item).find(`.table__cell--${nameField}`).text().trim();
 
 			return {
 				item,
@@ -436,27 +437,27 @@ function sortPerson() {
 			};
 		});
 
-		const sortItemsForNames = switchSortButton(arrNames, dataDepart);
+		const sortItemsForNames = switchSortButton(arrNames, pageName, e.target);
 
 		[...sortItemsForNames].forEach((elem) => {
-			$(`.table--${dataDepart} .table__content--active`).append(elem.item);
+			$(`.table--${pageName} .table__content--active`).append(elem.item);
 		});
 	});
 }
 
-function switchSortButton(arr, depart) {
-	if ($(`.table--${depart} .btn--sort`).data('direction')) {
+function switchSortButton(arr, tableName, item) {
+	if ($(item).data('direction')) {
 		arr.sort((a, b) => a.name > b.name ? 1 : -1);
-		$(`.table--${depart} .btn--sort`)
-		.addClass('btn--sort-up')
-		.removeClass('btn--sort-down')
-		.data('direction', false);
+		$(item)
+			.addClass('btn--sort-up')
+			.removeClass('btn--sort-down')
+			.data('direction', false);
 	} else {
 		arr.sort((a, b) => a.name < b.name ? 1 : -1);
-		$(`.table--${depart} .btn--sort`)
-		.addClass('btn--sort-down')
-		.removeClass('btn--sort-up')
-		.data('direction', true);
+		$(item)
+			.addClass('btn--sort-down')
+			.removeClass('btn--sort-up')
+			.data('direction', true);
 	}
 
 	return arr;

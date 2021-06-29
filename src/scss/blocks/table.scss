@@ -137,7 +137,8 @@
 			flex: 0 0 120px;
 		}
 
-		&--fio {
+		&--fio,
+		&--post {
 			display: flex;
 			align-items: center;
 			justify-content: space-between;

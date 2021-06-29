@@ -19,20 +19,21 @@ main.main(data-name="const")
 				header.tab.tab--const
 				.table.table--const
 					header.table__header
-						.table__cell.table__cell--header.table__cell--fio
+						.table__cell.table__cell--header.table__cell--fio(data-name='fio')
 							span.table__text.table__text--header
 								| Фамилия Имя Отчество
 							button.btn.btn--sort(type='button' data-direction='true')
-						.table__cell.table__cell--header.table__cell--post
+						.table__cell.table__cell--header.table__cell--post(data-name='post')
 							span.table__text.table__text--header
 								| Должность
-						.table__cell.table__cell--header.table__cell--cardid
+							button.btn.btn--sort(type='button' data-direction='true')
+						.table__cell.table__cell--header.table__cell--cardid(data-name='cardid')
 							span.table__text.table__text--header
 								| ID карты
-						.table__cell.table__cell--header.table__cell--cardname
+						.table__cell.table__cell--header.table__cell--cardname(data-name='cardname')
 							span.table__text.table__text--header
 								| Номер карты
-						.table__cell.table__cell--header.table__cell--statusid
+						.table__cell.table__cell--header.table__cell--statusid(data-name='statusid')
 							span.table__text.table__text--header
 								| Статус
 						.table__cell.table__cell--header.table__cell--clear
