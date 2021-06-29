@@ -383,11 +383,16 @@ function clearNumberCard() {
 }
 
 function switchControl() {
-	$('.btn--control').click((e) => {
+	$('.control').click((e) => {
 		const nameBtn = $(e.target).data('name');
 
 		$('.main').hide();
-		$(`.main[data-name='${nameBtn}']`).show();
+		$('.control__item').removeClass('control__item--active');
+
+		if (!$(e.target).hasClass('control__item--active')) {
+			$(e.target).addClass('control__item--active');
+			$(`.main[data-name='${nameBtn}']`).show();
+		}
 
 		focusFirstCell(nameBtn);
 	});

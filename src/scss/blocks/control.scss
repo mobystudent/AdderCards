@@ -11,6 +11,22 @@
 		text-align: left;
 		width: 100%;
 		padding: 15px;
+		border-bottom: 1px solid $disabledGray;
 		background: $gray;
+		transition: background .25s ease-out, color .25s ease-out;
+
+		&:hover {
+			color: $white;
+			background: $lightBlue;
+		}
+
+		&:first-child {
+			border-top: 1px solid $disabledGray;
+		}
+
+		&--active {
+			color: $white;
+			background: $lightBlue;
+		}
 	}
 }
