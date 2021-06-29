@@ -31,6 +31,7 @@ $(window).on('load', () => {
 	timeCard.addTimeCard();
 	timeCard.deleteTimeCard();
 	timeCard.clearNumberCard();
+	timeCard.submitIDinBD();
 });
 
 function getData() {
@@ -176,7 +177,7 @@ function changeTabs(depart, nameTable, modDepart) {
 		});
 
 		focusFirstCell(modDepart);
-		convert.checkValFieldsCardId(e.target);
+		// convert.checkValFieldsCardId(e.target);
 	});
 }
 
@@ -377,7 +378,7 @@ function clearNumberCard() {
 		cardsUser.find('.table__cell--cardname span').text('');
 		cardsUser.find('.table__cell--cardid input').removeAttr('readonly');
 
-		convert.checkValFieldsCardId(e.target);
+		// convert.checkValFieldsCardId(e.target);
 	});
 }
 
@@ -401,7 +402,7 @@ function focusFirstCell(nameTable) {
 // Добавление
 function addIDinDB() {
 	$('.btn--add').click((e) => {
-		returnToNextTab(e.target);
+		// returnToNextTab(e.target);
 	});
 }
 

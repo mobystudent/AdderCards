@@ -18,13 +18,13 @@ main.main(data-name="time")
 			.wrap.wrap--table
 				.table.table--time
 					header.table__header
-						.table__cell.table__cell--header.table__cell--nametitle
+						.table__cell.table__cell--header.table__cell--fio(data-name='fio')
 							span.table__text.table__text--header
 								| Название
-						.table__cell.table__cell--header.table__cell--cardid
+						.table__cell.table__cell--header.table__cell--cardid(data-name='cardid')
 							span.table__text.table__text--header
 								| ID карты
-						.table__cell.table__cell--header.table__cell--cardname
+						.table__cell.table__cell--header.table__cell--cardname(data-name='cardname')
 							span.table__text.table__text--header
 								| Номер карты
 						.table__cell.table__cell--header.table__cell--clear
@@ -48,6 +48,12 @@ main.main(data-name="time")
 							//- 			svg.icon.icon--delete
 							//- 				use.icon__item(xlink:href="#delete")
 						
+		.info
+			p.info__warn.info__warn--fields
+				| Предупреждение! Не всем картам присвоен идентификатор.
+			//- p.info__warn.info__warn--table
+			//- 	| Предупреждение! Ни одного пользователя не выбрано.
+						
 		.main__btns
-			button.btn.btn--add.btn--disable(type='button')
+			button.btn#submitTimeCard(type='button')
 				| Добавить

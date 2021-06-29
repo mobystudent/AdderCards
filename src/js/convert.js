@@ -10,14 +10,16 @@ import $ from 'jquery';
 
 function viewConvertCardId() {
 	$('.table__input').on('input', (e) => {
-		const cardIdVal = $(e.target).val();
+		const cardIdVal = $(e.target).val().trim();
 		const convertNumCard = convertCardId(cardIdVal);
 
 		$(e.target).attr('readonly', 'readonly');
-		$(e.target).parents('.table__row').data('card', true);
+		$(e.currentTarget).parent().attr('data-value', cardIdVal);
+		$(e.target).parents('.table__row').attr('data-card', true);
 		$(e.target).parents('.table__row').find('.table__cell--cardname .table__text').text(convertNumCard);
+		$(e.target).parents('.table__row').find('.table__cell--cardname').attr('data-value', convertNumCard);
 
-		checkValFieldsCardId(e.target);
+		// checkValFieldsCardId(e.target);
 		focusNext(e.target);
 	});
 }
@@ -87,17 +89,17 @@ function encryptionCardName(cardName) {
 	return encripCode;
 }
 
-function checkValFieldsCardId(item) {
-	const dataDepart = $(item).closest('.main').data('name');
-	const arrCardFields = $(`.table--${dataDepart} .table__content--active .table__input`);
-	const valueFields = [...arrCardFields].every((item) => $(item).val());
-
-	if (valueFields) {
-		$(item).parents('.main').find('.btn').removeClass('btn--disable');
-	} else {
-		$(item).parents('.main').find('.btn--add').addClass('btn--disable');
-	}
-}
+// function checkValFieldsCardId(item) {
+// 	const dataDepart = $(item).closest('.main').attr('data-name');
+// 	const arrCardFields = $(`.table--${dataDepart} .table__content--active .table__input`);
+// 	const valueFields = [...arrCardFields].every((item) => $(item).val());
+//
+// 	if (valueFields) {
+// 		$(item).parents('.main').find('.btn').removeClass('btn--disable');
+// 	} else {
+// 		$(item).parents('.main').find('.btn--add').addClass('btn--disable');
+// 	}
+// }
 
 function focusNext(item) {
 	const nextRow = $(item).parents('.table__row').next();
@@ -108,8 +110,8 @@ function focusNext(item) {
 }
 
 export default {
-	viewConvertCardId,
-	checkValFieldsCardId
+	viewConvertCardId
+	// checkValFieldsCardId
 };
 
 // }
