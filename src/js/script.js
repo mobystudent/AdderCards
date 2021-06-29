@@ -26,8 +26,11 @@ $(window).on('load', () => {
 	setUsersFromSelect();
 
 	qrcodes.changeCountQRCodes();
+
+	//time cards
 	timeCard.addTimeCard();
 	timeCard.deleteTimeCard();
+	timeCard.clearNumberCard();
 });
 
 function getData() {
@@ -53,6 +56,7 @@ function stringifyJSON() {
 function defaultDataInTables() {
 	$(`.main[data-name="const"]`).show();
 	countItems('#tableTime .table__content', 'time');
+	$('#tableTime .table__content').append(timeCard.templateTimeTable());
 }
 
 function delegationID(users) {
