@@ -1,6 +1,12 @@
 'use strict';
 
 import $ from 'jquery';
+import convert from './convert.js';
+
+$(window).on('load', () => {
+	convert.viewConvertCardId();
+	clearNumberCard();
+});
 
 function addTimeCard() {
 	$('.main__btn').click(() => {
@@ -34,6 +40,8 @@ function addTimeCard() {
 
 		countItems('#tableTime .table__content', 'time');
 		deleteTimeCard();
+		convert.viewConvertCardId();
+		clearNumberCard();
 	});
 }
 
@@ -49,6 +57,18 @@ function countItems(tableContent, modDepart) {
 	const countItemfromDep = $(tableContent).eq(0).find('.table__row').length;
 
 	$(`.main__count--${modDepart}`).text(countItemfromDep);
+}
+
+function clearNumberCard() {
+	$('.table__btn').click((e) => {
+		const cardsUser = $(e.target).parents('.table__row');
+
+		cardsUser.find('.table__cell--cardid input').val('');
+		cardsUser.find('.table__cell--cardname span').text('');
+		cardsUser.find('.table__cell--cardid input').removeAttr('readonly');
+
+		convert.checkValFieldsCardId(e.target);
+	});
 }
 
 export default {

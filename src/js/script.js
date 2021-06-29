@@ -12,7 +12,6 @@ $(window).on('load', () => {
 	getData();
 	stringifyJSON();
 	defaultDataInTables();
-	clearNumberCard();
 	printReport();
 	switchControl();
 	addIDinDB();
@@ -24,9 +23,8 @@ $(window).on('load', () => {
 	toggleSelect();
 	addNewUserInTable();
 	transferRemoveUserToRequest();
-	getUsersFromSelect();
+	setUsersFromSelect();
 
-	convert.viewConvertCardId();
 	qrcodes.changeCountQRCodes();
 	timeCard.addTimeCard();
 	timeCard.deleteTimeCard();
@@ -65,12 +63,13 @@ function delegationID(users) {
 		if (item.StatusID == 'newQR' || item.StatusID == 'changeQR') return item;
 	});
 
+	console.log(users);
 
 	if (filterArrCards) {
 		addTabs(filterArrCards, '#tableConst', 'const');
 		viewAllCountAndTitleDefault(filterArrCards, 'const');
-		changeTabs(users, '#tableConst', 'const');
-		createTable(users, '#tableConst');
+		changeTabs(filterArrCards, '#tableConst', 'const');
+		createTable(filterArrCards, '#tableConst');
 		addCountCards(filterArrCards, '#tableConst', 'const');
 		focusFirstCell('const');
 	}
@@ -78,8 +77,8 @@ function delegationID(users) {
 	if (filterArrQRs) {
 		addTabs(filterArrQRs, '#tableQR', 'qr');
 		viewAllCountAndTitleDefault(filterArrQRs, 'qr');
-		changeTabs(users, '#tableQR', 'qr');
-		createTable(users, '#tableQR');
+		changeTabs(filterArrQRs, '#tableQR', 'qr');
+		createTable(filterArrQRs, '#tableQR');
 		addCountCards(filterArrQRs, '#tableQR', 'qr');
 		focusFirstCell('qr');
 	}
@@ -549,6 +548,8 @@ function confirmPermission(objectItems) {
 
 			returnToNextTab(e.target);
 			delegationID(returnUsers);
+			convert.viewConvertCardId();
+			clearNumberCard();
 
 			$('.info__warn').hide();
 		} else {
@@ -735,10 +736,10 @@ function addNewUserInTable() {
 					}
 				}
 			}
-
-			object.IDUser = countId;
-			countId++;
 		});
+
+		object.IDUser = countId;//delete
+		countId++;//delete
 
 		switch(typeBtn) {
 			case 'add-user':
@@ -762,6 +763,14 @@ function addNewUserInTable() {
 	});
 }
 
+function addUsersInTable(tableID, nameTable, user) {
+	createTable(user, tableID, nameTable);
+	addCountCards(user, tableID, nameTable);
+
+	$(`.table--${nameTable} .table__body`).removeClass('table__body--empty');
+	$(`.table--${nameTable} .table__nothing`).hide();
+}
+
 function clearFieldsForm(array) {
 	[...array].forEach((item) => {
 		if ($(item).hasClass('select')) {
@@ -783,17 +792,13 @@ function clearFieldsForm(array) {
 			$(item).val('');
 		}
 	});
-}
 
-function addUsersInTable(tableID, nameTable, user) {
-	createTable(user, tableID, nameTable);
-	addCountCards(user, tableID, nameTable);
-
-	$(`.table--${nameTable} .table__body`).removeClass('table__body--empty');
-	$(`.table--${nameTable} .table__nothing`).hide();
+	$('.form__field--new-post, .form__field--new-fio, .form__field--depart').hide();
 }
 
 function transferRemoveUserToRequest() {
+	const userRemove = [];
+
 	$('#submitRemoveUser').click((e) => {
 		const dataArr = JSON.parse(stringifyJSON());
 		const depart = Object.values(dataArr).map((item) => item);
@@ -847,11 +852,14 @@ function transferRemoveUserToRequest() {
 			}
 		});
 
-		console.warn(object);
+		userRemove.push(object);
+		// console.warn(userRemove);
+		//
+		// addUsersInTable('#tableRequest', 'request', userRemove);
 	});
 }
 
-function getUsersFromSelect() {
+function setUsersFromSelect() {
 	const dataArr = JSON.parse(stringifyJSON());
 	const user = Object.values(dataArr).map((item) => item);
 
