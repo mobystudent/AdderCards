@@ -386,6 +386,8 @@ function switchControl() {
 	$('.control').click((e) => {
 		const nameBtn = $(e.target).data('name');
 
+		if (!nameBtn) return;
+
 		$('.main').hide();
 		$('.control__item').removeClass('control__item--active');
 
@@ -559,7 +561,7 @@ function confirmPermission(objectItems) {
 
 			returnToNextTab(e.target);
 			delegationID(returnUsers);
-			convert.viewConvertCardId();
+			// convert.viewConvertCardId();
 			clearNumberCard();
 
 			$('.info__warn').hide();

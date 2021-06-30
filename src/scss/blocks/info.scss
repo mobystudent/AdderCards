@@ -1,10 +1,17 @@
 .info {
 	margin-bottom: 40px;
 
-	&__warn {
+	&__item {
 		display: none;
 		@extend %text--premedium;
 		text-align: center;
-		color: $orange;
+
+		&--warn {
+			color: $orange;
+		}
+
+		&--error {
+			color: $darkRed;
+		}
 	}
 }

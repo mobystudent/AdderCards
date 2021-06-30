@@ -39,7 +39,7 @@ function addTimeCard() {
 		$('#tableTime .table__content').append(templateTimeTable());
 
 		countItems('#tableTime .table__content', 'time');
-		convert.viewConvertCardId();
+		// convert.viewConvertCardId();
 	});
 }
 
@@ -70,6 +70,7 @@ function clearNumberCard() {
 		}
 
 		// convert.checkValFieldsCardId(e.target);
+		convertCardIDInCardName();
 	});
 }
 
@@ -144,6 +145,48 @@ function countItems(tableContent, modDepart) {
 	const countItemfromDep = $(tableContent).eq(0).find('.table__row').length;
 
 	$(`.main__count--${modDepart}`).text(countItemfromDep);
+}
+
+function convertCardIDInCardName() {
+	$('.table__input').on('input', (e) => {
+		const cardIdVal = $(e.target).val().trim();
+		const convertNumCard = convert.convertCardId(cardIdVal);
+
+		if (!convertNumCard) {
+			$(e.target).parents('.main').find('.info__item--error').show();
+
+			return;
+		}
+
+		$(e.target).attr('readonly', 'readonly');
+		$(e.target).parent().attr('data-value', cardIdVal);
+		$(e.target).parents('.table__row').attr('data-card', true);
+		$(e.target).parents('.table__row').find('.table__cell--cardname .table__text').text(convertNumCard);
+		$(e.target).parents('.table__row').find('.table__cell--cardname').attr('data-value', convertNumCard);
+
+		checkInvalidValueCardID(e.target);
+		focusNext(e.target);
+	});
+}
+
+function checkInvalidValueCardID(item) {
+	const allItems = $('#tableTime .table__content--active .table__row');
+	const allValueItems = [...allItems].map((item) => {
+		const itemValue = $(item).find('.table__cell--cardid .table__input').val().trim();
+
+		return convert.convertCardId(itemValue);
+	});
+	const checkValueCard = [...allValueItems].every((item) => item);
+
+	if (checkValueCard) $(item).parents('.main').find('.info__item--error').hide();
+}
+
+function focusNext(item) {
+	const nextRow = $(item).parents('.table__row').next();
+
+	if (nextRow) {
+		$(nextRow).find('.table__input').focus();
+	}
 }
 
 export default {

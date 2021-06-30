@@ -8,24 +8,8 @@ import $ from 'jquery';
 // 		this.viewConvertCardId();
 // 	}
 
-function viewConvertCardId() {
-	$('.table__input').on('input', (e) => {
-		const cardIdVal = $(e.target).val().trim();
-		const convertNumCard = convertCardId(cardIdVal);
-
-		$(e.target).attr('readonly', 'readonly');
-		$(e.currentTarget).parent().attr('data-value', cardIdVal);
-		$(e.target).parents('.table__row').attr('data-card', true);
-		$(e.target).parents('.table__row').find('.table__cell--cardname .table__text').text(convertNumCard);
-		$(e.target).parents('.table__row').find('.table__cell--cardname').attr('data-value', convertNumCard);
-
-		// checkValFieldsCardId(e.target);
-		focusNext(e.target);
-	});
-}
-
 function convertCardId(cardNum) {
-	if (cardNum.includes('-') || cardNum.trim().length != 10) return;
+	if (cardNum.includes('-') || cardNum.trim().length != 10) return false;
 
 	const hexCode = parseInt(cardNum).toString(16);
 	const partOne = hexCode.slice(0, 2);
@@ -101,17 +85,9 @@ function encryptionCardName(cardName) {
 // 	}
 // }
 
-function focusNext(item) {
-	const nextRow = $(item).parents('.table__row').next();
-
-	if (nextRow) {
-		$(nextRow).find('.table__input').focus();
-	}
-}
-
 export default {
-	viewConvertCardId
-	// checkValFieldsCardId
+	// viewConvertCardId,
+	convertCardId
 };
 
 // }
