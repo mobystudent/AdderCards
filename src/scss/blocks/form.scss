@@ -26,14 +26,14 @@
 
 	&__name {
 		display: inline-block;
-		@extend %text--medium;
+		@extend %text--premedium;
 		margin-bottom: 10px;
 		color: $white;
 	}
 
 	&__input {
 		width: 100%;
-		@extend %text--premedium;
+		@extend %text--small;
 		color: $white;
 		padding: 10px 15px;
 		border: 1px solid $gray;

@@ -24,7 +24,7 @@
 
 	&__depart {
 		display: block;
-		@extend %text--prelarge;
+		@extend %text--large;
 		color: $white;
 		text-align: center;
 		margin-bottom: 20px;
@@ -75,7 +75,7 @@
 
 	&__count-text,
 	&__count {
-		@extend %text--premedium;
+		@extend %text--small;
 		color: $white;
 
 		@media print {
@@ -105,7 +105,7 @@
 	}
 
 	&__btn-text {
-		@extend %text--medium;
+		@extend %text--premedium;
 		color: $deepDarkBlue;
 	}
 }

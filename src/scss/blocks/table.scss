@@ -147,11 +147,11 @@
 		&--fio,
 		&--nametitle,
 		&--newfio {
-			flex: 0 0 400px;
+			flex: 0 0 350px;
 		}
 
 		&--post {
-			flex: 0 0 430px;
+			flex: 0 0 360px;
 		}
 
 		&--department,
@@ -210,7 +210,7 @@
 	&__text {
 		&--header {
 			display: inline-block;
-			@extend %text--medium;
+			@extend %text--premedium;
 			color: $white;
 
 			@media print {
@@ -223,7 +223,7 @@
 		&--body {
 			display: flex;
 			padding: 10px 20px;
-			@extend %text--premedium;
+			@extend %text--small;
 			color: $spaceBlack;
 			height: 40px;
 			width: 100%;
@@ -259,7 +259,7 @@
 	&__nothing {
 		display: none;
 		padding: 20px;
-		@extend %text--medium;
+		@extend %text--premedium;
 		text-align: center;
 		transform: translateY(140px);
 	}

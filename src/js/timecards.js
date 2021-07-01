@@ -48,7 +48,6 @@ function deleteTimeCard() {
 
 			const countItems = $(e.currentTarget).find('.table__row').length;
 
-			// if (countItems === 1) return;
 			blockLastCard(countItems, e.target);
 		}
 

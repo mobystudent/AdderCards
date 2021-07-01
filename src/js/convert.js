@@ -41,8 +41,6 @@ function addZeroinNum(item, numLength) {
 }
 
 function encryptionCardName(cardName) {
-	// const cardName = '009-00925';
-
 	const arrSymbols = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z'];
 	const fullCode = cardName.replace('-', '');
 	const firstPartCode = fullCode.slice(0, 4);

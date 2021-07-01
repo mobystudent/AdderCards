@@ -1,7 +1,7 @@
 .field {
 	&__textarea {
 		display: block;
-		@extend %text--uppermedium;
+		@extend %text--medium;
 		color: $white;
 		margin: 0 auto;
 		text-align: center;
