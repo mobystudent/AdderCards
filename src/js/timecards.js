@@ -39,7 +39,6 @@ function addTimeCard() {
 		$('#tableTime .table__content').append(templateTimeTable());
 
 		countItems('#tableTime .table__content', 'time');
-		// convert.viewConvertCardId();
 	});
 }
 
@@ -49,13 +48,26 @@ function deleteTimeCard() {
 
 			const countItems = $(e.currentTarget).find('.table__row').length;
 
-			if (countItems === 1) return;
-
-			$(e.target).closest('.table__row').remove();
+			// if (countItems === 1) return;
+			blockLastCard(countItems, e.target);
 		}
 
 		countItems('#tableTime .table__content', 'time');
 	});
+}
+
+function blockLastCard(countItems, item) {
+	if (countItems === 1) {
+		$('.main[data-name="time"]').find('.info__item--last').show();
+
+		setTimeout(() => {
+			$('.main[data-name="time"]').find('.info__item--last').hide();
+		}, 5000);
+
+		return false;
+	} else {
+		$(item).closest('.table__row').remove();
+	}
 }
 
 function clearNumberCard() {
@@ -69,7 +81,6 @@ function clearNumberCard() {
 			cardsUser.find('.table__cell--cardname').attr('data-cardname', '');
 		}
 
-		// convert.checkValFieldsCardId(e.target);
 		convertCardIDInCardName();
 	});
 }
