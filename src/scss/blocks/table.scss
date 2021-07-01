@@ -223,7 +223,7 @@
 		&--body {
 			display: flex;
 			padding: 10px 20px;
-			@extend %text--small;
+			@extend %text--premedium;
 			color: $spaceBlack;
 			height: 40px;
 			width: 100%;

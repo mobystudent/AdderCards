@@ -147,8 +147,21 @@ function submitIDinBD() {
 			return object;
 		});
 
+		const currentDate = getCurrentDate();
+
+		console.log(currentDate);
+
 		console.log(fillObject);
 	});
+}
+
+function getCurrentDate() {
+	const date = new Date();
+	const currentDay = date.getDate() < 10 ? `0${date.getDate()}` : date.getDate();
+	const currentMonth = date.getMonth() < 10 ? `0${date.getMonth()}` : date.getMonth();
+	const currentYear = date.getFullYear() < 10 ? `0${date.getFullYear()}` : date.getFullYear();
+
+	return `${currentDay}-${currentMonth}-${currentYear}`;
 }
 
 function countItems(tableContent, modDepart) {
