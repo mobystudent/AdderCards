@@ -39,37 +39,37 @@ const dirBuild = 'build',
 		build: {
 			html: dirBuild,
 			scss: dirBuild,
-			pug: dirSrc + '/template',
-			fonts: dirBuild + '/fonts',
-			favicon: dirBuild + '/favicon',
-			img: dirBuild + '/images',
-			js: dirBuild + '/js'
+			pug: `${dirSrc}/template`,
+			fonts: `${dirBuild}/fonts`,
+			favicon: `${dirBuild}/favicon`,
+			img: `${dirBuild}/images`,
+			js: `${dirBuild}/js`
 		},
 		src: {
-			html: dirSrc + '/template/*.html',
-			scss: dirSrc + '/scss/style.scss',
-			pug: dirSrc + '/pug/**/*.pug',
-			fonts: dirSrc + '/fonts/*.{ttf,otf}',
-			favicon: dirSrc + '/favicon/*',
-			imgBg: dirSrc + '/images/backgrounds/*',
-			imgPic: dirSrc + '/images/pictures/*',
-			js: dirSrc + '/js/script.js'
+			html: `${dirSrc}/template/*.html`,
+			scss: `${dirSrc}/scss/style.scss`,
+			pug: `${dirSrc}/pug/**/*.pug`,
+			fonts: `${dirSrc}/fonts/*.{ttf,otf}`,
+			favicon: `${dirSrc}/favicon/*`,
+			imgBg: `${dirSrc}/images/backgrounds/*`,
+			imgPic: `${dirSrc}/images/pictures/*`,
+			js: `${dirSrc}/js/script.js`
 		},
 		watch: {
-			html: dirSrc + '/template/**/*.html',
-			scss: dirSrc + '/scss/**/*.scss',
-			pug: dirSrc + '/pug/**/*.pug',
-			fonts: dirSrc + '/fonts/*',
-			favicon: dirSrc + '/favicon/*',
-			imgBg: dirSrc + '/images/backgrounds/*',
-			imgPic: dirSrc + '/images/pictures/*',
-			js: dirSrc + '/js/**/*.js'
+			html: `${dirSrc}/template/**/*.html`,
+			scss: `${dirSrc}/scss/**/*.scss`,
+			pug: `${dirSrc}/pug/**/*.pug`,
+			fonts: `${dirSrc}/fonts/*`,
+			favicon: `${dirSrc}/favicon/*`,
+			imgBg: `${dirSrc}/images/backgrounds/*`,
+			imgPic: `${dirSrc}/images/pictures/*`,
+			js: `${dirSrc}/js/**/*.js`
 		}
 	};
 
 /* clear build dir */
 function clean() {
-	return del(dirBuild + '/**');
+	return del(`${dirBuild}/**`);
 }
 
 /* conversion sass */
@@ -88,10 +88,10 @@ function gulpSass() {
 			grid: true,
 			overrideBrowserslist: ['> 0.4%, last 4 versions, firefox >= 52, edge >= 16, ie >= 11, safari >=10']
 		}))
+		.pipe(sourcemaps.write('.'))
 		.pipe(gulp.dest(path.build.scss))
 		.pipe(cleanCSS())
 		.pipe(rename('style.min.css'))
-		.pipe(sourcemaps.write('.'))
 		.pipe(gulp.dest(path.build.scss));
 }
 
@@ -192,12 +192,12 @@ function gulpJS() {
 		}, {
 			format: 'umd'
 		}))
+		.pipe(sourcemaps.write('.'))
 		.pipe(minify({
 			ext: {
 				min: '.min.js'
 			}
 		}))
-		.pipe(sourcemaps.write('.'))
 		.pipe(gulp.dest(path.build.js));
 }
 
