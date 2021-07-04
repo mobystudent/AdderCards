@@ -1,7 +1,6 @@
 'use strict';
 
 import $ from 'jquery';
-import { json } from './data.js';
 import convert from './convert.js';
 
 function templateTimeTable() {
@@ -84,17 +83,8 @@ function clearNumberCard() {
 	});
 }
 
-function stringifyJSON() {
-	const strJson = JSON.stringify(json);
-
-	return strJson;
-}
-
 function submitIDinBD() {
-	$('#submitTimeCard').click((e) => {
-		const dataArr = JSON.parse(stringifyJSON());
-		const depart = Object.values(dataArr).map((item) => item);
-
+	$('#submitTimeCard').click(() => {
 		const itemUsers = $('#tableTime .table__content--active').find('.table__row');
 		const object = {
 			FIO: '',
@@ -120,7 +110,8 @@ function submitIDinBD() {
 			TitleID: '',
 			NewFIO: '',
 			NewPost: '',
-			NewDepart: ''
+			NewDepart: '',
+			Data: ''
 		};
 		const valueFields = [...itemUsers].map((row) => {
 			const cells = $(row).find('.table__cell');
@@ -140,16 +131,14 @@ function submitIDinBD() {
 					if (itemField.toLocaleLowerCase() == key) {
 						console.log(key);
 						object[itemField] = elem[i][key];
+					} else if (itemField.toLocaleLowerCase() == 'data') {
+						object[itemField] = getCurrentDate();
 					}
 				}
 			}
 
 			return object;
 		});
-
-		const currentDate = getCurrentDate();
-
-		console.log(currentDate);
 
 		console.log(fillObject);
 	});
@@ -197,9 +186,9 @@ function checkInvalidValueCardID(item) {
 	const allValueItems = [...allItems].map((item) => {
 		const itemValue = $(item).find('.table__cell--cardid .table__input').val().trim();
 
-		return convert.convertCardId(itemValue);
+		return itemValue ? convert.convertCardId(itemValue) : '';
 	});
-	const checkValueCard = [...allValueItems].every((item) => item);
+	const checkValueCard = [...allValueItems].every((item) => item !== false);
 
 	if (checkValueCard) $(item).parents('.main').find('.info__item--error').hide();
 }
