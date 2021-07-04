@@ -150,6 +150,10 @@
 			flex: 0 0 350px;
 		}
 
+		&--code {
+			flex: 0 0 450px;
+		}
+
 		&--post {
 			flex: 0 0 360px;
 		}
@@ -188,6 +192,7 @@
 		}
 
 		&--cardname,
+		&--cardid,
 		&--statusid {
 			.table__text {
 				justify-content: center;

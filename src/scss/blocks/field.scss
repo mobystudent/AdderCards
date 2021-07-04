@@ -1,4 +1,6 @@
 .field {
+	margin-bottom: 40px;
+	
 	&__textarea {
 		display: block;
 		@extend %text--medium;
@@ -6,7 +8,7 @@
 		margin: 0 auto;
 		text-align: center;
 		padding: 20px 30px;
-		width: 750px;
+		width: 950px;
 		height: 370px;
 		overflow: auto;
 		resize: none;

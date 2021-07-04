@@ -12,11 +12,12 @@ function stringifyJSON() {
 
 function changeCountQRCodes() {
 	countQRCodes('.field__textarea');
-	generateQRCode('.field__textarea');
+	// generateQRCode('.field__textarea');
+	addQRCodesInTable('.field__textarea');
 
 	$('.field__textarea').bind('input', (e) => {
 		countQRCodes(e.target);
-		generateQRCode(e.target);
+		// generateQRCode(e.target);
 	});
 }
 
@@ -35,12 +36,77 @@ function countQRCodes(elem) {
 	$('.main__count--download').text(countQRs);
 }
 
-function generateQRCode(elem) {
-	const filterItems = arrayQRCodes(elem);
+function addQRCodesInTable(elem) {
+	$('#addQRCodes').click(() => {
+		const filterItems = arrayQRCodes(elem);
+		const parseQRItem = filterItems.map((item) =>  item.split(' '));
+		const filloutObject = parseQRItem.map((item) => {
+			const codePicture = item.find((obj) => obj.includes('N-'));
+			const idQR = item.find((obj) => obj.length === 10);
+			const nameQR = item.find((obj) => obj.length === 16);
 
-	createQRCode(filterItems);
-	assignUserQRCode(filterItems);
+			return [
+				{
+					codePicture,
+					idQR,
+					nameQR
+				}
+			];
+		});
+
+		createTable(filloutObject);
+		$('.field__textarea').val('');
+	});
 }
+
+function createTable(values) {
+	if (!$('#tableDownload').find('.table__content').length) {
+		$('#tableDownload').append(`<div class="table__content table__content--active"></div>`);
+
+		[...values].flat(1).forEach((item) => {
+			const { codePicture = '', idQR = '', nameQR = '' } = item;
+
+			$('#tableDownload .table__content').append(templateDownloadTable(codePicture, idQR, nameQR));
+
+			$(`.table--download .table__body`).removeClass('table__body--empty');
+			$(`.table--download .table__nothing`).hide();
+		})
+	}
+}
+
+function templateDownloadTable(codePicture, idQR, nameQR) {
+	return `
+		<div class="table__row table__row--time">
+			<div class="table__cell table__cell--body table__cell--code" data-name="code" data-info="true" data-value="${codePicture}">
+				<span class="table__text table__text--body">${codePicture}</span>
+			</div>
+			<div class="table__cell table__cell--body table__cell--cardid" data-name="cardid" data-info="true" data-value="${idQR}">
+				<span class="table__text table__text--body">${idQR}</span>
+			</div>
+			<div class="table__cell table__cell--body table__cell--cardname" data-name="cardname" data-info="true" data-value="${nameQR}">
+				<span class="table__text table__text--body">${nameQR}</span>
+			</div>
+			<div class="table__cell table__cell--body table__cell--delete">
+				<button class="table__btn table__btn--delete" type="button">
+					<svg class="icon icon--delete">
+						<use class="icon__item" xlink:href="#delete"></use>
+					</svg>
+				</button>
+			</div>
+		</div>
+	`;
+}
+
+// function generateQRCode(elem) {
+// 	$('#addQRCodes').click(() => {
+// 		const filterItems = arrayQRCodes(elem);
+//
+// 		console.log(filterItems);
+//
+// 		// createQRCode(filterItems);
+// 		// assignUserQRCode(filterItems);
+// 	});
+// }
 
 function createQRCode(arrCodes) {
 	const canvasArray = $('.canvas__code');
@@ -59,7 +125,7 @@ function createQRCode(arrCodes) {
 function assignUserQRCode(arrCodes) {
 	const dataArr = JSON.parse(stringifyJSON());
 	const depart = Object.values(dataArr).map((item) => item);
-	
+
 	const filterArrQRs = depart.filter((item) => {
 		if (item.StatusID == 'newQR' || item.StatusID == 'changeQR') return item;
 	});

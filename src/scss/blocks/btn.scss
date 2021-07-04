@@ -24,11 +24,6 @@
 		}
 	}
 
-	&--disable {
-		background: $gray;
-		cursor: default;
-	}
-
 	&--sort {
 		position: relative;
 		width: 30px;
@@ -107,5 +102,10 @@
 
 	&--form {
 		margin: 0 auto;
+	}
+
+	&--download,
+	&--assign {
+		margin: 0 auto 30px;
 	}
 }

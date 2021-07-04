@@ -264,9 +264,7 @@ function createTable(users, nameTable, tabName = '') {
 
 	if (tabName === 'add' || tabName === 'remove' || tabName === 'edit') {
 		if (!$(nameTable).find('.table__content').length) {
-			$(nameTable).append(`
-				<div class="table__content table__content--const"></div>
-			`);
+			$(nameTable).append(`<div class="table__content table__content--const"></div>`);
 		} else {
 			$(nameTable).find('.table__row').remove();
 		}
@@ -617,7 +615,7 @@ function returnToNextTab(item) {
 
 //Показывать данные в таблицах о пользователях
 function showDataInTable() {
-	const nameTables = ['const', 'qr', 'permis', 'add', 'remove', 'edit', 'request'];
+	const nameTables = ['const', 'qr', 'permis', 'add', 'remove', 'edit', 'request', 'download'];
 
 	nameTables.forEach((item) => {
 		if (!$(`.table--${item} .table__body .table__content`).length) {
