@@ -83,7 +83,7 @@ function clearNumberCard() {
 
 function submitIDinBD() {
 	const fillOutArr = [];
-	
+
 	$('#submitTimeCard').click(() => {
 		const itemUsers = $('#tableTime .table__content--active').find('.table__row');
 		const object = {
@@ -111,7 +111,8 @@ function submitIDinBD() {
 			NewFIO: '',
 			NewPost: '',
 			NewDepart: '',
-			Data: ''
+			Data: '',
+			CodePicture: ''
 		};
 		const valueFields = [...itemUsers].map((row) => {
 			const cells = $(row).find('.table__cell');

@@ -46,7 +46,8 @@ function submitIDinBD() {
 			NewFIO: '',
 			NewPost: '',
 			NewDepart: '',
-			Data: ''
+			Data: '',
+			CodePicture: ''
 		};
 		const valueFields = [...itemUsers].map((row) => {
 			const cells = $(row).find('.table__cell');

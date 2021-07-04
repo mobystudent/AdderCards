@@ -213,7 +213,9 @@ function createTable(users, nameTable, tabName = '') {
 			TitleID = '',
 			NewFIO = '',
 			NewPost = '',
-			NewDepart = ''
+			NewDepart = '',
+			Data = '',
+			CodePicture = ''
 		} = item;
 
 		if (!tabName) {
@@ -721,7 +723,9 @@ function addNewUserInTable() {
 			TitleID: '',
 			NewFIO: '',
 			NewPost: '',
-			NewDepart: ''
+			NewDepart: '',
+			Data: '',
+			CodePicture: ''
 		};
 		const addFields = [...fields].reduce((array, item) => {
 			const fieldName = $(item).data('field');
@@ -847,7 +851,9 @@ function transferRemoveUserToRequest() {
 			TitleID: '',
 			NewFIO: '',
 			NewPost: '',
-			NewDepart: ''
+			NewDepart: '',
+			Data: '',
+			CodePicture: ''
 		};
 		const valueFields = [...itemUsers].map((row) => {
 			const cells = $(row).find('.table__cell');

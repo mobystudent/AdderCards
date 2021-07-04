@@ -4,6 +4,11 @@ import $ from 'jquery';
 import { json } from './data.js';
 import QRCode from 'qrcode';
 
+$(window).on('load', () => {
+	addQRCodesInTable('.field__textarea');
+	assignQRCodeUsers();
+});
+
 function stringifyJSON() {
 	const strJson = JSON.stringify(json);
 
@@ -12,12 +17,9 @@ function stringifyJSON() {
 
 function changeCountQRCodes() {
 	countQRCodes('.field__textarea');
-	// generateQRCode('.field__textarea');
-	addQRCodesInTable('.field__textarea');
 
 	$('.field__textarea').bind('input', (e) => {
 		countQRCodes(e.target);
-		// generateQRCode(e.target);
 	});
 }
 
@@ -56,6 +58,7 @@ function addQRCodesInTable(elem) {
 
 		createTable(filloutObject);
 		$('.field__textarea').val('');
+		countQRCodes('.field__textarea');
 	});
 }
 
@@ -70,14 +73,14 @@ function createTable(values) {
 
 			$(`.table--download .table__body`).removeClass('table__body--empty');
 			$(`.table--download .table__nothing`).hide();
-		})
+		});
 	}
 }
 
 function templateDownloadTable(codePicture, idQR, nameQR) {
 	return `
 		<div class="table__row table__row--time">
-			<div class="table__cell table__cell--body table__cell--code" data-name="code" data-info="true" data-value="${codePicture}">
+			<div class="table__cell table__cell--body table__cell--codepicture" data-name="codepicture" data-info="true" data-value="${codePicture}">
 				<span class="table__text table__text--body">${codePicture}</span>
 			</div>
 			<div class="table__cell table__cell--body table__cell--cardid" data-name="cardid" data-info="true" data-value="${idQR}">
@@ -108,6 +111,105 @@ function templateDownloadTable(codePicture, idQR, nameQR) {
 // 	});
 // }
 
+function assignQRCodeUsers() {
+	const fillOutArr = [];
+
+	$('#submitDownloadQR').click(() => {
+		const countItemsTableQR = $('#tableQR .table__content--active .table__row').length;
+		const itemUsers = $('#tableDownload .table__content--active').find('.table__row');
+		const object = {
+			FIO: '',
+			Department: '',
+			FieldGroup: '',
+			Badge: '',
+			CardName: '',
+			CardID: '',
+			CardValidTo: '',
+			PIN: '',
+			CardStatus: 1,
+			Security: 0,
+			Disalarm: 0,
+			VIP: 0,
+			DayNightCLM: 0,
+			AntipassbackDisabled: 0,
+			PhotoFile: '',
+			EmployeeNumber: '',
+			Post: '',
+			NameID: '',
+			StatusID: '',
+			IDUser: '',
+			TitleID: '',
+			NewFIO: '',
+			NewPost: '',
+			NewDepart: '',
+			Data: '',
+			CodePicture: ''
+		};
+
+		if (countItemsTableQR) {
+			$('.info__item--users').hide();
+
+			const valueFields = [...itemUsers].map((row) => {
+				const cells = $(row).find('.table__cell');
+				const cellInfo = [...cells].filter((cell) => $(cell).attr('data-info'));
+				const valueField = cellInfo.map((cell) => {
+					const name = $(cell).attr('data-name');
+					const value = $(cell).attr('data-value');
+
+					return {[name]: value};
+				});
+
+				return valueField;
+			});
+			console.log(valueFields);
+			valueFields.forEach((elem) => {
+				const itemObject = Object.assign({}, object);
+
+				for (const itemField in itemObject) {
+					for (const item of elem) {
+						for (const key in item) {
+							if (itemField.toLocaleLowerCase() == key) {
+								itemObject[itemField] = item[key];
+							} else if (itemField.toLocaleLowerCase() == 'data') {
+								itemObject[itemField] = getCurrentDate();
+							}
+						}
+					}
+				}
+
+				fillOutArr.push(itemObject);
+			});
+
+			console.log(fillOutArr);
+			getQRAndAssignUser(fillOutArr, countItemsTableQR);
+			fillOutArr.splice(1, countItemsTableQR);
+			console.log(fillOutArr);
+		} else {
+			$('.info__item--users').show();
+		}
+
+	});
+}
+
+function getQRAndAssignUser(array, countItems) {
+	let assignQR = [];
+
+	if (array.length > countItems) {
+		assignQR = array.slice(0, countItems);
+	}
+
+	console.log(assignQR);
+}
+
+function getCurrentDate() {
+	const date = new Date();
+	const currentDay = date.getDate() < 10 ? `0${date.getDate()}` : date.getDate();
+	const currentMonth = date.getMonth() < 10 ? `0${date.getMonth()}` : date.getMonth();
+	const currentYear = date.getFullYear() < 10 ? `0${date.getFullYear()}` : date.getFullYear();
+
+	return `${currentDay}-${currentMonth}-${currentYear}`;
+}
+
 function createQRCode(arrCodes) {
 	const canvasArray = $('.canvas__code');
 
@@ -118,7 +220,7 @@ function createQRCode(arrCodes) {
 		})
 		.catch(err => {
 			console.error(err);
-		})
+		});
 	});
 }
 
