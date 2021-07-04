@@ -43,9 +43,15 @@ main.main(data-name="const")
 					.table__body#tableConst
 						p.table__nothing
 							| Новых данных нет
+							
+		.info
+			p.info__item.info__item--warn.info__item--fields
+				| Предупреждение! Не всем картам присвоен идентификатор.
+			p.info__item.info__item--error.info__item--fields
+				| Ошибка! Не правильно введен тип ID. Должно быть 10 цифр, без букв!
 	
 		.main__btns
-			button.btn.btn--add.btn--disable(type='button')
+			button.btn.btn--add#submitConstCard(type='button')
 				| Добавить
 			button.btn.btn--print#print(type='button')
 				| Распечатать отчет

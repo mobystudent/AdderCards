@@ -4,8 +4,7 @@ import $ from 'jquery';
 import { json } from './data.js';
 import { shortNameDepart } from './shortNameDepart.js';
 import timeCard from './timecards.js';
-// import Convert from './convert.js';
-import convert from './convert.js';
+import constCard from './constcards.js';
 import qrcodes from './qrcodes.js';
 
 $(window).on('load', () => {
@@ -14,7 +13,7 @@ $(window).on('load', () => {
 	defaultDataInTables();
 	printReport();
 	switchControl();
-	addIDinDB();
+	// addIDinDB();
 	sortItems();
 	permissionAdd();
 	clickAllowDisallowPermiss();
@@ -27,10 +26,14 @@ $(window).on('load', () => {
 
 	qrcodes.changeCountQRCodes();
 
+	//const cards
+	constCard.submitIDinBD();
+
 	//time cards
 	timeCard.addTimeCard();
 	timeCard.deleteTimeCard();
 	timeCard.clearNumberCard();
+	timeCard.convertCardIDInCardName();
 	timeCard.submitIDinBD();
 });
 
@@ -77,6 +80,9 @@ function delegationID(users) {
 		createTable(filterArrCards, '#tableConst');
 		addCountCards(filterArrCards, '#tableConst', 'const');
 		focusFirstCell('const');
+
+		constCard.clearNumberCard();
+		constCard.convertCardIDInCardName();
 	}
 
 	if (filterArrQRs) {
@@ -319,13 +325,13 @@ function createTable(users, nameTable, tabName = '') {
 
 			if (itemValue === 'cardid') {
 				tableContent.find(`.table__row:nth-child(${countRows})`).append(`
-					<div class="table__cell table__cell--body table__cell--${itemValue}" data-name="${itemValue}" data-value="">
+					<div class="table__cell table__cell--body table__cell--${itemValue}" data-name="${itemValue}" data-info="true" data-value="">
 						<input class="table__input" />
 					</div>
 				`);
 			} else if (itemValue !== 'iduser') {
 				tableContent.find(`.table__row:nth-child(${countRows})`).append(`
-					<div class="table__cell table__cell--body table__cell--${itemValue}" data-name="${itemValue}" data-value="${statusValue}">
+					<div class="table__cell table__cell--body table__cell--${itemValue}" data-name="${itemValue}" data-info="true" data-value="${statusValue}">
 						<span class="table__text table__text--body">
 							${statusValue}
 						</span>
@@ -363,24 +369,24 @@ function createTable(users, nameTable, tabName = '') {
 }
 
 function printReport() {
-	$('.btn--print').click((e) => {
+	$('#print').click((e) => {
 		$(e.target).closest('.main').find('.tab__item--active').data('depart');
 
 		window.print();
 	});
 }
 
-function clearNumberCard() {
-	$('.table__btn').click((e) => {
-		const cardsUser = $(e.target).parents('.table__row');
-
-		cardsUser.find('.table__cell--cardid input').val('');
-		cardsUser.find('.table__cell--cardname span').text('');
-		cardsUser.find('.table__cell--cardid input').removeAttr('readonly');
-
-		// convert.checkValFieldsCardId(e.target);
-	});
-}
+// function clearNumberCard() {
+// 	$('.table__btn').click((e) => {
+// 		const cardsUser = $(e.target).parents('.table__row');
+//
+// 		cardsUser.find('.table__cell--cardid input').val('');
+// 		cardsUser.find('.table__cell--cardname span').text('');
+// 		cardsUser.find('.table__cell--cardid input').removeAttr('readonly');
+//
+// 		// convert.checkValFieldsCardId(e.target);
+// 	});
+// }
 
 function switchControl() {
 	$('.control').click((e) => {
@@ -407,11 +413,11 @@ function focusFirstCell(nameTable) {
 }
 
 // Добавление
-function addIDinDB() {
-	$('.btn--add').click((e) => {
-		// returnToNextTab(e.target);
-	});
-}
+// function addIDinDB() {
+// 	$('#submitConstCard').click((e) => {
+// 		returnToNextTab(e.target);
+// 	});
+// }
 
 function removeAndFocusActiveBlock(containerBl, block, nameTable) {
 	let numActive;
@@ -562,7 +568,7 @@ function confirmPermission(objectItems) {
 			returnToNextTab(e.target);
 			delegationID(returnUsers);
 			// convert.viewConvertCardId();
-			clearNumberCard();
+			// clearNumberCard();
 
 			$('.info__warn').hide();
 		} else {
