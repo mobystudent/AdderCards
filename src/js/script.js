@@ -559,8 +559,10 @@ function confirmPermission(objectItems) {
 
 			classBtns.forEach((item) => {
 				const typeBtn = $(item).data('type');
+				const textBtn = $(item).data(typeBtn);
 
 				$(item).removeClass(`btn--${typeBtn}-disabled btn--${typeBtn}-cancel`).removeAttr('disabled', 'disabled');
+				$(`.table__header .btn--${typeBtn}`).text(textBtn);
 			});
 
 			returnToNextTab(e.target);
