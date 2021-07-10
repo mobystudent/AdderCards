@@ -140,7 +140,7 @@ function assignQRCodeUsers() {
 		// const object = {
 		// 	cardname: '',
 		// 	cardID: '',
-		// 	data: '',
+		// 	date: '',
 		// 	codepicture: ''
 		// };
 		// const valueFields = [...itemUsers].map((row) => {
@@ -175,8 +175,15 @@ function assignQRCodeUsers() {
 		// qrNeedsUsersCollection
 
 		[...qrCollection].forEach((elem, i) => {
+			const objectWithDate = {};
+
 			if (i < countNeedsQRUsers) {
-				qrNeedsUsersCollection.add(elem);
+				for (let key in elem) {
+					objectWithDate[key] = elem[key];
+				}
+				objectWithDate.date = getCurrentDate();
+
+				qrNeedsUsersCollection.add(objectWithDate);
 				qrCollection.delete(elem);
 			}
 		});
