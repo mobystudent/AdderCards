@@ -12,7 +12,7 @@ $(window).on('load', () => {
 	addQRCodesInTable('.field__textarea');
 	countQRCodes();
 	addQRCodeUsers();
-	addUsersInBD();
+	submitIDinBD();
 });
 
 function countQRCodes() {
@@ -193,8 +193,6 @@ function createTableFill() {
 		};
 	});
 
-	console.warn(dataToFillTable);
-
 	dataToFillTable.forEach((item, i) => {
 		$('#tableQR .table__content--active').append(`<div class="table__row" data-id="0"></div>`);
 
@@ -254,7 +252,7 @@ function createTableFill() {
 	});
 }
 
-function addUsersInBD() {
+function submitIDinBD() {
 	$('#submitConstQR').click(() => {
 		[...qrFillOutUsersCollection].forEach((user, i) => {
 			$('.canvas__grid').append(templateQRItem(user));

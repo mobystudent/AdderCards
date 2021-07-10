@@ -3,6 +3,8 @@
 import $ from 'jquery';
 import convert from './convert.js';
 
+const timeFillOutCardCollection = new Set(); // БД временных карт с присвоеными id
+
 function templateTimeTable() {
 	return `
 		<div class="table__row table__row--time">
@@ -34,7 +36,7 @@ function templateTimeTable() {
 }
 
 function addTimeCard() {
-	$('.main__btn').click(() => {
+	$('#addTimeCard').click(() => {
 		$('#tableTime .table__content').append(templateTimeTable());
 
 		countItems('#tableTime .table__content', 'time');
@@ -82,70 +84,143 @@ function clearNumberCard() {
 }
 
 function submitIDinBD() {
-	const fillOutArr = [];
-
 	$('#submitTimeCard').click(() => {
 		const itemUsers = $('#tableTime .table__content--active').find('.table__row');
-		const object = {
-			FIO: '',
-			Department: '',
-			FieldGroup: '',
-			Badge: '',
-			CardName: '',
-			CardID: '',
-			CardValidTo: '',
-			PIN: '',
-			CardStatus: 1,
-			Security: 0,
-			Disalarm: 0,
-			VIP: 0,
-			DayNightCLM: 0,
-			AntipassbackDisabled: 0,
-			PhotoFile: '',
-			EmployeeNumber: '',
-			Post: '',
-			NameID: '',
-			StatusID: '',
-			IDUser: '',
-			TitleID: '',
-			NewFIO: '',
-			NewPost: '',
-			NewDepart: '',
-			Data: '',
-			CodePicture: ''
-		};
+
 		const valueFields = [...itemUsers].map((row) => {
 			const cells = $(row).find('.table__cell');
 			const cellInfo = [...cells].filter((cell) => $(cell).attr('data-info'));
-			const valueField = cellInfo.map((cell) => {
+			const valueField = cellInfo.reduce((acc, cell) => {
 				const name = $(cell).attr('data-name');
 				const value = $(cell).attr('data-value');
 
-				return {[name]: value};
-			});
+				acc[name] = value;
+
+				return acc;
+			}, {});
+
+			timeFillOutCardCollection.add(valueField);
 
 			return valueField;
 		});
-		valueFields.forEach((elem) => {
-			const itemObject = Object.assign({}, object);
 
-			for (const itemField in itemObject) {
-				for (const item of elem) {
-					for (const key in item) {
-						if (itemField.toLocaleLowerCase() == key) {
-							itemObject[itemField] = item[key];
-						} else if (itemField.toLocaleLowerCase() == 'data') {
-							itemObject[itemField] = getCurrentDate();
-						}
-					}
-				}
+		[...valueFields].forEach((elem) => {
+			const objectWithDate = {};
+
+			for (let key in elem) {
+				objectWithDate[key] = elem[key];
 			}
-
-			fillOutArr.push(itemObject);
+			objectWithDate.date = getCurrentDate();
 		});
 
-		console.log(fillOutArr);
+		console.warn(timeFillOutCardCollection);
+		createObjectForBD();
+		timeFillOutCardCollection.clear();
 	});
+
+
+	// const fillOutArr = [];
+
+	// $('#submitTimeCard').click(() => {
+	// 	const itemUsers = $('#tableTime .table__content--active').find('.table__row');
+	// 	const object = {
+	// 		FIO: '',
+	// 		Department: '',
+	// 		FieldGroup: '',
+	// 		Badge: '',
+	// 		CardName: '',
+	// 		CardID: '',
+	// 		CardValidTo: '',
+	// 		PIN: '',
+	// 		CardStatus: 1,
+	// 		Security: 0,
+	// 		Disalarm: 0,
+	// 		VIP: 0,
+	// 		DayNightCLM: 0,
+	// 		AntipassbackDisabled: 0,
+	// 		PhotoFile: '',
+	// 		EmployeeNumber: '',
+	// 		Post: '',
+	// 		NameID: '',
+	// 		StatusID: '',
+	// 		IDUser: '',
+	// 		TitleID: '',
+	// 		NewFIO: '',
+	// 		NewPost: '',
+	// 		NewDepart: '',
+	// 		Data: '',
+	// 		CodePicture: ''
+	// 	};
+	// 	const valueFields = [...itemUsers].map((row) => {
+	// 		const cells = $(row).find('.table__cell');
+	// 		const cellInfo = [...cells].filter((cell) => $(cell).attr('data-info'));
+	// 		const valueField = cellInfo.map((cell) => {
+	// 			const name = $(cell).attr('data-name');
+	// 			const value = $(cell).attr('data-value');
+	//
+	// 			return {[name]: value};
+	// 		});
+	//
+	// 		return valueField;
+	// 	});
+	// 	valueFields.forEach((elem) => {
+	// 		const itemObject = Object.assign({}, object);
+	//
+	// 		for (const itemField in itemObject) {
+	// 			for (const item of elem) {
+	// 				for (const key in item) {
+	// 					if (itemField.toLocaleLowerCase() == key) {
+	// 						itemObject[itemField] = item[key];
+	// 					} else if (itemField.toLocaleLowerCase() == 'data') {
+	// 						itemObject[itemField] = getCurrentDate();
+	// 					}
+	// 				}
+	// 			}
+	// 		}
+	//
+	// 		fillOutArr.push(itemObject);
+	// 	});
+	//
+	// 	console.log(fillOutArr);
+	// });
+}
+
+function createObjectForBD() {
+	const object = {
+		FIO: '',
+		Department: '',
+		FieldGroup: '',
+		Badge: '',
+		CardName: '',
+		CardID: '',
+		CardValidTo: '',
+		PIN: '',
+		CardStatus: 1,
+		Security: 0,
+		Disalarm: 0,
+		VIP: 0,
+		DayNightCLM: 0,
+		AntipassbackDisabled: 0,
+		PhotoFile: '',
+		EmployeeNumber: '',
+		Post: ''
+	};
+
+	const fillOutObjectInBD = [...timeFillOutCardCollection].map((elem) => {
+		const itemObject = Object.assign({}, object);
+
+		for (const itemField in itemObject) {
+			for (const key in elem) {
+				if (itemField.toLocaleLowerCase() == key) {
+					itemObject[itemField] = elem[key];
+				}
+			}
+		}
+
+		return itemObject;
+	});
+
+	console.log(fillOutObjectInBD);
 }
 
 function getCurrentDate() {

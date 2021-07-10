@@ -9,7 +9,7 @@ import $ from 'jquery';
 // 	}
 
 function convertCardId(cardNum) {
-	if (cardNum.includes('-') || cardNum.trim().length != 10) return false;
+	if (cardNum.includes('-') || cardNum.trim().length != 10 || cardNum.search('\D')) return false;
 
 	const hexCode = parseInt(cardNum).toString(16);
 	const partOne = hexCode.slice(0, 2);
@@ -71,20 +71,7 @@ function encryptionCardName(cardName) {
 	return encripCode;
 }
 
-// function checkValFieldsCardId(item) {
-// 	const dataDepart = $(item).closest('.main').attr('data-name');
-// 	const arrCardFields = $(`.table--${dataDepart} .table__content--active .table__input`);
-// 	const valueFields = [...arrCardFields].every((item) => $(item).val());
-//
-// 	if (valueFields) {
-// 		$(item).parents('.main').find('.btn').removeClass('btn--disable');
-// 	} else {
-// 		$(item).parents('.main').find('.btn--add').addClass('btn--disable');
-// 	}
-// }
-
 export default {
-	// viewConvertCardId,
 	convertCardId
 };
 

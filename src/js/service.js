@@ -9,15 +9,7 @@ $(window).on('load', () => {
 
 function printReport() {
 	$('.btn--print').click((e) => {
-		console.log('Click');
-		// $(e.target).closest('.main').find('.tab__item--active').data('depart');
-
-		const namePage = $(e.target).closest('.main').data('name');
-
-		console.log(namePage);
-
-		if (namePage == 'qr')
-			window.print();
+		window.print();
 	});
 }
 
