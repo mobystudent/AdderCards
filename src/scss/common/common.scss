@@ -7,10 +7,10 @@ body {
 
 .wrapper {
 	display: grid;
-	grid-template:  'aside header header' 40px
-					'aside main main' 1fr
+	grid-template:  'aside main main' 1fr
 					'aside footer footer' 40px
 					/ 320px 1fr 1fr;
+	height: 100%;
 	background: $deepDarkGray;
 
 	&--hidden {
