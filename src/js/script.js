@@ -6,6 +6,7 @@ import { shortNameDepart } from './shortNameDepart.js';
 import timeCard from './timecards.js';
 import constCard from './constcards.js';
 import qrcodes from './qrcodes.js';
+// import constqr from './constqr.js';
 
 $(window).on('load', () => {
 	getData();

@@ -4,13 +4,49 @@
 
 	&__grid {
 		display: grid;
-		grid-template-columns: repeat(4, 250px);
+		grid-template-columns: repeat(3, 300px);
 		justify-content: center;
-		grid-gap: 30px;
+		padding: 80px 50px 50px;
+		background: $white;
 	}
 
 	&__item {
-		width: 250px;
-		height: 250px;
+		width: 300px;
+		padding: 20px 15px;
+		border: 1px dashed $black;
+	}
+
+	&__code {
+		display: block;
+		width: 150px;
+		height: 150px;
+		margin: 0 auto 10px;
+	}
+
+	&__name {
+		display: flex;
+		flex-flow: column;
+		margin-bottom: 10px;
+
+		span,
+		p {
+			text-align: center;
+			@extend %text--small;
+			color: $black;
+		}
+	}
+
+	&__post {
+		display: block;
+		text-align: center;
+		@extend %text--small;
+		color: $black;
+		margin-bottom: 15px;
+	}
+
+	&__instruct {
+		text-align: center;
+		@extend %text--presmall;
+		color: $black;
 	}
 }

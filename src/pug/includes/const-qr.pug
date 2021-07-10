@@ -47,12 +47,12 @@ main.main(data-name="qr")
 		section.canvas
 			.canvas__grid
 				
-				- for (let i = 0; i < 14; i++)
-					article.canvas__item(class=`canvas__item--${i + 1}`)
-						img.canvas__code(src="" alt="qr code")
+				//- - for (let i = 0; i < 14; i++)
+				//- 	article.canvas__item(class=`canvas__item--${i + 1}`)
+				//- 		img.canvas__code(src="" alt="qr code")
 	
 		.main__btns
-			button.btn.btn--add(type='button')
+			button.btn.btn--add#submitConstQR(type='button')
 				| Добавить
 			button.btn.btn--print#print(type='button')
 				| Распечатать отчет

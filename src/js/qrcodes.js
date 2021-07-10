@@ -1,21 +1,18 @@
 'use strict';
 
 import $ from 'jquery';
-// import { json } from './data.js';
+import QRCode from 'qrcode';
+
 const qrCollection = new Set(); // БД сформированных qr-кодов
 const qrNeedsUsersCollection = new Set(); // БД qr-кодов которые будут присвоены пользователям в QRconst
+const qrFillOutUsersCollection = new Set(); // БД пользователей с присвоеными qr-кодами
 
 $(window).on('load', () => {
 
 	addQRCodesInTable('.field__textarea');
 	addQRCodeUsers();
+	addUsersInBD();
 });
-
-// function stringifyJSON() {
-// 	const strJson = JSON.stringify(json);
-//
-// 	return strJson;
-// }
 
 function changeCountQRCodes() {
 	countQRCodes('.field__textarea');
@@ -108,18 +105,6 @@ function templateDownloadTable(codepicture, cardid, cardname) {
 	`;
 }
 
-// function generateQRCode(elem) {
-// 	$('#addQRCodes').click(() => {
-// 		const filterItems = arrayQRCodes(elem);
-//
-// 		console.log(filterItems);
-//
-// 		// createQRCode(filterItems);
-// 		// assignUserQRCode(filterItems);
-// 	});
-// }
-
-
 // Получить кол-во нуждающихся пользователей из таблицы QR
 function validationCountQRUsers() {
 	const countItemsTableQR = $('#tableQR .table__content--active .table__row').length;
@@ -150,9 +135,6 @@ function addQRCodeUsers() {
 			}
 		});
 
-		console.error(qrCollection);
-		console.warn(qrNeedsUsersCollection);
-
 		createTable();
 		assignQRCodeUsers();
 	});
@@ -166,47 +148,6 @@ function getCurrentDate() {
 
 	return `${currentDay}-${currentMonth}-${currentYear}`;
 }
-
-// function createQRCode(arrCodes) {
-// 	const canvasArray = $('.canvas__code');
-//
-// 	[...canvasArray].forEach((item, i) => {
-// 		QRCode.toDataURL(arrCodes[i])
-// 		.then(url => {
-// 			$(item).attr('src', url);
-// 		})
-// 		.catch(err => {
-// 			console.error(err);
-// 		});
-// 	});
-// }
-
-// function assignUserQRCode(arrCodes) {
-// 	const dataArr = JSON.parse(stringifyJSON());
-// 	const depart = Object.values(dataArr).map((item) => item);
-//
-// 	const filterArrQRs = depart.filter((item) => {
-// 		if (item.StatusID == 'newQR' || item.StatusID == 'changeQR') return item;
-// 	});
-// 	const countUserHasCode = filterArrQRs.length;
-// 	const fieldsQRCodes = $('.table--qr .table__cell--cardid input');
-//
-// 	filterArrQRs.forEach((item, i) => {
-// 		item.CardID = arrCodes[i];
-// 		$(fieldsQRCodes[i]).val(arrCodes[i])
-// 	});
-//
-// 	remoteAddedCodes(countUserHasCode);
-// }
-
-// function remoteAddedCodes(count) {
-// 	const filterItems = arrayQRCodes('.field__textarea');
-// 	filterItems.splice(0, count);
-// 	const joinnewArrCodes = filterItems.join('\n');
-//
-// 	$('.field__textarea').val(joinnewArrCodes);
-// 	countQRCodes('.field__textarea');
-// }
 
 function assignQRCodeUsers() {
 	const itemUsers = $('#tableQR .table__content--active').find('.table__row');
@@ -225,7 +166,8 @@ function assignQRCodeUsers() {
 		return valueField;
 	});
 	const qrCodesArray = Array.from(qrNeedsUsersCollection);
-	const fillOutUsersData = valueFields.map((elem, i) => {
+
+	valueFields.forEach((elem, i) => {
 		for (const keyItem in elem) {
 			for (const key in qrCodesArray[i]) {
 				if (keyItem == key) {
@@ -236,8 +178,118 @@ function assignQRCodeUsers() {
 			}
 		}
 
-		return elem;
+		qrFillOutUsersCollection.add(elem);
 	});
+
+	createTableFill();
+}
+
+function createTableFill() {
+	$('#tableQR .table__content--active').html('');
+
+	[...qrFillOutUsersCollection].forEach((item, i) => {
+		$('#tableQR .table__content--active').append(`<div class="table__row" data-id="0"></div>`);
+
+		for (let itemValue in item) {
+			let statusValue;
+			itemValue = itemValue.toLocaleLowerCase();
+
+			if (itemValue == 'StatusID') {
+				switch(item[itemValue]) {
+					case 'newCard':
+						statusValue = 'Новая карта';
+						break;
+					case 'changeCard':
+						statusValue = 'Замена карты';
+						break;
+					case 'newQR':
+						statusValue = 'Новый QR-код';
+						break;
+					case 'changeQR':
+						statusValue = 'Замена QR-кода';
+						break;
+					case 'changeFIO':
+						statusValue = 'Изменение ФИО';
+						break;
+					case 'changePost':
+						statusValue = 'Изменение должности';
+						break;
+					case 'changeDepart':
+						statusValue = 'Перевод в другое подразделение';
+						break;
+				}
+			} else {
+				statusValue = item[itemValue];
+			}
+
+		$('#tableQR').find(`.table__row:nth-child(${i + 1})`).append(`
+			<div class="table__cell table__cell--body table__cell--${itemValue}" data-name="${itemValue}" data-info="true" data-value="${statusValue}">
+				<span class="table__text table__text--body">
+					${statusValue}
+				</span>
+			</div>
+		`);
+	}
+
+		$('#tableQR').find(`.table__row:nth-child(${i + 1})`).append(`
+			<div class="table__cell table__cell--clear">
+				<button class="table__btn table__btn--clear" type="button">
+					<svg class="icon icon--clear">
+						<use class="icon__item" xlink:href="#clear"></use>
+					</svg>
+				</button>
+			</div>
+			<div class="table__cell table__cell--signature">
+				<span class="table__text table__text--body"></span>
+			</div>
+		`);
+	});
+}
+
+function addUsersInBD() {
+	$('#submitConstQR').click(() => {
+		[...qrFillOutUsersCollection].forEach((user, i) => {
+			$('.canvas__grid').append(templateQRItem(user));
+			createQRCode(user.codepicture, i);
+		});
+	});
+}
+
+function createQRCode(code, iter) {
+	QRCode.toDataURL(code)
+	.then(url => {
+		$(`.canvas__item:nth-child(${iter + 1}) .canvas__code`).attr('src', url);
+	})
+	.catch(err => {
+		console.error(err);
+	});
+}
+
+function templateQRItem(user) {
+	const { fio = '', post = '' } = user;
+	const fioArr = fio.split(' ');
+	let fullName = '';
+
+	if (fioArr.length <= 3) {
+		fullName = fioArr.reduce((acc, elem) => {
+			const templateName = `<span>${elem}</span>`;
+
+			acc += templateName;
+
+			return acc;
+		}, '');
+	} else {
+		fullName = `<p>${fio}</p>`;
+	}
+
+	return `
+		<article class="canvas__item">
+			<img class="canvas__code" src="" alt="qr code" />
+			<h3 class="canvas__name">${fullName}</h3>
+			<span class="canvas__post">${post}</span>
+			<p class="canvas__instruct">Скачайте с Google Play или App Store приложение UProx и отсканируейте через него QR-код.</p>
+		</article>
+	`;
 }
 
 export default {
