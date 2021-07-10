@@ -25,8 +25,6 @@ $(window).on('load', () => {
 	transferRemoveUserToRequest();
 	setUsersFromSelect();
 
-	qrcodes.changeCountQRCodes();
-
 	//const cards
 	constCard.submitIDinBD();
 

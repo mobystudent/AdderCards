@@ -10,15 +10,17 @@ const qrFillOutUsersCollection = new Set(); // БД пользователей �
 $(window).on('load', () => {
 
 	addQRCodesInTable('.field__textarea');
+	countQRCodes();
 	addQRCodeUsers();
 	addUsersInBD();
 });
 
-function changeCountQRCodes() {
-	countQRCodes('.field__textarea');
-
+function countQRCodes() {
 	$('.field__textarea').bind('input', (e) => {
-		countQRCodes(e.target);
+		const filterItems = arrayQRCodes(e.target);
+		const countQRs = filterItems.length;
+
+		$('.main__count--download').text(countQRs);
 	});
 }
 
@@ -28,13 +30,6 @@ function arrayQRCodes(elem) {
 	const filterItems = itemCodes.filter((item) => item ? true : false);
 
 	return filterItems;
-}
-
-function countQRCodes(elem) {
-	const filterItems = arrayQRCodes(elem);
-	const countQRs = filterItems.length;
-
-	$('.main__count--download').text(countQRs);
 }
 
 function addQRCodesInTable(elem) {
@@ -56,7 +51,8 @@ function addQRCodesInTable(elem) {
 
 		createTable();
 		$('.field__textarea').val('');
-		countQRCodes('.field__textarea');
+		$('.main__count--all-download').text(qrCollection.size);
+		$('.main__count--download').text('0');
 	});
 }
 
@@ -293,5 +289,4 @@ function templateQRItem(user) {
 }
 
 export default {
-	changeCountQRCodes
 };
