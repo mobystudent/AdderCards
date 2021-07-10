@@ -66,6 +66,8 @@ function addQRCodesInTable(elem) {
 function createTable() {
 	if (!$('#tableDownload').find('.table__content').length) {
 		$('#tableDownload').append(`<div class="table__content table__content--active"></div>`);
+	} else {
+		$('#tableDownload .table__content--active').html('');
 	}
 
 	qrCollection.forEach((item) => {
@@ -182,7 +184,6 @@ function assignQRCodeUsers() {
 		console.error(qrCollection);
 		console.warn(qrNeedsUsersCollection);
 
-		$('#tableDownload .table__content--active').html('');
 		createTable();
 	});
 }
