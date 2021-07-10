@@ -4,14 +4,17 @@
 
 	&__grid {
 		display: grid;
-		grid-template-columns: repeat(3, 300px);
+		grid-template-columns: repeat(4, 270px);
 		justify-content: center;
 		padding: 80px 50px 50px;
 		background: $white;
+
+		@media print {
+			padding: 30px 0;
+		}
 	}
 
 	&__item {
-		width: 300px;
 		padding: 20px 15px;
 		border: 1px dashed $black;
 	}

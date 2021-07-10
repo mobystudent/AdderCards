@@ -4,6 +4,10 @@
 	padding: 50px 0;
 	background: $gray;
 
+	@media print {
+		display: none;
+	}
+
 	&__item {
 		@extend %text--premedium;
 		font-weight: 300;

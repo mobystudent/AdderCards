@@ -5,10 +5,16 @@
 	border-bottom-right-radius: 10px;
 	overflow: hidden;
 
+	&--const {
+		@media print {
+			border: 1px solid $spaceBlack;
+			border-bottom: none;
+			border-radius: 0;
+		}
+	}
+
 	@media print {
-		border: 1px solid $spaceBlack;
-		border-bottom: none;
-		border-radius: 0;
+		display: none;
 	}
 
 	&__header {

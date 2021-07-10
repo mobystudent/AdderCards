@@ -13,7 +13,8 @@ body {
 	height: 100%;
 	background: $deepDarkGray;
 
-	&--hidden {
-		overflow: hidden;
+	@media print {
+		grid-template: 'main' 1fr
+						/ 1fr;
 	}
 }

@@ -72,9 +72,9 @@ export const json = {
 		"EmployeeNumber": "",
 		"Post": "Инженер 2-й категории",
 		"NameID": "CSDep",
-		"StatusID": "newCard",
+		"StatusID": "newQR",
 		"IDUser": "3",
-		"TitleID": "Пластиковая карта",
+		"TitleID": "QR-код",
 		"NewFio": "",
 		"NewPost": "",
 		"NewDepart": ""
@@ -348,9 +348,9 @@ export const json = {
 		"EmployeeNumber": "",
 		"Post": "Секретарь",
 		"NameID": "ChemDep",
-		"StatusID": "changeCard",
+		"StatusID": "newQR",
 		"IDUser": "15",
-		"TitleID": "Пластиковая карта",
+		"TitleID": "QR-код",
 		"NewFio": "",
 		"NewPost": "",
 		"NewDepart": ""

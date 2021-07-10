@@ -7,12 +7,12 @@ import timeCard from './timecards.js';
 import constCard from './constcards.js';
 import qrcodes from './qrcodes.js';
 // import constqr from './constqr.js';
+import service from './service.js';
 
 $(window).on('load', () => {
 	getData();
 	stringifyJSON();
 	defaultDataInTables();
-	printReport();
 	switchControl();
 	// addIDinDB();
 	sortItems();
@@ -364,14 +364,6 @@ function createTable(users, nameTable, tabName = '') {
 				</div>
 			`);
 		}
-	});
-}
-
-function printReport() {
-	$('#print').click((e) => {
-		$(e.target).closest('.main').find('.tab__item--active').data('depart');
-
-		window.print();
 	});
 }
 
