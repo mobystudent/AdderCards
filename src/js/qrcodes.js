@@ -8,7 +8,7 @@ const qrNeedsUsersCollection = new Set(); // БД qr-кодов которые �
 $(window).on('load', () => {
 
 	addQRCodesInTable('.field__textarea');
-	assignQRCodeUsers();
+	addQRCodeUsers();
 });
 
 // function stringifyJSON() {
@@ -51,9 +51,9 @@ function addQRCodesInTable(elem) {
 			const nameQR = item.find((obj) => obj.length === 16);
 
 			qrCollection.add({
-				codePicture,
-				idQR,
-				nameQR
+				codepicture: codePicture,
+				cardid: idQR,
+				cardname: nameQR
 			});
 		});
 
@@ -71,9 +71,9 @@ function createTable() {
 	}
 
 	qrCollection.forEach((item) => {
-		const { codePicture = '', idQR = '', nameQR = '' } = item;
+		const { codepicture = '', cardid = '', cardname = '' } = item;
 
-		$('#tableDownload .table__content').append(templateDownloadTable(codePicture, idQR, nameQR));
+		$('#tableDownload .table__content').append(templateDownloadTable(codepicture, cardid, cardname));
 
 		removeEmptyPlugTable('download');
 	});
@@ -85,17 +85,17 @@ function removeEmptyPlugTable(tableName) {
 	$(`.table--${tableName} .table__nothing`).hide();
 }
 
-function templateDownloadTable(codePicture, idQR, nameQR) {
+function templateDownloadTable(codepicture, cardid, cardname) {
 	return `
 		<div class="table__row table__row--time">
-			<div class="table__cell table__cell--body table__cell--codepicture" data-name="codepicture" data-info="true" data-value="${codePicture}">
-				<span class="table__text table__text--body">${codePicture}</span>
+			<div class="table__cell table__cell--body table__cell--codepicture" data-name="codepicture" data-info="true" data-value="${codepicture}">
+				<span class="table__text table__text--body">${codepicture}</span>
 			</div>
-			<div class="table__cell table__cell--body table__cell--cardid" data-name="cardid" data-info="true" data-value="${idQR}">
-				<span class="table__text table__text--body">${idQR}</span>
+			<div class="table__cell table__cell--body table__cell--cardid" data-name="cardid" data-info="true" data-value="${cardid}">
+				<span class="table__text table__text--body">${cardid}</span>
 			</div>
-			<div class="table__cell table__cell--body table__cell--cardname" data-name="cardname" data-info="true" data-value="${nameQR}">
-				<span class="table__text table__text--body">${nameQR}</span>
+			<div class="table__cell table__cell--body table__cell--cardname" data-name="cardname" data-info="true" data-value="${cardname}">
+				<span class="table__text table__text--body">${cardname}</span>
 			</div>
 			<div class="table__cell table__cell--body table__cell--delete">
 				<button class="table__btn table__btn--delete" type="button">
@@ -130,49 +130,11 @@ function validationCountQRUsers() {
 	return !countItemsTableQR ? false : countItemsTableQR;
 }
 
-function assignQRCodeUsers() {
+function addQRCodeUsers() {
 	$('#submitDownloadQR').click(() => {
 		const countNeedsQRUsers = validationCountQRUsers();
 
 		if (!countNeedsQRUsers) return;
-
-		// const itemUsers = $('#tableDownload .table__content--active').find('.table__row');
-		// const object = {
-		// 	cardname: '',
-		// 	cardID: '',
-		// 	date: '',
-		// 	codepicture: ''
-		// };
-		// const valueFields = [...itemUsers].map((row) => {
-		// 	const cells = $(row).find('.table__cell');
-		// 	const cellInfo = [...cells].filter((cell) => $(cell).attr('data-info'));
-		// 	const valueField = cellInfo.map((cell) => {
-		// 		const name = $(cell).attr('data-name');
-		// 		const value = $(cell).attr('data-value');
-		//
-		// 		return {[name]: value};
-		// 	});
-		//
-		// 	return valueField;
-		// });
-		// valueFields.forEach((elem) => {
-		// 	const itemObject = Object.assign({}, object);
-		//
-		// 	for (const itemField in itemObject) {
-		// 		for (const item of elem) {
-		// 			for (const key in item) {
-		// 				if (itemField == key) {
-		// 					itemObject[itemField] = item[key];
-		// 				} else if (itemField == 'data') {
-		// 					itemObject[itemField] = getCurrentDate();
-		// 				}
-		// 			}
-		// 		}
-		// 	}
-		//
-		// 	fillOutArr.push(itemObject);
-		// });
-		// qrNeedsUsersCollection
 
 		[...qrCollection].forEach((elem, i) => {
 			const objectWithDate = {};
@@ -192,6 +154,7 @@ function assignQRCodeUsers() {
 		console.warn(qrNeedsUsersCollection);
 
 		createTable();
+		assignQRCodeUsers();
 	});
 }
 
@@ -244,6 +207,38 @@ function getCurrentDate() {
 // 	$('.field__textarea').val(joinnewArrCodes);
 // 	countQRCodes('.field__textarea');
 // }
+
+function assignQRCodeUsers() {
+	const itemUsers = $('#tableQR .table__content--active').find('.table__row');
+	const valueFields = [...itemUsers].map((row) => {
+		const cells = $(row).find('.table__cell');
+		const cellInfo = [...cells].filter((cell) => $(cell).attr('data-info'));
+		const valueField = cellInfo.reduce((acc, cell) => {
+			const name = $(cell).attr('data-name');
+			const value = $(cell).attr('data-value');
+
+			acc[name] = value;
+
+			return acc;
+		}, {});
+
+		return valueField;
+	});
+	const qrCodesArray = Array.from(qrNeedsUsersCollection);
+	const fillOutUsersData = valueFields.map((elem, i) => {
+		for (const keyItem in elem) {
+			for (const key in qrCodesArray[i]) {
+				if (keyItem == key) {
+					elem[keyItem] = qrCodesArray[i][key];
+				} else {
+					elem[key] = qrCodesArray[i][key];
+				}
+			}
+		}
+
+		return elem;
+	});
+}
 
 export default {
 	changeCountQRCodes
