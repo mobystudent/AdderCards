@@ -133,6 +133,7 @@ function addQRCodeUsers() {
 
 		createTable();
 		assignQRCodeUsers();
+		$('.main__count--all-download').text(qrNeedsUsersCollection.size);
 	});
 }
 
@@ -182,8 +183,19 @@ function assignQRCodeUsers() {
 
 function createTableFill() {
 	$('#tableQR .table__content--active').html('');
+	const dataToFillTable = [...qrFillOutUsersCollection].map((elem) => {
+		return {
+			fio: elem.fio,
+			post: elem.post,
+			cardid: elem.cardid,
+			cardname: elem.cardname,
+			statusid: elem.statusid
+		};
+	});
 
-	[...qrFillOutUsersCollection].forEach((item, i) => {
+	console.warn(dataToFillTable);
+
+	dataToFillTable.forEach((item, i) => {
 		$('#tableQR .table__content--active').append(`<div class="table__row" data-id="0"></div>`);
 
 		for (let itemValue in item) {
