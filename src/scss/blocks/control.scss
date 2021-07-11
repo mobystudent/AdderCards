@@ -1,4 +1,6 @@
 .control {
+	display: flex;
+	flex-flow: column;
 	grid-area: aside;
 	margin-right: 20px;
 	padding: 50px 0;
@@ -24,8 +26,13 @@
 			background: $lightBlue;
 		}
 
-		&:first-child {
+		&:first-child,
+		&:last-child {
 			border-top: 1px solid $disabledGray;
+		}
+
+		&:last-child {
+			margin-top: auto;
 		}
 
 		&--active {

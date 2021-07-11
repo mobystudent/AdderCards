@@ -36,6 +36,7 @@
         <button class="control__item" type="button" data-name="remove">Удалить пользователя</button>
         <button class="control__item" type="button" data-name="edit">Редактировать пользователя</button>
         <button class="control__item" type="button" data-name="request">Запрос на изменение</button>
+        <button class="control__item" type="button" data-name="report">Отчёт по изменения</button>
       </aside>
       <main class="main" data-name="const">
         <div class="container">
@@ -94,9 +95,9 @@
             <div class="wrap wrap--table">
               <div class="table table--time">
                 <header class="table__header">
-                  <div class="table__cell table__cell--header table__cell--fio" data-name="fio"><span class="table__text table__text--header">Название</span></div>
-                  <div class="table__cell table__cell--header table__cell--cardid" data-name="cardid"><span class="table__text table__text--header">ID карты</span></div>
-                  <div class="table__cell table__cell--header table__cell--cardname" data-name="cardname"><span class="table__text table__text--header">Номер карты</span></div>
+                  <div class="table__cell table__cell--header table__cell--fio"><span class="table__text table__text--header">Название</span></div>
+                  <div class="table__cell table__cell--header table__cell--cardid"><span class="table__text table__text--header">ID карты</span></div>
+                  <div class="table__cell table__cell--header table__cell--cardname"><span class="table__text table__text--header">Номер карты</span></div>
                   <div class="table__cell table__cell--header table__cell--clear"></div>
                   <div class="table__cell table__cell--header table__cell--delete"></div>
                 </header>
@@ -477,7 +478,7 @@
                   </div>
                   <div class="table__cell table__cell--header table__cell--post"><span class="table__text table__text--header">Должность</span></div>
                   <div class="table__cell table__cell--header table__cell--statusid"><span class="table__text table__text--header">Статус</span></div>
-                  <div class="table__cell table__cell--header table__cell--data"><span class="table__text table__text--header">Дата</span></div>
+                  <div class="table__cell table__cell--header table__cell--date"><span class="table__text table__text--header">Дата</span></div>
                   <div class="table__cell table__cell--header table__cell--clear"></div>
                 </header>
                 <div class="table__body" id="tableRequest">
@@ -494,9 +495,40 @@
           </div>
         </div>
       </main>
+      <main class="main" data-name="report">
+        <div class="container">
+          <h1 class="main__title">Отчёт по изменениям</h1>
+          <div class="wrap wrap--content wrap--content-const">
+            <div class="main__cards main__cards--main">
+              <p class="main__count-wrap main__count-wrap--main"><span class="main__count-text">Количество qr-кодов и карт:&nbsp</span><span class="main__count main__count--all-qr">0</span></p>
+            </div>
+            <div class="wrap wrap--table">
+              <header class="tab tab--report"></header>
+              <div class="table table--report">
+                <header class="table__header">
+                  <div class="table__cell table__cell--header table__cell--fio"><span class="table__text table__text--header">Фамилия Имя Отчество</span>
+                    <button class="btn btn--sort" type="button" data-direction="true"></button>
+                  </div>
+                  <div class="table__cell table__cell--header table__cell--post"><span class="table__text table__text--header">Должность</span>
+                    <button class="btn btn--sort" type="button" data-direction="true"></button>
+                  </div>
+                  <div class="table__cell table__cell--header table__cell--department"><span class="table__text table__text--header">Подразделение/факультет</span>
+                    <button class="btn btn--sort" type="button" data-direction="true"></button>
+                  </div>
+                  <div class="table__cell table__cell--header table__cell--statusid"><span class="table__text table__text--header">Статус</span></div>
+                  <div class="table__cell table__cell--header table__cell--date"><span class="table__text table__text--header">Дата</span></div>
+                </header>
+                <div class="table__body" id="tableReport">
+                  <p class="table__nothing">Новых данных нет</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </main>
       <footer class="footer">
         <div class="container">
-          <div class="footer__wrap"><small class="footer__version">v1.6.24</small></div>
+          <div class="footer__wrap"><small class="footer__version">v1.7.0</small></div>
         </div>
       </footer>
     </div>

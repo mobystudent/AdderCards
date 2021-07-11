@@ -1,0 +1,69 @@
+
+<main class="main" data-name="add">
+  <div class="container">
+    <h1 class="main__title">Добавить нового пользователя</h1>
+    <form class="form" action="#" method="GET">
+      <div class="form__wrap">
+        <div class="form__field">
+          <label class="form__label"><span class="form__name">ФИО</span>
+            <input class="form__input form__item" data-field="FIO" name="name" type="text" placeholder="Введите ФИО" required="required"/>
+          </label>
+        </div>
+        <div class="form__field"><span class="form__name">Подразделение/факультет</span>
+          <div class="form__select form__item select" data-field="Department" data-type="NameID" data-select="name-id">
+            <header class="select__header"><span class="select__value" data-title="title" data-name-id="name-id" data-placeholder="Выберите подразделение/факультет">Выберите подразделение/факультет</span></header>
+            <ul class="select__list">
+              <li class="select__item"><span class="select__name" data-title="Химический факультет" data-name-id="ChemDep">Химический факультет</span></li>
+              <li class="select__item"><span class="select__name" data-title="Химический факультет" data-name-id="ChemDep">Химический факультет</span></li>
+              <li class="select__item"><span class="select__name" data-title="Химический факультет" data-name-id="ChemDep">Химический факультет</span></li>
+              <li class="select__item"><span class="select__name" data-title="Химический факультет" data-name-id="ChemDep">Химический факультет</span></li>
+              <li class="select__item"><span class="select__name" data-title="Химический факультет" data-name-id="ChemDep">Химический факультет</span></li>
+            </ul>
+          </div>
+        </div>
+        <div class="form__field">
+          <label class="form__label"><span class="form__name">Должность</span>
+            <input class="form__input form__item" data-field="Post" name="post" type="text" placeholder="Введите должность" required="required"/>
+          </label>
+        </div>
+        <div class="form__field"><span class="form__name">Тип идентификатора</span>
+          <div class="form__select form__item select" data-field="TitleID" data-type="StatusID" data-select="type">
+            <header class="select__header"><span class="select__value" data-title="title" data-type="type" data-placeholder="Выберите тип идентификатора">Выберите тип идентификатора</span></header>
+            <ul class="select__list">
+              <li class="select__item"><span class="select__name" data-title="Пластиковая карта" data-type="newCard">Пластиковая карта</span></li>
+              <li class="select__item"><span class="select__name" data-title="QR-код" data-type="newQR">QR-код</span></li>
+            </ul>
+          </div>
+        </div>
+      </div>
+      <button class="btn btn--form" id="addUser" type="button" data-type="add-user">Добавить</button>
+    </form>
+    <div class="wrap wrap--content wrap--content-add">
+      <div class="main__cards main__cards--main">
+        <p class="main__count-wrap main__count-wrap--depart"><span class="main__count-text">Количество добавленых пользователей:&nbsp</span><span class="main__count main__count--add">0</span></p>
+      </div>
+      <div class="wrap wrap--table">
+        <header class="tab tab--add"></header>
+        <div class="table table--add">
+          <header class="table__header">
+            <div class="table__cell table__cell--header table__cell--fio"><span class="table__text table__text--header">Фамилия Имя Отчество</span>
+              <button class="btn btn--sort" type="button" data-direction="true"></button>
+            </div>
+            <div class="table__cell table__cell--header table__cell--post"><span class="table__text table__text--header">Должность</span></div>
+            <div class="table__cell table__cell--header table__cell--department"><span class="table__text table__text--header">Подразделение/факультет</span></div>
+            <div class="table__cell table__cell--header table__cell--statusid"><span class="table__text table__text--header">Тип идентификатора</span></div>
+          </header>
+          <div class="table__body" id="tableAdd">
+            <p class="table__nothing">Не добавленно ни одного пользователя</p>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="info">
+      <p class="info__warn">Предупреждение! Не все поля заполнены</p>
+    </div>
+    <div class="main__btns">
+      <button class="btn" id="submitAddUser" type="button">Подтвердить и отправить</button>
+    </div>
+  </div>
+</main>

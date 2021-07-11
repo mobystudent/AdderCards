@@ -35,13 +35,13 @@ function templateTimeTable(data) {
 
 	return `
 		<div class="table__row table__row--time" data-id="${id}">
-			<div class="table__cell table__cell--body table__cell--fio" data-name="fio" data-info="true" data-value="${fio}">
+			<div class="table__cell table__cell--body table__cell--fio">
 				<span class="table__text table__text--body">${fio}</span>
 			</div>
-			<div class="table__cell table__cell--body table__cell--cardid" data-name="cardid" data-info="true" data-value="">
+			<div class="table__cell table__cell--body table__cell--cardid">
 				${typeIDField}
 			</div>
-			<div class="table__cell table__cell--body table__cell--cardname" data-name="cardname" data-info="true" data-value="">
+			<div class="table__cell table__cell--body table__cell--cardname">
 				<span class="table__text table__text--body">${cardname}</span>
 			</div>
 			<div class="table__cell table__cell--body table__cell--clear">
@@ -266,6 +266,10 @@ function createObjectForBD() {
 	});
 
 	console.log(fillOutObjectInBD);
+}
+
+function addCardsToReport() {
+
 }
 
 function getCurrentDate() {
