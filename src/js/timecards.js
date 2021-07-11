@@ -9,6 +9,11 @@ let timeReportCollection; // БД временных карт с присвое�
 
 $(window).on('load', () => {
 	countItems('#tableTime .table__content', 'time');
+
+	addTimeCard();
+	deleteTimeCard();
+	clearNumberCard();
+	submitIDinBD();
 	convertCardIDInCardName();
 
 	timeCollection.set(1, {
@@ -175,6 +180,21 @@ function focusNext(idItem) {
 	// }
 }
 
+function validationEmptyFields() {
+	let statusFields = '';
+
+	timeCollection.forEach((elem) => {
+		for (const key in elem) {
+			const statusMess = elem[key] == '' ? 'show' : 'hide';
+			statusFields = elem[key] == '' ? false : true;
+
+			$('.main[data-name="time"]').find('.info__item--warn.info__item--fields')[statusMess]();
+		}
+	});
+
+	return statusFields;
+}
+
 function checkInvalidValueCardID(idItem) {
 	const valuesCardid = timeCollection.get(idItem).cardid;
 	const convertNumCard = convert.convertCardId(valuesCardid);
@@ -218,6 +238,9 @@ function submitIDinBD() {
 		});
 
 		createObjectForBD();
+		const noEmpty = validationEmptyFields();
+
+		if (!noEmpty) return;
 
 		timeCollection.clear();
 		timeCollection.set(1, {
@@ -226,6 +249,8 @@ function submitIDinBD() {
 			cardid: '',
 			cardname: ''
 		});
+
+		renderTable();
 	});
 }
 
@@ -266,10 +291,6 @@ function createObjectForBD() {
 	});
 
 	console.log(fillOutObjectInBD);
-}
-
-function addCardsToReport() {
-
 }
 
 function getCurrentDate() {

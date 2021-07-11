@@ -5,8 +5,14 @@ import $ from 'jquery';
 const reportCollection = new Map(); // БД отчета
 
 $(window).on('load', () => {
-
+	createReportTable();
 });
+
+function createReportTable() {
+	reportCollection.forEach((elem) => {
+		$('#tableTime .table__content').append(templateReportTable(elem));
+	});
+}
 
 function templateReportTable(data) {
 	const { id = '', fio = '', post = '', department = '', statusid = '', date = '' } = data;

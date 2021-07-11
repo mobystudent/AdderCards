@@ -52,3 +52,7 @@ function confirmAllAllowDisallow() {
 		});
 	});
 }
+
+export default {
+
+};

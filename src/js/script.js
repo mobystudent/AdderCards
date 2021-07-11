@@ -25,12 +25,6 @@ $(window).on('load', () => {
 
 	//const cards
 	constCard.submitIDinBD();
-
-	//time cards
-	timeCard.addTimeCard();
-	timeCard.deleteTimeCard();
-	timeCard.clearNumberCard();
-	timeCard.submitIDinBD();
 });
 
 function getData() {
