@@ -33,6 +33,7 @@ function submitIDinBD() {
 
 				return acc;
 			}, {});
+			valueField.department = $('.main__depart--const').data('depart');
 
 			constFillOutCardCollection.add(valueField);
 
@@ -46,12 +47,13 @@ function submitIDinBD() {
 				objectWithDate[key] = elem[key];
 			}
 			objectWithDate.date = getCurrentDate();
+			objectWithDate.department = $('.main__depart--const').data('depart');
 
 			constReportCollection.add(objectWithDate);
 		});
 
-		console.warn(constFillOutCardCollection);
-		console.warn(constReportCollection);
+		console.warn(constFillOutCardCollection); // пойдет в БД
+		console.warn(constReportCollection); // пойдет в отчет
 		createObjectForBD();
 		// constFillOutCardCollection.clear();
 	});

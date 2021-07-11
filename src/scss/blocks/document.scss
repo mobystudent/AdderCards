@@ -1,17 +1,33 @@
 .document {
+	display: none;
 	width: 100%;
 	margin-bottom: 50px;
 
+	&__depart {
+		@extend %text--prelarge;
+		text-align: center;
+		color: $spaceBlack;
+		margin-bottom: 20px;
+	}
+
+	&__count {
+		display: block;
+		width: 100%;
+		@extend %text--small;
+		text-align: center;
+		color: $spaceBlack;
+		margin-bottom: 10px;
+	}
+
 	&__grid {
-		display: none;
+		display: grid;
 		grid-template-columns: repeat(4, 270px);
+		grid-template-rows: repeat(4, auto);
 		justify-content: center;
-		padding: 80px 50px 50px;
 		background: $white;
 
 		@media print {
-			display: grid;
-			padding: 30px 0;
+			padding: 30px 0 60px;
 		}
 	}
 

@@ -29,9 +29,7 @@
 		margin-bottom: 20px;
 
 		@media print {
-			font-size: 20px;
-			line-height: 24px;
-			color: $spaceBlack;
+			display: none;
 		}
 	}
 
@@ -57,18 +55,12 @@
 	&__count-wrap {
 		text-align: center;
 
-		&--depart {
-			margin-bottom: 10px;
-
-			@media print {
-				margin-bottom: 0;
-			}
+		@media print {
+			display: none;
 		}
 
-		&--main {
-			@media print {
-				display: none;
-			}
+		&--depart {
+			margin-bottom: 10px;
 		}
 	}
 

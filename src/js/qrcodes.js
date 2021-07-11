@@ -131,6 +131,8 @@ function addQRCodeUsers() {
 			}
 		});
 
+		console.log(qrNeedsUsersCollection);
+
 		createTable();
 		assignQRCodeUsers();
 		$('.main__count--all-download').text(qrNeedsUsersCollection.size);
@@ -164,6 +166,9 @@ function assignQRCodeUsers() {
 	});
 	const qrCodesArray = Array.from(qrNeedsUsersCollection);
 
+	console.log(valueFields);
+	console.log(qrCodesArray);
+
 	valueFields.forEach((elem, i) => {
 		for (const keyItem in elem) {
 			for (const key in qrCodesArray[i]) {
@@ -177,6 +182,8 @@ function assignQRCodeUsers() {
 
 		qrFillOutUsersCollection.add(elem);
 	});
+
+	console.warn(qrFillOutUsersCollection);
 
 	createTableFill();
 }
@@ -255,9 +262,37 @@ function createTableFill() {
 
 function submitIDinBD() {
 	$('#submitConstQR').click(() => {
+		if ($('.document__list').length) return;
+
+		const nameActiveDepart = $('.main__depart--qr').text();
+		const countActiveUsers = $('.main__count--qr').text();
+		const countCodeOnList = 16;
+		let countList = 1;
+
+		$('.document').append(`
+			<div class="document__list">
+				<h2 class="document__depart">${nameActiveDepart}</h2>
+				<span class="document__count">Количество qp-кодов: ${countActiveUsers}</span>
+				<div class="document__grid"></div>
+			</div>
+		`);
+
 		[...qrFillOutUsersCollection].forEach((user, i) => {
-			$('.document__grid').append(templateQRItem(user));
+			console.log(user);
+			$(`.document__list:nth-child(${countList}) .document__grid`).append(templateQRItem(user));
 			createQRCode(user.codepicture, i);
+
+			if (!((i + 1) % countCodeOnList)) {
+				$('.document').append(`
+					<div class="document__list">
+						<h2 class="document__depart">${nameActiveDepart}</h2>
+						<span class="document__count">Количество qp-кодов: ${countActiveUsers}</span>
+						<div class="document__grid"></div>
+					</div>
+				`);
+
+				countList++;
+			}
 		});
 	});
 }
@@ -269,6 +304,8 @@ function createQRCode(code, iter) {
 	})
 	.catch(err => {
 		console.error(err);
+
+		return;
 	});
 }
 

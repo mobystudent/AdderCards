@@ -69,7 +69,6 @@ function delegationID(users) {
 	});
 
 	if (filterArrCards.length) {
-		console.log('Count');
 		addTabs(filterArrCards, '#tableConst', 'const');
 		viewAllCountAndTitleDefault(filterArrCards, 'const');
 		changeTabs(filterArrCards, '#tableConst', 'const');
@@ -82,7 +81,6 @@ function delegationID(users) {
 	}
 
 	if (filterArrQRs.length) {
-		console.log('Count 2');
 		addTabs(filterArrQRs, '#tableQR', 'qr');
 		viewAllCountAndTitleDefault(filterArrQRs, 'qr');
 		changeTabs(filterArrQRs, '#tableQR', 'qr');
@@ -154,7 +152,7 @@ function viewAllCountAndTitleDefault(filterIDItems, modDepart) {
 
 	$(`.main__count--all-${modDepart}`).text(filterIDItems.length);
 
-	console.log(filterIDItems);
+	// console.log(filterIDItems);
 
 	filterIDItems.forEach((item) => {
 		// if (activeTabDepart && item.NameID == activeTabDepart) {
@@ -430,7 +428,7 @@ function confirmPermission(objectItems) {
 
 				$(item).remove();
 
-				console.warn(item);
+				// console.warn(item);
 
 				if (typePerson === 'allow') return item;
 			});
@@ -444,7 +442,7 @@ function confirmPermission(objectItems) {
 				return acc;
 			}, []);
 			// permissionCollection
-			console.log(returnUsers);
+			// console.log(returnUsers);
 			const nameTable = returnUsers.map((item) => {
 				return getTableID(item.StatusID);
 			});
