@@ -3,6 +3,9 @@
 import $ from 'jquery';
 import convert from './convert.js';
 
+const constFillOutCardCollection = new Set(); // БД постоянных карт с присвоеными id
+const constReportCollection = new Set(); // БД постоянных карт с присвоеными id для отчета
+
 function clearNumberCard() {
 	$('.table__content').click((e) => {
 		if ($(e.target).parents('.table__btn--clear').length || $(e.target).hasClass('table__btn--clear')) {
@@ -17,70 +20,79 @@ function clearNumberCard() {
 }
 
 function submitIDinBD() {
-	const fillOutArr = [];
-
 	$('#submitConstCard').click(() => {
 		const itemUsers = $('#tableConst .table__content--active').find('.table__row');
-		const object = {
-			FIO: '',
-			Department: '',
-			FieldGroup: '',
-			Badge: '',
-			CardName: '',
-			CardID: '',
-			CardValidTo: '',
-			PIN: '',
-			CardStatus: 1,
-			Security: 0,
-			Disalarm: 0,
-			VIP: 0,
-			DayNightCLM: 0,
-			AntipassbackDisabled: 0,
-			PhotoFile: '',
-			EmployeeNumber: '',
-			Post: '',
-			NameID: '',
-			StatusID: '',
-			IDUser: '',
-			TitleID: '',
-			NewFIO: '',
-			NewPost: '',
-			NewDepart: '',
-			Data: '',
-			CodePicture: ''
-		};
+
 		const valueFields = [...itemUsers].map((row) => {
 			const cells = $(row).find('.table__cell');
 			const cellInfo = [...cells].filter((cell) => $(cell).attr('data-info'));
-			const valueField = cellInfo.map((cell) => {
+			const valueField = cellInfo.reduce((acc, cell) => {
 				const name = $(cell).attr('data-name');
 				const value = $(cell).attr('data-value');
 
-				return {[name]: value};
-			});
+				acc[name] = value;
+
+				return acc;
+			}, {});
+
+			constFillOutCardCollection.add(valueField);
 
 			return valueField;
 		});
-		valueFields.forEach((elem) => {
-			const itemObject = Object.assign({}, object);
 
-			for (const itemField in itemObject) {
-				for (const item of elem) {
-					for (const key in item) {
-						if (itemField.toLocaleLowerCase() == key) {
-							itemObject[itemField] = item[key];
-						} else if (itemField.toLocaleLowerCase() == 'data') {
-							itemObject[itemField] = getCurrentDate();
-						}
-					}
-				}
+		[...valueFields].forEach((elem) => {
+			const objectWithDate = {};
+
+			for (let key in elem) {
+				objectWithDate[key] = elem[key];
 			}
+			objectWithDate.date = getCurrentDate();
 
-			fillOutArr.push(itemObject);
+			constReportCollection.add(objectWithDate);
 		});
 
-		console.log(fillOutArr);
+		console.warn(constFillOutCardCollection);
+		console.warn(constReportCollection);
+		createObjectForBD();
+		// constFillOutCardCollection.clear();
 	});
+}
+
+function createObjectForBD() {
+	const object = {
+		FIO: '',
+		Department: '',
+		FieldGroup: '',
+		Badge: '',
+		CardName: '',
+		CardID: '',
+		CardValidTo: '',
+		PIN: '',
+		CardStatus: 1,
+		Security: 0,
+		Disalarm: 0,
+		VIP: 0,
+		DayNightCLM: 0,
+		AntipassbackDisabled: 0,
+		PhotoFile: '',
+		EmployeeNumber: '',
+		Post: ''
+	};
+	const fillOutObjectInBD = [...constFillOutCardCollection].map((elem) => {
+		const itemObject = Object.assign({}, object);
+
+		for (const itemField in itemObject) {
+			for (const key in elem) {
+				if (itemField.toLocaleLowerCase() == key) {
+					itemObject[itemField] = elem[key];
+				}
+			}
+		}
+
+		return itemObject;
+	});
+
+	console.log(fillOutObjectInBD);
 }
 
 function getCurrentDate() {

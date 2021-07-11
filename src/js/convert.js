@@ -9,7 +9,7 @@ import $ from 'jquery';
 // 	}
 
 function convertCardId(cardNum) {
-	if (cardNum.includes('-') || cardNum.trim().length != 10 || cardNum.search('\D')) return false;
+	if (cardNum.includes('-') || cardNum.trim().length != 10 || isNaN(cardNum)) return false;
 
 	const hexCode = parseInt(cardNum).toString(16);
 	const partOne = hexCode.slice(0, 2);

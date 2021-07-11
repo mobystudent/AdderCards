@@ -6,6 +6,7 @@ import { shortNameDepart } from './shortNameDepart.js';
 import timeCard from './timecards.js';
 import constCard from './constcards.js';
 import qrcodes from './qrcodes.js';
+import permission from './permission.js';
 // import constqr from './constqr.js';
 import service from './service.js';
 
@@ -13,17 +14,9 @@ $(window).on('load', () => {
 	getData();
 	stringifyJSON();
 	defaultDataInTables();
-	switchControl();
 	// addIDinDB();
-	sortItems();
 	permissionAdd();
-	clickAllowDisallowPermiss();
-	confirmAllAllowDisallow();
-	showDataInTable();
-	toggleSelect();
 	addNewUserInTable();
-	transferRemoveUserToRequest();
-	setUsersFromSelect();
 
 	//const cards
 	constCard.submitIDinBD();
@@ -70,7 +63,7 @@ function delegationID(users) {
 		if (item.StatusID == 'newQR' || item.StatusID == 'changeQR') return item;
 	});
 
-	console.log(users);
+	// console.log(users);
 
 	if (filterArrCards) {
 		addTabs(filterArrCards, '#tableConst', 'const');
@@ -367,36 +360,6 @@ function createTable(users, nameTable, tabName = '') {
 	});
 }
 
-// function clearNumberCard() {
-// 	$('.table__btn').click((e) => {
-// 		const cardsUser = $(e.target).parents('.table__row');
-//
-// 		cardsUser.find('.table__cell--cardid input').val('');
-// 		cardsUser.find('.table__cell--cardname span').text('');
-// 		cardsUser.find('.table__cell--cardid input').removeAttr('readonly');
-//
-// 		// convert.checkValFieldsCardId(e.target);
-// 	});
-// }
-
-function switchControl() {
-	$('.control').click((e) => {
-		const nameBtn = $(e.target).data('name');
-
-		if (!nameBtn) return;
-
-		$('.main').hide();
-		$('.control__item').removeClass('control__item--active');
-
-		if (!$(e.target).hasClass('control__item--active')) {
-			$(e.target).addClass('control__item--active');
-			$(`.main[data-name='${nameBtn}']`).show();
-		}
-
-		focusFirstCell(nameBtn);
-	});
-}
-
 function focusFirstCell(nameTable) {
 	const rows = $(`.table--${nameTable} .table__content--active`).find('.table__row');
 
@@ -431,47 +394,6 @@ function removeAndFocusActiveBlock(containerBl, block, nameTable) {
 	focusFirstCell(nameTable);
 }
 
-// Сортировка
-function sortItems() {
-	$('.btn--sort').click((e) => {
-		const pageName = $(e.target).closest('.main').data('name');
-		const arrRows = $(e.target).parents('.table').find('.table__content--active .table__row');
-		const nameField = $(e.target).parent().data('name');
-		const arrNames = arrRows.map((i, item) => {
-			const namePerson = $(item).find(`.table__cell--${nameField}`).text().trim();
-
-			return {
-				item,
-				name: namePerson
-			};
-		});
-
-		const sortItemsForNames = switchSortButton(arrNames, pageName, e.target);
-
-		[...sortItemsForNames].forEach((elem) => {
-			$(`.table--${pageName} .table__content--active`).append(elem.item);
-		});
-	});
-}
-
-function switchSortButton(arr, tableName, item) {
-	if ($(item).data('direction')) {
-		arr.sort((a, b) => a.name > b.name ? 1 : -1);
-		$(item)
-			.addClass('btn--sort-up')
-			.removeClass('btn--sort-down')
-			.data('direction', false);
-	} else {
-		arr.sort((a, b) => a.name < b.name ? 1 : -1);
-		$(item)
-			.addClass('btn--sort-down')
-			.removeClass('btn--sort-up')
-			.data('direction', true);
-	}
-
-	return arr;
-}
-
 // Вкладка разрешение на добавление
 function permissionAdd() {
 	const dataArr = JSON.parse(stringifyJSON());
@@ -485,37 +407,6 @@ function permissionAdd() {
 	focusFirstCell('permis');
 
 	confirmPermission(depart);
-}
-
-function clickAllowDisallowPermiss() {
-	$('.btn--disallow, .btn--allow').click((e) => {
-		const typeBtn = $(e.target).data('type');
-		const diffBtn = typeBtn === 'disallow' ? 'allow' : 'disallow';
-
-		$(e.target).parents('.table__row').toggleClass('table__row--disabled');
-		$(e.target).siblings(`.btn--${diffBtn}`).toggleClass(`btn--${diffBtn}-disabled`);
-
-		if ($(e.target).hasClass(`btn--${typeBtn}-cancel`)) {
-			changeStatusDisallowBtn(e.target, 'removeClass', false, typeBtn, typeBtn, diffBtn);
-		} else {
-			changeStatusDisallowBtn(e.target, 'addClass', true, 'cancel', typeBtn, diffBtn);
-		}
-	});
-}
-
-function changeStatusDisallowBtn(elem, classStatus, disabled, valText, typeBtn, diffBtn) {
-	$(elem).siblings(`.btn--${diffBtn}`).attr('disabled', disabled);
-	$(elem).parents('.table__row');
-	$(elem)[classStatus](`btn--${typeBtn}-cancel`);
-
-	if (valText === 'cancel') {
-		$(elem).parents('.table__row').attr('data-type', typeBtn);
-	} else {
-		$(elem).parents('.table__row').removeAttr('data-type');
-	}
-
-	const textBtn = $(elem).data(valText);
-	$(elem).text(textBtn);
 }
 
 function confirmPermission(objectItems) {
@@ -561,7 +452,6 @@ function confirmPermission(objectItems) {
 			returnToNextTab(e.target);
 			delegationID(returnUsers);
 			// convert.viewConvertCardId();
-			// clearNumberCard();
 
 			$('.info__warn').hide();
 		} else {
@@ -578,21 +468,6 @@ function getTableID(name) {
 	}
 }
 
-function confirmAllAllowDisallow() {
-	$('#allowAll, #disallowAll').click((e) => {
-		const typeBtn = $(e.target).data('type');
-		const typeAttrItemsBtn = $(e.target).hasClass(`btn--${typeBtn}-cancel`) ? 'disabled'  : false;
-		const dataTypeItem = $(e.target).hasClass(`btn--${typeBtn}-cancel`) ? 'attr' : 'removeAttr';
-		const classBtns = ['allow', 'disallow'];
-
-		$('.table--permis .table__content--active .table__row').toggleClass('table__row--disabled')[dataTypeItem]('data-type', typeBtn);
-
-		classBtns.forEach((item) => {
-			$(`.table--permis .table__content--active .table__row .btn--${item}`).toggleClass(`btn--${item}-disabled`).attr('disabled', typeAttrItemsBtn);
-		});
-	});
-}
-
 function returnToNextTab(item) {
 	const dataDepart = $(item).closest('.main').data('name');
 	const countTabs = $(`.tab--${dataDepart} .tab__item`);
@@ -606,78 +481,6 @@ function returnToNextTab(item) {
 		$(`.table--${dataDepart} .table__content--active`).remove();
 		$(`.table--${dataDepart} .table__nothing`).show();
 	}
-}
-
-//Показывать данные в таблицах о пользователях
-function showDataInTable() {
-	const nameTables = ['const', 'qr', 'permis', 'add', 'remove', 'edit', 'request', 'download'];
-
-	nameTables.forEach((item) => {
-		if (!$(`.table--${item} .table__body .table__content`).length) {
-			$(`.table--${item} .table__body`).addClass('table__body--empty');
-			$(`.table--${item} .table__nothing`).show();
-		} else {
-			$(`.table--${item} .table__body`).removeClass('table__body--empty');
-			$(`.table--${item} .table__nothing`).hide();
-		}
-	});
-}
-
-function toggleSelect() {
-	$('.select__header').click((e) => {
-		$(e.currentTarget).next().slideToggle();
-		$(e.currentTarget).toggleClass('select__header--active');
-	});
-
-	clickSelectItem();
-}
-
-function clickSelectItem() {
-	$('.select__item').click((e) => {
-		const title = $(e.currentTarget).find('.select__name').data('title');
-		const select = $(e.currentTarget).parents('.select').data('select');
-
-		$(e.currentTarget).parents('.select').find('.select__value').addClass('select__value--selected').text(title);
-		$(e.currentTarget).parent().slideUp();
-		$(e.currentTarget).parents('.select').find('.select__header').removeClass('select__header--active');
-
-		setDataAttrSelectedItem(title, select, e.currentTarget);
-	});
-}
-
-function setDataAttrSelectedItem(title, select, elem) {
-	const dataType = $(elem).find('.select__name').data(select);
-	let attr = '';
-
-	if (select == 'reason') {
-		if (dataType == 'changeDepart') {
-			$('.form__field--depart').show();
-
-			$(elem).parents('.main').find('.wrap--content').addClass('wrap--content-remove-transfer').removeClass('wrap--content-remove-item');
-		} else {
-			$('.form__field--depart').hide();
-
-			$(elem).parents('.main').find('.wrap--content').addClass('wrap--content-remove-item').removeClass('wrap--content-remove-transfer');
-		}
-	} else if (select == 'change') {
-		if (dataType == 'changeFIO') {
-			$('.form__field--new-post').hide();
-			$('.form__field--new-fio').show();
-		} else if (dataType == 'changePost') {
-			$('.form__field--new-fio').hide();
-			$('.form__field--new-post').show();
-		} else {
-			$('.form__field--new-fio, .form__field--new-post').hide();
-		}
-	}
-
-	if (dataType) {
-		attr = {'title': title, [`${select}`]: dataType};
-	} else {
-		attr = {'title': title};
-	}
-
-	$(elem).parents('.select').find('.select__value--selected').data(attr);
 }
 
 function addNewUserInTable() {
@@ -808,88 +611,4 @@ function clearFieldsForm(array) {
 	});
 
 	$('.form__field--new-post, .form__field--new-fio, .form__field--depart').hide();
-}
-
-function transferRemoveUserToRequest() {
-	const userRemove = [];
-
-	$('#submitRemoveUser').click((e) => {
-		const dataArr = JSON.parse(stringifyJSON());
-		const depart = Object.values(dataArr).map((item) => item);
-
-		const itemUsers = $('#tableRemove .table__content--active').find('.table__row');
-		const object = {
-			FIO: '',
-			Department: '',
-			FieldGroup: '',
-			Badge: '',
-			CardName: '',
-			CardID: '',
-			CardValidTo: '',
-			PIN: '',
-			CardStatus: 1,
-			Security: 0,
-			Disalarm: 0,
-			VIP: 0,
-			DayNightCLM: 0,
-			AntipassbackDisabled: 0,
-			PhotoFile: '',
-			EmployeeNumber: '',
-			Post: '',
-			NameID: '',
-			StatusID: '',
-			IDUser: '',
-			TitleID: '',
-			NewFIO: '',
-			NewPost: '',
-			NewDepart: '',
-			Data: '',
-			CodePicture: ''
-		};
-		const valueFields = [...itemUsers].map((row) => {
-			const cells = $(row).find('.table__cell');
-			const valueField = [...cells].map((cell) => {
-				const name = $(cell).data('name');
-				const value = $(cell).data('value');
-
-				return {[name]: value};
-			});
-
-			return valueField;
-		});
-
-		valueFields.flat(1).forEach((elem) => {
-			for (const itemField in object) {
-				for (const key in elem) {
-					if (itemField.toLocaleLowerCase() == key) {
-						object[itemField] = elem[key];
-					}
-				}
-			}
-		});
-
-		userRemove.push(object);
-		// console.warn(userRemove);
-		//
-		// addUsersInTable('#tableRequest', 'request', userRemove);
-	});
-}
-
-function setUsersFromSelect() {
-	const dataArr = JSON.parse(stringifyJSON());
-	const user = Object.values(dataArr).map((item) => item);
-
-	user.forEach((item) => {
-		const name = item.FIO;
-
-		$('.select[data-select="fio"]').find('.select__list').append(`
-			<li class="select__item">
-				<span class="select__name" data-title="${name}">
-					${name}
-				</span>
-			</li>
-		`);
-	});
-
-	clickSelectItem();
 }

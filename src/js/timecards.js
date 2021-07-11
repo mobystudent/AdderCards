@@ -4,6 +4,7 @@ import $ from 'jquery';
 import convert from './convert.js';
 
 const timeFillOutCardCollection = new Set(); // БД временных карт с присвоеными id
+const timeReportCollection = new Set(); // БД временных карт с присвоеными id для отчета
 
 function templateTimeTable() {
 	return `
@@ -111,9 +112,12 @@ function submitIDinBD() {
 				objectWithDate[key] = elem[key];
 			}
 			objectWithDate.date = getCurrentDate();
+
+			timeReportCollection.add(objectWithDate);
 		});
 
 		console.warn(timeFillOutCardCollection);
+		console.warn(timeReportCollection);
 		createObjectForBD();
 		timeFillOutCardCollection.clear();
 	});
@@ -205,7 +209,6 @@ function createObjectForBD() {
 		EmployeeNumber: '',
 		Post: ''
 	};
-
 	const fillOutObjectInBD = [...timeFillOutCardCollection].map((elem) => {
 		const itemObject = Object.assign({}, object);
 

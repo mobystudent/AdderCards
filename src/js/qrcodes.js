@@ -183,6 +183,7 @@ function assignQRCodeUsers() {
 
 function createTableFill() {
 	$('#tableQR .table__content--active').html('');
+	
 	const dataToFillTable = [...qrFillOutUsersCollection].map((elem) => {
 		return {
 			fio: elem.fio,
