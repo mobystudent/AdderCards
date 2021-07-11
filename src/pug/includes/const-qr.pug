@@ -2,7 +2,7 @@ main.main(data-name="qr")
 	.container
 		h1.main__title
 			| Добавление QR-кодов пользователям
-		span.main__depart.main__depart--qr
+		span.main__depart.main__depart--qr(data-depart="")
 		.wrap.wrap--content.wrap--content-const
 			.main__cards.main__cards--main
 				p.main__count-wrap.main__count-wrap--depart
@@ -44,12 +44,14 @@ main.main(data-name="qr")
 						p.table__nothing
 							| Новых данных нет
 
-		section.canvas
-			.canvas__grid
+		section.document
+			.document__grid
 				
-				//- - for (let i = 0; i < 14; i++)
-				//- 	article.canvas__item(class=`canvas__item--${i + 1}`)
-				//- 		img.canvas__code(src="" alt="qr code")
+		.info
+			p.info__item.info__item--warn.info__item--fields
+				| Предупреждение! Не всем картам присвоен идентификатор.
+			p.info__item.info__item--error.info__item--fields
+				| Ошибка! Не правильно введен тип ID. Должно быть 10 цифр, без букв!
 	
 		.main__btns
 			button.btn.btn--add#submitConstQR(type='button')

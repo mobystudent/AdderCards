@@ -1,7 +1,7 @@
 main.main(data-name="permis")
 	.container
 		h1.main__title
-			| Разрешение на добавление #[br] считывателей пользователям
+			| Разрешение на добавление #[br] идентификаторов пользователям
 		span.main__depart.main__depart--permis
 		.wrap.wrap--content.wrap--content-permis
 			.main__cards.main__cards--main
@@ -40,8 +40,8 @@ main.main(data-name="permis")
 							| Новых данных нет
 	
 		.info
-			p.info__warn
-				| Предупреждение! Не все пользователи отмечены
+			p.info__item.info__item--warn.info__item--fields
+				| Предупреждение! Не все пользователи отмечены.
 	
 		.main__btns
 			button.btn#submitPermis(type='button')

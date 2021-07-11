@@ -87,7 +87,6 @@ function clearNumberCard() {
 function submitIDinBD() {
 	$('#submitTimeCard').click(() => {
 		const itemUsers = $('#tableTime .table__content--active').find('.table__row');
-
 		const valueFields = [...itemUsers].map((row) => {
 			const cells = $(row).find('.table__cell');
 			const cellInfo = [...cells].filter((cell) => $(cell).attr('data-info'));
@@ -105,7 +104,7 @@ function submitIDinBD() {
 			return valueField;
 		});
 
-		[...valueFields].forEach((elem) => {
+		valueFields.forEach((elem) => {
 			const objectWithDate = {};
 
 			for (let key in elem) {

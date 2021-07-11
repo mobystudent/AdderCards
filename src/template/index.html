@@ -39,7 +39,7 @@
       </aside>
       <main class="main" data-name="const">
         <div class="container">
-          <h1 class="main__title">Добавление карт пользователям</h1><span class="main__depart main__depart--const"></span>
+          <h1 class="main__title">Добавление карт пользователям</h1><span class="main__depart main__depart--const" data-depart=""></span>
           <div class="wrap wrap--content wrap--content-const">
             <div class="main__cards main__cards--main">
               <p class="main__count-wrap main__count-wrap--depart"><span class="main__count-text">Количество карт:&nbsp</span><span class="main__count main__count--const">0</span></p>
@@ -160,7 +160,7 @@
       </main>
       <main class="main" data-name="qr">
         <div class="container">
-          <h1 class="main__title">Добавление QR-кодов пользователям</h1><span class="main__depart main__depart--qr"></span>
+          <h1 class="main__title">Добавление QR-кодов пользователям</h1><span class="main__depart main__depart--qr" data-depart=""></span>
           <div class="wrap wrap--content wrap--content-const">
             <div class="main__cards main__cards--main">
               <p class="main__count-wrap main__count-wrap--depart"><span class="main__count-text">Количество qr-кодов:&nbsp</span><span class="main__count main__count--qr">0</span></p>
@@ -188,9 +188,13 @@
               </div>
             </div>
           </div>
-          <section class="canvas">
-            <div class="canvas__grid"></div>
+          <section class="document">
+            <div class="document__grid"></div>
           </section>
+          <div class="info">
+            <p class="info__item info__item--warn info__item--fields">Предупреждение! Не всем картам присвоен идентификатор.</p>
+            <p class="info__item info__item--error info__item--fields">Ошибка! Не правильно введен тип ID. Должно быть 10 цифр, без букв!</p>
+          </div>
           <div class="main__btns">
             <button class="btn btn--add" id="submitConstQR" type="button">Добавить</button>
             <button class="btn btn--print" type="button">Распечатать отчет</button>
@@ -199,7 +203,7 @@
       </main>
       <main class="main" data-name="permis">
         <div class="container">
-          <h1 class="main__title">Разрешение на добавление <br> считывателей пользователям</h1><span class="main__depart main__depart--permis"></span>
+          <h1 class="main__title">Разрешение на добавление <br> идентификаторов пользователям</h1><span class="main__depart main__depart--permis"></span>
           <div class="wrap wrap--content wrap--content-permis">
             <div class="main__cards main__cards--main">
               <p class="main__count-wrap main__count-wrap--depart"><span class="main__count-text">Количество карт:&nbsp</span><span class="main__count main__count--permis">0</span></p>
@@ -228,7 +232,7 @@
             </div>
           </div>
           <div class="info">
-            <p class="info__warn">Предупреждение! Не все пользователи отмечены</p>
+            <p class="info__item info__item--warn info__item--fields">Предупреждение! Не все пользователи отмечены.</p>
           </div>
           <div class="main__btns">
             <button class="btn" id="submitPermis" type="button">Подтвердить</button>
@@ -494,7 +498,7 @@
       </main>
       <footer class="footer">
         <div class="container">
-          <div class="footer__wrap"><small class="footer__version">v1.6.22</small></div>
+          <div class="footer__wrap"><small class="footer__version">v1.6.23</small></div>
         </div>
       </footer>
     </div>

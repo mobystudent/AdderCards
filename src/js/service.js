@@ -9,7 +9,6 @@ $(window).on('load', () => {
 	setUsersFromSelect();
 	switchControl();
 	sortItems();
-	showDataInTable();
 });
 
 function stringifyJSON() {
@@ -181,5 +180,6 @@ function showDataInTable() {
 }
 
 export default {
-	printReport
+	printReport,
+	showDataInTable
 };

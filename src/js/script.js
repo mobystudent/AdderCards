@@ -10,6 +10,8 @@ import permission from './permission.js';
 // import constqr from './constqr.js';
 import service from './service.js';
 
+const permissionCollection = new Set(); // БД пользователей которым разрешили выдачу карт и qr
+
 $(window).on('load', () => {
 	getData();
 	stringifyJSON();
@@ -17,6 +19,9 @@ $(window).on('load', () => {
 	// addIDinDB();
 	permissionAdd();
 	addNewUserInTable();
+
+	//service functions
+	service.showDataInTable();
 
 	//const cards
 	constCard.submitIDinBD();
@@ -63,9 +68,8 @@ function delegationID(users) {
 		if (item.StatusID == 'newQR' || item.StatusID == 'changeQR') return item;
 	});
 
-	// console.log(users);
-
-	if (filterArrCards) {
+	if (filterArrCards.length) {
+		console.log('Count');
 		addTabs(filterArrCards, '#tableConst', 'const');
 		viewAllCountAndTitleDefault(filterArrCards, 'const');
 		changeTabs(filterArrCards, '#tableConst', 'const');
@@ -77,7 +81,8 @@ function delegationID(users) {
 		constCard.convertCardIDInCardName();
 	}
 
-	if (filterArrQRs) {
+	if (filterArrQRs.length) {
+		console.log('Count 2');
 		addTabs(filterArrQRs, '#tableQR', 'qr');
 		viewAllCountAndTitleDefault(filterArrQRs, 'qr');
 		changeTabs(filterArrQRs, '#tableQR', 'qr');
@@ -149,10 +154,14 @@ function viewAllCountAndTitleDefault(filterIDItems, modDepart) {
 
 	$(`.main__count--all-${modDepart}`).text(filterIDItems.length);
 
+	console.log(filterIDItems);
+
 	filterIDItems.forEach((item) => {
-		if (item.NameID == activeTabDepart) {
-			$(`.main__depart--${modDepart}`).text(item.Department);
-		}
+		// if (activeTabDepart && item.NameID == activeTabDepart) {
+		// 	$(`.main__depart--${modDepart}`).text(item.Department);
+		// } else {
+		$(`.main__depart--${modDepart}`).text(item.Department).attr('data-depart', item.Department);
+		// }
 	});
 }
 
@@ -162,7 +171,7 @@ function changeTabs(depart, nameTable, modDepart) {
 
 		$(`${nameTable} .table__content--const`).removeClass('table__content--active');
 		$(`.tab--${modDepart} .tab__item`).removeClass('tab__item--active');
-		$(`.main__depart--${modDepart}`).text('');
+		$(`.main__depart--${modDepart}`).text('').attr('data-depart', '');
 		$(`${nameTable} .table__content--const[data-content=${nameDepart}]`).addClass('table__content--active');
 		$(e.target).closest('.tab__item').addClass('tab__item--active');
 
@@ -170,7 +179,7 @@ function changeTabs(depart, nameTable, modDepart) {
 
 		depart.forEach((item) => {
 			if (item.NameID == nameDepart) {
-				$(`.main__depart--${modDepart}`).text(item.Department);
+				$(`.main__depart--${modDepart}`).text(item.Department).attr('data-depart', item.Department);
 			}
 		});
 
@@ -415,14 +424,16 @@ function confirmPermission(objectItems) {
 		const checkedItems = [...typeItems].every((item) => $(item).is('[data-type]'));
 
 		if (checkedItems) {
+			const classBtns = ['#allowAll', '#disallowAll'];
 			const allowItems = [...typeItems].filter((item) => {
 				const typePerson = $(item).data('type');
 
 				$(item).remove();
 
+				console.warn(item);
+
 				if (typePerson === 'allow') return item;
 			});
-			const classBtns = ['#allowAll', '#disallowAll'];
 			const returnUsers = allowItems.reduce((acc, elem) => {
 				const idObj = $(elem).data('id');
 
@@ -432,6 +443,8 @@ function confirmPermission(objectItems) {
 
 				return acc;
 			}, []);
+			// permissionCollection
+			console.log(returnUsers);
 			const nameTable = returnUsers.map((item) => {
 				return getTableID(item.StatusID);
 			});

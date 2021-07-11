@@ -183,7 +183,7 @@ function assignQRCodeUsers() {
 
 function createTableFill() {
 	$('#tableQR .table__content--active').html('');
-	
+
 	const dataToFillTable = [...qrFillOutUsersCollection].map((elem) => {
 		return {
 			fio: elem.fio,
@@ -256,7 +256,7 @@ function createTableFill() {
 function submitIDinBD() {
 	$('#submitConstQR').click(() => {
 		[...qrFillOutUsersCollection].forEach((user, i) => {
-			$('.canvas__grid').append(templateQRItem(user));
+			$('.document__grid').append(templateQRItem(user));
 			createQRCode(user.codepicture, i);
 		});
 	});
@@ -265,7 +265,7 @@ function submitIDinBD() {
 function createQRCode(code, iter) {
 	QRCode.toDataURL(code)
 	.then(url => {
-		$(`.canvas__item:nth-child(${iter + 1}) .canvas__code`).attr('src', url);
+		$(`.document__item:nth-child(${iter + 1}) .document__code`).attr('src', url);
 	})
 	.catch(err => {
 		console.error(err);
@@ -290,11 +290,11 @@ function templateQRItem(user) {
 	}
 
 	return `
-		<article class="canvas__item">
-			<img class="canvas__code" src="" alt="qr code" />
-			<h3 class="canvas__name">${fullName}</h3>
-			<span class="canvas__post">${post}</span>
-			<p class="canvas__instruct">Скачайте с Google Play или App Store приложение UProx и отсканируейте через него QR-код.</p>
+		<article class="document__item">
+			<img class="document__code" src="" alt="qr code" />
+			<h3 class="document__name">${fullName}</h3>
+			<span class="document__post">${post}</span>
+			<p class="document__instruct">Скачайте с Google Play или App Store приложение UProx и отсканируейте через него QR-код.</p>
 		</article>
 	`;
 }
