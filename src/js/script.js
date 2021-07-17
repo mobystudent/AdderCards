@@ -86,15 +86,14 @@ function delegationID(users) {
 	// console.log(filterArrCards);
 	// console.log(filterArrQRs);
 	//
-	console.log(permissCardsCollection);
-	console.log(permissCodesCollection);
+	// console.log(permissCardsCollection);
+	// console.log(permissCodesCollection);
 
 	if (permissCardsCollection.size) {
 		// addTabs(filterArrCards, '#tableConst', 'const');
-		viewAllCountAndTitleDefault(filterArrCards, 'const');
-		changeTabs(filterArrCards, '#tableConst', 'const');
+		viewAllCount(filterArrCards, 'const');
+		// changeTabs(filterArrCards, '#tableConst', 'const');
 		createTable(filterArrCards, '#tableConst');
-		addCountCards(filterArrCards, '#tableConst', 'const');
 		focusFirstCell('const');
 
 		constCard.clearNumberCard();
@@ -103,45 +102,57 @@ function delegationID(users) {
 
 	if (permissCodesCollection.size) {
 		// addTabs(filterArrQRs, '#tableQR', 'qr');
-		viewAllCountAndTitleDefault(filterArrQRs, 'qr');
-		changeTabs(filterArrQRs, '#tableQR', 'qr');
+		viewAllCount(filterArrQRs, 'qr');
+		// changeTabs(filterArrQRs, '#tableQR', 'qr');
 		createTable(filterArrQRs, '#tableQR');
-		addCountCards(filterArrQRs, '#tableQR', 'qr');
 		focusFirstCell('qr');
 	}
 }
 
-function addTabs(collection, nameTable, modDepart) {
+function addTabs(collection, modDepart) {
 	const filterNameDepart = filterDepart(collection);
 
-	console.log(filterNameDepart);
-
 	if (filterNameDepart.length > 1) {
-		filterNameDepart.forEach((item, i) => {
+		filterNameDepart.forEach((item) => {
 			nameDeparts.forEach((depart) => {
-				const { idName = '', shortName = '', longName = '' } = depart;
+				const { idName = '', shortName = '' } = depart;
 
 				if (item == idName) {
 					$(`.tab--${modDepart}`).append(`
-						<button class="tab__item${i == 0 ? ' tab__item--active' : ''}" type="button" data-depart=${idName}>
+						<button class="tab__item" type="button" data-depart=${idName}>
 							<span class="tab__name">${shortName}</span>
 						</button>
 					`);
-					$(nameTable).append(`
-						<div class="table__content table__content--const" data-content=${idName}>
-						</div>
-					`);
 				}
-			//
-				if (i == 0) showTitleDepart(longName, modDepart);
 			});
 		});
-	} else {
-		$(nameTable).append(`
-			<div class="table__content table__content--const table__content--active" data-content=${filterNameDepart}>
-			</div>
-		`);
 	}
+}
+
+function showActiveDataOnPage(collection, nameTable, modDepart, nameDepart) {
+	$(nameTable).html('');
+	$(`.tab--${modDepart} .tab__item`).removeClass('tab__item--active');
+	$('#tablePermiss').append(`
+		<div class="table__content table__content--const table__content--active">
+		</div>
+	`);
+	$(`.tab__item[data-depart=${nameDepart}]`).addClass('tab__item--active');
+
+	countItems(nameDepart, modDepart);
+
+	collection.forEach((user) => {
+		if (user.nameid == nameDepart) {
+			$('#tablePermiss .table__content--active').append(permission.templatePermissionTable(user));
+		}
+	});
+
+	nameDeparts.forEach((depart) => {
+		const { idName = '', longName = '' } = depart;
+
+		if (idName == nameDepart) {
+			showTitleDepart(longName, modDepart);
+		}
+	});
 }
 
 function showTitleDepart(depart, modDepart) {
@@ -150,7 +161,7 @@ function showTitleDepart(depart, modDepart) {
 
 function filterDepart(collection) {
 	const arrayDepart = [...collection.values()].reduce((acc, item) => {
-		acc.push(item.NameID);
+		acc.push(item.nameid);
 		return acc;
 	}, []);
 	const filterIdDepart = new Set(arrayDepart);
@@ -158,87 +169,34 @@ function filterDepart(collection) {
 	return [...filterIdDepart];
 }
 
-function addCountCards(filterIDItems, nameTable, modDepart) {
-	const filterNameDepart = filterDepart(filterIDItems);
-	// console.log(filterNameDepart.length);
+function countItems(idDepart, modDepart) {
+	const countItemfromDep = [...permissionCollection.values()].filter((user) => user.nameid === idDepart);
 
-	if (filterNameDepart.length) {
-		$(`${nameTable} .table__content--const`).eq(0).addClass('table__content--active');
-
-
-		countItems(`${nameTable} .table__content--active`, modDepart);
-	}
+	$(`.main__count--${modDepart}`).text(countItemfromDep.length);
 }
 
-function countItems(tableContent, modDepart) {
-	const countItemfromDep = $(tableContent).eq(0).find('.table__row').length;
-
-	$(`.main__count--${modDepart}`).text(countItemfromDep);
-}
-
-function viewAllCountAndTitleDefault(collection, modDepart) {
-	const activeTabDepart = $(`.tab--${modDepart} .tab__item--active`).data('depart');
-
+function viewAllCount(collection, modDepart) {
 	$(`.main__count--all-${modDepart}`).text(collection.size);
-
-	// console.log(filterIDItems);
-
-	if (activeTabDepart) {
-		collection.forEach((item) => {
-
-			// console.log(item);
-			// if (activeTabDepart) {
-			// if (activeTabDepart && item.NameID == activeTabDepart) {
-			// 	$(`.main__depart--${modDepart}`).text(item.Department);
-			// } else {
-			$(`.main__depart--${modDepart}`).text(item.Department).attr('data-depart', item.Department);
-			// }
-		});
-	}
 }
 
 function changeTabs(depart, nameTable, modDepart) {
-	$(`.tab--${modDepart} .tab__item`).click((e) => {
+	$(`.tab--${modDepart}`).click((e) => {
+		if (!$(e.target).parents('.tab__item').length && !$(e.target).hasClass('tab__item')) return;
+
 		const nameDepart = $(e.target).closest('.tab__item').data('depart');
 
-		$(`${nameTable} .table__content--const`).removeClass('table__content--active');
-		$(`.tab--${modDepart} .tab__item`).removeClass('tab__item--active');
-		$(`.main__depart--${modDepart}`).text('').attr('data-depart', '');
-		$(`${nameTable} .table__content--const[data-content=${nameDepart}]`).addClass('table__content--active');
-		$(e.target).closest('.tab__item').addClass('tab__item--active');
-
-		countItems(`${nameTable} .table__content--active`, modDepart);
-
-		depart.forEach((item) => {
-			if (item.NameID == nameDepart) {
-				$(`.main__depart--${modDepart}`).text(item.Department).attr('data-depart', item.Department);
-			}
-		});
-
-		focusFirstCell(modDepart);
-		// convert.checkValFieldsCardId(e.target);
+		showActiveDataOnPage(permissionCollection, nameTable, modDepart, nameDepart);
 	});
 }
 
 function createTable(users, nameTable, tabName = '') {
+	// console.warn(users);
 	const limitUser = users.map((item) => {
 		const {
 			FIO = '',
 			Department = '',
-			FieldGroup = '',
-			Badge = '',
 			CardName = '',
 			CardID = '',
-			CardValidTo = '',
-			PIN = '',
-			CardStatus = 1,
-			Security = 0,
-			Disalarm = 0,
-			VIP = 0,
-			DayNightCLM = 0,
-			AntipassbackDisabled = 0,
-			PhotoFile = '',
-			EmployeeNumber = '',
 			Post = '',
 			NameID = '',
 			StatusID = '',
@@ -247,8 +205,6 @@ function createTable(users, nameTable, tabName = '') {
 			NewFIO = '',
 			NewPost = '',
 			NewDepart = '',
-			Data = '',
-			CodePicture = ''
 		} = item;
 
 		if (!tabName) {
@@ -386,17 +342,6 @@ function createTable(users, nameTable, tabName = '') {
 					<span class="table__text table__text--body"></span>
 				</div>
 			`);
-		} else if (tabName === 'permis') {
-			tableContent.find(`.table__row:nth-child(${countRows})`).append(`
-				<div class="table__cell table__cell--body table__cell--control">
-					<button class="btn btn--allow" data-type="allow" data-cancel="Отменить" data-allow="Разрешить" type="button">
-						Разрешить
-					</button>
-					<button class="btn btn--disallow" data-type="disallow" data-cancel="Отменить" data-disallow="Запретить" type="button">
-						Запретить
-					</button>
-				</div>
-			`);
 		}
 	});
 }
@@ -439,33 +384,58 @@ function removeAndFocusActiveBlock(containerBl, block, nameTable) {
 function userdFromJSON() {
 	const dataArr = JSON.parse(stringifyJSON());
 	const depart = Object.values(dataArr).map((item) => item);
+	const objToCollection = {
+		fio: '',
+		post: '',
+		nameid: '',
+		statusid: '',
+		department: ''
+	};
+	depart.forEach((elem, i) => {
+		const itemObject = Object.assign({}, objToCollection);
 
-	[...depart].forEach((users, i) => {
-		permissionCollection.set(i, users);
+		for (const itemField in itemObject) {
+			for (const key in elem) {
+				if (itemField == key.toLocaleLowerCase()) {
+					itemObject[itemField] = elem[key];
+				}
+			}
+		}
+
+		permissionCollection.set(i, itemObject);
 	});
 
-	console.log(permissionCollection);
-
-	// permissionCollection
 	permissionAdd();
 }
 
 function permissionAdd() {
-	const dataArr = JSON.parse(stringifyJSON());
-	const depart = Object.values(dataArr).map((item) => item);
+	const filterNameDepart = filterDepart(permissionCollection);
 
-	addTabs(permissionCollection, '#tablePermiss', 'permis');
-	viewAllCountAndTitleDefault(permissionCollection, 'permis');
-	changeTabs(depart ,'#tablePermiss', 'permis');
-	createTable(depart, '#tablePermiss', 'permis');
-	addCountCards(depart, '#tablePermiss', 'permis');
-	focusFirstCell('permis');
+	if (permissionCollection.size) {
+		$('.table__nothing').hide();
 
-	confirmPermission(depart);
+		viewAllCount(permissionCollection, 'permis');
+	}
+
+	if (filterNameDepart.length > 1) {
+		addTabs(permissionCollection, 'permis');
+		showActiveDataOnPage(permissionCollection ,'#tablePermiss', 'permis', filterNameDepart[0]);
+		changeTabs(permissionCollection ,'#tablePermiss', 'permis');
+	} else {
+		$('#tablePermiss').append(`
+			<div class="table__content table__content--const table__content--active">
+			</div>
+		`);
+
+		permissionCollection.forEach((user) => {
+			$('#tablePermiss .table__content--active').append(permission.templatePermissionTable(user));
+		});
+	}
+
 	permission.clickAllowDisallowPermiss();
 }
 
-function confirmPermission(objectItems) {
+function confirmPermission() {
 	let countItem = 0;
 
 	$('#submitPermis').click((e) => {
@@ -483,6 +453,7 @@ function confirmPermission(objectItems) {
 
 				if (typePerson === 'allow') return item;
 			});
+			console.log(allowItems);
 			const returnUsers = allowItems.reduce((acc, elem) => {
 				const idObj = $(elem).data('id');
 
@@ -492,6 +463,7 @@ function confirmPermission(objectItems) {
 
 				return acc;
 			}, []);
+			console.warn(returnUsers);
 			// permissionAddCollection
 
 			// For Collection
@@ -541,7 +513,7 @@ function confirmPermission(objectItems) {
 
 			returnToNextTab(e.target);
 			delegationID(returnUsers);
-			viewAllCountAndTitleDefault(permissionAddCollection, 'permis');
+			viewAllCount(permissionAddCollection, 'permis');
 			// convert.viewConvertCardId();
 
 			$('.info__warn').hide();

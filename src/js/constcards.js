@@ -7,7 +7,7 @@ const constFillOutCardCollection = new Set(); // БД постоянных ка�
 const constReportCollection = new Set(); // БД постоянных карт с присвоеными id для отчета
 
 function templateConstTable(data) {
-	const { id= '', fio = '', post  = '', cardid = '', cardname = '' } = data;
+	const { id = '', fio = '', post  = '', cardid = '', cardname = '' } = data;
 	let typeIDField = '';
 
 	if (cardid) {

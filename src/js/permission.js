@@ -52,7 +52,34 @@ function confirmAllAllowDisallow() {
 	});
 }
 
+function templatePermissionTable(data) {
+	const { id = '', fio = '', post = '', statusid = '' } = data;
+
+	return `
+		<div class="table__row table__row--time" data-id="${id}">
+			<div class="table__cell table__cell--body table__cell--fio">
+				<span class="table__text table__text--body">${fio}</span>
+			</div>
+			<div class="table__cell table__cell--body table__cell--post">
+				<span class="table__text table__text--body">${post}</span>
+			</div>
+			<div class="table__cell table__cell--body table__cell--statusid">
+				<span class="table__text table__text--body">${statusid}</span>
+			</div>
+			<div class="table__cell table__cell--body table__cell--control">
+				<button class="btn btn--allow" data-type="allow" data-cancel="Отменить" data-allow="Разрешить" type="button">
+					Разрешить
+				</button>
+				<button class="btn btn--disallow" data-type="disallow" data-cancel="Отменить" data-disallow="Запретить" type="button">
+					Запретить
+				</button>
+			</div>
+		</div>
+	`;
+}
+
 export default {
 	clickAllowDisallowPermiss,
-	confirmAllAllowDisallow
+	confirmAllAllowDisallow,
+	templatePermissionTable
 };

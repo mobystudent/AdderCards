@@ -29,7 +29,7 @@ $(window).on('load', () => {
 });
 
 function templateTimeTable(data) {
-	const { id= '', fio = '', cardid = '', cardname = '' } = data;
+	const { id = '', fio = '', cardid = '', cardname = '' } = data;
 	let typeIDField = '';
 
 	if (cardid) {
