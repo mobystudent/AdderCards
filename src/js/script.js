@@ -2,23 +2,30 @@
 
 import $ from 'jquery';
 import { json } from './data.js';
-import { shortNameDepart } from './shortNameDepart.js';
+import { nameDeparts } from './nameDepart.js';
 import timeCard from './timecards.js';
 import constCard from './constcards.js';
 import qrcodes from './qrcodes.js';
 import permission from './permission.js';
 // import constqr from './constqr.js';
 import service from './service.js';
+import usersFunc from './users-func.js';
 
-const permissionCollection = new Map(); // БД пользователей которым разрешили выдачу карт и qr
+const permissionCollection = new Map(); // БД пользователей при старте
+const permissionAddCollection = new Map(); // БД пользователей которым разрешили выдачу карт и qr
+const permissCardsCollection = new Map(); // БД пользователей которым разрешили выдачу карт
+const permissCodesCollection = new Map(); // БД пользователей которым разрешили выдачу qr
 
 $(window).on('load', () => {
 	getData();
 	stringifyJSON();
 	defaultDataInTables();
 	// addIDinDB();
-	permissionAdd();
-	addNewUserInTable();
+	// permissionAdd();
+	userdFromJSON();
+
+	//permission functions
+	permission.confirmAllAllowDisallow();
 
 	//service functions
 	service.showDataInTable();
@@ -51,16 +58,39 @@ function defaultDataInTables() {
 	$(`.main[data-name="const"]`).show();
 }
 
+let countCards = 0;
+let countCodes = 0;
+
 function delegationID(users) {
 	const filterArrCards = users.filter((item) => {
-		if (item.StatusID == 'newCard' || item.StatusID == 'changeCard') return item;
+		if (item.StatusID == 'newCard' || item.StatusID == 'changeCard') {
+
+			permissCardsCollection.set(countCards, item);
+			countCards++;
+
+			return item;
+		}
 	});
 	const filterArrQRs = users.filter((item) => {
-		if (item.StatusID == 'newQR' || item.StatusID == 'changeQR') return item;
+		if (item.StatusID == 'newQR' || item.StatusID == 'changeQR') {
+
+			permissCodesCollection.set(countCodes, item);
+			countCodes++;
+
+			return item;
+		}
 	});
 
-	if (filterArrCards.length) {
-		addTabs(filterArrCards, '#tableConst', 'const');
+
+	permissionAddCollection.clear();
+	// console.log(filterArrCards);
+	// console.log(filterArrQRs);
+	//
+	console.log(permissCardsCollection);
+	console.log(permissCodesCollection);
+
+	if (permissCardsCollection.size) {
+		// addTabs(filterArrCards, '#tableConst', 'const');
 		viewAllCountAndTitleDefault(filterArrCards, 'const');
 		changeTabs(filterArrCards, '#tableConst', 'const');
 		createTable(filterArrCards, '#tableConst');
@@ -71,8 +101,8 @@ function delegationID(users) {
 		constCard.convertCardIDInCardName();
 	}
 
-	if (filterArrQRs.length) {
-		addTabs(filterArrQRs, '#tableQR', 'qr');
+	if (permissCodesCollection.size) {
+		// addTabs(filterArrQRs, '#tableQR', 'qr');
 		viewAllCountAndTitleDefault(filterArrQRs, 'qr');
 		changeTabs(filterArrQRs, '#tableQR', 'qr');
 		createTable(filterArrQRs, '#tableQR');
@@ -81,25 +111,28 @@ function delegationID(users) {
 	}
 }
 
-function addTabs(filterIDItems, nameTable, modDepart) {
-	const filterNameDepart = filterDepart(filterIDItems);
+function addTabs(collection, nameTable, modDepart) {
+	const filterNameDepart = filterDepart(collection);
+
+	console.log(filterNameDepart);
 
 	if (filterNameDepart.length > 1) {
 		filterNameDepart.forEach((item, i) => {
-			const arrDepart = Object.entries(shortNameDepart);
-
-			arrDepart.forEach((depart) => {
-				if (item == depart[0]) {
+			nameDeparts.forEach((depart) => {
+				if (item == depart.idName) {
+					console.log(depart.shortName);
 					$(`.tab--${modDepart}`).append(`
-						<button class="tab__item${i == 0 ? ' tab__item--active' : ''}" type="button" data-depart=${depart[0]}>
-							<span class="tab__name">${depart[1]}</span>
+						<button class="tab__item${i == 0 ? ' tab__item--active' : ''}" type="button" data-depart=${depart.idName}>
+							<span class="tab__name">${depart.shortName}</span>
 						</button>
 					`);
 					$(nameTable).append(`
-						<div class="table__content table__content--const" data-content=${depart[0]}>
+						<div class="table__content table__content--const" data-content=${depart.idName}>
 						</div>
 					`);
 				}
+			//
+			// 	if (i == 0) showTitleDepart(depart[1], modDepart);
 			});
 		});
 	} else {
@@ -110,8 +143,12 @@ function addTabs(filterIDItems, nameTable, modDepart) {
 	}
 }
 
-function filterDepart(filterIDItems) {
-	const arrayDepart = filterIDItems.reduce((acc, item) => {
+function showTitleDepart(depart, modDepart) {
+	$(`.main__depart--${modDepart}`).text(item.Department).attr('data-depart', item.Department);
+}
+
+function filterDepart(collection) {
+	const arrayDepart = [...collection.values()].reduce((acc, item) => {
 		acc.push(item.NameID);
 		return acc;
 	}, []);
@@ -138,20 +175,25 @@ function countItems(tableContent, modDepart) {
 	$(`.main__count--${modDepart}`).text(countItemfromDep);
 }
 
-function viewAllCountAndTitleDefault(filterIDItems, modDepart) {
+function viewAllCountAndTitleDefault(collection, modDepart) {
 	const activeTabDepart = $(`.tab--${modDepart} .tab__item--active`).data('depart');
 
-	$(`.main__count--all-${modDepart}`).text(filterIDItems.length);
+	$(`.main__count--all-${modDepart}`).text(collection.size);
 
 	// console.log(filterIDItems);
 
-	filterIDItems.forEach((item) => {
-		// if (activeTabDepart && item.NameID == activeTabDepart) {
-		// 	$(`.main__depart--${modDepart}`).text(item.Department);
-		// } else {
-		$(`.main__depart--${modDepart}`).text(item.Department).attr('data-depart', item.Department);
-		// }
-	});
+	if (activeTabDepart) {
+		collection.forEach((item) => {
+
+			// console.log(item);
+			// if (activeTabDepart) {
+			// if (activeTabDepart && item.NameID == activeTabDepart) {
+			// 	$(`.main__depart--${modDepart}`).text(item.Department);
+			// } else {
+			$(`.main__depart--${modDepart}`).text(item.Department).attr('data-depart', item.Department);
+			// }
+		});
+	}
 }
 
 function changeTabs(depart, nameTable, modDepart) {
@@ -393,22 +435,37 @@ function removeAndFocusActiveBlock(containerBl, block, nameTable) {
 }
 
 // Вкладка разрешение на добавление
+function userdFromJSON() {
+	const dataArr = JSON.parse(stringifyJSON());
+	const depart = Object.values(dataArr).map((item) => item);
+
+	[...depart].forEach((users, i) => {
+		permissionCollection.set(i, users);
+	});
+
+	console.log(permissionCollection);
+
+	// permissionCollection
+	permissionAdd();
+}
+
 function permissionAdd() {
 	const dataArr = JSON.parse(stringifyJSON());
 	const depart = Object.values(dataArr).map((item) => item);
 
-	addTabs(depart, '#tablePermiss', 'permis');
-	viewAllCountAndTitleDefault(depart, 'permis');
+	addTabs(permissionCollection, '#tablePermiss', 'permis');
+	viewAllCountAndTitleDefault(permissionCollection, 'permis');
 	changeTabs(depart ,'#tablePermiss', 'permis');
 	createTable(depart, '#tablePermiss', 'permis');
 	addCountCards(depart, '#tablePermiss', 'permis');
 	focusFirstCell('permis');
 
 	confirmPermission(depart);
+	permission.clickAllowDisallowPermiss();
 }
 
 function confirmPermission(objectItems) {
-	let countItems = 0;
+	let countItem = 0;
 
 	$('#submitPermis').click((e) => {
 		const typeItems = $('#tablePermiss .table__content--active').find('.table__row');
@@ -434,7 +491,7 @@ function confirmPermission(objectItems) {
 
 				return acc;
 			}, []);
-			// permissionCollection
+			// permissionAddCollection
 
 			// For Collection
 			const objToCollection = {
@@ -456,11 +513,11 @@ function confirmPermission(objectItems) {
 					}
 				}
 
-				permissionCollection.set(countItems, itemObject);
-				countItems++;
+				permissionAddCollection.set(countItem, itemObject);
+				countItem++;
 			});
 
-			console.log(permissionCollection);
+			console.log(permissionAddCollection);
 
 			// End for collection
 
@@ -483,6 +540,7 @@ function confirmPermission(objectItems) {
 
 			returnToNextTab(e.target);
 			delegationID(returnUsers);
+			viewAllCountAndTitleDefault(permissionAddCollection, 'permis');
 			// convert.viewConvertCardId();
 
 			$('.info__warn').hide();
@@ -513,134 +571,4 @@ function returnToNextTab(item) {
 		$(`.table--${dataDepart} .table__content--active`).remove();
 		$(`.table--${dataDepart} .table__nothing`).show();
 	}
-}
-
-function addNewUserInTable() {
-	const userAdd = [];
-	const userRemove = [];
-	const userEdit = [];
-	let countId = 1; //delete
-
-	$('#addUser, #removeUser, #editUser').click((e) => {
-		const form = $(e.target).parents('.form');
-		const fields = $(form).find('.form__item');
-		const typeBtn = $(e.target).data('type');
-		const object = {
-			FIO: '',
-			Department: '',
-			FieldGroup: '',
-			Badge: '',
-			CardName: '',
-			CardID: '',
-			CardValidTo: '',
-			PIN: '',
-			CardStatus: 1,
-			Security: 0,
-			Disalarm: 0,
-			VIP: 0,
-			DayNightCLM: 0,
-			AntipassbackDisabled: 0,
-			PhotoFile: '',
-			EmployeeNumber: '',
-			Post: '',
-			NameID: '',
-			StatusID: '',
-			IDUser: '',
-			TitleID: '',
-			NewFIO: '',
-			NewPost: '',
-			NewDepart: '',
-			Data: '',
-			CodePicture: ''
-		};
-		const addFields = [...fields].reduce((array, item) => {
-			const fieldName = $(item).data('field');
-
-			if ($(item).hasClass('select')) {
-				const fieldType = $(item).data('type');
-				const typeSelect = $(item).data('select');
-				const valueItem = $(item).find('.select__value--selected').data('title');
-
-				if (typeSelect != 'fio') {
-					const nameId = $(item).find('.select__value--selected').data(typeSelect);
-
-					array.push({[fieldName]: valueItem}, {[fieldType]: nameId});
-				} else {
-					array.push({[fieldName]: valueItem});
-				}
-			} else {
-				const inputValue = $(item).val();
-
-				array.push({[fieldName]: inputValue});
-			}
-
-			return array;
-		}, []);
-
-		addFields.forEach((elem) => {
-			for (const itemField in object) {
-				for (const key in elem) {
-					if (itemField == key) {
-						object[itemField] = elem[key];
-					}
-				}
-			}
-		});
-
-		object.IDUser = countId;//delete
-		countId++;//delete
-
-		switch(typeBtn) {
-			case 'add-user':
-				userAdd.push(object);
-				addUsersInTable('#tableAdd', 'add', userAdd);
-
-				break;
-			case 'remove-user':
-				userRemove.push(object);
-				addUsersInTable('#tableRemove', 'remove', userRemove);
-
-				break;
-			case 'edit-user':
-				userEdit.push(object);
-				addUsersInTable('#tableEdit', 'edit', userEdit);
-
-				break;
-		}
-
-		clearFieldsForm(fields);
-	});
-}
-
-function addUsersInTable(tableID, nameTable, user) {
-	createTable(user, tableID, nameTable);
-	addCountCards(user, tableID, nameTable);
-
-	$(`.table--${nameTable} .table__body`).removeClass('table__body--empty');
-	$(`.table--${nameTable} .table__nothing`).hide();
-}
-
-function clearFieldsForm(array) {
-	[...array].forEach((item) => {
-		if ($(item).hasClass('select')) {
-			const typeSelect = $(item).data('select');
-			const placeholder = $(item).find('.select__value').data('placeholder');
-			let attr = '';
-
-			if (typeSelect != 'fio') {
-				attr = {'title': 'title', [`${typeSelect}`]: typeSelect};
-			} else {
-				attr = {'title': 'title'};
-			}
-
-			$(item).find('.select__value--selected')
-				.removeClass('select__value--selected')
-				.data(attr)
-				.text(placeholder);
-		} else {
-			$(item).val('');
-		}
-	});
-
-	$('.form__field--new-post, .form__field--new-fio, .form__field--depart').hide();
 }
