@@ -40,13 +40,10 @@
 	}
 
 	&__content {
+		display: none;
 		height: 370px;
 		overflow: auto;
 		transition: height .25s ease;
-
-		&--const {
-			display: none;
-		}
 
 		@media print {
 			height: auto;

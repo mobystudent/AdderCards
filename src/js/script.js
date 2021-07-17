@@ -133,7 +133,7 @@ function showActiveDataOnPage(collection, nameTable, modDepart, nameDepart) {
 	$(nameTable).html('');
 	$(`.tab--${modDepart} .tab__item`).removeClass('tab__item--active');
 	$('#tablePermiss').append(`
-		<div class="table__content table__content--const table__content--active">
+		<div class="table__content table__content--active">
 		</div>
 	`);
 	$(`.tab__item[data-depart=${nameDepart}]`).addClass('tab__item--active');
@@ -255,7 +255,7 @@ function createTable(users, nameTable, tabName = '') {
 
 	if (tabName === 'add' || tabName === 'remove' || tabName === 'edit') {
 		if (!$(nameTable).find('.table__content').length) {
-			$(nameTable).append(`<div class="table__content table__content--const"></div>`);
+			$(nameTable).append(`<div class="table__content"></div>`);
 		} else {
 			$(nameTable).find('.table__row').remove();
 		}
@@ -423,7 +423,7 @@ function permissionAdd() {
 		changeTabs(permissionCollection ,'#tablePermiss', 'permis');
 	} else {
 		$('#tablePermiss').append(`
-			<div class="table__content table__content--const table__content--active">
+			<div class="table__content table__content--active">
 			</div>
 		`);
 
