@@ -10,7 +10,7 @@ import permission from './permission.js';
 // import constqr from './constqr.js';
 import service from './service.js';
 
-const permissionCollection = new Set(); // БД пользователей которым разрешили выдачу карт и qr
+const permissionCollection = new Map(); // БД пользователей которым разрешили выдачу карт и qr
 
 $(window).on('load', () => {
 	getData();
@@ -345,7 +345,7 @@ function createTable(users, nameTable, tabName = '') {
 			`);
 		} else if (tabName === 'permis') {
 			tableContent.find(`.table__row:nth-child(${countRows})`).append(`
-				<div class="table__cell table__cell--body table__cell--buttons">
+				<div class="table__cell table__cell--body table__cell--control">
 					<button class="btn btn--allow" data-type="allow" data-cancel="Отменить" data-allow="Разрешить" type="button">
 						Разрешить
 					</button>
@@ -408,6 +408,8 @@ function permissionAdd() {
 }
 
 function confirmPermission(objectItems) {
+	let countItems = 0;
+
 	$('#submitPermis').click((e) => {
 		const typeItems = $('#tablePermiss .table__content--active').find('.table__row');
 		const checkedItems = [...typeItems].every((item) => $(item).is('[data-type]'));
@@ -433,7 +435,35 @@ function confirmPermission(objectItems) {
 				return acc;
 			}, []);
 			// permissionCollection
-			// console.log(returnUsers);
+
+			// For Collection
+			const objToCollection = {
+				fio: '',
+				post: '',
+				nameid: '',
+				statusid: '',
+				department: ''
+			};
+
+			returnUsers.forEach((elem) => {
+				const itemObject = Object.assign({}, objToCollection);
+
+				for (const itemField in itemObject) {
+					for (const key in elem) {
+						if (itemField == key.toLocaleLowerCase()) {
+							itemObject[itemField] = elem[key];
+						}
+					}
+				}
+
+				permissionCollection.set(countItems, itemObject);
+				countItems++;
+			});
+
+			console.log(permissionCollection);
+
+			// End for collection
+
 			const nameTable = returnUsers.map((item) => {
 				return getTableID(item.StatusID);
 			});
