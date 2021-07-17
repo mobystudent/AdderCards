@@ -262,8 +262,7 @@
 		width: 100%;
 
 		&:focus {
-			box-shadow: inset 0 0 5px 1px $yellow;
-			box-shadow: 0 0 0 7px $gray, 0px 0px 10px 10px $blueLight;
+			box-shadow: 0 0 0 7px $gray, 0 0 10px 10px $blueLight;
 		}
 
 		@media print {

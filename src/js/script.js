@@ -119,20 +119,21 @@ function addTabs(collection, nameTable, modDepart) {
 	if (filterNameDepart.length > 1) {
 		filterNameDepart.forEach((item, i) => {
 			nameDeparts.forEach((depart) => {
-				if (item == depart.idName) {
-					console.log(depart.shortName);
+				const { idName = '', shortName = '', longName = '' } = depart;
+
+				if (item == idName) {
 					$(`.tab--${modDepart}`).append(`
-						<button class="tab__item${i == 0 ? ' tab__item--active' : ''}" type="button" data-depart=${depart.idName}>
-							<span class="tab__name">${depart.shortName}</span>
+						<button class="tab__item${i == 0 ? ' tab__item--active' : ''}" type="button" data-depart=${idName}>
+							<span class="tab__name">${shortName}</span>
 						</button>
 					`);
 					$(nameTable).append(`
-						<div class="table__content table__content--const" data-content=${depart.idName}>
+						<div class="table__content table__content--const" data-content=${idName}>
 						</div>
 					`);
 				}
 			//
-			// 	if (i == 0) showTitleDepart(depart[1], modDepart);
+				if (i == 0) showTitleDepart(longName, modDepart);
 			});
 		});
 	} else {
@@ -144,7 +145,7 @@ function addTabs(collection, nameTable, modDepart) {
 }
 
 function showTitleDepart(depart, modDepart) {
-	$(`.main__depart--${modDepart}`).text(item.Department).attr('data-depart', item.Department);
+	$(`.main__depart--${modDepart}`).text(depart).attr('data-depart', depart);
 }
 
 function filterDepart(collection) {

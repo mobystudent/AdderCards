@@ -3,8 +3,7 @@
 import $ from 'jquery';
 
 $(window).on('load', () => {
-	clickAllowDisallowPermiss();
-	confirmAllAllowDisallow();
+
 });
 
 function clickAllowDisallowPermiss() {
@@ -54,5 +53,6 @@ function confirmAllAllowDisallow() {
 }
 
 export default {
-
+	clickAllowDisallowPermiss,
+	confirmAllAllowDisallow
 };
