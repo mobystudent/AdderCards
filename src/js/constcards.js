@@ -109,7 +109,7 @@ function dataAdd(nameTable) {
 		`);
 
 		countItems(filterNameDepart[0], 'const');
-		
+
 		return;
 	}
 
@@ -255,8 +255,9 @@ function createObjectForBD() {
 
 function getCurrentDate() {
 	const date = new Date();
+	const month = date.getMonth() + 1;
 	const currentDay = date.getDate() < 10 ? `0${date.getDate()}` : date.getDate();
-	const currentMonth = date.getMonth() < 10 ? `0${date.getMonth()}` : date.getMonth();
+	const currentMonth = month < 10 ? `0${month}` : month;
 	const currentYear = date.getFullYear() < 10 ? `0${date.getFullYear()}` : date.getFullYear();
 
 	return `${currentDay}-${currentMonth}-${currentYear}`;

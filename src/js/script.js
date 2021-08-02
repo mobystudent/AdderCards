@@ -10,6 +10,7 @@ import constQR from './constqr.js';
 import addUser from './adduser.js';
 import service from './service.js';
 import usersFunc from './users-func.js';
+import report from './report.js';
 
 $(window).on('load', () => {
 	getData();

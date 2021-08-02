@@ -2,7 +2,7 @@ main.main(data-name="report")
 	.container
 		h1.main__title
 			| Отчёт по изменениям
-		.wrap.wrap--content.wrap--content-const
+		.wrap.wrap--content.wrap--content-report
 			.main__cards.main__cards--main
 				p.main__count-wrap.main__count-wrap--main
 					span.main__count-text
@@ -25,7 +25,10 @@ main.main(data-name="report")
 							span.table__text.table__text--header
 								| Подразделение/факультет
 							button.btn.btn--sort(type='button' data-direction='true')
-						.table__cell.table__cell--header.table__cell--statusid
+						.table__cell.table__cell--header.table__cell--cardname
+							span.table__text.table__text--header
+								| Номер иден-тора
+						.table__cell.table__cell--header.table__cell--statustitle
 							span.table__text.table__text--header
 								| Статус
 						.table__cell.table__cell--header.table__cell--date

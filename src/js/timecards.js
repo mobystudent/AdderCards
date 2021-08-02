@@ -39,7 +39,7 @@ function templateTimeTable(data) {
 	}
 
 	return `
-		<div class="table__row table__row--time" data-id="${id}">
+		<div class="table__row" data-id="${id}">
 			<div class="table__cell table__cell--body table__cell--fio">
 				<span class="table__text table__text--body">${fio}</span>
 			</div>
@@ -237,6 +237,8 @@ function submitIDinBD() {
 			item.date = getCurrentDate();
 		});
 
+		// console.log([...timeReportCollection.values()]);
+		setDatainDB([...timeReportCollection.values()]);
 		createObjectForBD();
 		const noEmpty = validationEmptyFields();
 
@@ -291,16 +293,19 @@ function createObjectForBD() {
 	});
 
 	console.log(fillOutObjectInBD);
-	setDatainDB(fillOutObjectInBD);
 }
 
 function getCurrentDate() {
 	const date = new Date();
+	const month = date.getMonth() + 1;
 	const currentDay = date.getDate() < 10 ? `0${date.getDate()}` : date.getDate();
-	const currentMonth = date.getMonth() < 10 ? `0${date.getMonth()}` : date.getMonth();
+	const currentMonth = month < 10 ? `0${month}` : month;
 	const currentYear = date.getFullYear() < 10 ? `0${date.getFullYear()}` : date.getFullYear();
 
-	return `${currentDay}-${currentMonth}-${currentYear}`;
+	const currentHour = date.getHours() < 10 ? `0${date.getHours()}` : date.getHours();
+	const currentMinute = date.getMinutes() < 10 ? `0${date.getMinutes()}` : date.getMinutes();
+
+	return `${currentDay}-${currentMonth}-${currentYear} ${currentHour}:${currentMinute}`;
 }
 
 function countItems(tableContent, modDepart) {

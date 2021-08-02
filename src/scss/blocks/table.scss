@@ -147,7 +147,8 @@
 		}
 
 		&--fio,
-		&--post {
+		&--post,
+		&--department {
 			// display: flex;
 			// align-items: center;
 			justify-content: space-between;
@@ -169,7 +170,7 @@
 
 		&--department,
 		&--new-depart {
-			flex: 0 0 450px;
+			flex: 0 0 380px;
 		}
 
 		&--control {
@@ -179,8 +180,7 @@
 
 		&--cardid,
 		&--cardname,
-		&--statustitle,
-		&--date {
+		&--statustitle {
 			text-align: center;
 			justify-content: center;
 			flex: 0 0 210px;
@@ -204,9 +204,16 @@
 			justify-content: center;
 		}
 
+		&--date {
+			text-align: center;
+			justify-content: center;
+			flex: 0 0 170px;
+		}
+
 		&--cardname,
 		&--cardid,
-		&--statustitle {
+		&--statustitle,
+		&--date {
 			.table__text {
 				justify-content: center;
 			}

@@ -503,7 +503,7 @@
       <main class="main" data-name="report">
         <div class="container">
           <h1 class="main__title">Отчёт по изменениям</h1>
-          <div class="wrap wrap--content wrap--content-const">
+          <div class="wrap wrap--content wrap--content-report">
             <div class="main__cards main__cards--main">
               <p class="main__count-wrap main__count-wrap--main"><span class="main__count-text">Количество qr-кодов и карт:&nbsp</span><span class="main__count main__count--all-qr">0</span></p>
             </div>
@@ -520,7 +520,8 @@
                   <div class="table__cell table__cell--header table__cell--department"><span class="table__text table__text--header">Подразделение/факультет</span>
                     <button class="btn btn--sort" type="button" data-direction="true"></button>
                   </div>
-                  <div class="table__cell table__cell--header table__cell--statusid"><span class="table__text table__text--header">Статус</span></div>
+                  <div class="table__cell table__cell--header table__cell--cardname"><span class="table__text table__text--header">Номер иден-тора</span></div>
+                  <div class="table__cell table__cell--header table__cell--statustitle"><span class="table__text table__text--header">Статус</span></div>
                   <div class="table__cell table__cell--header table__cell--date"><span class="table__text table__text--header">Дата</span></div>
                 </header>
                 <div class="table__body" id="tableReport">
@@ -533,7 +534,7 @@
       </main>
       <footer class="footer">
         <div class="container">
-          <div class="footer__wrap"><small class="footer__version">v2.0.0</small></div>
+          <div class="footer__wrap"><small class="footer__version">v2.0.1</small></div>
         </div>
       </footer>
     </div>
