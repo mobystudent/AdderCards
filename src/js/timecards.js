@@ -271,7 +271,7 @@ function createObjectForBD() {
 		DayNightCLM: 0,
 		AntipassbackDisabled: 0,
 		PhotoFile: '',
-		EmployeeNumber: '',
+		EmployeeNumber: 1,
 		Post: ''
 	};
 	const fillOutObjectInBD = [...timeFillOutCollection].map((elem) => {
@@ -291,6 +291,7 @@ function createObjectForBD() {
 	});
 
 	console.log(fillOutObjectInBD);
+	setDatainDB(fillOutObjectInBD);
 }
 
 function getCurrentDate() {
@@ -306,6 +307,23 @@ function countItems(tableContent, modDepart) {
 	const countItemfromDep = $(tableContent).eq(0).find('.table__row').length;
 
 	$(`.main__count--${modDepart}`).text(countItemfromDep);
+}
+
+function setDatainDB(array) {
+	$.ajax({
+		url: "./php/time-card.php",
+		method: "post",
+		dataType: "html",
+		data: {
+			array: array
+		},
+		success: function(data) {
+			console.log('succsess '+data);
+		},
+		error: function(data) {
+			console.log(data);
+		}
+	});
 }
 
 export default {

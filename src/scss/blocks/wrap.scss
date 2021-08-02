@@ -7,7 +7,7 @@
 		margin: 0 auto;
 
 		&-const {
-			max-width: 1600px;
+			max-width: 1410px;
 		}
 
 		&-time {
@@ -23,11 +23,31 @@
 		}
 
 		&-permis {
-			max-width: 1330px;
+			max-width: 1310px;
 		}
 
 		&-download {
 			max-width: 910px;
+		}
+
+		&-request {
+			max-width: 1160px;
+		}
+
+		&-add {
+			max-width: 1360px;
+		}
+
+		&-edit-fio {
+			max-width: 1060px;
+		}
+
+		&-edit-post {
+			max-width: 1040px;
+		}
+
+		&-edit-image {
+			max-width: 880px;
 		}
 	}
 }

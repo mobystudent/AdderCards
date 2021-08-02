@@ -33,10 +33,9 @@ main.main(data-name="qr")
 						.table__cell.table__cell--header.table__cell--cardname
 							span.table__text.table__text--header
 								| Номер qr-кода
-						.table__cell.table__cell--header.table__cell--statusid
+						.table__cell.table__cell--header.table__cell--statustitle
 							span.table__text.table__text--header
 								| Статус
-						.table__cell.table__cell--header.table__cell--clear
 						.table__cell.table__cell--header.table__cell--signature
 							span.table__text.table__text--header
 								| Подпись
@@ -57,3 +56,5 @@ main.main(data-name="qr")
 				| Добавить
 			button.btn.btn--print(type='button')
 				| Распечатать отчет
+			button.btn.btn--print-codes(type='button')
+				| Распечатать QR-кода

@@ -66,6 +66,10 @@ function setDataAttrSelectedItem(title, select, elem) {
 		} else if (dataType == 'changePost') {
 			$('.form__field--new-fio').hide();
 			$('.form__field--new-post').show();
+		} else if (dataType == 'changeImage') {
+			$('.form__field--new-fio, .form__field--new-post').hide();
+			$(elem).closest('.form__wrap').removeClass('form__wrap--center').find('.form__aside').removeClass('form__aside--hide');
+			// $('.form__field--new-post').show();
 		} else {
 			$('.form__field--new-fio, .form__field--new-post').hide();
 		}

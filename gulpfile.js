@@ -5,6 +5,7 @@ const gulp = require('gulp'),
 	pug = require('gulp-pug'),
 	sourcemaps = require('gulp-sourcemaps'),
 	rename = require('gulp-rename'),
+	debug = require('gulp-debug'),
 	browserSync = require('browser-sync').create();
 
 /* styles */
@@ -16,7 +17,8 @@ const autoprefixer = require('gulp-autoprefixer'),
 /* images */
 const imagemin = require('gulp-imagemin'),
 	jp2000 = require('gulp-jpeg-2000'),
-	webp = require('gulp-webp');
+	webp = require('gulp-webp'),
+	svgSprite = require('gulp-svg-sprite');
 
 /* fonts */
 const ttf2svg = require('gulp-ttf-svg'),
@@ -37,32 +39,37 @@ const dirBuild = 'build',
 	dirSrc = 'src',
 	path = {
 		build: {
-			html: dirBuild,
+			template: dirBuild,
 			scss: dirBuild,
 			pug: `${dirSrc}/template`,
+			php: `${dirBuild}/php`,
 			fonts: `${dirBuild}/fonts`,
 			favicon: `${dirBuild}/favicon`,
 			img: `${dirBuild}/images`,
 			js: `${dirBuild}/js`
 		},
 		src: {
-			html: `${dirSrc}/template/*.html`,
+			template: `${dirSrc}/template/index.php`,
+			php: `${dirSrc}/php/*.php`,
 			scss: `${dirSrc}/scss/style.scss`,
 			pug: `${dirSrc}/pug/**/*.pug`,
 			fonts: `${dirSrc}/fonts/*.{ttf,otf}`,
 			favicon: `${dirSrc}/favicon/*`,
 			imgBg: `${dirSrc}/images/backgrounds/*`,
 			imgPic: `${dirSrc}/images/pictures/*`,
+			imgSvg: `${dirSrc}/images/svg/*`,
 			js: `${dirSrc}/js/script.js`
 		},
 		watch: {
-			html: `${dirSrc}/template/**/*.html`,
+			template: `${dirSrc}/template/**/*.php`,
+			php: `${dirSrc}/php/**/*.php`,
 			scss: `${dirSrc}/scss/**/*.scss`,
 			pug: `${dirSrc}/pug/**/*.pug`,
 			fonts: `${dirSrc}/fonts/*`,
 			favicon: `${dirSrc}/favicon/*`,
 			imgBg: `${dirSrc}/images/backgrounds/*`,
 			imgPic: `${dirSrc}/images/pictures/*`,
+			imgSvg: `${dirSrc}/images/svg/*`,
 			js: `${dirSrc}/js/**/*.js`
 		}
 	};
@@ -86,9 +93,10 @@ function gulpSass() {
 		.pipe(groupcmq())
 		.pipe(autoprefixer({
 			grid: true,
-			overrideBrowserslist: ['> 0.4%, last 4 versions, firefox >= 52, edge >= 16, ie >= 11, safari >=10']
+			overrideBrowserslist: ['> 0.4%, last 4 versions, firefox >= 52, edge >= 18, safari >=10']
 		}))
 		.pipe(sourcemaps.write('.'))
+		.pipe(debug({title: 'scss:'}))
 		.pipe(gulp.dest(path.build.scss))
 		.pipe(cleanCSS())
 		.pipe(rename('style.min.css'))
@@ -106,6 +114,7 @@ function gulpFonts() {
 		.pipe(ttf2woff2())
 		.pipe(gulp.src(path.src.fonts))
 		.pipe(ttf2eot())
+		.pipe(debug({title: 'fonts:'}))
 		.pipe(gulp.dest(path.build.fonts));
 }
 
@@ -115,13 +124,22 @@ function gulpPug() {
 		.pipe(pug({
 			pretty: true
 		}))
+		.pipe(rename({
+			extname: '.php'
+		}))
 		.pipe(gulp.dest(path.build.pug));
 }
 
-/* copy html in build dir */
-function gulpHTML() {
-	return gulp.src(path.src.html)
-		.pipe(gulp.dest(path.build.html));
+/* copy template in build dir */
+function gulpTemplate() {
+	return gulp.src(path.src.template)
+		.pipe(gulp.dest(path.build.template));
+}
+
+/* copy php in build dir */
+function gulpPHP() {
+	return gulp.src(path.src.php)
+		.pipe(gulp.dest(path.build.php));
 }
 
 /* optimize images */
@@ -141,6 +159,7 @@ function gulpImagesPic() {
 				optimizationLevel: 2
 			})
 		]))
+		.pipe(debug({title: 'pictures:'}))
 		.pipe(gulp.dest(path.build.img));
 }
 
@@ -162,6 +181,34 @@ function gulpImagesBg() {
 				}]
 			})
 		]))
+		.pipe(debug({title: 'backgrounds:'}))
+		.pipe(gulp.dest(path.build.img));
+}
+
+function gulpImagesSVG() {
+	return gulp.src(path.src.imgSvg)
+		.pipe(svgSprite({
+			share: {
+				transform: [
+					{
+						svgo: {
+							plugins: [{
+								removeAttrs: {
+									attrs: ['class', 'style', 'fill', 'stroke.*']
+								},
+								removeViewBox: true
+							}]
+						}
+					}
+				]
+			},
+			mode: {
+				symbol: {
+					sprite: '../sprite.svg'
+				}
+			}
+		}))
+		.pipe(debug({title: 'svg:'}))
 		.pipe(gulp.dest(path.build.img));
 }
 
@@ -198,32 +245,35 @@ function gulpJS() {
 				min: '.min.js'
 			}
 		}))
+		.pipe(debug({title: 'js:'}))
 		.pipe(gulp.dest(path.build.js));
 }
 
 /* watch src files and show changes in browser */
 function gulpWatch() {
-	browserSync.init({
-		server: './' + dirBuild
-	});
+	// browserSync.init({
+	// 	server: './' + dirBuild
+	// });
 
 	gulp.watch(path.watch.scss, gulp.series(gulpSass));
 	gulp.watch(path.watch.pug, gulp.series(gulpPug));
-	gulp.watch(path.watch.html, gulp.series(gulpHTML));
+	gulp.watch(path.watch.template, gulp.series(gulpTemplate));
+	gulp.watch(path.watch.php, gulp.series(gulpPHP));
 	gulp.watch(path.watch.js, gulp.series(gulpJS));
 	gulp.watch(path.watch.imgPic, gulp.series(gulpImagesPic));
 	gulp.watch(path.watch.imgBg, gulp.series(gulpImagesBg));
+	gulp.watch(path.watch.imgSvg, gulp.series(gulpImagesSVG));
 	gulp.watch(path.watch.fonts, gulp.series(gulpFonts));
 }
 
-const dev = gulp.series(clean, gulp.parallel(gulp.series(gulpImagesPic, gulpImagesBg, gulpFonts, gulpSass), gulpHTML, gulpPug, gulpJS, gulpFavicon)),
-	build = gulp.series(clean, gulp.parallel(gulp.series(gulpImagesPic, gulpImagesBg, gulpFonts, gulpSass), gulpHTML, gulpJS, gulpFavicon));
+const dev = gulp.series(clean, gulp.parallel(gulp.series(gulpImagesPic, gulpImagesBg, gulpImagesSVG, gulpFonts, gulpSass), gulpTemplate, gulpPHP, gulpPug, gulpJS, gulpFavicon)),
+	build = gulp.series(clean, gulp.parallel(gulp.series(gulpImagesPic, gulpImagesBg, gulpImagesSVG, gulpFonts, gulpSass), gulpTemplate, gulpPHP, gulpJS, gulpFavicon));
 
 exports.default = build;
 exports.watch = gulp.series(build, gulpWatch);
 exports.dev = gulp.series(dev, gulpWatch);
-exports.elem = gulp.series(gulp.parallel(gulpFonts, gulpFavicon, gulpImagesPic, gulpImagesBg));
+exports.elem = gulp.series(gulp.parallel(gulpFonts, gulpFavicon, gulpImagesPic, gulpImagesBg, gulpImagesSVG));
 exports.clean = clean;
 exports.js = gulpJS;
-exports.img = gulp.parallel(gulpImagesPic, gulpImagesBg);
+exports.img = gulp.parallel(gulpImagesPic, gulpImagesBg, gulpImagesSVG);
 exports.fonts = gulpFonts;

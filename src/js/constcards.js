@@ -1,13 +1,61 @@
 'use strict';
 
 import $ from 'jquery';
+import { json } from './data.js';
+import { nameDeparts } from './nameDepart.js';
 import convert from './convert.js';
 
-const constFillOutCardCollection = new Set(); // БД постоянных карт с присвоеными id
-const constReportCollection = new Set(); // БД постоянных карт с присвоеными id для отчета
+const constCollection = new Map(); // БД пользователей которым разрешили выдачу карт
+// const constFillOutCardCollection = new Set(); // БД постоянных карт с присвоеными id
+// const constReportCollection = new Set(); // БД постоянных карт с присвоеными id для отчета
+
+$(window).on('load', () => {
+	userdFromJSON();
+	submitIDinBD();
+});
+
+function stringifyJSON() {
+	const strJson = JSON.stringify(json);
+
+	return strJson;
+}
+
+function userdFromJSON() {
+	const dataArr = JSON.parse(stringifyJSON());
+	const depart = Object.values(dataArr).map((item) => item);
+	const objToCollection = {
+		id: '',
+		fio: '',
+		post: '',
+		nameid: '',
+		cardid: '',
+		cardname: '',
+		statusid: '',
+		statustitle: '',
+		department: ''
+	};
+
+	depart.forEach((elem, i) => {
+		const itemObject = Object.assign({}, objToCollection);
+
+		for (const itemField in itemObject) {
+			for (const key in elem) {
+				if (itemField === key.toLocaleLowerCase()) {
+					itemObject[itemField] = elem[key];
+				} else if (itemField === 'id') {
+					itemObject[itemField] = i;
+				}
+			}
+		}
+
+		constCollection.set(i, itemObject);
+	});
+
+	dataAdd('#tableConst');
+}
 
 function templateConstTable(data) {
-	const { id = '', fio = '', post  = '', cardid = '', cardname = '' } = data;
+	const { id = '', fio = '', post  = '', cardid = '', cardname = '', statustitle = '' } = data;
 	let typeIDField = '';
 
 	if (cardid) {
@@ -30,6 +78,9 @@ function templateConstTable(data) {
 			<div class="table__cell table__cell--body table__cell--cardname">
 				<span class="table__text table__text--body">${cardname}</span>
 			</div>
+			<div class="table__cell table__cell--body table__cell--statustitle">
+				<span class="table__text table__text--body">${statustitle}</span>
+			</div>
 			<div class="table__cell table__cell--body table__cell--clear">
 				<button class="table__btn table__btn--clear" type="button">
 					<svg class="icon icon--clear">
@@ -37,66 +88,130 @@ function templateConstTable(data) {
 					</svg>
 				</button>
 			</div>
-			<div class="table__cell table__cell--body table__cell--delete">
-				<button class="table__btn table__btn--delete" type="button">
-					<svg class="icon icon--delete">
-						<use class="icon__item" xlink:href="#delete"></use>
-					</svg>
-				</button>
+			<div class="table__cell table__cell--body table__cell--signature">
+				<span class="table__text table__text--body">Подпись</span>
 			</div>
 		</div>
 	`;
 }
 
-function clearNumberCard() {
-	$('.table__content').click((e) => {
-		if ($(e.target).parents('.table__btn--clear').length || $(e.target).hasClass('table__btn--clear')) {
-			const cardsUser = $(e.target).parents('.table__row');
+function dataAdd(nameTable) {
+	const filterNameDepart = filterDepart(constCollection);
 
-			cardsUser.find('.table__cell--cardid input').val('').removeAttr('readonly');
-			cardsUser.find('.table__cell--cardid').attr('data-cardid', '');
-			cardsUser.find('.table__cell--cardname span').text('');
-			cardsUser.find('.table__cell--cardname').attr('data-cardname', '');
+	viewAllCount(constCollection, 'const');
+
+	if (constCollection.size) {
+		$(`${nameTable} .table__nothing`).hide();
+	} else {
+		$(nameTable).addClass('table__body--empty').html('');
+		$(nameTable).append(`
+			<p class="table__nothing">Новых данных нет</p>
+		`);
+
+		countItems(filterNameDepart[0], 'const');
+		
+		return;
+	}
+
+	if (filterNameDepart.length > 1) {
+		addTabs(constCollection, 'const');
+		showActiveDataOnPage(constCollection , nameTable, 'const', filterNameDepart[0]);
+		changeTabs(nameTable, 'const');
+	} else {
+		$(nameTable).html('');
+		$(nameTable).append(`
+			<div class="table__content table__content--active">
+			</div>
+		`);
+		$(`.tab--const`).html('');
+
+		constCollection.forEach((user) => {
+			const { nameid = '', department = '' } = user;
+
+			showTitleDepart(department, nameid, 'const');
+
+			$(`${nameTable} .table__content--active`).append(templateConstTable(user));
+		});
+
+		convertCardIDInCardName();
+		clearNumberCard();
+	}
+}
+
+function showActiveDataOnPage(collection, nameTable, modDepart, nameDepart) {
+	$(nameTable).html('');
+	$(`.tab--${modDepart} .tab__item`).removeClass('tab__item--active');
+	$(nameTable).append(`
+		<div class="table__content table__content--active">
+		</div>
+	`);
+	$(`.tab__item[data-depart=${nameDepart}]`).addClass('tab__item--active');
+
+	collection.forEach((user) => {
+		if (user.nameid == nameDepart) {
+			$(`${nameTable} .table__content--active`).append(templateConstTable(user));
 		}
 	});
+
+	nameDeparts.forEach((depart) => {
+		const { idName = '', longName = '' } = depart;
+
+		if (idName == nameDepart) {
+			showTitleDepart(longName, idName, modDepart);
+		}
+	});
+
+	countItems(nameDepart, modDepart);
+	convertCardIDInCardName();
+	clearNumberCard();
+}
+
+function showTitleDepart(depart, id, modDepart) {
+	$(`.main__depart--${modDepart}`).text(depart).attr({'data-depart': depart, 'data-id': id});
 }
 
 function submitIDinBD() {
 	$('#submitConstCard').click(() => {
-		const itemUsers = $('#tableConst .table__content--active').find('.table__row');
-		const valueFields = [...itemUsers].map((row) => {
-			const cells = $(row).find('.table__cell');
-			const cellInfo = [...cells].filter((cell) => $(cell).attr('data-info'));
-			const valueField = cellInfo.reduce((acc, cell) => {
-				const name = $(cell).attr('data-name');
-				const value = $(cell).attr('data-value');
+		const idActiveDepart = $('.main__depart--const').attr('data-id');
+		const filterDepatCollection = [...constCollection.values()].filter((user) => user.nameid == idActiveDepart);
+		const identifiedItems = filterDepatCollection.every((user) => user.cardid);
 
-				acc[name] = value;
+		console.log(identifiedItems);
 
-				return acc;
-			}, {});
-			valueField.department = $('.main__depart--const').data('depart');
+		if (identifiedItems) {
+			const idFilterUsers = filterDepatCollection.map((item) => item.id);
 
-			constFillOutCardCollection.add(valueField);
+			filterDepatCollection.splice(0);
+			idFilterUsers.forEach((key) => {
+				constCollection.delete(key);
+			});
 
-			return valueField;
-		});
+			dataAdd('#tableConst');
 
-		valueFields.forEach((elem) => {
-			const objectWithDate = {};
-
-			for (let key in elem) {
-				objectWithDate[key] = elem[key];
+			if (!constCollection.size) {
+				showTitleDepart('', '', 'const');
 			}
-			objectWithDate.date = getCurrentDate();
-			objectWithDate.department = $('.main__depart--const').data('depart');
 
-			constReportCollection.add(objectWithDate);
-		});
+			$('.info__warn').hide();
+		} else {
+			$('.info__warn').show();
+		}
 
-		console.warn(constFillOutCardCollection); // пойдет в БД
-		console.warn(constReportCollection); // пойдет в отчет
-		createObjectForBD();
+		console.log(constCollection);
+
+		// valueFields.forEach((elem) => {
+		// 	const objectWithDate = {};
+		//
+		// 	for (let key in elem) {
+		// 		objectWithDate[key] = elem[key];
+		// 	}
+		// 	objectWithDate.date = getCurrentDate();
+		//
+		// });
+
+		// console.warn(constFillOutCardCollection); // пойдет в БД
+		// console.warn(constReportCollection); // пойдет в отчет
+		// createObjectForBD();
 		// constFillOutCardCollection.clear();
 	});
 }
@@ -147,42 +262,52 @@ function getCurrentDate() {
 	return `${currentDay}-${currentMonth}-${currentYear}`;
 }
 
-function convertCardIDInCardName() {
+function clearNumberCard() {
 	$('.table__content').click((e) => {
-		if (!$(e.target).hasClass('table__input')) return;
-
-		$('.table__input').on('input', (e) => {
-			const cardIdVal = $(e.target).val().trim();
-			const convertNumCard = convert.convertCardId(cardIdVal);
-
-			if (!convertNumCard) {
-				$(e.target).parents('.main').find('.info__item--error').show();
-
-				return;
-			}
-
-			$(e.target).attr('readonly', 'readonly');
-			$(e.target).parent().attr('data-value', cardIdVal);
-			$(e.target).parents('.table__row').attr('data-card', true);
-			$(e.target).parents('.table__row').find('.table__cell--cardname .table__text').text(convertNumCard);
-			$(e.target).parents('.table__row').find('.table__cell--cardname').attr('data-value', convertNumCard);
-
-			checkInvalidValueCardID(e.target);
-			focusNext(e.target);
-		});
+		if ($(e.target).closest('.table__btn--clear').hasClass('table__btn--clear')) {
+			setDataInTable(e.target, '', '');
+		}
 	});
 }
 
-function checkInvalidValueCardID(item) {
-	const allItems = $('#tableConst .table__content--active .table__row');
-	const allValueItems = [...allItems].map((item) => {
-		const itemValue = $(item).find('.table__cell--cardid .table__input').val().trim();
+function convertCardIDInCardName() {
+	$('.table__input').on('input', (e) => {
+		if (!$(e.target).hasClass('table__input')) return;
 
-		return itemValue ? convert.convertCardId(itemValue) : '';
+		const cardIdVal = $(e.target).val().trim();
+		const convertNumCard = convert.convertCardId(cardIdVal);
+
+		if (!convertNumCard) {
+			$(e.target).parents('.main').find('.info__item--error').show();
+
+			return;
+		}
+
+		setDataInTable(e.target, cardIdVal, convertNumCard);
+		checkInvalidValueCardID('const');
+		// focusNext(e.target);
+		// dataAdd('#tableConst');
 	});
-	const checkValueCard = [...allValueItems].every((item) => item !== false);
+}
 
-	if (checkValueCard) $(item).parents('.main').find('.info__item--error').hide();
+function setDataInTable(item, cardid, cardname) {
+	const userID = $(item).parents('.table__row').data('id');
+	const nameDepart = $('.main__depart--const').attr('data-id');
+
+	constCollection.forEach((user) => {
+		if (user.id === userID) {
+			user.cardid = cardid;
+			user.cardname = cardname;
+		}
+	});
+
+	showActiveDataOnPage(constCollection ,'#tableConst', 'const', nameDepart);
+}
+
+function checkInvalidValueCardID(namePage) {
+	const checkValueCard = [...constCollection.values()].every((user) => convert.convertCardId(user.cardid) || user.cardid === '');
+
+	if (checkValueCard) $(`.main[data-name=${namePage}]`).find('.info__item--error').hide();
 }
 
 function focusNext(item) {
@@ -193,8 +318,59 @@ function focusNext(item) {
 	}
 }
 
+// Общие функции с картами и кодами
+function countItems(idDepart, modDepart) {
+	const countItemfromDep = [...constCollection.values()].filter((user) => user.nameid === idDepart);
+
+	$(`.main__count--${modDepart}`).text(countItemfromDep.length);
+}
+
+function viewAllCount(collection, modDepart) {
+	$(`.main__count--all-${modDepart}`).text(collection.size);
+}
+
+function addTabs(collection, modDepart) {
+	const filterNameDepart = filterDepart(collection);
+
+	$(`.tab--${modDepart}`).html('');
+
+	if (filterNameDepart.length > 1) {
+		filterNameDepart.forEach((item) => {
+			nameDeparts.forEach((depart) => {
+				const { idName = '', shortName = '' } = depart;
+
+				if (item == idName) {
+					$(`.tab--${modDepart}`).append(`
+						<button class="tab__item" type="button" data-depart=${idName}>
+							<span class="tab__name">${shortName}</span>
+						</button>
+					`);
+				}
+			});
+		});
+	}
+}
+
+function changeTabs(nameTable, modDepart) {
+	$(`.tab--${modDepart}`).click((e) => {
+		if (!$(e.target).parents('.tab__item').length && !$(e.target).hasClass('tab__item')) return;
+
+		const nameDepart = $(e.target).closest('.tab__item').data('depart');
+
+		showActiveDataOnPage(constCollection, nameTable, modDepart, nameDepart);
+	});
+}
+
+function filterDepart(collection) {
+	const arrayDepart = [...collection.values()].reduce((acc, item) => {
+		acc.push(item.nameid);
+		return acc;
+	}, []);
+	const filterIdDepart = new Set(arrayDepart);
+
+	return [...filterIdDepart];
+}
+
 export default {
-	clearNumberCard,
-	convertCardIDInCardName,
-	submitIDinBD
+
 };

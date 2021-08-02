@@ -11,7 +11,7 @@ main.main(data-name="download")
 						span.main__count.main__count--download
 							| 0
 			.field
-				textarea.field__textarea
+				textarea.field__textarea(placeholder="Загрузите текстовые коды для конвертирования")
 					
 			button.btn.btn--download#addQRCodes(type="button")
 				| Добавить
@@ -45,6 +45,10 @@ main.main(data-name="download")
 			.info
 				p.info__item.info__item--warn.info__item--fields
 					| Предупреждение! Не верно введена строка с кодом.
+				p.info__item.info__item--warn.info__item--missed
+					| Предупреждение! Пропущена одна из трех обязательных частей qr-кода, для конвертирования.
+				p.info__item.info__item--warn.info__item--deficit
+					| Предупреждение! Недостаточно кодов для присвоения пользователям.
 				p.info__item.info__item--warn.info__item--users
 					| Предупреждение! Нет новых пользователей для присвоения qr-кода.
 		

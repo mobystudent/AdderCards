@@ -1,14 +1,3 @@
-<?php
-
-	$mysqli = new mysqli("localhost", "root", "root", "security-system");
-	$mysqli->query ("SET NAMES 'utf8'");
-
-	echo('Hello');
-
-	$mysqli->close();//закрываем соединение с БД
-
-?>
-
 <!DOCTYPE html>
 <html lang="ru">
   <head>
@@ -544,7 +533,7 @@
       </main>
       <footer class="footer">
         <div class="container">
-          <div class="footer__wrap"><small class="footer__version">v1.7.17</small></div>
+          <div class="footer__wrap"><small class="footer__version">v2.0.0</small></div>
         </div>
       </footer>
     </div>

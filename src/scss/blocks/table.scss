@@ -131,6 +131,7 @@
 		&--delete,
 		&--clear {
 			flex: 0 0 40px;
+			padding: 0;
 
 			@media print {
 				display: none;
@@ -178,7 +179,7 @@
 
 		&--cardid,
 		&--cardname,
-		&--statusid,
+		&--statustitle,
 		&--date {
 			text-align: center;
 			justify-content: center;
@@ -187,6 +188,10 @@
 
 		&--nameid {
 			display: none;
+		}
+
+		&--image {
+			flex: 0 0 200px;
 		}
 
 		&--titleid {
@@ -201,7 +206,7 @@
 
 		&--cardname,
 		&--cardid,
-		&--statusid {
+		&--statustitle {
 			.table__text {
 				justify-content: center;
 			}
@@ -209,7 +214,7 @@
 
 		@media print {
 			&--cardid,
-			&--statusid {
+			&--statustitle {
 				display: none;
 			}
 
@@ -234,10 +239,11 @@
 		}
 
 		&--body {
-			display: block;
+			display: flex;
+			align-items: center;
 			@extend %text--premedium;
 			color: $spaceBlack;
-			// height: 40px;
+			height: 40px;
 			width: 100%;
 			text-overflow: ellipsis;
 			overflow: hidden;
@@ -259,7 +265,7 @@
 		width: 100%;
 
 		&:focus {
-			box-shadow: 0 0 0 7px $gray, 0 0 10px 10px $blueLight;
+			box-shadow: 0 0 0 9px $gray, 0 0 0 15px $blueLight;
 		}
 
 		@media print {
@@ -269,7 +275,6 @@
 	}
 
 	&__nothing {
-		display: none;
 		padding: 20px;
 		@extend %text--premedium;
 		text-align: center;

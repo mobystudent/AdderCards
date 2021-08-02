@@ -3,24 +3,47 @@
 import $ from 'jquery';
 import QRCode from 'qrcode';
 
-const qrCollection = new Set(); // БД сформированных qr-кодов
+const downloadCollection = new Set(); // БД сформированных qr-кодов
 const qrNeedsUsersCollection = new Set(); // БД qr-кодов которые будут присвоены пользователям в QRconst
 const qrFillOutUsersCollection = new Set(); // БД пользователей с присвоеными qr-кодами
 
 $(window).on('load', () => {
-
 	addQRCodesInTable('.field__textarea');
 	countQRCodes();
 	addQRCodeUsers();
 	submitIDinBD();
 });
 
+function templateDownloadTable(data) {
+	const { codepicture = '', cardid = '', cardname = '' } = data;
+
+	return `
+		<div class="table__row table__row--time">
+			<div class="table__cell table__cell--body table__cell--codepicture">
+				<span class="table__text table__text--body">${codepicture}</span>
+			</div>
+			<div class="table__cell table__cell--body table__cell--cardid">
+				<span class="table__text table__text--body">${cardid}</span>
+			</div>
+			<div class="table__cell table__cell--body table__cell--cardname">
+				<span class="table__text table__text--body">${cardname}</span>
+			</div>
+			<div class="table__cell table__cell--body table__cell--delete">
+				<button class="table__btn table__btn--delete" type="button">
+					<svg class="icon icon--delete">
+						<use class="icon__item" xlink:href="#delete"></use>
+					</svg>
+				</button>
+			</div>
+		</div>
+	`;
+}
+
 function countQRCodes() {
 	$('.field__textarea').bind('input', (e) => {
 		const filterItems = arrayQRCodes(e.target);
-		const countQRs = filterItems.length;
 
-		$('.main__count--download').text(countQRs);
+		$('.main__count--download').text(filterItems.length);
 	});
 }
 
@@ -35,70 +58,94 @@ function arrayQRCodes(elem) {
 function addQRCodesInTable(elem) {
 	$('#addQRCodes').click(() => {
 		const filterItems = arrayQRCodes(elem);
-		const parseQRItem = filterItems.map((item) =>  item.split(' '));
+		const parseQRItem = filterItems.map((item) => item.split(' '));
 
 		parseQRItem.forEach((item) => {
 			const codePicture = item.find((obj) => obj.includes('N-'));
 			const idQR = item.find((obj) => obj.length === 10);
 			const nameQR = item.find((obj) => obj.length === 16);
 
-			qrCollection.add({
+			downloadCollection.add({
 				codepicture: codePicture,
 				cardid: idQR,
 				cardname: nameQR
 			});
 		});
 
-		createTable();
+		parseQRItem.splice(0);
+
+		dataAdd('#tableDownload');
 		$('.field__textarea').val('');
-		$('.main__count--all-download').text(qrCollection.size);
-		$('.main__count--download').text('0');
+		$('.main__count--download').text(parseQRItem.length);
 	});
 }
 
-function createTable() {
-	if (!$('#tableDownload').find('.table__content').length) {
-		$('#tableDownload').append(`<div class="table__content table__content--active"></div>`);
+function dataAdd(nameTable) {
+	$('.main__count--all-download').text(downloadCollection.size);
+
+	if (downloadCollection.size) {
+		$(`${nameTable} .table__nothing`).hide();
+
+		$(nameTable).html('');
+		$(nameTable).append(`
+			<div class="table__content table__content--active">
+			</div>
+		`);
+
+		downloadCollection.forEach((item) => {
+			$(`${nameTable} .table__content--active`).append(templateDownloadTable(item));
+		});
 	} else {
-		$('#tableDownload .table__content--active').html('');
+		$(nameTable).addClass('table__body--empty').html('');
+		$(nameTable).append(`
+			<p class="table__nothing">Новых данных нет</p>
+		`);
+
+		return;
 	}
-
-	qrCollection.forEach((item) => {
-		const { codepicture = '', cardid = '', cardname = '' } = item;
-
-		$('#tableDownload .table__content').append(templateDownloadTable(codepicture, cardid, cardname));
-
-		removeEmptyPlugTable('download');
-	});
 }
 
 // Удалить пустую заглушку, если таблица не пустая
-function removeEmptyPlugTable(tableName) {
-	$(`.table--${tableName} .table__body`).removeClass('table__body--empty');
-	$(`.table--${tableName} .table__nothing`).hide();
-}
+// function removeEmptyPlugTable(tableName) {
+// 	$(`.table--${tableName} .table__body`).removeClass('table__body--empty');
+// 	$(`.table--${tableName} .table__nothing`).hide();
+// }
 
-function templateDownloadTable(codepicture, cardid, cardname) {
-	return `
-		<div class="table__row table__row--time">
-			<div class="table__cell table__cell--body table__cell--codepicture" data-name="codepicture" data-info="true" data-value="${codepicture}">
-				<span class="table__text table__text--body">${codepicture}</span>
-			</div>
-			<div class="table__cell table__cell--body table__cell--cardid" data-name="cardid" data-info="true" data-value="${cardid}">
-				<span class="table__text table__text--body">${cardid}</span>
-			</div>
-			<div class="table__cell table__cell--body table__cell--cardname" data-name="cardname" data-info="true" data-value="${cardname}">
-				<span class="table__text table__text--body">${cardname}</span>
-			</div>
-			<div class="table__cell table__cell--body table__cell--delete">
-				<button class="table__btn table__btn--delete" type="button">
-					<svg class="icon icon--delete">
-						<use class="icon__item" xlink:href="#delete"></use>
-					</svg>
-				</button>
-			</div>
-		</div>
-	`;
+function addQRCodeUsers() {
+	$('#submitDownloadQR').click(() => {
+		const countNeedsQRUsers = validationCountQRUsers();
+		const countItemsTableQR = $('#tableQR .table__content--active .table__row').length;
+
+		if (!countNeedsQRUsers) return;
+
+		console.log(downloadCollection.size);
+		console.log(countItemsTableQR);
+
+		if (downloadCollection.size > countItemsTableQR) {
+			[...downloadCollection].forEach((elem, i) => {
+				const objectWithDate = {};
+
+				if (i < countNeedsQRUsers) {
+					for (let key in elem) {
+						objectWithDate[key] = elem[key];
+					}
+					objectWithDate.date = getCurrentDate();
+
+					qrNeedsUsersCollection.add(objectWithDate);
+					downloadCollection.delete(elem);
+				}
+			});
+
+			$('.info__item--deficit').hide();
+			dataAdd('#tableDownload');
+			assignQRCodeUsers();
+			$('.main__count--all-download').text(downloadCollection.size);
+		} else {
+			$('.info__item--deficit').show();
+
+			return;
+		}
+	});
 }
 
 // Получить кол-во нуждающихся пользователей из таблицы QR
@@ -109,34 +156,6 @@ function validationCountQRUsers() {
 	$('.info__item--users')[visibleMessage]();
 
 	return !countItemsTableQR ? false : countItemsTableQR;
-}
-
-function addQRCodeUsers() {
-	$('#submitDownloadQR').click(() => {
-		const countNeedsQRUsers = validationCountQRUsers();
-
-		if (!countNeedsQRUsers) return;
-
-		[...qrCollection].forEach((elem, i) => {
-			const objectWithDate = {};
-
-			if (i < countNeedsQRUsers) {
-				for (let key in elem) {
-					objectWithDate[key] = elem[key];
-				}
-				objectWithDate.date = getCurrentDate();
-
-				qrNeedsUsersCollection.add(objectWithDate);
-				qrCollection.delete(elem);
-			}
-		});
-
-		console.log(qrNeedsUsersCollection);
-
-		createTable();
-		assignQRCodeUsers();
-		$('.main__count--all-download').text(qrNeedsUsersCollection.size);
-	});
 }
 
 function getCurrentDate() {

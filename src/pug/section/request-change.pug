@@ -26,27 +26,20 @@ main.main(data-name="request")
 						.table__cell.table__cell--header.table__cell--post
 							span.table__text.table__text--header
 								| Должность
-						//- .table__cell.table__cell--header.table__cell--cardid
-						//- 	span.table__text.table__text--header
-						//- 		| ID карты
-						//- .table__cell.table__cell--header.table__cell--cardname
-						//- 	span.table__text.table__text--header
-						//- 		| Номер карты
-						.table__cell.table__cell--header.table__cell--statusid
+						.table__cell.table__cell--header.table__cell--statustitle
 							span.table__text.table__text--header
 								| Статус
 						.table__cell.table__cell--header.table__cell--date
 							span.table__text.table__text--header
 								| Дата
-						.table__cell.table__cell--header.table__cell--clear
 					.table__body#tableRequest
 						p.table__nothing
 							| Новых данных нет
 							
 		.info
-			p.info__warn
-				| Предупреждение! Ни одного пользователя не выбрано.
+			p.info__item.info__item--warn.info__item--fields
+				| Предупреждение! Не все поля заполненны.
 	
 		.main__btns
 			button.btn.btn--confirm(type='button')
-				| Подтвердить
+				| Пременить

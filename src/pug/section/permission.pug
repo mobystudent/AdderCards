@@ -27,7 +27,7 @@ main.main(data-name="permis")
 							span.table__text.table__text--header
 								| Должность
 							button.btn.btn--sort(type='button' data-direction='true')
-						.table__cell.table__cell--header.table__cell--statusid
+						.table__cell.table__cell--header.table__cell--statustitle
 							span.table__text.table__text--header
 								| Статус
 						.table__cell.table__cell--header.table__cell--control
@@ -35,7 +35,7 @@ main.main(data-name="permis")
 								| Разрешить все
 							button.btn.btn--disallow#disallowAll(type='button' data-type="disallow" data-cancel="Отменить" data-disallow="Запретить все")
 								| Запретить все
-					.table__body#tablePermiss
+					.table__body.table__body--empty#tablePermis
 						p.table__nothing
 							| Новых данных нет
 	
