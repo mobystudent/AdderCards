@@ -48,25 +48,6 @@ function defaultDataInTables() {
 	$(`.main[data-name="const"]`).show();
 }
 
-function delegationID(users) {
-	const filterArrCards = users.filter((item) => {
-		if (item.StatusID == 'newCard' || item.StatusID == 'changeCard') {
-
-			return item;
-		}
-	});
-	const filterArrQRs = users.filter((item) => {
-		if (item.StatusID == 'newQR' || item.StatusID == 'changeQR') {
-
-			return item;
-		}
-	});
-
-	// if (permissCardsCollection.size) {
-	// 	focusFirstCell('const');
-	// }
-}
-
 function createTable() {
 	// if (tabName === 'add') {
 	// 	return {

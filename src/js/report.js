@@ -8,10 +8,27 @@ $(window).on('load', () => {
 	getDatainDB();
 });
 
+function getDatainDB() {
+	$.ajax({
+		url: "./php/report.php",
+		method: "post",
+		success: function(data) {
+			const dataFromDB = JSON.parse(data);
+
+			dataFromDB.forEach((item, i) => {
+				reportCollection.set(i, item);
+			});
+
+			dataAdd('#tableReport');
+		},
+		error: function(data) {
+			console.log(data);
+		}
+	});
+}
+
 function templateReportTable(data) {
 	const { id = '', fio = '', post = '', department = '', cardname = '', statustitle = '', date = '' } = data;
-
-	console.log(fio);
 
 	return `
 		<div class="table__row" data-id="${id}">
@@ -62,25 +79,6 @@ function dataAdd(nameTable) {
 
 		return;
 	}
-}
-
-function getDatainDB() {
-	$.ajax({
-		url: "./php/report.php",
-		method: "post",
-		success: function(data) {
-			const dataFromDB = JSON.parse(data);
-
-			dataFromDB.forEach((item, i) => {
-				reportCollection.set(i, item);
-			});
-
-			dataAdd('#tableReport');
-		},
-		error: function(data) {
-			console.log(data);
-		}
-	});
 }
 
 export default {

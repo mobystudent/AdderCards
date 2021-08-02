@@ -1,25 +1,31 @@
 'use strict';
 
 import $ from 'jquery';
-import { json } from './data.js';
 import { nameDeparts } from './nameDepart.js';
 
 const permissionCollection = new Map(); // БД пользователей при старте
 
 $(window).on('load', () => {
-	userdFromJSON();
+	getDatainDB();
 	submitIDinBD();
 });
 
-function stringifyJSON() {
-	const strJson = JSON.stringify(json);
+function getDatainDB() {
+	$.ajax({
+		url: "./php/permission.php",
+		method: "post",
+		success: function(data) {
+			const dataFromDB = JSON.parse(data);
 
-	return strJson;
+			userdFromDB(dataFromDB);
+		},
+		error: function(data) {
+			console.log(data);
+		}
+	});
 }
 
-function userdFromJSON() {
-	const dataArr = JSON.parse(stringifyJSON());
-	const depart = Object.values(dataArr).map((item) => item);
+function userdFromDB(array) {
 	const objToCollection = {
 		id: '',
 		fio: '',
@@ -31,7 +37,7 @@ function userdFromJSON() {
 		statuspermiss: ''
 	};
 
-	depart.forEach((elem, i) => {
+	array.forEach((elem, i) => {
 		const itemObject = Object.assign({}, objToCollection);
 
 		for (const itemField in itemObject) {
@@ -160,7 +166,11 @@ function submitIDinBD() {
 			const allowItems = filterDepatCollection.filter((item) => item.statuspermiss === 'allow');
 			const idFilterUsers = filterDepatCollection.map((item) => item.id);
 
+
 			console.log(allowItems);
+
+			delegationID(allowItems);
+			getDeleteDataInDB(allowItems);
 
 			filterDepatCollection.splice(0);
 			idFilterUsers.forEach((key) => {
@@ -175,13 +185,20 @@ function submitIDinBD() {
 			}
 
 		// 	returnToNextTab(e.target);
-		// 	delegationID(returnUsers);
 
 			$('.info__warn').hide();
 		} else {
 			$('.info__warn').show();
 		}
 	});
+}
+
+function delegationID(users) {
+	const filterArrCards = users.filter((item) => item.statusid == 'newCard' || item.statusid == 'changeCard');
+	const filterArrQRs = users.filter((item) => item.statusid == 'newQR' || item.statusid == 'changeQR');
+
+	getDataInCardDB(filterArrCards);
+	getDataInQRDB(filterArrQRs);
 }
 
 function clickAllowDisallowPermiss() {
@@ -271,6 +288,58 @@ function resetControlBtns() {
 
 		$(item).removeClass(`btn--${typeBtn}-disabled btn--${typeBtn}-cancel`).removeAttr('disabled', 'disabled');
 		$(`.table__header .btn--${typeBtn}`).text(textBtn);
+	});
+}
+
+function getDataInCardDB(array) {
+
+	$.ajax({
+		url: "./php/const-card.php",
+		method: "post",
+		dataType: "html",
+		data: {
+			array: array
+		},
+		success: function(data) {
+			console.log('succsess '+data);
+		},
+		error: function(data) {
+			console.log(data);
+		}
+	});
+}
+
+function getDataInQRDB(array) {
+	$.ajax({
+		url: "./php/const-qr.php",
+		method: "post",
+		dataType: "html",
+		data: {
+			array: array
+		},
+		success: function(data) {
+			console.log('succsess '+data);
+		},
+		error: function(data) {
+			console.log(data);
+		}
+	});
+}
+
+function getDeleteDataInDB(array) {
+	$.ajax({
+		url: "./php/permission-delete.php",
+		method: "post",
+		dataType: "html",
+		data: {
+			array: array
+		},
+		success: function(data) {
+			console.log('succsess '+data);
+		},
+		error: function(data) {
+			console.log(data);
+		}
 	});
 }
 

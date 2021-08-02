@@ -1,1 +1,1 @@
-{"version":3,"names":[],"mappings":"","sources":["includes/footer.pug"],"sourcesContent":["footer.footer\r\n\t.container\r\n\t\t.footer__wrap\r\n\t\t\tsmall.footer__version v2.0.1\r\n"],"file":"footer.php"}
+{"version":3,"names":[],"mappings":"","sources":["includes/footer.pug"],"sourcesContent":["footer.footer\r\n\t.container\r\n\t\t.footer__wrap\r\n\t\t\tsmall.footer__version v2.0.2\r\n"],"file":"footer.php"}
