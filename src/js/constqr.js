@@ -1,25 +1,31 @@
 'use strict';
 
 import $ from 'jquery';
-import { json } from './data.js';
 import { nameDeparts } from './nameDepart.js';
 import QRCode from 'qrcode';
 
 const qrCollection = new Map(); // БД пользователей которым разрешили выдачу qr-кодов
 
 $(window).on('load', () => {
-	userdFromJSON();
+	getDatainDB();
 });
 
-function stringifyJSON() {
-	const strJson = JSON.stringify(json);
+function getDatainDB() {
+	$.ajax({
+		url: "./php/const-qr-get.php",
+		method: "post",
+		success: function(data) {
+			const dataFromDB = JSON.parse(data);
 
-	return strJson;
+			userdFromDB(dataFromDB);
+		},
+		error: function(data) {
+			console.log(data);
+		}
+	});
 }
 
-function userdFromJSON() {
-	const dataArr = JSON.parse(stringifyJSON());
-	const depart = Object.values(dataArr).map((item) => item);
+function userdFromDB(array) {
 	const objToCollection = {
 		id: '',
 		fio: '',
@@ -32,7 +38,7 @@ function userdFromJSON() {
 		department: ''
 	};
 
-	depart.forEach((elem, i) => {
+	array.forEach((elem, i) => {
 		const itemObject = Object.assign({}, objToCollection);
 
 		for (const itemField in itemObject) {
@@ -168,6 +174,19 @@ function focusNext(item) {
 	if (nextRow) {
 		$(nextRow).find('.table__input').focus();
 	}
+}
+
+function getCurrentDate() {
+	const date = new Date();
+	const month = date.getMonth() + 1;
+	const currentDay = date.getDate() < 10 ? `0${date.getDate()}` : date.getDate();
+	const currentMonth = month < 10 ? `0${month}` : month;
+	const currentYear = date.getFullYear() < 10 ? `0${date.getFullYear()}` : date.getFullYear();
+
+	const currentHour = date.getHours() < 10 ? `0${date.getHours()}` : date.getHours();
+	const currentMinute = date.getMinutes() < 10 ? `0${date.getMinutes()}` : date.getMinutes();
+
+	return `${currentDay}-${currentMonth}-${currentYear} ${currentHour}:${currentMinute}`;
 }
 
 // Общие функции с картами и кодами

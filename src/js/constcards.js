@@ -1,7 +1,6 @@
 'use strict';
 
 import $ from 'jquery';
-import { json } from './data.js';
 import { nameDeparts } from './nameDepart.js';
 import convert from './convert.js';
 
@@ -10,19 +9,26 @@ const constCollection = new Map(); // БД пользователей котор
 // const constReportCollection = new Set(); // БД постоянных карт с присвоеными id для отчета
 
 $(window).on('load', () => {
-	userdFromJSON();
+	getDatainDB();
 	submitIDinBD();
 });
 
-function stringifyJSON() {
-	const strJson = JSON.stringify(json);
+function getDatainDB() {
+	$.ajax({
+		url: "./php/const-card-get.php",
+		method: "post",
+		success: function(data) {
+			const dataFromDB = JSON.parse(data);
 
-	return strJson;
+			userdFromDB(dataFromDB);
+		},
+		error: function(data) {
+			console.log(data);
+		}
+	});
 }
 
-function userdFromJSON() {
-	const dataArr = JSON.parse(stringifyJSON());
-	const depart = Object.values(dataArr).map((item) => item);
+function userdFromDB(array) {
 	const objToCollection = {
 		id: '',
 		fio: '',
@@ -35,7 +41,7 @@ function userdFromJSON() {
 		department: ''
 	};
 
-	depart.forEach((elem, i) => {
+	array.forEach((elem, i) => {
 		const itemObject = Object.assign({}, objToCollection);
 
 		for (const itemField in itemObject) {
@@ -181,6 +187,12 @@ function submitIDinBD() {
 		if (identifiedItems) {
 			const idFilterUsers = filterDepatCollection.map((item) => item.id);
 
+			constCollection.forEach((item) => {
+				item.date = getCurrentDate();
+			});
+
+			setDatainDB([...constCollection.values()]);
+
 			filterDepatCollection.splice(0);
 			idFilterUsers.forEach((key) => {
 				constCollection.delete(key);
@@ -197,22 +209,28 @@ function submitIDinBD() {
 			$('.info__warn').show();
 		}
 
-		console.log(constCollection);
-
-		// valueFields.forEach((elem) => {
-		// 	const objectWithDate = {};
-		//
-		// 	for (let key in elem) {
-		// 		objectWithDate[key] = elem[key];
-		// 	}
-		// 	objectWithDate.date = getCurrentDate();
-		//
-		// });
-
 		// console.warn(constFillOutCardCollection); // пойдет в БД
 		// console.warn(constReportCollection); // пойдет в отчет
 		// createObjectForBD();
 		// constFillOutCardCollection.clear();
+	});
+}
+
+function setDatainDB(array) {
+	$.ajax({
+		url: "./php/report-add.php",
+		method: "post",
+		dataType: "html",
+		data: {
+			action: 'reportAdd',
+			array: array
+		},
+		success: function(data) {
+			console.log('succsess '+data);
+		},
+		error: function(data) {
+			console.log(data);
+		}
 	});
 }
 
@@ -260,7 +278,10 @@ function getCurrentDate() {
 	const currentMonth = month < 10 ? `0${month}` : month;
 	const currentYear = date.getFullYear() < 10 ? `0${date.getFullYear()}` : date.getFullYear();
 
-	return `${currentDay}-${currentMonth}-${currentYear}`;
+	const currentHour = date.getHours() < 10 ? `0${date.getHours()}` : date.getHours();
+	const currentMinute = date.getMinutes() < 10 ? `0${date.getMinutes()}` : date.getMinutes();
+
+	return `${currentDay}-${currentMonth}-${currentYear} ${currentHour}:${currentMinute}`;
 }
 
 function clearNumberCard() {

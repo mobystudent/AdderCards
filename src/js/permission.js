@@ -292,7 +292,6 @@ function resetControlBtns() {
 }
 
 function getDataInCardDB(array) {
-
 	$.ajax({
 		url: "./php/const-card.php",
 		method: "post",

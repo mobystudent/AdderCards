@@ -237,7 +237,6 @@ function submitIDinBD() {
 			item.date = getCurrentDate();
 		});
 
-		// console.log([...timeReportCollection.values()]);
 		setDatainDB([...timeReportCollection.values()]);
 		createObjectForBD();
 		const noEmpty = validationEmptyFields();
@@ -316,7 +315,7 @@ function countItems(tableContent, modDepart) {
 
 function setDatainDB(array) {
 	$.ajax({
-		url: "./php/time-card.php",
+		url: "./php/report-add.php",
 		method: "post",
 		dataType: "html",
 		data: {
