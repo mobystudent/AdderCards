@@ -10,7 +10,7 @@ $(window).on('load', () => {
 
 function getDatainDB() {
 	$.ajax({
-		url: "./php/report.php",
+		url: "./php/report-output.php",
 		method: "post",
 		success: function(data) {
 			const dataFromDB = JSON.parse(data);

@@ -1,22 +1,22 @@
 
 <main class="main" data-name="add">
   <div class="container">
-    <h1 class="main__title">Добавить нового пользователя</h1><span class="main__depart main__depart--permis">Химический факультет</span>
+    <h1 class="main__title">Добавить нового пользователя</h1><span class="main__depart main__depart--add" data-depart="Химический факультет" data-id="ChemDep">Химический факультет</span>
     <form class="form" action="#" method="GET">
       <div class="form__wrap">
         <div class="form__fields">
           <div class="form__field">
             <label class="form__label"><span class="form__name">ФИО</span>
-              <input class="form__input form__item" data-field="FIO" name="name" type="text" placeholder="Введите ФИО" required="required"/>
+              <input class="form__input form__item" data-field="fio" name="name" type="text" placeholder="Введите ФИО" required="required"/>
             </label>
           </div>
           <div class="form__field">
             <label class="form__label"><span class="form__name">Должность</span>
-              <input class="form__input form__item" data-field="Post" name="post" type="text" placeholder="Введите должность" required="required"/>
+              <input class="form__input form__item" data-field="post" name="post" type="text" placeholder="Введите должность" required="required"/>
             </label>
           </div>
           <div class="form__field"><span class="form__name">Тип идентификатора</span>
-            <div class="form__select form__item select" data-field="TitleID" data-type="StatusID" data-select="type">
+            <div class="form__select form__item select" data-field="statustitle" data-type="statusid" data-select="type">
               <header class="select__header"><span class="select__value" data-title="title" data-type="type" data-placeholder="Выберите тип идентификатора">Выберите тип идентификатора</span></header>
               <ul class="select__list">
                 <li class="select__item"><span class="select__name" data-title="Пластиковая карта" data-type="newCard">Пластиковая карта</span></li>
@@ -24,16 +24,25 @@
               </ul>
             </div>
           </div>
-          <div class="form__field">
-            <label class="form__label"><span class="form__name">Дата окончания действия пропуска</span>
-              <input class="form__input form__item" data-field="Post" name="post" type="text" placeholder="Введите дату окончания пропуска" required="required"/>
+          <div class="form__field"><span class="form__name">Окончание действия пропуска</span>
+            <div class="form__select form__item select" data-select="date">
+              <header class="select__header"><span class="select__value" data-title="title" data-date="date" data-placeholder="Выберите окончание действия пропуска">Выберите окончание действия пропуска</span></header>
+              <ul class="select__list">
+                <li class="select__item"><span class="select__name" data-title="Ввести дату" data-date="date">Ввести дату</span></li>
+                <li class="select__item"><span class="select__name" data-title="Безвременно" data-date="infinite">Безвременно</span></li>
+              </ul>
+            </div>
+          </div>
+          <div class="form__field form__field--date">
+            <label class="form__label"><span class="form__name">Дата окончания</span>
+              <input class="form__input form__item" id="dateField" data-field="date" name="date" type="text" placeholder="Введите дату" required="required"/>
             </label>
           </div>
         </div>
         <div class="form__aside">
           <div class="form__img"><img class="img img--form" src="./images/avatar.svg" alt="user avatar"/></div>
           <div class="form__field">
-            <input class="form__input form__input--file" id="addFile" data-field="Image" name="image" type="file" required="required"/>
+            <input class="form__input form__input--file form__item" id="addFile" data-field="photofile" name="image" type="file" required="required"/>
             <label class="form__download" for="addFile">
               <svg class="icon icon--download">
                 <use xlink:href="../images/sprite.svg#download"></use>

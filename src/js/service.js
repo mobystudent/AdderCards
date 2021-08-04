@@ -73,15 +73,21 @@ function setDataAttrSelectedItem(title, select, elem) {
 		} else {
 			$('.form__field--new-fio, .form__field--new-post').hide();
 		}
+	} else if (select == 'date') {
+		if (dataType == 'date') {
+			$('.form__field--date').show();
+		} else {
+			$('.form__field--date').hide();
+		}
 	}
 
 	if (dataType) {
-		attr = {'title': title, [`${select}`]: dataType};
+		attr = {'data-title': title, [`data-${select}`]: dataType};
 	} else {
-		attr = {'title': title};
+		attr = {'data-title': title};
 	}
 
-	$(elem).parents('.select').find('.select__value--selected').data(attr);
+	$(elem).parents('.select').find('.select__value--selected').attr(attr);
 }
 
 function setUsersFromSelect() {
