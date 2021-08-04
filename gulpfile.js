@@ -42,6 +42,7 @@ const dirBuild = 'build',
 			template: dirBuild,
 			scss: dirBuild,
 			pug: `${dirSrc}/template`,
+			css: `${dirBuild}/css`,
 			php: `${dirBuild}/php`,
 			fonts: `${dirBuild}/fonts`,
 			favicon: `${dirBuild}/favicon`,
@@ -53,6 +54,7 @@ const dirBuild = 'build',
 			php: `${dirSrc}/php/*.php`,
 			scss: `${dirSrc}/scss/style.scss`,
 			pug: `${dirSrc}/pug/**/*.pug`,
+			css: `${dirSrc}/css/**/*.css`,
 			fonts: `${dirSrc}/fonts/*.{ttf,otf}`,
 			favicon: `${dirSrc}/favicon/*`,
 			imgBg: `${dirSrc}/images/backgrounds/*`,
@@ -65,6 +67,7 @@ const dirBuild = 'build',
 			php: `${dirSrc}/php/**/*.php`,
 			scss: `${dirSrc}/scss/**/*.scss`,
 			pug: `${dirSrc}/pug/**/*.pug`,
+			css: `${dirSrc}/css/**/*.css`,
 			fonts: `${dirSrc}/fonts/*`,
 			favicon: `${dirSrc}/favicon/*`,
 			imgBg: `${dirSrc}/images/backgrounds/*`,
@@ -128,6 +131,12 @@ function gulpPug() {
 			extname: '.php'
 		}))
 		.pipe(gulp.dest(path.build.pug));
+}
+
+/* copy css vendors in build dir */
+function gulpCss() {
+	return gulp.src(path.src.css)
+		.pipe(gulp.dest(path.build.css));
 }
 
 /* copy template in build dir */
@@ -259,6 +268,7 @@ function gulpWatch() {
 	gulp.watch(path.watch.pug, gulp.series(gulpPug));
 	gulp.watch(path.watch.template, gulp.series(gulpTemplate));
 	gulp.watch(path.watch.php, gulp.series(gulpPHP));
+	gulp.watch(path.watch.css, gulp.series(gulpCss));
 	gulp.watch(path.watch.js, gulp.series(gulpJS));
 	gulp.watch(path.watch.imgPic, gulp.series(gulpImagesPic));
 	gulp.watch(path.watch.imgBg, gulp.series(gulpImagesBg));
@@ -266,8 +276,8 @@ function gulpWatch() {
 	gulp.watch(path.watch.fonts, gulp.series(gulpFonts));
 }
 
-const dev = gulp.series(clean, gulp.parallel(gulp.series(gulpImagesPic, gulpImagesBg, gulpImagesSVG, gulpFonts, gulpSass), gulpTemplate, gulpPHP, gulpPug, gulpJS, gulpFavicon)),
-	build = gulp.series(clean, gulp.parallel(gulp.series(gulpImagesPic, gulpImagesBg, gulpImagesSVG, gulpFonts, gulpSass), gulpTemplate, gulpPHP, gulpJS, gulpFavicon));
+const dev = gulp.series(clean, gulp.parallel(gulp.series(gulpImagesPic, gulpImagesBg, gulpImagesSVG, gulpFonts, gulpCss, gulpSass), gulpTemplate, gulpPHP, gulpPug, gulpJS, gulpFavicon)),
+	build = gulp.series(clean, gulp.parallel(gulp.series(gulpImagesPic, gulpImagesBg, gulpImagesSVG, gulpFonts, gulpCss, gulpSass), gulpTemplate, gulpPHP, gulpJS, gulpFavicon));
 
 exports.default = build;
 exports.watch = gulp.series(build, gulpWatch);
@@ -275,5 +285,6 @@ exports.dev = gulp.series(dev, gulpWatch);
 exports.elem = gulp.series(gulp.parallel(gulpFonts, gulpFavicon, gulpImagesPic, gulpImagesBg, gulpImagesSVG));
 exports.clean = clean;
 exports.js = gulpJS;
+exports.css = gulpCss;
 exports.img = gulp.parallel(gulpImagesPic, gulpImagesBg, gulpImagesSVG);
 exports.fonts = gulpFonts;

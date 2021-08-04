@@ -7,8 +7,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no, user-scalable=no">
     <title>Служба безопасности</title>
     <link rel="favicon" href="favicon/favicon.ico">
+    <link rel="stylesheet" href="./css/jquery-ui.min.css">
+    <link rel="stylesheet" href="./css/jquery-ui.theme.min.css">
     <link rel="stylesheet" href="style.css">
-    <script defer src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.0/jquery.min.js"></script>
     <script defer type="module" src="js/script.js"></script>
   </head>
   <body>
@@ -265,9 +266,18 @@
                     </ul>
                   </div>
                 </div>
+                <div class="form__field"><span class="form__name">Окончание действия пропуска</span>
+                  <div class="form__select form__item select">
+                    <header class="select__header"><span class="select__value" data-placeholder="Выберите тип идентификатора">Выберите окончание действия пропуска</span></header>
+                    <ul class="select__list">
+                      <li class="select__item"><span class="select__name" data-title="Ввести дату">Ввести дату</span></li>
+                      <li class="select__item"><span class="select__name" data-title="Безвременно">Безвременно</span></li>
+                    </ul>
+                  </div>
+                </div>
                 <div class="form__field">
-                  <label class="form__label"><span class="form__name">Дата окончания действия пропуска</span>
-                    <input class="form__input form__item" data-field="Post" name="post" type="text" placeholder="Введите дату окончания пропуска" required>
+                  <label class="form__label"><span class="form__name">Дата окончания</span>
+                    <input class="form__input form__item" id="dateField" data-field="Date" name="date" type="text" placeholder="Введите дату" required>
                   </label>
                 </div>
               </div>
@@ -534,7 +544,7 @@
       </main>
       <footer class="footer">
         <div class="container">
-          <div class="footer__wrap"><small class="footer__version">v2.0.3</small></div>
+          <div class="footer__wrap"><small class="footer__version">v2.0.4</small></div>
         </div>
       </footer>
     </div>
