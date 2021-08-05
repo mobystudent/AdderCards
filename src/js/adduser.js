@@ -15,6 +15,7 @@ $(window).on('load', () => {
 	addUser();
 	datepicker();
 	downloadFoto();
+	submitIDinBD();
 });
 
 function templateAddTable(data) {
@@ -307,17 +308,17 @@ function validationEmptyFields(fields) {
 	const validFields = Object.values(fields).every((item) => item);
 	const statusMess = !validFields ? 'show' : 'hide';
 	const extentionArray = ['giff', 'png', 'jpg', 'jpeg'];
-	let correctName = '';
-	let countNameWords = '';
-	let extensionImg = '';
+	let correctName = 'hide';
+	let countNameWords = 'hide';
+	let extensionImg = 'hide';
 
 	for (let key in fields) {
-		if (key == 'fio') {
+		if (key == 'fio' && fields[key]) {
 			const countWords = fields[key].trim().split(' ');
 
-			correctName = fields[key].match(/[^а-яА-Я.-\s]/g) ? 'show' : 'hide';
+			correctName = fields[key].match(/[^а-яА-ЯiIъїё.'-\s]/g) ? 'show' : 'hide';
 			countNameWords = (countWords.length < 2) ? 'show' : 'hide';
-		} else if (key == 'photofile') {
+		} else if (key == 'photofile' && fields[key]) {
 			const extenName = fields[key].lastIndexOf('.');
 			const extenImg = fields[key].slice(extenName + 1);
 
@@ -371,6 +372,50 @@ function renderForm(id) {
 	addCollection.forEach((user) => {
 		if (user.id == id) {
 			$('#addForm .form__wrap').append(templateAddForm(user));
+		}
+	});
+}
+
+function submitIDinBD() {
+	$('#submitAddUser').click(() => {
+		if (!addCollection.size) return;
+
+		const idDepart = $('.main__depart--add').attr('data-id');
+		const nameDepart = $('.main__depart--add').attr('data-depart');
+
+		addCollection.forEach((elem) => {
+			elem.nameid = idDepart;
+			elem.department = nameDepart;
+		});
+
+		getAddDataInDB([...addCollection.values()]);
+
+		addCollection.clear();
+		$('#tableAdd')
+			.html('')
+			.addClass('table__body--empty').html('')
+			.append(`
+				<p class="table__nothing">Новых данных нет</p>
+			`);
+
+		renderTable();
+		countItems('#tableAdd .table__content', 'add');
+	});
+}
+
+function getAddDataInDB(array) {
+	$.ajax({
+		url: "./php/add-user-add.php",
+		method: "post",
+		dataType: "html",
+		data: {
+			array: array
+		},
+		success: function(data) {
+			console.log('succsess '+data);
+		},
+		error: function(data) {
+			console.log(data);
 		}
 	});
 }

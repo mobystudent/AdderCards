@@ -4,10 +4,8 @@
 	$mysqli->query("SET NAMES 'utf8'");
 
 	$array = $_POST['array'];
-	$action = $_POST['action'];
 
 	var_dump($array);
-	var_dump($action);
 
 	foreach ($array as $item) {
 		$index = 0;
