@@ -129,7 +129,8 @@
 		}
 
 		&--delete,
-		&--clear {
+		&--clear,
+		&--edit {
 			flex: 0 0 40px;
 			padding: 0;
 
@@ -192,6 +193,14 @@
 
 		&--photofile {
 			flex: 0 0 200px;
+
+			#{$self}__text {
+				display: inline-block;
+				white-space: nowrap;
+				overflow: hidden;
+				text-overflow: ellipsis;
+				height: auto;
+			}
 		}
 
 		&--titleid {
@@ -214,7 +223,7 @@
 		&--cardid,
 		&--statustitle,
 		&--date {
-			.table__text {
+			#{$self}__text {
 				justify-content: center;
 			}
 		}

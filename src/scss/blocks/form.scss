@@ -24,8 +24,11 @@
 
 		&--depart,
 		&--new-post,
-		&--new-fio,
-		&--date {
+		&--new-fio {
+			display: none;
+		}
+
+		&--hide {
 			display: none;
 		}
 	}

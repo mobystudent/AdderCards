@@ -2,7 +2,7 @@
 <main class="main" data-name="add">
   <div class="container">
     <h1 class="main__title">Добавить нового пользователя</h1><span class="main__depart main__depart--add" data-depart="Химический факультет" data-id="ChemDep">Химический факультет</span>
-    <form class="form" action="#" method="GET">
+    <form class="form" id="addForm" action="#" method="GET">
       <div class="form__wrap">
         <div class="form__fields">
           <div class="form__field">
@@ -25,7 +25,7 @@
             </div>
           </div>
           <div class="form__field"><span class="form__name">Окончание действия пропуска</span>
-            <div class="form__select form__item select" data-type="datestatus" data-select="date">
+            <div class="form__select form__item select" data-field="datetitle" data-type="datestatus" data-select="date">
               <header class="select__header"><span class="select__value" data-title="title" data-date="date" data-placeholder="Выберите окончание действия пропуска">Выберите окончание действия пропуска</span></header>
               <ul class="select__list">
                 <li class="select__item"><span class="select__name" data-title="Ввести дату" data-date="date">Ввести дату</span></li>
@@ -33,7 +33,7 @@
               </ul>
             </div>
           </div>
-          <div class="form__field form__field--date">
+          <div class="form__field form__field--hide" data-name="date">
             <label class="form__label"><span class="form__name">Дата окончания</span>
               <input class="form__input form__item" id="dateField" data-field="date" name="date" type="text" placeholder="Введите дату" required="required"/>
             </label>
@@ -42,10 +42,10 @@
         <div class="form__aside">
           <div class="form__img"><img class="img img--form" src="./images/avatar.svg" alt="user avatar"/></div>
           <div class="form__field">
-            <input class="form__input form__input--file form__item" id="addFile" data-field="photofile" name="image" type="file" required="required"/>
+            <input class="form__input form__input--file form__item" id="addFile" data-field="photofile" name="photofile" type="file" required="required"/>
             <label class="form__download" for="addFile">
               <svg class="icon icon--download">
-                <use xlink:href="../images/sprite.svg#download"></use>
+                <use xlink:href="./images/sprite.svg#download"></use>
               </svg><span class="form__title">Загрузить фото</span>
             </label>
           </div>
@@ -74,6 +74,8 @@
             <div class="table__cell table__cell--header table__cell--photofile"><span class="table__text table__text--header">Фотография</span></div>
             <div class="table__cell table__cell--header table__cell--statustitle"><span class="table__text table__text--header">Идентификатор</span></div>
             <div class="table__cell table__cell--header table__cell--date"><span class="table__text table__text--header">Дата</span></div>
+            <div class="table__cell table__cell--header table__cell--edit"></div>
+            <div class="table__cell table__cell--header table__cell--delete"></div>
           </header>
           <div class="table__body" id="tableAdd">
             <p class="table__nothing">Не добавленно ни одного пользователя</p>

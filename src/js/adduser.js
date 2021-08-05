@@ -3,11 +3,13 @@
 import $ from 'jquery';
 import datepickerFactory from 'jquery-datepicker';
 import datepickerRUFactory from 'jquery-datepicker/i18n/jquery.ui.datepicker-ru';
+import service from './service.js';
 
 datepickerFactory($);
 datepickerRUFactory($);
 
 const addCollection = new Map();
+const imgUrlCollection = new Map();
 
 $(window).on('load', () => {
 	addUser();
@@ -26,7 +28,7 @@ function templateAddTable(data) {
 			<div class="table__cell table__cell--body table__cell--post">
 				<span class="table__text table__text--body">${post}</span>
 			</div>
-			<div class="table__cell table__cell--body table__cell--photofile">
+			<div class="table__cell table__cell--body table__cell--photofile" title=${photofile}>
 				<span class="table__text table__text--body">${photofile}</span>
 			</div>
 			<div class="table__cell table__cell--body table__cell--statustitle">
@@ -34,6 +36,94 @@ function templateAddTable(data) {
 			</div>
 			<div class="table__cell table__cell--body table__cell--date">
 				<span class="table__text table__text--body">${date}</span>
+			</div>
+			<div class="table__cell table__cell--body table__cell--edit">
+				<button class="table__btn table__btn--edit" type="button">
+					<svg class="icon icon--edit">
+						<use class="icon__item" xlink:href="./images/sprite.svg#edit"></use>
+					</svg>
+				</button>
+			</div>
+			<div class="table__cell table__cell--body table__cell--delete">
+				<button class="table__btn table__btn--delete" type="button">
+					<svg class="icon icon--delete">
+						<use class="icon__item" xlink:href="./images/sprite.svg#delete"></use>
+					</svg>
+				</button>
+			</div>
+		</div>
+	`;
+}
+
+function templateAddForm(data) {
+	const { id = '', fio = '', photofile = '', post = '', statusid = '', statustitle = '', datestatus = '', datetitle = '', date  = '' } = data;
+	const photoUrl = imgUrlCollection.get(id);
+	const dateClassView = datestatus == 'date' ? '' : 'form__field--hide';
+
+	return `
+		<div class="form__fields">
+			<div class="form__field">
+				<label class="form__label">
+				<span class="form__name">ФИО</span>
+					<input class="form__input form__item" data-field="fio" name="name" type="text" value="${fio}" placeholder="Введите ФИО" required="required"/>
+				</label>
+			</div>
+			<div class="form__field">
+				<label class="form__label">
+				<span class="form__name">Должность</span>
+					<input class="form__input form__item" data-field="post" name="post" type="text" value="${post}" placeholder="Введите должность" required="required"/>
+				</label>
+			</div>
+			<div class="form__field">
+				<span class="form__name">Тип идентификатора</span>
+				<div class="form__select form__item select" data-field="statustitle" data-type="statusid" data-select="type">
+					<header class="select__header">
+						<span class="select__value select__value--selected" data-title="${statustitle}" data-type="${statusid}" data-placeholder="Выберите тип идентификатора">${statustitle}</span>
+					</header>
+					<ul class="select__list">
+						<li class="select__item">
+							<span class="select__name" data-title="Пластиковая карта" data-type="newCard">Пластиковая карта</span>
+						</li>
+						<li class="select__item">
+							<span class="select__name" data-title="QR-код" data-type="newQR">QR-код</span>
+						</li>
+					</ul>
+				</div>
+			</div>
+			<div class="form__field">
+				<span class="form__name">Окончание действия пропуска</span>
+				<div class="form__select form__item select" data-field="datetitle" data-type="datestatus" data-select="date">
+					<header class="select__header">
+						<span class="select__value select__value--selected" data-title="${datetitle}" data-date="${datestatus}" data-placeholder="Выберите окончание действия пропуска">${datetitle}</span>
+					</header>
+					<ul class="select__list">
+						<li class="select__item">
+							<span class="select__name" data-title="Ввести дату" data-date="date">Ввести дату</span>
+						</li>
+						<li class="select__item">
+							<span class="select__name" data-title="Безвременно" data-date="infinite">Безвременно</span>
+						</li>
+					</ul>
+				</div>
+			</div>
+			<div class="form__field ${dateClassView}" data-name="date">
+				<label class="form__label"><span class="form__name">Дата окончания</span>
+					<input class="form__input form__item" id="dateField" data-field="date" name="date" type="text" value="${date}" placeholder="Введите дату" required="required"/>
+				</label>
+			</div>
+		</div>
+		<div class="form__aside">
+			<div class="form__img">
+				<img class="img img--form" src=${photoUrl} alt="user avatar"/>
+			</div>
+			<div class="form__field">
+				<input class="form__input form__input--file form__item" id="addFile" data-field="photofile" data-value="${photofile}" name="photofile" type="file" required="required"/>
+				<label class="form__download" for="addFile">
+					<svg class="icon icon--download">
+						<use xlink:href=./images/sprite.svg#download></use>
+					</svg>
+					<span class="form__title">Загрузить фото</span>
+				</label>
 			</div>
 		</div>
 	`;
@@ -58,23 +148,25 @@ function addUser() {
 				const typeSelect = $(item).data('select');
 				const fieldType = $(item).data('type');
 				const nameId = $(item).find('.select__value--selected').attr(`data-${typeSelect}`);
+				const valueItem = $(item).find('.select__value--selected').attr('data-title');
 
-				if ($(item).data('select') != 'date') {
-					const valueItem = $(item).find('.select__value--selected').attr('data-title');
+				if ($(item).data('select') == 'date' && nameId == 'date') {
+					const inputValue = $('.form__item[data-field="date"]').val();
 
-					object[fieldName] = valueItem;
-				} else {
-					if (nameId == 'date') {
-						const inputValue = $('.form__item[data-field="date"]').val();
-
-						object.date = inputValue;
-					}
+					object.date = inputValue;
 				}
 
 				object[fieldType] = nameId;
+				object[fieldName] = valueItem;
 			} else {
-				if ($(item).attr('data-field') != 'date') {
+				// if ($(item).attr('data-field') != 'date' || $(item).attr('data-field') != 'photofile') {
+				if ($(item).attr('data-field') != 'date' && $(item).attr('data-field') != 'photofile') {
 					const inputValue = $(item).val();
+
+					object[fieldName] = inputValue;
+				} else if ($(item).attr('data-field') == 'photofile') {
+					console.log('photofile');
+					const inputValue = $(item).data('value');
 
 					object[fieldName] = inputValue;
 				}
@@ -103,6 +195,7 @@ function userdFromForm(object) {
 		statusid: '',
 		statustitle: '',
 		datestatus: '',
+		datetitle: '',
 		department: ''
 	};
 	const indexCollection = addCollection.size;
@@ -150,10 +243,10 @@ function dataAdd(nameTable) {
 		return;
 	}
 
-	console.log(addCollection);
-
 	renderTable();
 	countItems('#tableAdd .table__content', 'add');
+	deleteUser();
+	editUser();
 }
 
 function countItems(tableContent, modDepart) {
@@ -173,7 +266,7 @@ function clearFieldsForm(array) {
 				.removeClass('select__value--selected')
 				.attr(attr)
 				.text(placeholder);
-			$('.form__field--date').hide();
+			$('.form__field[data-name="date"]').addClass('form__field--hide');
 			$('.img--form').attr('src', './images/avatar.svg');
 		} else {
 			$(item).val('');
@@ -192,18 +285,21 @@ function datepicker() {
 		minDate: "+1D",
 		maxViewMode: 10
 	});
-	// $('.ui-datepicker').appendTo('.section__form-wrap');
 }
 
 function downloadFoto() {
 	$('.form__input--file').change((e) => {
 		const fileReader = new FileReader();
+		const indexAddCollection = addCollection.size;
+		const fileName = $(e.target).val();
 
 		fileReader.onload = (e) => {
 			$('.img--form').attr('src', e.target.result);
+			imgUrlCollection.set(indexAddCollection, e.target.result);
 		};
 
 		fileReader.readAsDataURL($(e.target)[0].files[0]);
+		$(e.target).attr('data-value', fileName);
 	});
 }
 
@@ -237,6 +333,46 @@ function validationEmptyFields(fields) {
 	$('.main[data-name="add"]').find('.info__item--error.info__item--image')[extensionImg]();
 
 	return valid;
+}
+
+function deleteUser() {
+	$('.table__content').click((e) => {
+		if ($(e.target).parents('.table__btn--delete').length || $(e.target).hasClass('table__btn--delete')) {
+			const idRemove = $(e.target).closest('.table__row').data('id');
+
+			addCollection.delete(idRemove);
+			renderTable();
+		}
+
+		countItems('#tableAdd .table__content', 'add');
+	});
+}
+
+function editUser() {
+	$('.table__content').click((e) => {
+		if ($(e.target).parents('.table__btn--edit').length || $(e.target).hasClass('table__btn--edit')) {
+			const idEdit = $(e.target).closest('.table__row').data('id');
+
+			renderForm(idEdit);
+			addCollection.delete(idEdit);
+			renderTable();
+			service.toggleSelect();
+			datepicker();
+			downloadFoto();
+		}
+
+		countItems('#tableAdd .table__content', 'add');
+	});
+}
+
+function renderForm(id) {
+	$('#addForm .form__wrap').html('');
+
+	addCollection.forEach((user) => {
+		if (user.id == id) {
+			$('#addForm .form__wrap').append(templateAddForm(user));
+		}
+	});
 }
 
 export default {

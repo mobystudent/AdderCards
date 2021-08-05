@@ -75,9 +75,9 @@ function setDataAttrSelectedItem(title, select, elem) {
 		}
 	} else if (select == 'date') {
 		if (dataType == 'date') {
-			$('.form__field--date').show();
+			$('.form__field[data-name="date"]').removeClass('form__field--hide');
 		} else {
-			$('.form__field--date').hide();
+			$('.form__field[data-name="date"]').addClass('form__field--hide');
 		}
 	}
 
@@ -191,5 +191,6 @@ function showDataInTable() {
 
 export default {
 	printReport,
-	showDataInTable
+	showDataInTable,
+	toggleSelect
 };

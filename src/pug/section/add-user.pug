@@ -5,7 +5,7 @@ main.main(data-name="add")
 		span.main__depart.main__depart--add(data-depart="Химический факультет" data-id="ChemDep")
 			| Химический факультет
 		
-		form.form(action="#" method="GET")
+		form.form#addForm(action="#" method="GET")
 			.form__wrap
 				.form__fields
 					.form__field
@@ -48,7 +48,7 @@ main.main(data-name="add")
 					.form__field
 						span.form__name
 							| Окончание действия пропуска
-						.form__select.form__item.select(data-type="datestatus" data-select="date")
+						.form__select.form__item.select(data-field="datetitle" data-type="datestatus" data-select="date")
 							header.select__header
 								span.select__value(data-title="title" data-date="date" data-placeholder="Выберите окончание действия пропуска")
 									| Выберите окончание действия пропуска
@@ -59,7 +59,7 @@ main.main(data-name="add")
 								li.select__item
 									span.select__name(data-title="Безвременно" data-date="infinite")
 										| Безвременно
-					.form__field.form__field--date
+					.form__field.form__field--hide(data-name="date")
 						label.form__label
 							span.form__name
 								| Дата окончания
@@ -68,10 +68,10 @@ main.main(data-name="add")
 					.form__img
 						img.img.img--form(src="./images/avatar.svg" alt="user avatar")
 					.form__field
-						input.form__input.form__input--file.form__item#addFile(data-field="photofile" name="image" type="file" required)
+						input.form__input.form__input--file.form__item#addFile(data-field="photofile" name="photofile" type="file" required)
 						label.form__download(for="addFile")
 							svg.icon.icon--download
-								use(xlink:href="../images/sprite.svg#download")
+								use(xlink:href="./images/sprite.svg#download")
 							span.form__title
 								| Загрузить фото
 									
@@ -118,6 +118,8 @@ main.main(data-name="add")
 						.table__cell.table__cell--header.table__cell--date
 							span.table__text.table__text--header
 								| Дата
+						.table__cell.table__cell--header.table__cell--edit
+						.table__cell.table__cell--header.table__cell--delete
 					.table__body#tableAdd
 						p.table__nothing
 							| Не добавленно ни одного пользователя
