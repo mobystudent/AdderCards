@@ -55,6 +55,9 @@
     </form>
     <div class="info">
       <p class="info__item info__item--warn info__item--fields">Предупреждение! Не все поля заполненны.</p>
+      <p class="info__item info__item--error info__item--name">Ошибка! Имя содержит недопустимые символы. Разрешены: кириллические буквы, дефис, точка.</p>
+      <p class="info__item info__item--error info__item--image">Ошибка! Не правильный формат изображение. Допустимы: giff, png, jpg, jpeg.</p>
+      <p class="info__item info__item--error info__item--short">Ошибка! ФИО должно состоять хотя бы из двух слов.</p>
     </div>
     <div class="wrap wrap--content wrap--content-add">
       <div class="main__cards main__cards--main">
@@ -68,7 +71,7 @@
               <button class="btn btn--sort" type="button" data-direction="true"></button>
             </div>
             <div class="table__cell table__cell--header table__cell--post"><span class="table__text table__text--header">Должность</span></div>
-            <div class="table__cell table__cell--header table__cell--image"><span class="table__text table__text--header">Фотография</span></div>
+            <div class="table__cell table__cell--header table__cell--photofile"><span class="table__text table__text--header">Фотография</span></div>
             <div class="table__cell table__cell--header table__cell--statustitle"><span class="table__text table__text--header">Идентификатор</span></div>
             <div class="table__cell table__cell--header table__cell--date"><span class="table__text table__text--header">Дата</span></div>
           </header>

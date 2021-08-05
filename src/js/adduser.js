@@ -51,7 +51,7 @@ function addUser() {
 	$('#addUser').click((e) => {
 		const form = $(e.target).parents('.form');
 		const fields = $(form).find('.form__item');
-		const addFields = [...fields].reduce((object, item) => {
+		const userData = [...fields].reduce((object, item) => {
 			const fieldName = $(item).data('field');
 
 			if ($(item).hasClass('select')) {
@@ -83,18 +83,16 @@ function addUser() {
 			return object;
 		}, {});
 
-		console.log(addFields);
-		console.log(validationEmptyFields(addFields));
-		// validationEmptyFields(addFields);
+		console.log(userData);
 
-		// if (validationEmptyFields(addFields)) {
-		// 	clearFieldsForm(fields);
-		// 	userdFromForm([addFields]);
-		// }
+		if (validationEmptyFields(userData)) {
+			clearFieldsForm(fields);
+			userdFromForm(userData);
+		}
 	});
 }
 
-function userdFromForm(array) {
+function userdFromForm(object) {
 	const objToCollection = {
 		id: '',
 		fio: '',
@@ -108,28 +106,25 @@ function userdFromForm(array) {
 		department: ''
 	};
 	const indexCollection = addCollection.size;
+	const itemObject = Object.assign({}, objToCollection);
+	const departName = $('.main__depart--add').attr('data-depart');
+	const departID = $('.main__depart--add').attr('data-id');
 
-	array.forEach((elem, i) => {
-		const itemObject = Object.assign({}, objToCollection);
-		const departName = $('.main__depart--add').attr('data-depart');
-		const departID = $('.main__depart--add').attr('data-id');
-
-		for (const itemField in itemObject) {
-			for (const key in elem) {
-				if (itemField === key) {
-					itemObject[itemField] = elem[key];
-				} else if (itemField === 'id') {
-					itemObject[itemField] = i;
-				} else if (itemField === 'department') {
-					itemObject[itemField] = departName;
-				} else if (itemField === 'nameid') {
-					itemObject[itemField] = departID;
-				}
+	for (const itemField in itemObject) {
+		for (const key in object) {
+			if (itemField === key) {
+				itemObject[itemField] = object[key];
+			} else if (itemField === 'id') {
+				itemObject[itemField] = indexCollection;
+			} else if (itemField === 'department') {
+				itemObject[itemField] = departName;
+			} else if (itemField === 'nameid') {
+				itemObject[itemField] = departID;
 			}
 		}
+	}
 
-		addCollection.set(indexCollection, itemObject);
-	});
+	addCollection.set(indexCollection, itemObject);
 
 	dataAdd('#tableAdd');
 }
@@ -215,10 +210,33 @@ function downloadFoto() {
 function validationEmptyFields(fields) {
 	const validFields = Object.values(fields).every((item) => item);
 	const statusMess = !validFields ? 'show' : 'hide';
+	const extentionArray = ['giff', 'png', 'jpg', 'jpeg'];
+	let correctName = '';
+	let countNameWords = '';
+	let extensionImg = '';
+
+	for (let key in fields) {
+		if (key == 'fio') {
+			const countWords = fields[key].trim().split(' ');
+
+			correctName = fields[key].match(/[^а-яА-Я.-\s]/g) ? 'show' : 'hide';
+			countNameWords = (countWords.length < 2) ? 'show' : 'hide';
+		} else if (key == 'photofile') {
+			const extenName = fields[key].lastIndexOf('.');
+			const extenImg = fields[key].slice(extenName + 1);
+
+			extensionImg = extentionArray.some((item) => item == extenImg) ? 'hide' : 'show';
+		}
+	}
+
+	const valid = [statusMess, correctName, countNameWords, extensionImg].every((mess) => mess === 'hide');
 
 	$('.main[data-name="add"]').find('.info__item--warn.info__item--fields')[statusMess]();
+	$('.main[data-name="add"]').find('.info__item--error.info__item--name')[correctName]();
+	$('.main[data-name="add"]').find('.info__item--error.info__item--short')[countNameWords]();
+	$('.main[data-name="add"]').find('.info__item--error.info__item--image')[extensionImg]();
 
-	console.log(validFields);
+	return valid;
 }
 
 export default {

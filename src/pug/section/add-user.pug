@@ -81,6 +81,12 @@ main.main(data-name="add")
 		.info
 			p.info__item.info__item--warn.info__item--fields
 				| Предупреждение! Не все поля заполненны.
+			p.info__item.info__item--error.info__item--name
+				| Ошибка! Имя содержит недопустимые символы. Разрешены: кириллические буквы, дефис, точка.
+			p.info__item.info__item--error.info__item--image
+				| Ошибка! Не правильный формат изображение. Допустимы: giff, png, jpg, jpeg.
+			p.info__item.info__item--error.info__item--short
+				| Ошибка! ФИО должно состоять хотя бы из двух слов.
 
 		.wrap.wrap--content.wrap--content-add
 			.main__cards.main__cards--main
@@ -103,7 +109,7 @@ main.main(data-name="add")
 						//- .table__cell.table__cell--header.table__cell--department
 						//- 	span.table__text.table__text--header
 						//- 		| Подразделение/факультет
-						.table__cell.table__cell--header.table__cell--image
+						.table__cell.table__cell--header.table__cell--photofile
 							span.table__text.table__text--header
 								| Фотография
 						.table__cell.table__cell--header.table__cell--statustitle
