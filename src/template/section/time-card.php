@@ -9,7 +9,7 @@
         </div>
         <button class="main__btn" id="addTimeCard" type="button">
           <svg class="icon icon--plus">
-            <use class="icon__item" xlink:href="#plus"></use>
+            <use class="icon__item" xlink:href="./images/sprite.svg#plus"></use>
           </svg><span class="main__btn-text">Добавить карту</span>
         </button>
       </div>

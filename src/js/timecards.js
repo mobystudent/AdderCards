@@ -52,14 +52,14 @@ function templateTimeTable(data) {
 			<div class="table__cell table__cell--body table__cell--clear">
 				<button class="table__btn table__btn--clear" type="button">
 					<svg class="icon icon--clear">
-						<use class="icon__item" xlink:href="#clear"></use>
+						<use class="icon__item" xlink:href="./images/sprite.svg#clear"></use>
 					</svg>
 				</button>
 			</div>
 			<div class="table__cell table__cell--body table__cell--delete">
 				<button class="table__btn table__btn--delete" type="button">
 					<svg class="icon icon--delete">
-						<use class="icon__item" xlink:href="#delete"></use>
+						<use class="icon__item" xlink:href="./images/sprite.svg#delete"></use>
 					</svg>
 				</button>
 			</div>
@@ -233,12 +233,13 @@ function submitIDinBD() {
 		timeReportCollection = deepClone(timeCollection);
 		timeFillOutCollection = deepClone(timeCollection);
 
-		timeReportCollection.forEach((item) => {
+		createObjectForBD([...timeReportCollection.values()]);
+
+		timeFillOutCollection.forEach((item) => {
 			item.date = getCurrentDate();
 		});
 
-		setDatainDB([...timeReportCollection.values()]);
-		createObjectForBD();
+		setDatainDB([...timeFillOutCollection.values()]);
 		const noEmpty = validationEmptyFields();
 
 		if (!noEmpty) return;
@@ -255,7 +256,7 @@ function submitIDinBD() {
 	});
 }
 
-function createObjectForBD() {
+function createObjectForBD(map) {
 	const object = {
 		FIO: '',
 		Department: '',
@@ -275,15 +276,13 @@ function createObjectForBD() {
 		EmployeeNumber: 1,
 		Post: ''
 	};
-	const fillOutObjectInBD = [...timeFillOutCollection].map((elem) => {
+	const fillOutObjectInBD = map.map((elem) => {
 		const itemObject = Object.assign({}, object);
 
 		for (const itemField in itemObject) {
-			for (const item of elem) {
-				for (const key in item) {
-					if (itemField.toLocaleLowerCase() == key) {
-						itemObject[itemField] = item[key];
-					}
+			for (const key in elem) {
+				if (itemField.toLocaleLowerCase() == key) {
+					itemObject[itemField] = elem[key];
 				}
 			}
 		}
@@ -315,7 +314,7 @@ function countItems(tableContent, modDepart) {
 
 function setDatainDB(array) {
 	$.ajax({
-		url: "./php/report-add.php",
+		url: "./php/report-time-add.php",
 		method: "post",
 		dataType: "html",
 		data: {
@@ -331,9 +330,5 @@ function setDatainDB(array) {
 }
 
 export default {
-	addTimeCard,
-	deleteTimeCard,
-	clearNumberCard,
-	templateTimeTable,
-	submitIDinBD
+
 };

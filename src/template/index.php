@@ -77,7 +77,7 @@
               </div>
               <button class="main__btn" id="addTimeCard" type="button">
                 <svg class="icon icon--plus">
-                  <use class="icon__item" xlink:href="#plus"></use>
+                  <use class="icon__item" xlink:href="./images/sprite.svg#plus"></use>
                 </svg><span class="main__btn-text">Добавить карту</span>
               </button>
             </div>
@@ -537,7 +537,7 @@
       </main>
       <footer class="footer">
         <div class="container">
-          <div class="footer__wrap"><small class="footer__version">v2.1.2</small></div>
+          <div class="footer__wrap"><small class="footer__version">v2.1.3</small></div>
         </div>
       </footer>
     </div>
