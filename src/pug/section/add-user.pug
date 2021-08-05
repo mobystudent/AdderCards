@@ -48,7 +48,7 @@ main.main(data-name="add")
 					.form__field
 						span.form__name
 							| Окончание действия пропуска
-						.form__select.form__item.select(data-select="date")
+						.form__select.form__item.select(data-type="datestatus" data-select="date")
 							header.select__header
 								span.select__value(data-title="title" data-date="date" data-placeholder="Выберите окончание действия пропуска")
 									| Выберите окончание действия пропуска
@@ -77,6 +77,10 @@ main.main(data-name="add")
 									
 			button.btn.btn--form#addUser(type="button" data-type="add-user")
 				| Добавить
+				
+		.info
+			p.info__item.info__item--warn.info__item--fields
+				| Предупреждение! Не все поля заполненны.
 
 		.wrap.wrap--content.wrap--content-add
 			.main__cards.main__cards--main
@@ -111,11 +115,7 @@ main.main(data-name="add")
 					.table__body#tableAdd
 						p.table__nothing
 							| Не добавленно ни одного пользователя
-	
-		.info
-			p.info__item.info__item--warn.info__item--fields
-				| Предупреждение! Не все поля заполненны.
-	
+		
 		.main__btns
 			button.btn#submitAddUser(type="button")
 				| Подтвердить и отправить

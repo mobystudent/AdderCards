@@ -267,7 +267,7 @@
                   </div>
                 </div>
                 <div class="form__field"><span class="form__name">Окончание действия пропуска</span>
-                  <div class="form__select form__item select" data-select="date">
+                  <div class="form__select form__item select" data-type="datestatus" data-select="date">
                     <header class="select__header"><span class="select__value" data-title="title" data-date="date" data-placeholder="Выберите окончание действия пропуска">Выберите окончание действия пропуска</span></header>
                     <ul class="select__list">
                       <li class="select__item"><span class="select__name" data-title="Ввести дату" data-date="date">Ввести дату</span></li>
@@ -295,6 +295,9 @@
             </div>
             <button class="btn btn--form" id="addUser" type="button" data-type="add-user">Добавить</button>
           </form>
+          <div class="info">
+            <p class="info__item info__item--warn info__item--fields">Предупреждение! Не все поля заполненны.</p>
+          </div>
           <div class="wrap wrap--content wrap--content-add">
             <div class="main__cards main__cards--main">
               <p class="main__count-wrap main__count-wrap--depart"><span class="main__count-text">Количество добавленых пользователей:&nbsp</span><span class="main__count main__count--add">0</span></p>
@@ -316,9 +319,6 @@
                 </div>
               </div>
             </div>
-          </div>
-          <div class="info">
-            <p class="info__item info__item--warn info__item--fields">Предупреждение! Не все поля заполненны.</p>
           </div>
           <div class="main__btns">
             <button class="btn" id="submitAddUser" type="button">Подтвердить и отправить</button>
@@ -544,7 +544,7 @@
       </main>
       <footer class="footer">
         <div class="container">
-          <div class="footer__wrap"><small class="footer__version">v2.0.5</small></div>
+          <div class="footer__wrap"><small class="footer__version">v2.0.6</small></div>
         </div>
       </footer>
     </div>

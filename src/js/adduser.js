@@ -13,8 +13,6 @@ $(window).on('load', () => {
 	addUser();
 	datepicker();
 	downloadFoto();
-
-	$.datepicker.regional['ru'];
 });
 
 function templateAddTable(data) {
@@ -56,27 +54,43 @@ function addUser() {
 		const addFields = [...fields].reduce((object, item) => {
 			const fieldName = $(item).data('field');
 
-			if ($(item).hasClass('select') && $(item).data('select') != 'date') {
-				const fieldType = $(item).data('type');
+			if ($(item).hasClass('select')) {
 				const typeSelect = $(item).data('select');
-				const valueItem = $(item).find('.select__value--selected').attr('data-title');
+				const fieldType = $(item).data('type');
 				const nameId = $(item).find('.select__value--selected').attr(`data-${typeSelect}`);
 
-				object[fieldName] = valueItem;
+				if ($(item).data('select') != 'date') {
+					const valueItem = $(item).find('.select__value--selected').attr('data-title');
+
+					object[fieldName] = valueItem;
+				} else {
+					if (nameId == 'date') {
+						const inputValue = $('.form__item[data-field="date"]').val();
+
+						object.date = inputValue;
+					}
+				}
+
 				object[fieldType] = nameId;
 			} else {
-				const inputValue = $(item).val();
+				if ($(item).attr('data-field') != 'date') {
+					const inputValue = $(item).val();
 
-				object[fieldName] = inputValue;
+					object[fieldName] = inputValue;
+				}
 			}
 
 			return object;
 		}, {});
 
-		console.log([addFields]);
+		console.log(addFields);
+		console.log(validationEmptyFields(addFields));
+		// validationEmptyFields(addFields);
 
-		userdFromForm([addFields]);
-		clearFieldsForm(fields);
+		// if (validationEmptyFields(addFields)) {
+		// 	clearFieldsForm(fields);
+		// 	userdFromForm([addFields]);
+		// }
 	});
 }
 
@@ -84,24 +98,21 @@ function userdFromForm(array) {
 	const objToCollection = {
 		id: '',
 		fio: '',
+		date: '',
 		post: '',
 		nameid: '',
 		photofile: '',
 		statusid: '',
 		statustitle: '',
+		datestatus: '',
 		department: ''
 	};
 	const indexCollection = addCollection.size;
-
-	console.warn(indexCollection);
 
 	array.forEach((elem, i) => {
 		const itemObject = Object.assign({}, objToCollection);
 		const departName = $('.main__depart--add').attr('data-depart');
 		const departID = $('.main__depart--add').attr('data-id');
-
-		console.log(departName);
-		console.log(departID);
 
 		for (const itemField in itemObject) {
 			for (const key in elem) {
@@ -119,8 +130,6 @@ function userdFromForm(array) {
 
 		addCollection.set(indexCollection, itemObject);
 	});
-
-	console.log(addCollection);
 
 	dataAdd('#tableAdd');
 }
@@ -201,6 +210,15 @@ function downloadFoto() {
 
 		fileReader.readAsDataURL($(e.target)[0].files[0]);
 	});
+}
+
+function validationEmptyFields(fields) {
+	const validFields = Object.values(fields).every((item) => item);
+	const statusMess = !validFields ? 'show' : 'hide';
+
+	$('.main[data-name="add"]').find('.info__item--warn.info__item--fields')[statusMess]();
+
+	console.log(validFields);
 }
 
 export default {
