@@ -5,8 +5,8 @@ const gulp = require('gulp'),
 	pug = require('gulp-pug'),
 	sourcemaps = require('gulp-sourcemaps'),
 	rename = require('gulp-rename'),
-	debug = require('gulp-debug'),
-	browserSync = require('browser-sync').create();
+	debug = require('gulp-debug');
+	// browserSync = require('browser-sync').create();
 
 /* styles */
 const autoprefixer = require('gulp-autoprefixer'),
@@ -96,7 +96,7 @@ function gulpSass() {
 		.pipe(groupcmq())
 		.pipe(autoprefixer({
 			grid: true,
-			overrideBrowserslist: ['> 0.4%, last 4 versions, firefox >= 52, edge >= 18, safari >=10']
+			overrideBrowserslist: ['> 0.4%, last 4 versions, firefox >= 62, edge >= 18, safari >=12']
 		}))
 		.pipe(sourcemaps.write('.'))
 		.pipe(debug({title: 'scss:'}))
@@ -197,16 +197,17 @@ function gulpImagesBg() {
 function gulpImagesSVG() {
 	return gulp.src(path.src.imgSvg)
 		.pipe(svgSprite({
-			share: {
+			shape: {
 				transform: [
 					{
 						svgo: {
-							plugins: [{
-								removeAttrs: {
-									attrs: ['class', 'style', 'fill', 'stroke.*']
-								},
-								removeViewBox: true
-							}]
+							plugins: [
+								{
+									removeAttrs: {
+										attrs: ['class', 'style', 'fill', 'stroke.*', 'xmlns']
+									}
+								}
+							]
 						}
 					}
 				]
