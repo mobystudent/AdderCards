@@ -6,7 +6,7 @@ main.main(data-name="remove")
 			| Химический факультет
 		
 		form.form#removeForm(action="#" method="GET")
-			.form__wrap
+			.form__wrap(data-post="")
 				.form__fields
 					.form__field
 						span.form__name
@@ -95,9 +95,9 @@ main.main(data-name="remove")
 						.table__cell.table__cell--header.table__cell--titleid
 							span.table__text.table__text--header
 								| Причина удаления
-						//- .table__cell.table__cell--header.table__cell--new-depart
-						//- 	span.table__text.table__text--header
-						//- 		| Новое подразделение
+						.table__cell.table__cell--header.table__cell--newdepart
+							span.table__text.table__text--header
+								| Новое подразделение
 						.table__cell.table__cell--header.table__cell--date
 							span.table__text.table__text--header
 								| Дата

@@ -19,7 +19,12 @@ $(window).on('load', () => {
 });
 
 function templateRemoveTable(data) {
-	const { id = '', fio = '', post = '', statustitle = '', date  = '' } = data;
+	const { id = '', fio = '', post = '', titleid = '', newdepart = '',  date  = '' } = data;
+	const newdepartTemplate = newdepart ? `
+			<div class="table__cell table__cell--body table__cell--newdepart">
+				<span class="table__text table__text--body">${newdepart}</span>
+			</div>
+		` : false;
 
 	return `
 		<div class="table__row" data-id="${id}">
@@ -29,9 +34,10 @@ function templateRemoveTable(data) {
 			<div class="table__cell table__cell--body table__cell--post">
 				<span class="table__text table__text--body">${post}</span>
 			</div>
-			<div class="table__cell table__cell--body table__cell--statustitle">
-				<span class="table__text table__text--body">${statustitle}</span>
+			<div class="table__cell table__cell--body table__cell--titleid">
+				<span class="table__text table__text--body">${titleid}</span>
 			</div>
+			${newdepartTemplate}
 			<div class="table__cell table__cell--body table__cell--date">
 				<span class="table__text table__text--body">${date}</span>
 			</div>
@@ -107,7 +113,7 @@ function renderTable() {
 	$('#tableRemove .table__content').html('');
 
 	removeCollection.forEach((item) => {
-		$('#tableRemove .table__content').append(templateremoveTable(item));
+		$('#tableRemove .table__content').append(templateRemoveTable(item));
 	});
 }
 
@@ -153,7 +159,7 @@ function addUser() {
 	});
 }
 
-function userdFromForm(object) {
+function userdFromForm(object, page = 'remove') {
 	const objToCollection = {
 		id: '',
 		fio: '',
@@ -162,16 +168,17 @@ function userdFromForm(object) {
 		nameid: '',
 		photofile: '',
 		photourl: '',
+		titleid: '',
 		statusid: '',
-		statustitle: '',
-		datestatus: '',
-		datetitle: '',
+		newdepart: '',
+		newnameid: '',
 		department: ''
 	};
-	const indexCollection = addCollection.size;
+	const indexCollection = removeCollection.size;
 	const itemObject = Object.assign({}, objToCollection);
-	const departName = $('.main__depart--add').attr('data-depart');
-	const departID = $('.main__depart--add').attr('data-id');
+	const departName = $(`.main__depart--${page}`).attr('data-depart');
+	const departID = $(`.main__depart--${page}`).attr('data-id');
+	const postUser = $('#removeForm .form__wrap').data('post');
 
 	for (const itemField in itemObject) {
 		for (const key in object) {
@@ -183,13 +190,50 @@ function userdFromForm(object) {
 				itemObject[itemField] = departName;
 			} else if (itemField === 'nameid') {
 				itemObject[itemField] = departID;
+			} else if (itemField === 'post') {
+				itemObject[itemField] = postUser;
 			}
 		}
 	}
 
-	addCollection.set(indexCollection, itemObject);
+	removeCollection.set(indexCollection, itemObject);
 
-	dataAdd('#tableAdd');
+	console.warn(removeCollection);
+
+	dataAdd('#tableRemove');
+}
+
+function dataAdd(nameTable) {
+	if (removeCollection.size) {
+		$('.table__nothing').hide();
+		$(nameTable)
+			.html('')
+			.removeClass('table__body--empty')
+			.append(`
+				<div class="table__content table__content--active">
+				</div>
+			`);
+	} else {
+		$(nameTable).addClass('table__body--empty').html('');
+		$(nameTable).append(`
+			<p class="table__nothing">Новых данных нет</p>
+		`);
+
+		countItems('#tableRemove .table__content', 'remove');
+
+		return;
+	}
+
+	renderTable();
+	countItems('#tableRemove .table__content', 'remove');
+	// deleteUser();
+	// editUser();
+}
+
+function countItems(tableContent, modDepart) {
+	const countItemfromDep = $(tableContent).eq(0).find('.table__row').length;
+
+	$(`.main__count--${modDepart}`).text(countItemfromDep);
 }
 
 function setDepartInSelect() {
@@ -315,9 +359,7 @@ function datepicker() {
 	});
 }
 
-function showUserAvatar(url) {
-	const { photourl  = '' } = url;
-
+function showUserAvatar(photourl) {
 	console.log(photourl);
 	// $('.img--form-remove').attr('src', photourl);
 }
@@ -346,7 +388,10 @@ function getAddUsersInDB(id = '') {
 		},
 		success: function(data) {
 			if (id) {
-				showUserAvatar(JSON.parse(data));
+				const { post  = '', photourl  = '' } = JSON.parse(data);
+
+				showUserAvatar(photourl);
+				$('#removeForm .form__wrap').attr('data-post', post);
 			} else {
 				setUsersInSelect(JSON.parse(data));
 			}

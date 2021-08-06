@@ -322,7 +322,7 @@
         <div class="container">
           <h1 class="main__title">Удалить пользователя</h1><span class="main__depart main__depart--remove" data-depart="Химический факультет" data-id="ChemDep">Химический факультет</span>
           <form class="form" id="removeForm" action="#" method="GET">
-            <div class="form__wrap">
+            <div class="form__wrap" data-post="">
               <div class="form__fields">
                 <div class="form__field"><span class="form__name">Пользователь</span>
                   <div class="form__select form__item select" data-field="fio" data-select="fio">
@@ -373,6 +373,7 @@
                   </div>
                   <div class="table__cell table__cell--header table__cell--post"><span class="table__text table__text--header">Должность</span></div>
                   <div class="table__cell table__cell--header table__cell--titleid"><span class="table__text table__text--header">Причина удаления</span></div>
+                  <div class="table__cell table__cell--header table__cell--newdepart"><span class="table__text table__text--header">Новое подразделение</span></div>
                   <div class="table__cell table__cell--header table__cell--date"><span class="table__text table__text--header">Дата</span></div>
                   <div class="table__cell table__cell--header table__cell--edit"></div>
                   <div class="table__cell table__cell--header table__cell--delete"></div>
@@ -536,7 +537,7 @@
       </main>
       <footer class="footer">
         <div class="container">
-          <div class="footer__wrap"><small class="footer__version">v2.1.9</small></div>
+          <div class="footer__wrap"><small class="footer__version">v2.1.10</small></div>
         </div>
       </footer>
     </div>

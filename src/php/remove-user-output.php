@@ -8,14 +8,14 @@
 	$nameDepart = 'user_depart_'.$nameid;
 
 	if ($id) {
-		if($resultSet = $mysqli->query("SELECT photourl FROM `$nameDepart` WHERE id = '$id'")) {
+		if($resultSet = $mysqli->query("SELECT photourl, post FROM `$nameDepart` WHERE id = '$id'")) {
 			$data = $resultSet->fetch_assoc();
 		} else {
 			echo 'False get in BD '.$nameDepart;
 		}
 	} else {
 		$data = array();
-		
+
 		if($resultSet = $mysqli->query("SELECT * FROM `$nameDepart`")) {
 			while ($result = $resultSet->fetch_assoc()) {
 				array_push($data, $result);
