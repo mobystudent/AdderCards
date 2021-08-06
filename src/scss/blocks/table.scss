@@ -89,10 +89,6 @@
 	}
 
 	&__cell {
-		text-overflow: ellipsis;
-		white-space: nowrap;
-		overflow: hidden;
-
 		@media print {
 			&:not(:last-child) {
 				border-right: 1px solid $deepDarkBlue;
@@ -166,7 +162,7 @@
 		}
 
 		&--post {
-			flex: 0 0 360px;
+			flex: 0 0 260px;
 		}
 
 		&--department,
@@ -261,9 +257,6 @@
 			color: $spaceBlack;
 			height: 40px;
 			width: 100%;
-			text-overflow: ellipsis;
-			overflow: hidden;
-			white-space: nowrap;
 
 			@media print {
 				font-size: 12px;

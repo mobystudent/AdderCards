@@ -24,7 +24,7 @@ function templateRemoveTable(data) {
 			<div class="table__cell table__cell--body table__cell--newdepart">
 				<span class="table__text table__text--body">${newdepart}</span>
 			</div>
-		` : false;
+		` : '';
 
 	return `
 		<div class="table__row" data-id="${id}">
@@ -60,24 +60,28 @@ function templateRemoveTable(data) {
 }
 
 function templateRemoveForm(data) {
-	const { id = '', fio = '', photofile = '', photourl = '', post = '', statusid = '', statustitle = '', datestatus = '', datetitle = '', date  = '' } = data;
+	const { fio = '', statusid = '', newdepart = '', newnameid = '', titleid = '', date  = '' } = data;
+	const departClassView = statusid == 'changeDepart' ? '' : 'form__field--hide';
+	const dateClassView = statusid == 'remove' ? '' : 'form__field--hide';
 
 	return `
 		<div class="form__fields">
-			<div class="form__field"><span class="form__name">Пользователь</span>
+			<div class="form__field">
+				<span class="form__name">Пользователь</span>
 				<div class="form__select form__item select" data-field="fio" data-select="fio">
 					<header class="select__header">
-						<span class="select__value" data-title="title" data-placeholder="Выберите пользователя">Выберите пользователя</span>
+						<span class="select__value select__value--selected" data-title="${fio}" data-fio="fio" data-placeholder="Выберите пользователя">${fio}</span>
 					</header>
 					<ul class="select__list"></ul>
 				</div>
 			</div>
-			<div class="form__field"><span class="form__name">Причина удаления</span>
+			<div class="form__field">
+				<span class="form__name">Причина удаления</span>
 				<div class="form__select form__item select" data-field="titleid" data-type="statusid" data-select="reason">
 					<header class="select__header">
-						<span class="select__value" data-title="title" data-reason="type" data-placeholder="Выберите причину удаления">Выберите причину удаления</span>
+						<span class="select__value select__value--selected" data-title="${titleid}" data-reason="${statusid}" data-placeholder="Выберите причину удаления">${titleid}</span>
 					</header>
-					ul class="select__list">
+					<ul class="select__list">
 						<li class="select__item">
 							<span class="select__name" data-title="Перевод в другое подразделение" data-reason="changeDepart">Перевод в другое подразделение</span>
 						</li>
@@ -87,24 +91,23 @@ function templateRemoveForm(data) {
 					</ul>
 				</div>
 			</div>
-			<div class="form__field form__field--hide" data-name="depart"><span class="form__name">Новое подразделение</span>
+			<div class="form__field ${departClassView}" data-name="depart">
+				<span class="form__name">Новое подразделение</span>
 				<div class="form__select form__item select" data-field="newdepart" data-type="newnameid" data-select="new-name-id">
 					<header class="select__header">
-						<span class="select__value" data-title="title" data-new-name-id="new-name-id" data-placeholder="Выберите подразделение">Выберите подразделение</span>
+						<span class="select__value select__value--selected" data-title="${newdepart}" data-new-name-id="${newnameid}" data-placeholder="Выберите подразделение">${newdepart}</span>
 					</header>
 					<ul class="select__list"></ul>
 				</div>
 			</div>
-			<div class="form__field form__field--hide" data-name="date">
+			<div class="form__field ${dateClassView}" data-name="date">
 				<label class="form__label"><span class="form__name">Дата завершения действия пропуска</span>
-					<input class="form__input form__item" id="removeDateField" data-field="date" name="date" type="text" value="${date}" placeholder="Введите дату завершения действия пропуска" required="required"/>
+					<input class="form__input form__item" id="removeDatepicker" data-field="date" name="date" type="text" value="${date}" placeholder="Введите дату завершения действия пропуска" required="required"/>
 				</label>
 			</div>
 		</div>
 		<div class="form__aside">
-			<div class="form__img">
-				<img class="img img--form img--form-remove" src=${photourl} alt="user avatar"/>
-			</div>
+			<div class="form__img"><img class="img img--form img--form-remove" src="./images/avatar.svg" alt="user avatar"/></div>
 		</div>
 	`;
 }
@@ -153,8 +156,8 @@ function addUser() {
 		console.log(userData);
 
 		if (validationEmptyFields(userData)) {
-			clearFieldsForm(fields);
 			userdFromForm(userData);
+			clearFieldsForm(fields);
 		}
 	});
 }
@@ -226,8 +229,8 @@ function dataAdd(nameTable) {
 
 	renderTable();
 	countItems('#tableRemove .table__content', 'remove');
-	// deleteUser();
-	// editUser();
+	deleteUser();
+	editUser();
 }
 
 function countItems(tableContent, modDepart) {
@@ -344,6 +347,7 @@ function clearFieldsForm(array) {
 	});
 
 	$('.form__field[data-name="date"]').addClass('form__field--hide');
+	$('#removeForm .form__wrap').attr('data-post', '');
 	$('.img--form').attr('src', './images/avatar.svg');
 	$('.form__field--new-post, .form__field--new-fio, .form__field--depart').hide();
 }
@@ -373,6 +377,47 @@ function validationEmptyFields(fields) {
 	$('.main[data-name="remove"]').find('.info__item--warn.info__item--fields')[statusMess]();
 
 	return valid;
+}
+
+function deleteUser() {
+	$('.table__content').click((e) => {
+		if ($(e.target).parents('.table__btn--delete').length || $(e.target).hasClass('table__btn--delete')) {
+			const idRemove = $(e.target).closest('.table__row').data('id');
+
+			removeCollection.delete(idRemove);
+			renderTable();
+		}
+
+		countItems('#tableRemove .table__content', 'remove');
+	});
+}
+
+function editUser() {
+	$('.table__content').click((e) => {
+		if ($(e.target).parents('.table__btn--edit').length || $(e.target).hasClass('table__btn--edit')) {
+			const idEdit = $(e.target).closest('.table__row').data('id');
+
+			renderForm(idEdit);
+			removeCollection.delete(idEdit);
+			renderTable();
+			service.toggleSelect();
+			datepicker();
+			getAddUsersInDB();
+			setDepartInSelect();
+		}
+
+		countItems('#tableAdd .table__content', 'add');
+	});
+}
+
+function renderForm(id) {
+	$('#removeForm .form__wrap').html('');
+
+	removeCollection.forEach((user) => {
+		if (user.id == id) {
+			$('#removeForm .form__wrap').append(templateRemoveForm(user));
+		}
+	});
 }
 
 function getAddUsersInDB(id = '') {
