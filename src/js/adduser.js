@@ -388,7 +388,7 @@ function submitIDinBD() {
 			elem.department = nameDepart;
 		});
 
-		getAddDataInDB([...addCollection.values()]);
+		getAddDataInDB([...addCollection.values()], idDepart);
 
 		addCollection.clear();
 		$('#tableAdd')
@@ -403,12 +403,13 @@ function submitIDinBD() {
 	});
 }
 
-function getAddDataInDB(array) {
+function getAddDataInDB(array, nameid) {
 	$.ajax({
 		url: "./php/add-user-add.php",
 		method: "post",
 		dataType: "html",
 		data: {
+			nameid: nameid,
 			array: array
 		},
 		success: function(data) {

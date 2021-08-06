@@ -4,8 +4,12 @@
 	$mysqli->query("SET NAMES 'utf8'");
 
 	$array = $_POST['array'];
+	$nameid = strtolower($_POST['nameid']);
+	$nameDepart = 'user_depart_'.$nameid;
 
 	var_dump($array);
+	var_dump($nameid);
+	var_dump($nameDepart);
 
 	foreach ($array as $item) {
 		foreach ($item as $key => $value) {
@@ -20,9 +24,15 @@
 		}
 
 		if($mysqli->query("INSERT INTO add_user (fio, department, post, photofile, nameid, statusid, statustitle, date) VALUES ('$fio', '$department', '$post', '$photofile', '$nameid', '$statusid', '$statustitle', '$date')")) {
-			echo('Success add in BD');
+			echo('Success add in BD add_user');
 		} else {
-			echo 'False add in BD';
+			echo 'False add in BD add_user';
+		}
+
+		if ($mysqli->query("INSERT INTO `$nameDepart` (fio, department, post, photofile, nameid, statusid, statustitle, date) VALUES ('$fio', '$department', '$post', '$photofile', '$nameid', '$statusid', '$statustitle', '$date')")) {
+			echo('Success add in BD '.$nameDepart);
+		} else {
+			echo 'False add in BD '.$nameDepart;
 		}
 	}
 

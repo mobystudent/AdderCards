@@ -285,7 +285,7 @@
           </form>
           <div class="info">
             <p class="info__item info__item--warn info__item--fields">Предупреждение! Не все поля заполненны.</p>
-            <p class="info__item info__item--error info__item--name">Ошибка! Имя содержит недопустимые символы. Разрешены: кириллические буквы, дефис, точка.</p>
+            <p class="info__item info__item--error info__item--name">Ошибка! Имя содержит недопустимые символы. Разрешены: кириллические буквы, дефис, точка, апостроф.</p>
             <p class="info__item info__item--error info__item--image">Ошибка! Не правильный формат изображение. Допустимы: giff, png, jpg, jpeg.</p>
             <p class="info__item info__item--error info__item--short">Ошибка! ФИО должно состоять хотя бы из двух слов.</p>
           </div>
@@ -537,7 +537,7 @@
       </main>
       <footer class="footer">
         <div class="container">
-          <div class="footer__wrap"><small class="footer__version">v2.1.3</small></div>
+          <div class="footer__wrap"><small class="footer__version">v2.1.4</small></div>
         </div>
       </footer>
     </div>
