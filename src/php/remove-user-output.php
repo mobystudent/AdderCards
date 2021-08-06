@@ -3,16 +3,26 @@
 	$mysqli = new mysqli("localhost", "root", "root", "security-system");
 	$mysqli->query("SET NAMES 'utf8'");
 
-	$data = array();
 	$nameid = strtolower($_POST['nameid']);
+	$id = $_POST['id'];
 	$nameDepart = 'user_depart_'.$nameid;
 
-	if($resultSet = $mysqli->query("SELECT * FROM `$nameDepart`")) {
-		while ($result = $resultSet->fetch_assoc()) {
-			array_push($data, $result);
+	if ($id) {
+		if($resultSet = $mysqli->query("SELECT photourl FROM `$nameDepart` WHERE id = '$id'")) {
+			$data = $resultSet->fetch_assoc();
+		} else {
+			echo 'False get in BD '.$nameDepart;
 		}
 	} else {
-		echo 'False get in BD '.$nameDepart;
+		$data = array();
+		
+		if($resultSet = $mysqli->query("SELECT * FROM `$nameDepart`")) {
+			while ($result = $resultSet->fetch_assoc()) {
+				array_push($data, $result);
+			}
+		} else {
+			echo 'False get in BD '.$nameDepart;
+		}
 	}
 
 	echo json_encode($data);

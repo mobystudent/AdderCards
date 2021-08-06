@@ -63,12 +63,12 @@ main.main(data-name="add")
 						label.form__label
 							span.form__name
 								| Дата окончания
-							input.form__input.form__item#addDateField(data-field="date" name="date" type="text" placeholder="Введите дату" required)
+							input.form__input.form__item#addDatepicker(data-field="date" name="date" type="text" placeholder="Введите дату" required)
 				.form__aside
 					.form__img
 						img.img.img--form(src="./images/avatar.svg" alt="user avatar")
 					.form__field
-						input.form__input.form__input--file.form__item#addFile(data-field="photofile" name="photofile" type="file" required)
+						input.form__input.form__input--file.form__item#addFile(data-field="photofile" data-url="photourl" name="photofile" type="file" required)
 						label.form__download(for="addFile")
 							svg.icon.icon--download
 								use(xlink:href="./images/sprite.svg#download")

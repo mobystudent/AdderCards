@@ -12,7 +12,7 @@ function addNewUserInTable() {
 	const userEdit = [];
 	let countId = 1; //delete
 
-	$('#removeUser, #editUser').click((e) => {
+	$('#editUser').click((e) => {
 		const form = $(e.target).parents('.form');
 		const fields = $(form).find('.form__item');
 		const typeBtn = $(e.target).data('type');

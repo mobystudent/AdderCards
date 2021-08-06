@@ -35,14 +35,14 @@
           </div>
           <div class="form__field form__field--hide" data-name="date">
             <label class="form__label"><span class="form__name">Дата окончания</span>
-              <input class="form__input form__item" id="addDateField" data-field="date" name="date" type="text" placeholder="Введите дату" required="required"/>
+              <input class="form__input form__item" id="addDatepicker" data-field="date" name="date" type="text" placeholder="Введите дату" required="required"/>
             </label>
           </div>
         </div>
         <div class="form__aside">
           <div class="form__img"><img class="img img--form" src="./images/avatar.svg" alt="user avatar"/></div>
           <div class="form__field">
-            <input class="form__input form__input--file form__item" id="addFile" data-field="photofile" name="photofile" type="file" required="required"/>
+            <input class="form__input form__input--file form__item" id="addFile" data-field="photofile" data-url="photourl" name="photofile" type="file" required="required"/>
             <label class="form__download" for="addFile">
               <svg class="icon icon--download">
                 <use xlink:href="./images/sprite.svg#download"></use>

@@ -9,7 +9,6 @@ datepickerFactory($);
 datepickerRUFactory($);
 
 const addCollection = new Map();
-const imgUrlCollection = new Map();
 
 $(window).on('load', () => {
 	addUser();
@@ -57,8 +56,7 @@ function templateAddTable(data) {
 }
 
 function templateAddForm(data) {
-	const { id = '', fio = '', photofile = '', post = '', statusid = '', statustitle = '', datestatus = '', datetitle = '', date  = '' } = data;
-	const photoUrl = imgUrlCollection.get(id);
+	const { fio = '', photofile = '', photourl = '', post = '', statusid = '', statustitle = '', datestatus = '', datetitle = '', date  = '' } = data;
 	const dateClassView = datestatus == 'date' ? '' : 'form__field--hide';
 
 	return `
@@ -109,13 +107,13 @@ function templateAddForm(data) {
 			</div>
 			<div class="form__field ${dateClassView}" data-name="date">
 				<label class="form__label"><span class="form__name">Дата окончания</span>
-					<input class="form__input form__item" id="dateField" data-field="date" name="date" type="text" value="${date}" placeholder="Введите дату" required="required"/>
+					<input class="form__input form__item" id="addDateField" data-field="date" name="date" type="text" value="${date}" placeholder="Введите дату" required="required"/>
 				</label>
 			</div>
 		</div>
 		<div class="form__aside">
 			<div class="form__img">
-				<img class="img img--form" src=${photoUrl} alt="user avatar"/>
+				<img class="img img--form" src=${photourl} alt="user avatar"/>
 			</div>
 			<div class="form__field">
 				<input class="form__input form__input--file form__item" id="addFile" data-field="photofile" data-value="${photofile}" name="photofile" type="file" required="required"/>
@@ -160,15 +158,17 @@ function addUser() {
 				object[fieldType] = nameId;
 				object[fieldName] = valueItem;
 			} else {
-				// if ($(item).attr('data-field') != 'date' || $(item).attr('data-field') != 'photofile') {
 				if ($(item).attr('data-field') != 'date' && $(item).attr('data-field') != 'photofile') {
 					const inputValue = $(item).val();
 
 					object[fieldName] = inputValue;
 				} else if ($(item).attr('data-field') == 'photofile') {
-					console.log('photofile');
+					const fieldUrl = $(item).data('url');
 					const inputValue = $(item).data('value');
 
+					console.log(fieldUrl);
+
+					object.photourl = fieldUrl;
 					object[fieldName] = inputValue;
 				}
 			}
@@ -193,6 +193,7 @@ function userdFromForm(object) {
 		post: '',
 		nameid: '',
 		photofile: '',
+		photourl: '',
 		statusid: '',
 		statustitle: '',
 		datestatus: '',
@@ -278,7 +279,7 @@ function clearFieldsForm(array) {
 }
 
 function datepicker() {
-	$("#addDateField").datepicker({
+	$("#addDatepicker").datepicker({
 		changeMonth: true,
 		changeYear: true,
 		showOtherMonths: true,
@@ -292,12 +293,11 @@ function downloadFoto() {
 	$('.form__input--file').change((e) => {
 		const file = e.target.files[0];
 		const url = URL.createObjectURL(file);
-		const indexAddCollection = addCollection.size;
 		const fileName = $(e.target).val();
 
 		$('.img--form').attr('src', url);
-		imgUrlCollection.set(indexAddCollection, url);
-		$(e.target).attr('data-value', fileName);
+		addCollection.photourl = url;
+		$(e.target).attr({ 'data-value': fileName, 'data-url': url });
 	});
 }
 
@@ -380,6 +380,8 @@ function submitIDinBD() {
 		const idDepart = $('.main__depart--add').attr('data-id');
 		const nameDepart = $('.main__depart--add').attr('data-depart');
 
+		console.log(addCollection);
+
 		addCollection.forEach((elem) => {
 			elem.nameid = idDepart;
 			elem.department = nameDepart;
@@ -401,6 +403,8 @@ function submitIDinBD() {
 }
 
 function setAddUsersInDB(array, nameid) {
+	console.log(array);
+
 	$.ajax({
 		url: "./php/add-user-add.php",
 		method: "post",

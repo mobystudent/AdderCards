@@ -265,14 +265,14 @@
                 </div>
                 <div class="form__field form__field--hide" data-name="date">
                   <label class="form__label"><span class="form__name">Дата окончания</span>
-                    <input class="form__input form__item" id="addDateField" data-field="date" name="date" type="text" placeholder="Введите дату" required>
+                    <input class="form__input form__item" id="addDatepicker" data-field="date" name="date" type="text" placeholder="Введите дату" required>
                   </label>
                 </div>
               </div>
               <div class="form__aside">
                 <div class="form__img"><img class="img img--form" src="./images/avatar.svg" alt="user avatar"></div>
                 <div class="form__field">
-                  <input class="form__input form__input--file form__item" id="addFile" data-field="photofile" name="photofile" type="file" required>
+                  <input class="form__input form__input--file form__item" id="addFile" data-field="photofile" data-url="photourl" name="photofile" type="file" required>
                   <label class="form__download" for="addFile">
                     <svg class="icon icon--download">
                       <use xlink:href="./images/sprite.svg#download"></use>
@@ -325,14 +325,14 @@
             <div class="form__wrap">
               <div class="form__fields">
                 <div class="form__field"><span class="form__name">Пользователь</span>
-                  <div class="form__select form__item select" data-field="FIO" data-select="fio">
-                    <header class="select__header"><span class="select__value" data-title="title" data-placeholder="Выберите пользователя">Выберите пользователя</span></header>
+                  <div class="form__select form__item select" data-field="fio" data-select="fio">
+                    <header class="select__header"><span class="select__value" data-title="title" data-fio="fio" data-placeholder="Выберите пользователя">Выберите пользователя</span></header>
                     <ul class="select__list"></ul>
                   </div>
                 </div>
                 <div class="form__field"><span class="form__name">Причина удаления</span>
-                  <div class="form__select form__item select" data-field="TitleID" data-type="StatusID" data-select="reason">
-                    <header class="select__header"><span class="select__value" data-title="title" data-reason="type" data-placeholder="Выберите причину удаления">Выберите причину удаления</span></header>
+                  <div class="form__select form__item select" data-field="titleid" data-type="statusid" data-select="reason">
+                    <header class="select__header"><span class="select__value" data-title="title" data-reason="reason" data-placeholder="Выберите причину удаления">Выберите причину удаления</span></header>
                     <ul class="select__list">
                       <li class="select__item"><span class="select__name" data-title="Перевод в другое подразделение" data-reason="changeDepart">Перевод в другое подразделение</span></li>
                       <li class="select__item"><span class="select__name" data-title="Увольнение" data-reason="remove">Увольнение</span></li>
@@ -340,22 +340,19 @@
                   </div>
                 </div>
                 <div class="form__field form__field--hide" data-name="depart"><span class="form__name">Новое подразделение</span>
-                  <div class="form__select form__item select" data-field="NewDepart" data-type="NewNameID" data-select="new-name-id">
+                  <div class="form__select form__item select" data-field="newdepart" data-type="newnameid" data-select="new-name-id">
                     <header class="select__header"><span class="select__value" data-title="title" data-new-name-id="new-name-id" data-placeholder="Выберите подразделение">Выберите подразделение</span></header>
                     <ul class="select__list"></ul>
                   </div>
                 </div>
                 <div class="form__field form__field--hide" data-name="date">
                   <label class="form__label"><span class="form__name">Дата завершения действия пропуска</span>
-                    <input class="form__input form__item" id="removeDateField" data-field="date" name="date" type="text" placeholder="Введите дату завершения действия пропуска" required>
+                    <input class="form__input form__item" id="removeDatepicker" data-field="date" name="date" type="text" placeholder="Введите дату завершения действия пропуска" required>
                   </label>
                 </div>
               </div>
               <div class="form__aside">
-                <div class="form__img"><img class="img img--form" src="./images/avatar.svg" alt="user avatar"></div>
-                <div class="form__field">
-                  <input class="form__input form__input--file form__item" id="viewFile" data-field="photofile" name="photofile" type="file">
-                </div>
+                <div class="form__img"><img class="img img--form img--form-remove" src="./images/avatar.svg" alt="user avatar"></div>
               </div>
             </div>
             <button class="btn btn--form" id="removeUser" type="button" data-type="remove-user">Удалить</button>
@@ -540,7 +537,7 @@
       </main>
       <footer class="footer">
         <div class="container">
-          <div class="footer__wrap"><small class="footer__version">v2.1.7</small></div>
+          <div class="footer__wrap"><small class="footer__version">v2.1.8</small></div>
         </div>
       </footer>
     </div>
