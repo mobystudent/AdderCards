@@ -1,7 +1,7 @@
 
 <main class="main" data-name="remove">
   <div class="container">
-    <h1 class="main__title">Удалить пользователя</h1><span class="main__depart main__depart--permis">Химический факультет</span>
+    <h1 class="main__title">Удалить пользователя</h1><span class="main__depart main__depart--remove" data-depart="Химический факультет" data-id="ChemDep">Химический факультет</span>
     <form class="form" id="removeForm" action="#" method="GET">
       <div class="form__wrap">
         <div class="form__fields">

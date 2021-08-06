@@ -1,21 +1,13 @@
 'use strict';
 
 import $ from 'jquery';
-import { json } from './data.js';
 
 $(window).on('load', () => {
 	printReport();
 	toggleSelect();
-	setUsersFromSelect();
 	switchControl();
 	sortItems();
 });
-
-function stringifyJSON() {
-	const strJson = JSON.stringify(json);
-
-	return strJson;
-}
 
 function printReport() {
 	$('.btn--print').click(() => {
@@ -90,25 +82,6 @@ function setDataAttrSelectedItem(title, select, elem) {
 	}
 
 	$(elem).parents('.select').find('.select__value--selected').attr(attr);
-}
-
-function setUsersFromSelect() {
-	const dataArr = JSON.parse(stringifyJSON());
-	const user = Object.values(dataArr).map((item) => item);
-
-	user.forEach((item) => {
-		const name = item.FIO;
-
-		$('.select[data-select="fio"]').find('.select__list').append(`
-			<li class="select__item">
-				<span class="select__name" data-title="${name}">
-					${name}
-				</span>
-			</li>
-		`);
-	});
-
-	clickSelectItem();
 }
 
 function switchControl() {
@@ -194,5 +167,6 @@ function showDataInTable() {
 export default {
 	printReport,
 	showDataInTable,
-	toggleSelect
+	toggleSelect,
+	clickSelectItem
 };

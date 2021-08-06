@@ -320,7 +320,7 @@
       </main>
       <main class="main" data-name="remove">
         <div class="container">
-          <h1 class="main__title">Удалить пользователя</h1><span class="main__depart main__depart--permis">Химический факультет</span>
+          <h1 class="main__title">Удалить пользователя</h1><span class="main__depart main__depart--remove" data-depart="Химический факультет" data-id="ChemDep">Химический факультет</span>
           <form class="form" id="removeForm" action="#" method="GET">
             <div class="form__wrap">
               <div class="form__fields">
@@ -540,7 +540,7 @@
       </main>
       <footer class="footer">
         <div class="container">
-          <div class="footer__wrap"><small class="footer__version">v2.1.6</small></div>
+          <div class="footer__wrap"><small class="footer__version">v2.1.7</small></div>
         </div>
       </footer>
     </div>

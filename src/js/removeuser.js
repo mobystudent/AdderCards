@@ -13,7 +13,8 @@ const removeCollection = new Map();
 
 $(window).on('load', () => {
 	datepicker();
-	inputDepartInSelect();
+	setDepartInSelect();
+	getAddUsersInDB();
 });
 
 function templateRemoveTable(data) {
@@ -51,7 +52,7 @@ function templateRemoveTable(data) {
 	`;
 }
 
-function inputDepartInSelect() {
+function setDepartInSelect() {
 	nameDeparts.forEach((depart) => {
 		const { idName = '', longName = '' } = depart;
 
@@ -61,6 +62,24 @@ function inputDepartInSelect() {
 			</li>
 		`);
 	});
+
+	service.clickSelectItem();
+}
+
+function setUsersInSelect(users) {
+	users.forEach((item) => {
+		const { fio = '' } = item;
+
+		$('.select[data-select="fio"]').find('.select__list').append(`
+			<li class="select__item">
+				<span class="select__name" data-title="${fio}">
+					${fio}
+				</span>
+			</li>
+		`);
+	});
+
+	service.clickSelectItem();
 }
 
 function datepicker() {
@@ -71,6 +90,25 @@ function datepicker() {
 		selectOtherMonths: true,
 		minDate: "+1D",
 		maxViewMode: 10
+	});
+}
+
+function getAddUsersInDB() {
+	const idDepart = $('.main__depart--remove').attr('data-id');
+
+	$.ajax({
+		url: "./php/remove-user-output.php",
+		method: "post",
+		dataType: "html",
+		data: {
+			nameid: idDepart
+		},
+		success: function(data) {
+			setUsersInSelect(JSON.parse(data));
+		},
+		error: function(data) {
+			console.log(data);
+		}
 	});
 }
 
