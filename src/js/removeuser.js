@@ -20,11 +20,6 @@ $(window).on('load', () => {
 
 function templateRemoveTable(data) {
 	const { id = '', fio = '', post = '', titleid = '', newdepart = '',  date  = '' } = data;
-	const newdepartTemplate = newdepart ? `
-			<div class="table__cell table__cell--body table__cell--newdepart">
-				<span class="table__text table__text--body">${newdepart}</span>
-			</div>
-		` : '';
 
 	return `
 		<div class="table__row" data-id="${id}">
@@ -37,7 +32,9 @@ function templateRemoveTable(data) {
 			<div class="table__cell table__cell--body table__cell--titleid">
 				<span class="table__text table__text--body">${titleid}</span>
 			</div>
-			${newdepartTemplate}
+			<div class="table__cell table__cell--body table__cell--newdepart">
+				<span class="table__text table__text--body">${newdepart}</span>
+			</div>
 			<div class="table__cell table__cell--body table__cell--date">
 				<span class="table__text table__text--body">${date}</span>
 			</div>
@@ -158,6 +155,7 @@ function addUser() {
 		if (validationEmptyFields(userData)) {
 			userdFromForm(userData);
 			clearFieldsForm(fields);
+			showFieldsInHeader();
 		}
 	});
 }
@@ -253,6 +251,37 @@ function setDepartInSelect() {
 	clickSelectItem();
 }
 
+function showFieldsInHeader() {
+	const existDepart = [...removeCollection.values()].every((elem) => elem.newdepart);
+	const existDate = [...removeCollection.values()].every((elem) => elem.date);
+
+	console.log(existDepart);
+	console.log(existDate);
+
+	if (existDepart && !existDate) {
+		$('.table__header .table__cell--date').addClass('table__cell--hide');
+		$('.table__body .table__cell--date').addClass('table__cell--hide');
+		$('.table__header .table__cell--newdepart').removeClass('table__cell--hide');
+		$('.table__body .table__cell--newdepart').removeClass('table__cell--hide');
+
+		$('.main[data-name="remove"]').find('.wrap--content').addClass('wrap--content-remove-transfer').removeClass('wrap--content-remove-item');
+	} else if (!existDepart && existDate) {
+		$('.table__header .table__cell--date').removeClass('table__cell--hide');
+		$('.table__body .table__cell--date').removeClass('table__cell--hide');
+		$('.table__header .table__cell--newdepart').addClass('table__cell--hide');
+		$('.table__body .table__cell--newdepart').addClass('table__cell--hide');
+
+		$('.main[data-name="remove"]').find('.wrap--content').addClass('wrap--content-remove-item').removeClass('wrap--content-remove-transfer');
+	} else {
+		$('.table__header .table__cell--date').removeClass('table__cell--hide');
+		$('.table__body .table__cell--date').removeClass('table__cell--hide');
+		$('.table__header .table__cell--newdepart').removeClass('table__cell--hide');
+		$('.table__body .table__cell--newdepart').removeClass('table__cell--hide');
+
+		$('.main[data-name="remove"]').find('.wrap--content').removeClass('wrap--content-remove-item, wrap--content-remove-transfer').addClass('wrap--content-remove-all');
+	}
+}
+
 function setUsersInSelect(users) {
 	users.forEach((item) => {
 		const { id = '', fio = '' } = item;
@@ -296,8 +325,6 @@ function setDataAttrSelectedItem(title, select, elem) {
 			$('.main[data-name="remove"] .form__field[data-name="depart"]').removeClass('form__field--hide');
 			$('.main[data-name="remove"] .form__field[data-name="date"]').addClass('form__field--hide');
 			$('.main[data-name="remove"] .form__field[data-name="date"]').find('.form__input').val('');
-
-			// $(elem).parents('.main').find('.wrap--content').addClass('wrap--content-remove-transfer').removeClass('wrap--content-remove-item');
 		} else {
 			const newDepartFields = $('#removeForm').find('.form__item[data-field="newdepart"]');
 
@@ -312,8 +339,6 @@ function setDataAttrSelectedItem(title, select, elem) {
 				.removeClass('select__value--selected')
 				.attr(attr)
 				.text(placeholder);
-
-			// $(elem).parents('.main').find('.wrap--content').addClass('wrap--content-remove-item').removeClass('wrap--content-remove-transfer');
 		}
 	}
 

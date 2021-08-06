@@ -16,22 +16,6 @@ main.main(data-name="remove")
 								span.select__value(data-title="title" data-fio="fio" data-placeholder="Выберите пользователя")
 									| Выберите пользователя
 							ul.select__list
-					//- .form__field
-						span.form__name
-							| Подразделение/факультет
-						.form__select.form__item.select(data-field="Department" data-type="NameID" data-select="name-id")
-							header.select__header
-								span.select__value(data-title="title" data-name-id="name-id" data-placeholder="Выберите подразделение/факультет")
-									| Выберите подразделение/факультет
-							ul.select__list
-								
-								- for (let i = 0; i < 2 ; i++)
-									li.select__item
-										span.select__name(data-title="Химический факультет" data-name-id="ChemDep")
-											| Химический факультет
-									li.select__item
-										span.select__name(data-title="Биологический факультет" data-name-id="BioDep")
-											| Биологический факультет
 					.form__field
 						span.form__name
 							| Причина удаления
@@ -89,13 +73,10 @@ main.main(data-name="remove")
 						.table__cell.table__cell--header.table__cell--post
 							span.table__text.table__text--header
 								| Должность
-						//- .table__cell.table__cell--header.table__cell--department
-						//- 	span.table__text.table__text--header
-						//- 		| Подразделение/факультет
 						.table__cell.table__cell--header.table__cell--titleid
 							span.table__text.table__text--header
 								| Причина удаления
-						.table__cell.table__cell--header.table__cell--newdepart
+						.table__cell.table__cell--header.table__cell--newdepart.table__cell--hide
 							span.table__text.table__text--header
 								| Новое подразделение
 						.table__cell.table__cell--header.table__cell--date

@@ -41,19 +41,7 @@ function setDataAttrSelectedItem(title, select, elem) {
 	const dataType = $(elem).find('.select__name').data(select);
 	let attr = '';
 
-	if (select == 'reason') {
-		if (dataType == 'changeDepart') {
-			$('.main[data-name="remove"] .form__field[data-name="depart"]').removeClass('form__field--hide');
-			$('.main[data-name="remove"] .form__field[data-name="date"]').addClass('form__field--hide');
-
-			$(elem).parents('.main').find('.wrap--content').addClass('wrap--content-remove-transfer').removeClass('wrap--content-remove-item');
-		} else {
-			$('.main[data-name="remove"] .form__field[data-name="depart"]').addClass('form__field--hide');
-			$('.main[data-name="remove"] .form__field[data-name="date"]').removeClass('form__field--hide');
-
-			$(elem).parents('.main').find('.wrap--content').addClass('wrap--content-remove-item').removeClass('wrap--content-remove-transfer');
-		}
-	} else if (select == 'change') {
+	if (select == 'change') {
 		if (dataType == 'changeFIO') {
 			$('.form__field--new-post').hide();
 			$('.form__field--new-fio').show();

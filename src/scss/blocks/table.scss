@@ -224,6 +224,10 @@
 			}
 		}
 
+		&--hide {
+			display: none;
+		}
+
 		@media print {
 			&--cardid,
 			&--statustitle {
