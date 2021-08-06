@@ -1,69 +1,64 @@
 'use strict';
 
 import $ from 'jquery';
+import datepickerFactory from 'jquery-datepicker';
+import datepickerRUFactory from 'jquery-datepicker/i18n/jquery.ui.datepicker-ru';
+import service from './service.js';
+
+datepickerFactory($);
+datepickerRUFactory($);
+
+const removeCollection = new Map();
 
 $(window).on('load', () => {
-	transferRemoveUserToRequest();
+	datepicker();
 });
 
-function transferRemoveUserToRequest() {
-	const userRemove = [];
+function templateRemoveTable(data) {
+	const { id = '', fio = '', post = '', statustitle = '', date  = '' } = data;
 
-	$('#submitRemoveUser').click(() => {
-		const itemUsers = $('#tableRemove .table__content--active').find('.table__row');
-		const object = {
-			FIO: '',
-			Department: '',
-			FieldGroup: '',
-			Badge: '',
-			CardName: '',
-			CardID: '',
-			CardValidTo: '',
-			PIN: '',
-			CardStatus: 1,
-			Security: 0,
-			Disalarm: 0,
-			VIP: 0,
-			DayNightCLM: 0,
-			AntipassbackDisabled: 0,
-			PhotoFile: '',
-			EmployeeNumber: '',
-			Post: '',
-			NameID: '',
-			StatusID: '',
-			IDUser: '',
-			TitleID: '',
-			NewFIO: '',
-			NewPost: '',
-			NewDepart: '',
-			Data: '',
-			CodePicture: ''
-		};
-		const valueFields = [...itemUsers].map((row) => {
-			const cells = $(row).find('.table__cell');
-			const valueField = [...cells].map((cell) => {
-				const name = $(cell).data('name');
-				const value = $(cell).data('value');
+	return `
+		<div class="table__row" data-id="${id}">
+			<div class="table__cell table__cell--body table__cell--fio">
+				<span class="table__text table__text--body">${fio}</span>
+			</div>
+			<div class="table__cell table__cell--body table__cell--post">
+				<span class="table__text table__text--body">${post}</span>
+			</div>
+			<div class="table__cell table__cell--body table__cell--statustitle">
+				<span class="table__text table__text--body">${statustitle}</span>
+			</div>
+			<div class="table__cell table__cell--body table__cell--date">
+				<span class="table__text table__text--body">${date}</span>
+			</div>
+			<div class="table__cell table__cell--body table__cell--edit">
+				<button class="table__btn table__btn--edit" type="button">
+					<svg class="icon icon--edit">
+						<use class="icon__item" xlink:href="./images/sprite.svg#edit"></use>
+					</svg>
+				</button>
+			</div>
+			<div class="table__cell table__cell--body table__cell--delete">
+				<button class="table__btn table__btn--delete" type="button">
+					<svg class="icon icon--delete">
+						<use class="icon__item" xlink:href="./images/sprite.svg#delete"></use>
+					</svg>
+				</button>
+			</div>
+		</div>
+	`;
+}
 
-				return {[name]: value};
-			});
-
-			return valueField;
-		});
-
-		valueFields.flat(1).forEach((elem) => {
-			for (const itemField in object) {
-				for (const key in elem) {
-					if (itemField.toLocaleLowerCase() == key) {
-						object[itemField] = elem[key];
-					}
-				}
-			}
-		});
-
-		userRemove.push(object);
-		// console.warn(userRemove);
-		//
-		// addUsersInTable('#tableRequest', 'request', userRemove);
+function datepicker() {
+	$("#removeDateField").datepicker({
+		changeMonth: true,
+		changeYear: true,
+		showOtherMonths: true,
+		selectOtherMonths: true,
+		minDate: "+1D",
+		maxViewMode: 10
 	});
 }
+
+export default {
+};

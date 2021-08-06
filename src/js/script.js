@@ -8,6 +8,7 @@ import qrCodes from './qrcodes.js';
 import permission from './permission.js';
 import constQR from './constqr.js';
 import addUser from './adduser.js';
+import removeUser from './removeuser.js';
 import service from './service.js';
 import usersFunc from './users-func.js';
 import report from './report.js';

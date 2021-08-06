@@ -51,11 +51,13 @@ function setDataAttrSelectedItem(title, select, elem) {
 
 	if (select == 'reason') {
 		if (dataType == 'changeDepart') {
-			$('.form__field--depart').show();
+			$('.main[data-name="remove"] .form__field[data-name="depart"]').removeClass('form__field--hide');
+			$('.main[data-name="remove"] .form__field[data-name="date"]').addClass('form__field--hide');
 
 			$(elem).parents('.main').find('.wrap--content').addClass('wrap--content-remove-transfer').removeClass('wrap--content-remove-item');
 		} else {
-			$('.form__field--depart').hide();
+			$('.main[data-name="remove"] .form__field[data-name="depart"]').addClass('form__field--hide');
+			$('.main[data-name="remove"] .form__field[data-name="date"]').removeClass('form__field--hide');
 
 			$(elem).parents('.main').find('.wrap--content').addClass('wrap--content-remove-item').removeClass('wrap--content-remove-transfer');
 		}
@@ -75,9 +77,9 @@ function setDataAttrSelectedItem(title, select, elem) {
 		}
 	} else if (select == 'date') {
 		if (dataType == 'date') {
-			$('.form__field[data-name="date"]').removeClass('form__field--hide');
+			$('.main[data-name="add"] .form__field[data-name="date"]').removeClass('form__field--hide');
 		} else {
-			$('.form__field[data-name="date"]').addClass('form__field--hide');
+			$('.main[data-name="add"] .form__field[data-name="date"]').addClass('form__field--hide');
 		}
 	}
 

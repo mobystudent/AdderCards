@@ -278,7 +278,7 @@ function clearFieldsForm(array) {
 }
 
 function datepicker() {
-	$("#dateField").datepicker({
+	$("#addDateField").datepicker({
 		changeMonth: true,
 		changeYear: true,
 		showOtherMonths: true,
@@ -290,16 +290,13 @@ function datepicker() {
 
 function downloadFoto() {
 	$('.form__input--file').change((e) => {
-		const fileReader = new FileReader();
+		const file = e.target.files[0];
+		const url = URL.createObjectURL(file);
 		const indexAddCollection = addCollection.size;
 		const fileName = $(e.target).val();
 
-		fileReader.onload = (e) => {
-			$('.img--form').attr('src', e.target.result);
-			imgUrlCollection.set(indexAddCollection, e.target.result);
-		};
-
-		fileReader.readAsDataURL($(e.target)[0].files[0]);
+		$('.img--form').attr('src', url);
+		imgUrlCollection.set(indexAddCollection, url);
 		$(e.target).attr('data-value', fileName);
 	});
 }

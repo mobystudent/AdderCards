@@ -35,7 +35,7 @@
           </div>
           <div class="form__field form__field--hide" data-name="date">
             <label class="form__label"><span class="form__name">Дата окончания</span>
-              <input class="form__input form__item" id="dateField" data-field="date" name="date" type="text" placeholder="Введите дату" required="required"/>
+              <input class="form__input form__item" id="addDateField" data-field="date" name="date" type="text" placeholder="Введите дату" required="required"/>
             </label>
           </div>
         </div>

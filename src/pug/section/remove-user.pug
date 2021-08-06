@@ -5,8 +5,8 @@ main.main(data-name="remove")
 		span.main__depart.main__depart--permis
 			| Химический факультет
 		
-		form.form(action="#" method="GET")
-			.form__wrap.form__wrap--center
+		form.form#removeForm(action="#" method="GET")
+			.form__wrap
 				.form__fields
 					.form__field
 						span.form__name
@@ -46,7 +46,7 @@ main.main(data-name="remove")
 								li.select__item
 									span.select__name(data-title="Увольнение" data-reason="remove")
 										| Увольнение
-					.form__field.form__field--depart
+					.form__field.form__field--hide(data-name="depart")
 						span.form__name
 							| Новое подразделение
 						.form__select.form__item.select(data-field="NewDepart" data-type="NewNameID" data-select="new-name-id")
@@ -55,16 +55,21 @@ main.main(data-name="remove")
 									| Выберите подразделение
 							ul.select__list
 								
-								- for (let i = 0; i < 5 ; i++)
+								- for (let i = 0; i < 5; i++)
 									li.select__item
 										span.select__name(data-title="Факультет компьютерных наук" data-new-name-id="CSDep")
 											| Факультет компьютерных наук
-					.form__field
+					.form__field.form__field--hide(data-name="date")
 						label.form__label
 							span.form__name
 								| Дата завершения действия пропуска
-							input.form__input.form__item(data-field="Post" name="post" type="text" placeholder="Введите дату завершения действия пропуска" required)
-									
+							input.form__input.form__item#removeDateField(data-field="date" name="date" type="text" placeholder="Введите дату завершения действия пропуска" required)
+				.form__aside
+					.form__img
+						img.img.img--form(src="./images/avatar.svg" alt="user avatar")
+					.form__field
+						input.form__input.form__input--file.form__item#viewFile(data-field="photofile" name="photofile" type="file")
+								
 			button.btn.btn--form#removeUser(type="button" data-type="remove-user")
 				| Удалить
 
@@ -83,15 +88,23 @@ main.main(data-name="remove")
 							span.table__text.table__text--header
 								| Фамилия Имя Отчество
 							button.btn.btn--sort(type="button" data-direction="true")
+						.table__cell.table__cell--header.table__cell--post
+							span.table__text.table__text--header
+								| Должность
 						//- .table__cell.table__cell--header.table__cell--department
 						//- 	span.table__text.table__text--header
 						//- 		| Подразделение/факультет
 						.table__cell.table__cell--header.table__cell--titleid
 							span.table__text.table__text--header
 								| Причина удаления
-						.table__cell.table__cell--header.table__cell--new-depart
+						//- .table__cell.table__cell--header.table__cell--new-depart
+						//- 	span.table__text.table__text--header
+						//- 		| Новое подразделение
+						.table__cell.table__cell--header.table__cell--date
 							span.table__text.table__text--header
-								| Новое подразделение
+								| Дата
+						.table__cell.table__cell--header.table__cell--edit
+						.table__cell.table__cell--header.table__cell--delete
 					.table__body#tableRemove
 						p.table__nothing
 							| Не добавленно ни одного пользователя

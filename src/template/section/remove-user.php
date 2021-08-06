@@ -2,8 +2,8 @@
 <main class="main" data-name="remove">
   <div class="container">
     <h1 class="main__title">Удалить пользователя</h1><span class="main__depart main__depart--permis">Химический факультет</span>
-    <form class="form" action="#" method="GET">
-      <div class="form__wrap form__wrap--center">
+    <form class="form" id="removeForm" action="#" method="GET">
+      <div class="form__wrap">
         <div class="form__fields">
           <div class="form__field"><span class="form__name">Пользователь</span>
             <div class="form__select form__item select" data-field="FIO" data-select="fio">
@@ -20,7 +20,7 @@
               </ul>
             </div>
           </div>
-          <div class="form__field form__field--depart"><span class="form__name">Новое подразделение</span>
+          <div class="form__field form__field--hide" data-name="depart"><span class="form__name">Новое подразделение</span>
             <div class="form__select form__item select" data-field="NewDepart" data-type="NewNameID" data-select="new-name-id">
               <header class="select__header"><span class="select__value" data-title="title" data-new-name-id="new-name-id" data-placeholder="Выберите подразделение">Выберите подразделение</span></header>
               <ul class="select__list">
@@ -32,10 +32,16 @@
               </ul>
             </div>
           </div>
-          <div class="form__field">
+          <div class="form__field form__field--hide" data-name="date">
             <label class="form__label"><span class="form__name">Дата завершения действия пропуска</span>
-              <input class="form__input form__item" data-field="Post" name="post" type="text" placeholder="Введите дату завершения действия пропуска" required="required"/>
+              <input class="form__input form__item" id="removeDateField" data-field="date" name="date" type="text" placeholder="Введите дату завершения действия пропуска" required="required"/>
             </label>
+          </div>
+        </div>
+        <div class="form__aside">
+          <div class="form__img"><img class="img img--form" src="./images/avatar.svg" alt="user avatar"/></div>
+          <div class="form__field">
+            <input class="form__input form__input--file form__item" id="viewFile" data-field="photofile" name="photofile" type="file"/>
           </div>
         </div>
       </div>
@@ -52,8 +58,11 @@
             <div class="table__cell table__cell--header table__cell--fio"><span class="table__text table__text--header">Фамилия Имя Отчество</span>
               <button class="btn btn--sort" type="button" data-direction="true"></button>
             </div>
+            <div class="table__cell table__cell--header table__cell--post"><span class="table__text table__text--header">Должность</span></div>
             <div class="table__cell table__cell--header table__cell--titleid"><span class="table__text table__text--header">Причина удаления</span></div>
-            <div class="table__cell table__cell--header table__cell--new-depart"><span class="table__text table__text--header">Новое подразделение</span></div>
+            <div class="table__cell table__cell--header table__cell--date"><span class="table__text table__text--header">Дата</span></div>
+            <div class="table__cell table__cell--header table__cell--edit"></div>
+            <div class="table__cell table__cell--header table__cell--delete"></div>
           </header>
           <div class="table__body" id="tableRemove">
             <p class="table__nothing">Не добавленно ни одного пользователя</p>

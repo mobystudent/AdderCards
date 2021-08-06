@@ -5,9 +5,9 @@
 	&__wrap {
 		display: flex;
 		justify-content: space-between;
-		margin-bottom: 60px;
+		margin-bottom: 40px;
 
-		&--center {
+		&--center { // remove
 			justify-content: center;
 		}
 	}
@@ -22,7 +22,6 @@
 			margin-bottom: 20px;
 		}
 
-		&--depart,
 		&--new-post,
 		&--new-fio {
 			display: none;
