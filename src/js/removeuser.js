@@ -3,6 +3,7 @@
 import $ from 'jquery';
 import datepickerFactory from 'jquery-datepicker';
 import datepickerRUFactory from 'jquery-datepicker/i18n/jquery.ui.datepicker-ru';
+import { nameDeparts } from './nameDepart.js';
 import service from './service.js';
 
 datepickerFactory($);
@@ -12,6 +13,7 @@ const removeCollection = new Map();
 
 $(window).on('load', () => {
 	datepicker();
+	inputDepartInSelect();
 });
 
 function templateRemoveTable(data) {
@@ -47,6 +49,18 @@ function templateRemoveTable(data) {
 			</div>
 		</div>
 	`;
+}
+
+function inputDepartInSelect() {
+	nameDeparts.forEach((depart) => {
+		const { idName = '', longName = '' } = depart;
+
+		$('.select[data-field="NewDepart"] .select__list').append(`
+			<li class="select__item">
+				<span class="select__name" data-title="${longName}" data-new-name-id="${idName}">${longName}</span>
+			</li>
+		`);
+	});
 }
 
 function datepicker() {

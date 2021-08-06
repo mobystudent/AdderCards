@@ -342,13 +342,7 @@
                 <div class="form__field form__field--hide" data-name="depart"><span class="form__name">Новое подразделение</span>
                   <div class="form__select form__item select" data-field="NewDepart" data-type="NewNameID" data-select="new-name-id">
                     <header class="select__header"><span class="select__value" data-title="title" data-new-name-id="new-name-id" data-placeholder="Выберите подразделение">Выберите подразделение</span></header>
-                    <ul class="select__list">
-                      <li class="select__item"><span class="select__name" data-title="Факультет компьютерных наук" data-new-name-id="CSDep">Факультет компьютерных наук</span></li>
-                      <li class="select__item"><span class="select__name" data-title="Факультет компьютерных наук" data-new-name-id="CSDep">Факультет компьютерных наук</span></li>
-                      <li class="select__item"><span class="select__name" data-title="Факультет компьютерных наук" data-new-name-id="CSDep">Факультет компьютерных наук</span></li>
-                      <li class="select__item"><span class="select__name" data-title="Факультет компьютерных наук" data-new-name-id="CSDep">Факультет компьютерных наук</span></li>
-                      <li class="select__item"><span class="select__name" data-title="Факультет компьютерных наук" data-new-name-id="CSDep">Факультет компьютерных наук</span></li>
-                    </ul>
+                    <ul class="select__list"></ul>
                   </div>
                 </div>
                 <div class="form__field form__field--hide" data-name="date">
@@ -546,7 +540,7 @@
       </main>
       <footer class="footer">
         <div class="container">
-          <div class="footer__wrap"><small class="footer__version">v2.1.5</small></div>
+          <div class="footer__wrap"><small class="footer__version">v2.1.6</small></div>
         </div>
       </footer>
     </div>
