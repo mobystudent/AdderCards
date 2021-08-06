@@ -38,6 +38,9 @@
       </div>
       <button class="btn btn--form" id="removeUser" type="button" data-type="remove-user">Удалить</button>
     </form>
+    <div class="info">
+      <p class="info__item info__item--warn info__item--fields">Предупреждение! Не все поля заполненны.</p>
+    </div>
     <div class="wrap wrap--content wrap--content-remove-item">
       <div class="main__cards main__cards--main">
         <p class="main__count-wrap main__count-wrap--depart"><span class="main__count-text">Количество удаленных пользователей:&nbsp</span><span class="main__count main__count--remove">0</span></p>
@@ -60,10 +63,6 @@
           </div>
         </div>
       </div>
-    </div>
-    <div class="info">
-      <p class="info__item info__item--warn info__item--fields">Предупреждение! Не все поля заполненны.</p>
-      <p class="info__item info__item--warn info__item--table">Предупреждение! Ни одного пользователя не выбрано.</p>
     </div>
     <div class="main__btns">
       <button class="btn" id="submitRemoveUser" type="button">Подтвердить и отправить</button>

@@ -66,6 +66,10 @@ main.main(data-name="remove")
 								
 			button.btn.btn--form#removeUser(type="button" data-type="remove-user")
 				| Удалить
+				
+		.info
+			p.info__item.info__item--warn.info__item--fields
+				| Предупреждение! Не все поля заполненны.
 
 		.wrap.wrap--content.wrap--content-remove-item
 			.main__cards.main__cards--main
@@ -102,13 +106,7 @@ main.main(data-name="remove")
 					.table__body#tableRemove
 						p.table__nothing
 							| Не добавленно ни одного пользователя
-	
-		.info
-			p.info__item.info__item--warn.info__item--fields
-				| Предупреждение! Не все поля заполненны.
-			p.info__item.info__item--warn.info__item--table
-				| Предупреждение! Ни одного пользователя не выбрано.
-	
+		
 		.main__btns
 			button.btn#submitRemoveUser(type="button")
 				| Подтвердить и отправить

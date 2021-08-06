@@ -149,8 +149,8 @@ function addUser() {
 				const nameId = $(item).find('.select__value--selected').attr(`data-${typeSelect}`);
 				const valueItem = $(item).find('.select__value--selected').attr('data-title');
 
-				if ($(item).data('select') == 'date' && nameId == 'date') {
-					const inputValue = $('.form__item[data-field="date"]').val();
+				if (typeSelect == 'date' && nameId == 'date') {
+					const inputValue = $(e.target).parents('.form').find('.form__item[data-field="date"]').val();
 
 					object.date = inputValue;
 				}
@@ -268,13 +268,13 @@ function clearFieldsForm(array) {
 				.removeClass('select__value--selected')
 				.attr(attr)
 				.text(placeholder);
-			$('.form__field[data-name="date"]').addClass('form__field--hide');
-			$('.img--form').attr('src', './images/avatar.svg');
 		} else {
 			$(item).val('');
 		}
 	});
 
+	$('.form__field[data-name="date"]').addClass('form__field--hide');
+	$('.img--form').attr('src', './images/avatar.svg');
 	$('.form__field--new-post, .form__field--new-fio, .form__field--depart').hide();
 }
 

@@ -124,17 +124,19 @@ function addUser() {
 				const fieldType = $(item).data('type');
 				const valueItem = $(item).find('.select__value--selected').attr('data-title');
 
-				if ($(item).data('select') == 'reason' && nameId == 'remove') {
-					const inputValue = $('.form__item[data-field="date"]').val();
+				if (typeSelect == 'reason') {
+					if (nameId == 'remove') {
+						const inputValue = $(e.target).parents('.form').find('.form__item[data-field="date"]').val();
 
-					object.date = inputValue;
+						object.date = inputValue;
+					}
+
 					object[fieldType] = nameId;
 					object[fieldName] = valueItem;
-				} else if ($(item).data('select') == 'new-name-id' && nameId) {
-
+				} else if (typeSelect == 'new-name-id' && nameId) {
 					object[fieldType] = nameId;
 					object[fieldName] = valueItem;
-				} else if ($(item).data('select') == 'fio') {
+				} else if (typeSelect == 'fio') {
 					object[fieldName] = valueItem;
 				}
 			}
@@ -144,11 +146,50 @@ function addUser() {
 
 		console.log(userData);
 
-		// if (validationEmptyFields(userData)) {
-		// 	clearFieldsForm(fields);
-		// 	userdFromForm(userData);
-		// }
+		if (validationEmptyFields(userData)) {
+			clearFieldsForm(fields);
+			userdFromForm(userData);
+		}
 	});
+}
+
+function userdFromForm(object) {
+	const objToCollection = {
+		id: '',
+		fio: '',
+		date: '',
+		post: '',
+		nameid: '',
+		photofile: '',
+		photourl: '',
+		statusid: '',
+		statustitle: '',
+		datestatus: '',
+		datetitle: '',
+		department: ''
+	};
+	const indexCollection = addCollection.size;
+	const itemObject = Object.assign({}, objToCollection);
+	const departName = $('.main__depart--add').attr('data-depart');
+	const departID = $('.main__depart--add').attr('data-id');
+
+	for (const itemField in itemObject) {
+		for (const key in object) {
+			if (itemField === key) {
+				itemObject[itemField] = object[key];
+			} else if (itemField === 'id') {
+				itemObject[itemField] = indexCollection;
+			} else if (itemField === 'department') {
+				itemObject[itemField] = departName;
+			} else if (itemField === 'nameid') {
+				itemObject[itemField] = departID;
+			}
+		}
+	}
+
+	addCollection.set(indexCollection, itemObject);
+
+	dataAdd('#tableAdd');
 }
 
 function setDepartInSelect() {
@@ -181,17 +222,6 @@ function setUsersInSelect(users) {
 	clickSelectItem();
 }
 
-function datepicker() {
-	$("#removeDatepicker").datepicker({
-		changeMonth: true,
-		changeYear: true,
-		showOtherMonths: true,
-		selectOtherMonths: true,
-		minDate: "+1D",
-		maxViewMode: 10
-	});
-}
-
 function clickSelectItem() {
 	$('.select__item').click((e) => {
 		const title = $(e.currentTarget).find('.select__name').data('title');
@@ -218,11 +248,23 @@ function setDataAttrSelectedItem(title, select, elem) {
 		if (dataType == 'changeDepart') {
 			$('.main[data-name="remove"] .form__field[data-name="depart"]').removeClass('form__field--hide');
 			$('.main[data-name="remove"] .form__field[data-name="date"]').addClass('form__field--hide');
+			$('.main[data-name="remove"] .form__field[data-name="date"]').find('.form__input').val('');
 
 			// $(elem).parents('.main').find('.wrap--content').addClass('wrap--content-remove-transfer').removeClass('wrap--content-remove-item');
 		} else {
+			const newDepartFields = $('#removeForm').find('.form__item[data-field="newdepart"]');
+
 			$('.main[data-name="remove"] .form__field[data-name="depart"]').addClass('form__field--hide');
 			$('.main[data-name="remove"] .form__field[data-name="date"]').removeClass('form__field--hide');
+
+			const typeSelect = 'newdepart';
+			const placeholder = newDepartFields.find('.select__value').data('placeholder');
+			const attr = {'data-title': 'title', [`data-${typeSelect}`]: typeSelect};
+
+			newDepartFields.find('.select__value--selected')
+				.removeClass('select__value--selected')
+				.attr(attr)
+				.text(placeholder);
 
 			// $(elem).parents('.main').find('.wrap--content').addClass('wrap--content-remove-item').removeClass('wrap--content-remove-transfer');
 		}
@@ -237,11 +279,58 @@ function setDataAttrSelectedItem(title, select, elem) {
 	$(elem).parents('.select').find('.select__value--selected').attr(attr);
 }
 
+function clearFieldsForm(array) {
+	[...array].forEach((item) => {
+		if ($(item).hasClass('select')) {
+			const typeSelect = $(item).data('select');
+			const placeholder = $(item).find('.select__value').data('placeholder');
+			const attr = {'data-title': 'title', [`data-${typeSelect}`]: typeSelect};
+
+			if (typeSelect == 'new-name-id') {
+				$(item).parents('.form__field').addClass('form__field--hide');
+			}
+
+			$(item).find('.select__value--selected')
+				.removeClass('select__value--selected')
+				.attr(attr)
+				.text(placeholder);
+		} else {
+			$(item).val('');
+		}
+	});
+
+	$('.form__field[data-name="date"]').addClass('form__field--hide');
+	$('.img--form').attr('src', './images/avatar.svg');
+	$('.form__field--new-post, .form__field--new-fio, .form__field--depart').hide();
+}
+
+function datepicker() {
+	$("#removeDatepicker").datepicker({
+		changeMonth: true,
+		changeYear: true,
+		showOtherMonths: true,
+		selectOtherMonths: true,
+		minDate: "+1D",
+		maxViewMode: 10
+	});
+}
+
 function showUserAvatar(url) {
 	const { photourl  = '' } = url;
 
 	console.log(photourl);
 	// $('.img--form-remove').attr('src', photourl);
+}
+
+function validationEmptyFields(fields) {
+	const validFields = Object.values(fields).every((item) => item);
+	const statusMess = !validFields ? 'show' : 'hide';
+
+	const valid = statusMess === 'hide' ? true : false;
+
+	$('.main[data-name="remove"]').find('.info__item--warn.info__item--fields')[statusMess]();
+
+	return valid;
 }
 
 function getAddUsersInDB(id = '') {

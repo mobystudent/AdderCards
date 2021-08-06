@@ -72,6 +72,7 @@ function setDataAttrSelectedItem(title, select, elem) {
 			$('.main[data-name="add"] .form__field[data-name="date"]').removeClass('form__field--hide');
 		} else {
 			$('.main[data-name="add"] .form__field[data-name="date"]').addClass('form__field--hide');
+			$('.main[data-name="add"] .form__field[data-name="date"]').find('.form__input').val('');
 		}
 	}
 
