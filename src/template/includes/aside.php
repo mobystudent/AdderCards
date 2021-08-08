@@ -9,5 +9,6 @@
   <button class="control__item" type="button" data-name="remove">Удалить пользователя</button>
   <button class="control__item" type="button" data-name="edit">Редактировать пользователя</button>
   <button class="control__item" type="button" data-name="request">Запрос на изменение</button>
+  <button class="control__item" type="button" data-name="reject">Отклоненные пользователи</button>
   <button class="control__item" type="button" data-name="report">Отчёт по изменения</button>
 </aside>

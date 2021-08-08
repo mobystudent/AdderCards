@@ -1,0 +1,36 @@
+main.main(data-name="reject")
+	.container
+		h1.main__title
+			| Отклоненные пользователи
+		.wrap.wrap--content.wrap--content-reject
+			.main__cards.main__cards--main
+				p.main__count-wrap.main__count-wrap--main
+					span.main__count-text
+						| Количество пользователей:&nbsp
+					span.main__count.main__count--reject
+						| 0
+			.wrap.wrap--table
+				header.tab.tab--reject
+				.table.table--reject
+					header.table__header
+						.table__cell.table__cell--header.table__cell--fio
+							span.table__text.table__text--header
+								| Фамилия Имя Отчество
+							button.btn.btn--sort(type='button' data-direction='true')
+						.table__cell.table__cell--header.table__cell--post
+							span.table__text.table__text--header
+								| Должность
+							button.btn.btn--sort(type='button' data-direction='true')
+						.table__cell.table__cell--header.table__cell--department
+							span.table__text.table__text--header
+								| Подразделение/факультет
+							button.btn.btn--sort(type='button' data-direction='true')
+						.table__cell.table__cell--header.table__cell--statustitle
+							span.table__text.table__text--header
+								| Статус
+						.table__cell.table__cell--header.table__cell--date
+							span.table__text.table__text--header
+								| Дата
+					.table__body#tableReject
+						p.table__nothing
+							| Новых данных нет

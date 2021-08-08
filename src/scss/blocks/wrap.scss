@@ -55,7 +55,11 @@
 		}
 
 		&-report {
-			width: 1710px;
+			max-width: 1710px;
+		}
+
+		&-reject {
+			max-width: 1400px;
 		}
 	}
 }

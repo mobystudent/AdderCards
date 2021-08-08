@@ -221,7 +221,7 @@ function dataAdd(nameTable) {
 			<p class="table__nothing">Новых данных нет</p>
 		`);
 
-		countItems(`${nameTable} .table__content`, 'remove');
+		// countItems(`${nameTable} .table__content`, 'remove');
 
 		return;
 	}

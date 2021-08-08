@@ -241,13 +241,13 @@ function dataAdd(nameTable) {
 			<p class="table__nothing">Новых данных нет</p>
 		`);
 
-		countItems('#tableAdd .table__content', 'add');
+		// countItems(`${nameTable} .table__content`, 'add');
 
 		return;
 	}
 
 	renderTable();
-	countItems('#tableAdd .table__content', 'add');
+	countItems(`${nameTable} .table__content`, 'add');
 	deleteUser();
 	editUser();
 }

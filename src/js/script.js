@@ -12,6 +12,7 @@ import removeUser from './removeuser.js';
 import service from './service.js';
 import usersFunc from './users-func.js';
 import report from './report.js';
+import reject from './reject.js';
 
 $(window).on('load', () => {
 	getData();
