@@ -38,7 +38,7 @@ function templatePermissionTable(data) {
 
 function getDatainDB() {
 	$.ajax({
-		url: "./php/permission.php",
+		url: "./php/permission-output.php",
 		method: "post",
 		success: function(data) {
 			userdFromDB(JSON.parse(data));
@@ -170,13 +170,13 @@ function submitIDinBD() {
 
 			if (allowItems.length) {
 				delegationID(allowItems);
-				getDeleteDataInDB(allowItems);
+				setDataInDBWithID(allowItems, idActiveDepart, 'permission-remove');
 			} else {
 				disallowItems.forEach((item) => {
 					item.date = getCurrentDate();
 				});
 
-				getRejectUserd(disallowItems, idActiveDepart);
+				setDataInDBWithID(disallowItems, idActiveDepart, 'reject');
 			}
 
 			filterDepatCollection.splice(0);
@@ -204,26 +204,8 @@ function delegationID(users) {
 	const filterArrCards = users.filter((item) => item.statusid == 'newCard' || item.statusid == 'changeCard');
 	const filterArrQRs = users.filter((item) => item.statusid == 'newQR' || item.statusid == 'changeQR');
 
-	getDataInCardDB(filterArrCards);
-	getDataInQRDB(filterArrQRs);
-}
-
-function getRejectUserd(users, idDepart) {
-	$.ajax({
-		url: "./php/reject.php",
-		method: "post",
-		dataType: "html",
-		data: {
-			nameid: idDepart,
-			array: users
-		},
-		success: function(data) {
-			console.log('succsess '+data);
-		},
-		error: function(data) {
-			console.log(data);
-		}
-	});
+	setDataInDB(filterArrCards, 'const-card');
+	setDataInDB(filterArrQRs, 'const-qr');
 }
 
 function getCurrentDate() {
@@ -329,13 +311,14 @@ function resetControlBtns() {
 	});
 }
 
-function getDataInCardDB(array) {
+function setDataInDBWithID(users, idDepart, nameQuery) {
 	$.ajax({
-		url: "./php/const-card.php",
+		url: `./php/${nameQuery}.php`,
 		method: "post",
 		dataType: "html",
 		data: {
-			array: array
+			nameid: idDepart,
+			array: users
 		},
 		success: function(data) {
 			console.log('succsess '+data);
@@ -346,30 +329,13 @@ function getDataInCardDB(array) {
 	});
 }
 
-function getDataInQRDB(array) {
+function setDataInDB(users, nameQuery) {
 	$.ajax({
-		url: "./php/const-qr.php",
+		url: `./php/${nameQuery}.php`,
 		method: "post",
 		dataType: "html",
 		data: {
-			array: array
-		},
-		success: function(data) {
-			console.log('succsess '+data);
-		},
-		error: function(data) {
-			console.log(data);
-		}
-	});
-}
-
-function getDeleteDataInDB(array) {
-	$.ajax({
-		url: "./php/permission-delete.php",
-		method: "post",
-		dataType: "html",
-		data: {
-			array: array
+			array: users
 		},
 		success: function(data) {
 			console.log('succsess '+data);
@@ -435,7 +401,4 @@ function filterDepart(collection) {
 }
 
 export default {
-	// clickAllowDisallowPermiss,
-	templatePermissionTable,
-	resetControlBtns
 };

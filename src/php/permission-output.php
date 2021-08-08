@@ -5,7 +5,7 @@
 
 	$data = array();
 
-	if($resultSet = $mysqli->query("SELECT * FROM add_user")) {
+	if($resultSet = $mysqli->query("SELECT * FROM permission")) {
 		while ($result = $resultSet->fetch_assoc()) {
 			array_push($data, $result);
 		}

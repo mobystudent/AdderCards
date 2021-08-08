@@ -17,10 +17,6 @@ import reject from './reject.js';
 $(window).on('load', () => {
 	getData();
 	defaultDataInTables();
-	// permissionAdd();
-
-	//permission functions
-	// permission.confirmAllAllowDisallow();
 
 	//service functions
 	service.showDataInTable();

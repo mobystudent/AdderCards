@@ -5,11 +5,11 @@
 
 	$array = $_POST['array'];
 	$nameid = strtolower($_POST['nameid']);
-	$nameDepart = 'user_depart_'.$nameid;
+	$nameDepart = 'add_depart_'.$nameid;
 
 	var_dump($array);
-	var_dump($nameid);
-	var_dump($nameDepart);
+	echo($nameid);
+	echo($nameDepart);
 
 	foreach ($array as $item) {
 		foreach ($item as $key => $value) {
@@ -24,8 +24,8 @@
 			if ($key === 'date') $date = $value;
 		}
 
-		if($mysqli->query("INSERT INTO add_user (fio, department, post, photofile, photourl, nameid, statusid, statustitle, date) VALUES ('$fio', '$department', '$post', '$photofile', '$photourl', '$nameid', '$statusid', '$statustitle', '$date')")) {
-			echo('Success add in BD add_user');
+		if($mysqli->query("INSERT INTO permission (fio, department, post, photofile, nameid, statusid, statustitle) VALUES ('$fio', '$department', '$post', '$photofile', '$nameid', '$statusid', '$statustitle')")) {
+			echo('Success add in BD permission');
 		} else {
 			echo $mysqli->error;
 		}

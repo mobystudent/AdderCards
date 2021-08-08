@@ -13,9 +13,9 @@
 		}
 
 		if($mysqli->query("DELETE FROM permission WHERE nameid = '$nameid'")) {
-			echo('Success add in BD');
+			echo('Success remove in BD permission');
 		} else {
-			echo 'False add in BD';
+			echo $mysqli->error;
 		}
 	}
 
