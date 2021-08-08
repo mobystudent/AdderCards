@@ -553,7 +553,7 @@
       </main>
       <footer class="footer">
         <div class="container">
-          <div class="footer__wrap"><small class="footer__version">v2.1.14</small></div>
+          <div class="footer__wrap"><small class="footer__version">v2.2.0</small></div>
         </div>
       </footer>
     </div>

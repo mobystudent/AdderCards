@@ -8,12 +8,8 @@
 	var_dump($array);
 
 	foreach ($array as $item) {
-		$index = 0;
-
 		foreach ($item as $key => $value) {
 			if ($key === 'nameid') $nameid = $value;
-
-			$index++;
 		}
 
 		if($mysqli->query("DELETE FROM permission WHERE nameid = '$nameid'")) {

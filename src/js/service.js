@@ -4,7 +4,7 @@ import $ from 'jquery';
 
 $(window).on('load', () => {
 	printReport();
-	toggleSelect();
+	// toggleSelect();
 	switchControl();
 	sortItems();
 });
@@ -54,13 +54,6 @@ function setDataAttrSelectedItem(title, select, elem) {
 			// $('.form__field--new-post').show();
 		} else {
 			$('.form__field--new-fio, .form__field--new-post').hide();
-		}
-	} else if (select == 'date') {
-		if (dataType == 'date') {
-			$('.main[data-name="add"] .form__field[data-name="date"]').removeClass('form__field--hide');
-		} else {
-			$('.main[data-name="add"] .form__field[data-name="date"]').addClass('form__field--hide');
-			$('.main[data-name="add"] .form__field[data-name="date"]').find('.form__input').val('');
 		}
 	}
 
@@ -156,6 +149,6 @@ function showDataInTable() {
 export default {
 	printReport,
 	showDataInTable,
-	toggleSelect,
-	clickSelectItem
+	// toggleSelect,
+	// clickSelectItem
 };

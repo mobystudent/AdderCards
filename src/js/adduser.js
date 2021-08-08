@@ -13,6 +13,7 @@ const addCollection = new Map();
 $(window).on('load', () => {
 	addUser();
 	datepicker();
+	toggleSelect();
 	downloadFoto();
 	submitIDinBD();
 });
@@ -255,6 +256,50 @@ function countItems(tableContent, modDepart) {
 	const countItemfromDep = $(tableContent).eq(0).find('.table__row').length;
 
 	$(`.main__count--${modDepart}`).text(countItemfromDep);
+}
+
+function toggleSelect() {
+	$('#addForm .select__header').click((e) => {
+		$(e.currentTarget).next().slideToggle();
+		$(e.currentTarget).toggleClass('select__header--active');
+	});
+
+	clickSelectItem();
+}
+
+function clickSelectItem() {
+	$('#addForm .select__item').click((e) => {
+		const title = $(e.currentTarget).find('.select__name').data('title');
+		const select = $(e.currentTarget).parents('.select').data('select');
+
+		$(e.currentTarget).parents('.select').find('.select__value').addClass('select__value--selected').text(title);
+		$(e.currentTarget).parent().slideUp();
+		$(e.currentTarget).parents('.select').find('.select__header').removeClass('select__header--active');
+
+		setDataAttrSelectedItem(title, select, e.currentTarget);
+	});
+}
+
+function setDataAttrSelectedItem(title, select, elem) {
+	const dataType = $(elem).find('.select__name').data(select);
+	let attr = '';
+
+	if (select == 'date') {
+		if (dataType == 'date') {
+			$('.main[data-name="add"] .form__field[data-name="date"]').removeClass('form__field--hide');
+		} else {
+			$('.main[data-name="add"] .form__field[data-name="date"]').addClass('form__field--hide');
+			$('.main[data-name="add"] .form__field[data-name="date"]').find('.form__input').val('');
+		}
+	}
+
+	if (dataType) {
+		attr = {'data-title': title, [`data-${select}`]: dataType};
+	} else {
+		attr = {'data-title': title};
+	}
+
+	$(elem).parents('.select').find('.select__value--selected').attr(attr);
 }
 
 function clearFieldsForm(array) {

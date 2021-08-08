@@ -5,12 +5,12 @@
 
 	$data = array();
 
-	if($resultSet = $mysqli->query("SELECT * FROM permission")) {
+	if($resultSet = $mysqli->query("SELECT * FROM add_user")) {
 		while ($result = $resultSet->fetch_assoc()) {
 			array_push($data, $result);
 		}
 	} else {
-		echo 'False get in BD';
+		echo 'False get in BD add_user';
 	}
 
 	echo json_encode($data);

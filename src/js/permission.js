@@ -10,53 +10,6 @@ $(window).on('load', () => {
 	submitIDinBD();
 });
 
-function getDatainDB() {
-	$.ajax({
-		url: "./php/permission.php",
-		method: "post",
-		success: function(data) {
-			const dataFromDB = JSON.parse(data);
-
-			userdFromDB(dataFromDB);
-		},
-		error: function(data) {
-			console.log(data);
-		}
-	});
-}
-
-function userdFromDB(array) {
-	const objToCollection = {
-		id: '',
-		fio: '',
-		post: '',
-		nameid: '',
-		statusid: '',
-		statustitle: '',
-		department: '',
-		statuspermiss: ''
-	};
-
-	array.forEach((elem, i) => {
-		const itemObject = Object.assign({}, objToCollection);
-
-		for (const itemField in itemObject) {
-			for (const key in elem) {
-				if (itemField === key.toLocaleLowerCase()) {
-					itemObject[itemField] = elem[key];
-				} else if (itemField === 'id') {
-					itemObject[itemField] = i;
-				}
-			}
-		}
-
-		permissionCollection.set(i, itemObject);
-	});
-
-	dataAdd('#tablePermis');
-	confirmAllAllowDisallow();
-}
-
 function templatePermissionTable(data) {
 	const { id = '', fio = '', post = '', statustitle = '' } = data;
 
@@ -81,6 +34,51 @@ function templatePermissionTable(data) {
 			</div>
 		</div>
 	`;
+}
+
+function getDatainDB() {
+	$.ajax({
+		url: "./php/permission.php",
+		method: "post",
+		success: function(data) {
+			userdFromDB(JSON.parse(data));
+		},
+		error: function(data) {
+			console.log(data);
+		}
+	});
+}
+
+function userdFromDB(array) {
+	const objToCollection = {
+		id: '',
+		fio: '',
+		post: '',
+		nameid: '',
+		statusid: '',
+		statustitle: '',
+		department: '',
+		statuspermiss: ''
+	};
+
+	array.forEach((elem, i) => {
+		const itemObject = Object.assign({}, objToCollection);
+
+		for (const itemField in itemObject) {
+			for (const key in elem) {
+				if (itemField === key) {
+					itemObject[itemField] = elem[key];
+				} else if (itemField === 'id') {
+					itemObject[itemField] = i;
+				}
+			}
+		}
+
+		permissionCollection.set(i, itemObject);
+	});
+
+	dataAdd('#tablePermis');
+	confirmAllAllowDisallow();
 }
 
 function dataAdd(nameTable) {
@@ -164,13 +162,22 @@ function submitIDinBD() {
 
 		if (checkedItems) {
 			const allowItems = filterDepatCollection.filter((item) => item.statuspermiss === 'allow');
+			const disallowItems = filterDepatCollection.filter((item) => item.statuspermiss === 'disallow');
 			const idFilterUsers = filterDepatCollection.map((item) => item.id);
 
-
 			console.log(allowItems);
+			console.log(disallowItems);
 
-			delegationID(allowItems);
-			getDeleteDataInDB(allowItems);
+			if (allowItems.length) {
+				delegationID(allowItems);
+				getDeleteDataInDB(allowItems);
+			} else {
+				disallowItems.forEach((item) => {
+					item.date = getCurrentDate();
+				});
+
+				getRejectUserd(disallowItems, idActiveDepart);
+			}
 
 			filterDepatCollection.splice(0);
 			idFilterUsers.forEach((key) => {
@@ -199,6 +206,37 @@ function delegationID(users) {
 
 	getDataInCardDB(filterArrCards);
 	getDataInQRDB(filterArrQRs);
+}
+
+function getRejectUserd(users, idDepart) {
+	$.ajax({
+		url: "./php/reject.php",
+		method: "post",
+		dataType: "html",
+		data: {
+			nameid: idDepart,
+			array: users
+		},
+		success: function(data) {
+			console.log('succsess '+data);
+		},
+		error: function(data) {
+			console.log(data);
+		}
+	});
+}
+
+function getCurrentDate() {
+	const date = new Date();
+	const month = date.getMonth() + 1;
+	const currentDay = date.getDate() < 10 ? `0${date.getDate()}` : date.getDate();
+	const currentMonth = month < 10 ? `0${month}` : month;
+	const currentYear = date.getFullYear() < 10 ? `0${date.getFullYear()}` : date.getFullYear();
+
+	const currentHour = date.getHours() < 10 ? `0${date.getHours()}` : date.getHours();
+	const currentMinute = date.getMinutes() < 10 ? `0${date.getMinutes()}` : date.getMinutes();
+
+	return `${currentDay}-${currentMonth}-${currentYear} ${currentHour}:${currentMinute}`;
 }
 
 function clickAllowDisallowPermiss() {

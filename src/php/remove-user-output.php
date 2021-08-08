@@ -5,13 +5,13 @@
 
 	$nameid = strtolower($_POST['nameid']);
 	$id = $_POST['id'];
-	$nameDepart = 'user_depart_'.$nameid;
+	$nameDepart = 'add_depart_'.$nameid;
 
 	if ($id) {
 		if($resultSet = $mysqli->query("SELECT photourl, post FROM `$nameDepart` WHERE id = '$id'")) {
 			$data = $resultSet->fetch_assoc();
 		} else {
-			echo 'False get in BD '.$nameDepart;
+			echo $mysqli->error;
 		}
 	} else {
 		$data = array();
@@ -21,7 +21,7 @@
 				array_push($data, $result);
 			}
 		} else {
-			echo 'False get in BD '.$nameDepart;
+			echo $mysqli->error;
 		}
 	}
 

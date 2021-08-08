@@ -4,7 +4,6 @@ import $ from 'jquery';
 import datepickerFactory from 'jquery-datepicker';
 import datepickerRUFactory from 'jquery-datepicker/i18n/jquery.ui.datepicker-ru';
 import { nameDeparts } from './nameDepart.js';
-import service from './service.js';
 
 datepickerFactory($);
 datepickerRUFactory($);
@@ -13,6 +12,7 @@ const removeCollection = new Map();
 
 $(window).on('load', () => {
 	addUser();
+	toggleSelect();
 	datepicker();
 	setDepartInSelect();
 	getAddUsersInDB();
@@ -156,14 +156,14 @@ function addUser() {
 		console.log(userData);
 
 		if (validationEmptyFields(userData)) {
-			userdFromForm(userData);
+			userFromForm(userData);
 			clearFieldsForm(fields);
 			showFieldsInTable();
 		}
 	});
 }
 
-function userdFromForm(object, page = 'remove') {
+function userFromForm(object, page = 'remove') {
 	const objToCollection = {
 		id: '',
 		fio: '',
@@ -221,13 +221,13 @@ function dataAdd(nameTable) {
 			<p class="table__nothing">Новых данных нет</p>
 		`);
 
-		countItems('#tableRemove .table__content', 'remove');
+		countItems(`${nameTable} .table__content`, 'remove');
 
 		return;
 	}
 
 	renderTable();
-	countItems('#tableRemove .table__content', 'remove');
+	countItems(`${nameTable} .table__content`, 'remove');
 	deleteUser();
 	editUser();
 }
@@ -328,8 +328,17 @@ function setUsersInSelect(users) {
 	clickSelectItem();
 }
 
+function toggleSelect() {
+	$('#removeForm .select__header').click((e) => {
+		$(e.currentTarget).next().slideToggle();
+		$(e.currentTarget).toggleClass('select__header--active');
+	});
+
+	clickSelectItem();
+}
+
 function clickSelectItem() {
-	$('.select__item').click((e) => {
+	$('#removeForm .select__item').click((e) => {
 		const title = $(e.currentTarget).find('.select__name').data('title');
 		const id = $(e.currentTarget).find('.select__name').data('id');
 		const select = $(e.currentTarget).parents('.select').data('select');
@@ -455,7 +464,7 @@ function editUser() {
 			renderForm(idEdit);
 			removeCollection.delete(idEdit);
 			renderTable();
-			service.toggleSelect();
+			toggleSelect();
 			datepicker();
 			getAddUsersInDB();
 			setDepartInSelect();
