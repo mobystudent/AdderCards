@@ -83,7 +83,11 @@ main.main(data-name="remove")
 							span.table__text.table__text--header
 								| Дата
 						.table__cell.table__cell--header.table__cell--edit
+							svg.icon.icon--edit.icon--edit-white
+								use.icon__item(xlink:href="./images/sprite.svg#edit")
 						.table__cell.table__cell--header.table__cell--delete
+							svg.icon.icon--delete.icon--delete-white
+								use.icon__item(xlink:href="./images/sprite.svg#delete")
 					.table__body#tableRemove
 						p.table__nothing
 							| Не добавленно ни одного пользователя

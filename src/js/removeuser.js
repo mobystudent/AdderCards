@@ -40,14 +40,14 @@ function templateRemoveTable(data) {
 			</div>
 			<div class="table__cell table__cell--body table__cell--edit">
 				<button class="table__btn table__btn--edit" type="button">
-					<svg class="icon icon--edit">
+					<svg class="icon icon--edit icon--edit-black">
 						<use class="icon__item" xlink:href="./images/sprite.svg#edit"></use>
 					</svg>
 				</button>
 			</div>
 			<div class="table__cell table__cell--body table__cell--delete">
 				<button class="table__btn table__btn--delete" type="button">
-					<svg class="icon icon--delete">
+					<svg class="icon icon--delete icon--delete-black">
 						<use class="icon__item" xlink:href="./images/sprite.svg#delete"></use>
 					</svg>
 				</button>
@@ -98,13 +98,16 @@ function templateRemoveForm(data) {
 				</div>
 			</div>
 			<div class="form__field ${dateClassView}" data-name="date">
-				<label class="form__label"><span class="form__name">Дата завершения действия пропуска</span>
+				<label class="form__label">
+					<span class="form__name">Дата завершения действия пропуска</span>
 					<input class="form__input form__item" id="removeDatepicker" data-field="date" name="date" type="text" value="${date}" placeholder="Введите дату завершения действия пропуска" required="required"/>
 				</label>
 			</div>
 		</div>
 		<div class="form__aside">
-			<div class="form__img"><img class="img img--form img--form-remove" src="./images/avatar.svg" alt="user avatar"/></div>
+			<div class="form__img">
+				<img class="img img--form img--form-remove" src="./images/avatar.svg" alt="user avatar"/>
+			</div>
 		</div>
 	`;
 }
@@ -155,7 +158,7 @@ function addUser() {
 		if (validationEmptyFields(userData)) {
 			userdFromForm(userData);
 			clearFieldsForm(fields);
-			showFieldsInHeader();
+			showFieldsInTable();
 		}
 	});
 }
@@ -198,8 +201,6 @@ function userdFromForm(object, page = 'remove') {
 	}
 
 	removeCollection.set(indexCollection, itemObject);
-
-	console.warn(removeCollection);
 
 	dataAdd('#tableRemove');
 }
@@ -251,35 +252,64 @@ function setDepartInSelect() {
 	clickSelectItem();
 }
 
-function showFieldsInHeader() {
+function showFieldsInTable() {
 	const existDepart = [...removeCollection.values()].every((elem) => elem.newdepart);
 	const existDate = [...removeCollection.values()].every((elem) => elem.date);
-
-	console.log(existDepart);
-	console.log(existDate);
+	const wrapDefClasses = 'wrap wrap--content';
 
 	if (existDepart && !existDate) {
-		$('.table__header .table__cell--date').addClass('table__cell--hide');
-		$('.table__body .table__cell--date').addClass('table__cell--hide');
-		$('.table__header .table__cell--newdepart').removeClass('table__cell--hide');
-		$('.table__body .table__cell--newdepart').removeClass('table__cell--hide');
+		const actionArr = [
+			{
+				name: 'date',
+				action: 'addClass'
+			},
+			{
+				name: 'newdepart',
+				action: 'removeClass'
+			}
+		];
+		const classAttr = `${wrapDefClasses} wrap--content-remove-transfer`;
 
-		$('.main[data-name="remove"]').find('.wrap--content').addClass('wrap--content-remove-transfer').removeClass('wrap--content-remove-item');
+		changeViewFieldsInTable(actionArr, classAttr);
 	} else if (!existDepart && existDate) {
-		$('.table__header .table__cell--date').removeClass('table__cell--hide');
-		$('.table__body .table__cell--date').removeClass('table__cell--hide');
-		$('.table__header .table__cell--newdepart').addClass('table__cell--hide');
-		$('.table__body .table__cell--newdepart').addClass('table__cell--hide');
+		const actionArr = [
+			{
+				name: 'date',
+				action: 'removeClass'
+			},
+			{
+				name: 'newdepart',
+				action: 'addClass'
+			}
+		];
+		const classAttr = `${wrapDefClasses} wrap--content-remove-item`;
 
-		$('.main[data-name="remove"]').find('.wrap--content').addClass('wrap--content-remove-item').removeClass('wrap--content-remove-transfer');
+		changeViewFieldsInTable(actionArr, classAttr);
 	} else {
-		$('.table__header .table__cell--date').removeClass('table__cell--hide');
-		$('.table__body .table__cell--date').removeClass('table__cell--hide');
-		$('.table__header .table__cell--newdepart').removeClass('table__cell--hide');
-		$('.table__body .table__cell--newdepart').removeClass('table__cell--hide');
+		const actionArr = [
+			{
+				name: 'date',
+				action: 'removeClass'
+			},
+			{
+				name: 'newdepart',
+				action: 'removeClass'
+			}
+		];
+		const classAttr = `${wrapDefClasses} wrap--content-remove-all`;
 
-		$('.main[data-name="remove"]').find('.wrap--content').removeClass('wrap--content-remove-item, wrap--content-remove-transfer').addClass('wrap--content-remove-all');
+		changeViewFieldsInTable(actionArr, classAttr);
 	}
+}
+
+function changeViewFieldsInTable(arr, classAttr) {
+	arr.forEach((elem) => {
+		const { name = '', action = '' } = elem;
+
+		$(`.table--remove .table__cell--${name}`)[action]('table__cell--hide');
+	});
+
+	$('.main[data-name="remove"]').find('.wrap--content').attr('class', classAttr);
 }
 
 function setUsersInSelect(users) {

@@ -39,14 +39,14 @@ function templateAddTable(data) {
 			</div>
 			<div class="table__cell table__cell--body table__cell--edit">
 				<button class="table__btn table__btn--edit" type="button">
-					<svg class="icon icon--edit">
+					<svg class="icon icon--edit icon--edit-black">
 						<use class="icon__item" xlink:href="./images/sprite.svg#edit"></use>
 					</svg>
 				</button>
 			</div>
 			<div class="table__cell table__cell--body table__cell--delete">
 				<button class="table__btn table__btn--delete" type="button">
-					<svg class="icon icon--delete">
+					<svg class="icon icon--delete icon--delete-black">
 						<use class="icon__item" xlink:href="./images/sprite.svg#delete"></use>
 					</svg>
 				</button>

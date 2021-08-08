@@ -304,8 +304,16 @@
                   <div class="table__cell table__cell--header table__cell--photofile"><span class="table__text table__text--header">Фотография</span></div>
                   <div class="table__cell table__cell--header table__cell--statustitle"><span class="table__text table__text--header">Идентификатор</span></div>
                   <div class="table__cell table__cell--header table__cell--date"><span class="table__text table__text--header">Дата</span></div>
-                  <div class="table__cell table__cell--header table__cell--edit"></div>
-                  <div class="table__cell table__cell--header table__cell--delete"></div>
+                  <div class="table__cell table__cell--header table__cell--edit">
+                    <svg class="icon icon--edit icon--edit-white">
+                      <use class="icon__item" xlink:href="./images/sprite.svg#edit"></use>
+                    </svg>
+                  </div>
+                  <div class="table__cell table__cell--header table__cell--delete">
+                    <svg class="icon icon--delete icon--delete-white">
+                      <use class="icon__item" xlink:href="./images/sprite.svg#delete"></use>
+                    </svg>
+                  </div>
                 </header>
                 <div class="table__body" id="tableAdd">
                   <p class="table__nothing">Не добавленно ни одного пользователя</p>
@@ -375,8 +383,16 @@
                   <div class="table__cell table__cell--header table__cell--titleid"><span class="table__text table__text--header">Причина удаления</span></div>
                   <div class="table__cell table__cell--header table__cell--newdepart table__cell--hide"><span class="table__text table__text--header">Новое подразделение</span></div>
                   <div class="table__cell table__cell--header table__cell--date"><span class="table__text table__text--header">Дата</span></div>
-                  <div class="table__cell table__cell--header table__cell--edit"></div>
-                  <div class="table__cell table__cell--header table__cell--delete"></div>
+                  <div class="table__cell table__cell--header table__cell--edit">
+                    <svg class="icon icon--edit icon--edit-white">
+                      <use class="icon__item" xlink:href="./images/sprite.svg#edit"></use>
+                    </svg>
+                  </div>
+                  <div class="table__cell table__cell--header table__cell--delete">
+                    <svg class="icon icon--delete icon--delete-white">
+                      <use class="icon__item" xlink:href="./images/sprite.svg#delete"></use>
+                    </svg>
+                  </div>
                 </header>
                 <div class="table__body" id="tableRemove">
                   <p class="table__nothing">Не добавленно ни одного пользователя</p>
@@ -537,7 +553,7 @@
       </main>
       <footer class="footer">
         <div class="container">
-          <div class="footer__wrap"><small class="footer__version">v2.1.13</small></div>
+          <div class="footer__wrap"><small class="footer__version">v2.1.14</small></div>
         </div>
       </footer>
     </div>
