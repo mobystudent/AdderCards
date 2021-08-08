@@ -227,15 +227,9 @@ function dataAdd(nameTable) {
 	}
 
 	renderTable();
-	countItems(`${nameTable} .table__content`, 'remove');
+	$('.main__count--remove').text(removeCollection.size);
 	deleteUser();
 	editUser();
-}
-
-function countItems(tableContent, modDepart) {
-	const countItemfromDep = $(tableContent).eq(0).find('.table__row').length;
-
-	$(`.main__count--${modDepart}`).text(countItemfromDep);
 }
 
 function setDepartInSelect() {
@@ -452,7 +446,7 @@ function deleteUser() {
 			renderTable();
 		}
 
-		countItems('#tableRemove .table__content', 'remove');
+		$('.main__count--remove').text(removeCollection.size);
 	});
 }
 
@@ -470,7 +464,7 @@ function editUser() {
 			setDepartInSelect();
 		}
 
-		countItems('#tableAdd .table__content', 'add');
+		$('.main__count--remove').text(removeCollection.size);
 	});
 }
 

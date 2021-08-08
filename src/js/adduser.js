@@ -241,21 +241,13 @@ function dataAdd(nameTable) {
 			<p class="table__nothing">Новых данных нет</p>
 		`);
 
-		// countItems(`${nameTable} .table__content`, 'add');
-
 		return;
 	}
 
 	renderTable();
-	countItems(`${nameTable} .table__content`, 'add');
+	$('.main__count--add').text(addCollection.size);
 	deleteUser();
 	editUser();
-}
-
-function countItems(tableContent, modDepart) {
-	const countItemfromDep = $(tableContent).eq(0).find('.table__row').length;
-
-	$(`.main__count--${modDepart}`).text(countItemfromDep);
 }
 
 function toggleSelect() {
@@ -387,7 +379,7 @@ function deleteUser() {
 			renderTable();
 		}
 
-		countItems('#tableAdd .table__content', 'add');
+		$('.main__count--add').text(addCollection.size);
 	});
 }
 
@@ -404,7 +396,7 @@ function editUser() {
 			downloadFoto();
 		}
 
-		countItems('#tableAdd .table__content', 'add');
+		$('.main__count--add').text(addCollection.size);
 	});
 }
 
@@ -443,7 +435,7 @@ function submitIDinBD() {
 			`);
 
 		renderTable();
-		countItems('#tableAdd .table__content', 'add');
+		$('.main__count--add').text(addCollection.size);
 	});
 }
 
