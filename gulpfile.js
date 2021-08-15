@@ -5,14 +5,18 @@ const gulp = require('gulp'),
 	pug = require('gulp-pug'),
 	sourcemaps = require('gulp-sourcemaps'),
 	rename = require('gulp-rename'),
-	debug = require('gulp-debug');
+	debug = require('gulp-debug'),
+	plumber = require('gulp-plumber'),
+	newer = require('gulp-newer'),
+	changed = require('gulp-changed');
 	// browserSync = require('browser-sync').create();
 
 /* styles */
 const autoprefixer = require('gulp-autoprefixer'),
 	sass = require('gulp-sass'),
 	groupcmq = require('gulp-group-css-media-queries'),
-	cleanCSS = require('gulp-clean-css');
+	cleanCSS = require('gulp-clean-css'),
+	sassGlob = require('gulp-sass-glob');
 
 /* images */
 const imagemin = require('gulp-imagemin'),
@@ -86,6 +90,7 @@ function clean() {
 function gulpSass() {
 	return gulp.src(path.src.scss)
 		.pipe(sourcemaps.init())
+		.pipe(sassGlob())
 		.pipe(sass({
 				linefeed: 'crlf',
 				indentType: 'tab',
@@ -96,10 +101,12 @@ function gulpSass() {
 		.pipe(groupcmq())
 		.pipe(autoprefixer({
 			grid: true,
-			overrideBrowserslist: ['> 0.4%, last 4 versions, firefox >= 62, edge >= 18, safari >=12']
+			overrideBrowserslist: ['> 0.4%', 'last 4 versions', 'firefox >= 62', 'edge >= 18', 'safari >=12', 'not ie <= 11', 'not dead']
 		}))
 		.pipe(sourcemaps.write('.'))
-		.pipe(debug({title: 'scss:'}))
+		.pipe(debug({
+			title: 'scss:'
+		}))
 		.pipe(gulp.dest(path.build.scss))
 		.pipe(cleanCSS())
 		.pipe(rename('style.min.css'))
@@ -117,19 +124,29 @@ function gulpFonts() {
 		.pipe(ttf2woff2())
 		.pipe(gulp.src(path.src.fonts))
 		.pipe(ttf2eot())
-		.pipe(debug({title: 'fonts:'}))
+		.pipe(debug({
+			title: 'fonts:'
+		}))
 		.pipe(gulp.dest(path.build.fonts));
 }
 
 /* conversion pug */
 function gulpPug() {
 	return gulp.src(path.src.pug)
+		.pipe(plumber())
+		.pipe(changed(path.build.pug, {
+			extension: '.php'
+		}))
 		.pipe(pug({
 			pretty: true
 		}))
 		.pipe(rename({
 			extname: '.php'
 		}))
+		.pipe(debug({
+			title: 'pug:'
+		}))
+		.pipe(plumber.stop())
 		.pipe(gulp.dest(path.build.pug));
 }
 
@@ -154,12 +171,17 @@ function gulpPHP() {
 /* optimize images */
 function gulpImagesPic() {
 	return gulp.src(path.src.imgPic)
+		.pipe(newer(path.build.img))
 		.pipe(jp2000())
+		.pipe(gulp.dest(path.build.img))
 		.pipe(gulp.src(path.src.imgPic))
+		.pipe(newer(path.build.img))
 		.pipe(webp({
 			quality: 70
 		}))
+		.pipe(gulp.dest(path.build.img))
 		.pipe(gulp.src(path.src.imgPic))
+		.pipe(newer(path.build.img))
 		.pipe(imagemin([
 			imagemin.mozjpeg({
 				quality: 90
@@ -168,12 +190,15 @@ function gulpImagesPic() {
 				optimizationLevel: 2
 			})
 		]))
-		.pipe(debug({title: 'pictures:'}))
+		.pipe(debug({
+			title: 'pictures:'
+		}))
 		.pipe(gulp.dest(path.build.img));
 }
 
 function gulpImagesBg() {
 	return gulp.src(path.src.imgBg)
+		.pipe(newer(path.build.img))
 		.pipe(imagemin([
 			imagemin.mozjpeg({
 				quality: 10
@@ -190,12 +215,15 @@ function gulpImagesBg() {
 				}]
 			})
 		]))
-		.pipe(debug({title: 'backgrounds:'}))
+		.pipe(debug({
+			title: 'backgrounds:'
+		}))
 		.pipe(gulp.dest(path.build.img));
 }
 
 function gulpImagesSVG() {
 	return gulp.src(path.src.imgSvg)
+		.pipe(newer(path.build.img))
 		.pipe(svgSprite({
 			shape: {
 				transform: [
@@ -232,6 +260,7 @@ function gulpFavicon() {
 function gulpJS() {
 	return gulp.src(path.src.js)
 		.pipe(sourcemaps.init())
+		.pipe(plumber())
 		.pipe(rollup({
 			plugins: [
 				nodeResolve({
@@ -255,7 +284,10 @@ function gulpJS() {
 				min: '.min.js'
 			}
 		}))
-		.pipe(debug({title: 'js:'}))
+		.pipe(debug({
+			title: 'js:'
+		}))
+		.pipe(plumber.stop())
 		.pipe(gulp.dest(path.build.js));
 }
 
@@ -277,8 +309,8 @@ function gulpWatch() {
 	gulp.watch(path.watch.fonts, gulp.series(gulpFonts));
 }
 
-const dev = gulp.series(clean, gulp.parallel(gulp.series(gulpImagesPic, gulpImagesBg, gulpImagesSVG, gulpFonts, gulpCss, gulpSass), gulpTemplate, gulpPHP, gulpPug, gulpJS, gulpFavicon)),
-	build = gulp.series(clean, gulp.parallel(gulp.series(gulpImagesPic, gulpImagesBg, gulpImagesSVG, gulpFonts, gulpCss, gulpSass), gulpTemplate, gulpPHP, gulpJS, gulpFavicon));
+const dev = gulp.series(clean, gulp.parallel(gulp.series(gulpImagesPic, gulpImagesBg, gulpImagesSVG), gulpFonts, gulpCss, gulpSass, gulp.series(gulpTemplate, gulpPHP), gulpPug, gulpJS, gulpFavicon));
+const build = gulp.series(clean, gulp.parallel(gulp.series(gulpImagesPic, gulpImagesBg, gulpImagesSVG), gulpFonts, gulpCss, gulpSass, gulp.series(gulpTemplate, gulpPHP), gulpJS, gulpFavicon));
 
 exports.default = build;
 exports.watch = gulp.series(build, gulpWatch);
@@ -289,3 +321,4 @@ exports.js = gulpJS;
 exports.css = gulpCss;
 exports.img = gulp.parallel(gulpImagesPic, gulpImagesBg, gulpImagesSVG);
 exports.fonts = gulpFonts;
+exports.favicon = gulpFavicon;

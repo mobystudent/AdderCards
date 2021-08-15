@@ -11,10 +11,7 @@ License URI: http://www.gnu.org/licenses/gpl-2.0.html
 @import "common/reset.scss";
 
 //Variables & mixins
-@import "helpers/mixins.scss";
-@import "helpers/colors.scss";
-@import "helpers/fonts.scss";
-@import "helpers/text.scss";
+@import "helpers/*.scss";
 
 //Defaults
 @import "common/common.scss";
@@ -23,24 +20,7 @@ License URI: http://www.gnu.org/licenses/gpl-2.0.html
 @import "vendors/ui-datepicker.scss";
 
 //Blocks
-@import "blocks/icon.scss";
-@import "blocks/logo.scss";
-@import "blocks/img.scss";
-@import "blocks/container.scss";
-@import "blocks/table.scss";
-@import "blocks/tab.scss";
-@import "blocks/btn.scss";
-@import "blocks/wrap.scss";
-@import "blocks/field.scss";
-@import "blocks/document.scss";
-@import "blocks/info.scss";
-@import "blocks/form.scss";
-@import "blocks/select.scss";
-@import "blocks/control.scss";
+@import "blocks/*.scss";
 
 //Sections
-@import "sections/header.scss";
-@import "sections/footer.scss";
-@import "sections/section.scss";
-@import "sections/nav.scss";
-@import "sections/main.scss";
+@import "sections/*.scss";

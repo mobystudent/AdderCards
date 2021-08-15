@@ -408,9 +408,9 @@
       </main>
       <main class="main" data-name="edit">
         <div class="container">
-          <h1 class="main__title">Редактировать пользователя</h1><span class="main__depart main__depart--permis">Химический факультет</span>
-          <form class="form" action="#" method="GET">
-            <div class="form__wrap form__wrap--center">
+          <h1 class="main__title">Редактировать пользователя</h1><span class="main__depart main__depart--edit" data-depart="Химический факультет" data-id="ChemDep">Химический факультет</span>
+          <form class="form" id="editForm" action="#" method="GET">
+            <div class="form__wrap" data-post="">
               <div class="form__fields">
                 <div class="form__field"><span class="form__name">Пользователь</span>
                   <div class="form__select form__item select" data-field="FIO" data-select="fio">
@@ -441,20 +441,15 @@
                   </label>
                 </div>
               </div>
-              <div class="form__aside form__aside--hide">
-                <div class="form__img"><img class="img img--form" src="./images/avatar.svg" alt="user avatar"></div>
-                <div class="form__field">
-                  <input class="form__input form__input--file" id="addFile" data-field="Image" name="image" type="file" required>
-                  <label class="form__download" for="addFile">
-                    <svg class="icon icon--download">
-                      <use xlink:href="../images/sprite.svg#download"></use>
-                    </svg><span class="form__title">Загрузить фото</span>
-                  </label>
-                </div>
+              <div class="form__aside">
+                <div class="form__img"><img class="img img--form img--form-remove" src="./images/avatar.svg" alt="user avatar"></div>
               </div>
             </div>
             <button class="btn btn--form" id="editUser" type="button" data-type="edit-user">Редактировать</button>
           </form>
+          <div class="info">
+            <p class="info__item info__item--warn info__item--fields">Предупреждение! Не все поля заполненны.</p>
+          </div>
           <div class="wrap wrap--content wrap--content-edit-fio">
             <div class="main__cards main__cards--main">
               <p class="main__count-wrap main__count-wrap--depart"><span class="main__count-text">Количество добавленых пользователей:&nbsp</span><span class="main__count main__count--edit">0</span></p>
