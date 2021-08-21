@@ -2,39 +2,26 @@ main.main(data-name="edit")
 	.container
 		h1.main__title
 			| Редактировать пользователя
-		span.main__depart.main__depart--permis
+		span.main__depart.main__depart--edit(data-depart="Химический факультет" data-id="ChemDep")
 			| Химический факультет
 		
-		form.form(action="#" method="GET")
-			.form__wrap.form__wrap--center
+		form.form#editForm(action="#" method="GET")
+			.form__wrap
 				.form__fields
 					.form__field
 						span.form__name
 							| Пользователь
-						.form__select.form__item.select(data-field="FIO" data-select="fio")
+						.form__select.form__item.select(data-field="fio" data-select="fio")
 							header.select__header
-								span.select__value(data-title="title" data-placeholder="Выберите пользователя")
+								span.select__value(data-title="Выберите пользователя" data-placeholder="Выберите пользователя")
 									| Выберите пользователя
 							ul.select__list
-					//- .form__field
-						span.form__name
-							| Подразделение/факультет
-						.form__select.form__item.select(data-field="Department" data-type="NameID" data-select="name-id")
-							header.select__header
-								span.select__value(data-title="title" data-name-id="name-id" data-placeholder="Выберите подразделение/факультет")
-									| Выберите подразделение/факультет
-							ul.select__list
-								
-								- for (let i = 0; i < 5 ; i++)
-									li.select__item
-										span.select__name(data-title="Химический факультет" data-name-id="ChemDep")
-											| Химический факультет
 					.form__field
 						span.form__name
 							| Тип изменения
-						.form__select.form__item.select(data-field="TitleID" data-type="StatusID" data-select="change")
+						.form__select.form__item.select(data-field="titleid" data-type="statusid" data-select="change")
 							header.select__header
-								span.select__value(data-title="title" data-change="type" data-placeholder="Выберите тип изменения")
+								span.select__value(data-title="Выберите тип изменения" data-change="type" data-placeholder="Выберите тип изменения")
 									| Выберите тип изменения
 							ul.select__list
 								
@@ -45,30 +32,36 @@ main.main(data-name="edit")
 									li.select__item
 										span.select__name(data-title=arrChanges[i] data-change=arrTypeChanges[i])
 											| #{arrChanges[i]}
-					.form__field.form__field--new-post
+					.form__field.form__field--hide(data-name="newpost")
 						label.form__label
 							span.form__name
 								| Новая должность
-							input.form__input.form__item(data-field="NewPost" name="newPost" type="text" placeholder="Введите новую должность" required)
-					.form__field.form__field--new-fio
+							input.form__input.form__item(data-field="newpost" name="newpost" type="text" placeholder="Введите новую должность" required)
+					.form__field.form__field--hide(data-name="newfio")
 						label.form__label
 							span.form__name
 								| Новое ФИО
-							input.form__input.form__item(data-field="NewFIO" name="newName" type="text" placeholder="Введите новое ФИО" required)
+							input.form__input.form__item(data-field="newfio" name="newfio" type="text" placeholder="Введите новое ФИО" required)
+					.form__field.form__field--hide
+						span.form__item.form__item--post(data-field="post")
 								
-				.form__aside.form__aside--hide
+				.form__aside
 					.form__img
-						img.img.img--form(src="./images/avatar.svg" alt="user avatar")
-					.form__field
-						input.form__input.form__input--file#addFile(data-field="Image" name="image" type="file" required)
-						label.form__download(for="addFile")
+						img.img.img--form.img--form-edit(src="./images/avatar.svg" alt="user avatar")
+					.form__field.form__field--hide(data-name="newimage")
+						input.form__input.form__input--file.form__item#editFile(data-field="photofile" data-url="photourl" name="photofile" type="file" required)
+						label.form__download(for="editFile")
 							svg.icon.icon--download
-								use(xlink:href="../images/sprite.svg#download")
+								use(xlink:href="./images/sprite.svg#download")
 							span.form__title
 								| Загрузить фото
 									
 			button.btn.btn--form#editUser(type="button" data-type="edit-user")
 				| Редактировать
+				
+		.info
+			p.info__item.info__item--warn.info__item--fields
+				| Предупреждение! Не все поля заполненны.
 
 		.wrap.wrap--content.wrap--content-edit-fio
 			.main__cards.main__cards--main
@@ -85,9 +78,6 @@ main.main(data-name="edit")
 							span.table__text.table__text--header
 								| Фамилия Имя Отчество
 							button.btn.btn--sort(type="button" data-direction="true")
-						//- .table__cell.table__cell--header.table__cell--department
-						//- 	span.table__text.table__text--header
-						//- 		| Подразделение/факультет
 						.table__cell.table__cell--header.table__cell--titleid
 							span.table__text.table__text--header
 								| Тип изменения

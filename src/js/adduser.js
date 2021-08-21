@@ -327,7 +327,7 @@ function datepicker() {
 }
 
 function downloadFoto() {
-	$('.form__input--file').change((e) => {
+	$('#addForm .form__input--file').change((e) => {
 		const file = e.target.files[0];
 		const url = URL.createObjectURL(file);
 		const fileName = $(e.target).val();

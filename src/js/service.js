@@ -4,7 +4,6 @@ import $ from 'jquery';
 
 $(window).on('load', () => {
 	printReport();
-	// toggleSelect();
 	switchControl();
 	sortItems();
 });
@@ -13,57 +12,6 @@ function printReport() {
 	$('.btn--print').click(() => {
 		window.print();
 	});
-}
-
-function toggleSelect() {
-	$('.select__header').click((e) => {
-		$(e.currentTarget).next().slideToggle();
-		$(e.currentTarget).toggleClass('select__header--active');
-	});
-
-	clickSelectItem();
-}
-
-function clickSelectItem() {
-	$('.select__item').click((e) => {
-		const title = $(e.currentTarget).find('.select__name').data('title');
-		const select = $(e.currentTarget).parents('.select').data('select');
-
-		$(e.currentTarget).parents('.select').find('.select__value').addClass('select__value--selected').text(title);
-		$(e.currentTarget).parent().slideUp();
-		$(e.currentTarget).parents('.select').find('.select__header').removeClass('select__header--active');
-
-		setDataAttrSelectedItem(title, select, e.currentTarget);
-	});
-}
-
-function setDataAttrSelectedItem(title, select, elem) {
-	const dataType = $(elem).find('.select__name').data(select);
-	let attr = '';
-
-	if (select == 'change') {
-		if (dataType == 'changeFIO') {
-			$('.form__field--new-post').hide();
-			$('.form__field--new-fio').show();
-		} else if (dataType == 'changePost') {
-			$('.form__field--new-fio').hide();
-			$('.form__field--new-post').show();
-		} else if (dataType == 'changeImage') {
-			$('.form__field--new-fio, .form__field--new-post').hide();
-			$(elem).closest('.form__wrap').removeClass('form__wrap--center').find('.form__aside').removeClass('form__aside--hide');
-			// $('.form__field--new-post').show();
-		} else {
-			$('.form__field--new-fio, .form__field--new-post').hide();
-		}
-	}
-
-	if (dataType) {
-		attr = {'data-title': title, [`data-${select}`]: dataType};
-	} else {
-		attr = {'data-title': title};
-	}
-
-	$(elem).parents('.select').find('.select__value--selected').attr(attr);
 }
 
 function switchControl() {
@@ -149,6 +97,4 @@ function showDataInTable() {
 export default {
 	printReport,
 	showDataInTable,
-	// toggleSelect,
-	// clickSelectItem
 };

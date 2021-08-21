@@ -286,9 +286,9 @@
 		height: 40px;
 		width: 100%;
 
-		&:focus {
-			box-shadow: 0 0 0 9px $gray, 0 0 0 15px $blueLight;
-		}
+		// &:focus {
+		// 	box-shadow: 0 0 0 9px $gray, 0 0 0 15px $blueLight;
+		// }
 
 		@media print {
 			font-size: 12px;

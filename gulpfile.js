@@ -43,9 +43,8 @@ const dirBuild = 'build',
 	dirSrc = 'src',
 	path = {
 		build: {
-			template: dirBuild,
 			scss: dirBuild,
-			pug: `${dirSrc}/template`,
+			pug: dirBuild,
 			css: `${dirBuild}/css`,
 			php: `${dirBuild}/php`,
 			fonts: `${dirBuild}/fonts`,
@@ -54,7 +53,6 @@ const dirBuild = 'build',
 			js: `${dirBuild}/js`
 		},
 		src: {
-			template: `${dirSrc}/template/index.php`,
 			php: `${dirSrc}/php/*.php`,
 			scss: `${dirSrc}/scss/style.scss`,
 			pug: `${dirSrc}/pug/**/*.pug`,
@@ -67,7 +65,6 @@ const dirBuild = 'build',
 			js: `${dirSrc}/js/script.js`
 		},
 		watch: {
-			template: `${dirSrc}/template/**/*.php`,
 			php: `${dirSrc}/php/**/*.php`,
 			scss: `${dirSrc}/scss/**/*.scss`,
 			pug: `${dirSrc}/pug/**/*.pug`,
@@ -154,12 +151,6 @@ function gulpPug() {
 function gulpCss() {
 	return gulp.src(path.src.css)
 		.pipe(gulp.dest(path.build.css));
-}
-
-/* copy template in build dir */
-function gulpTemplate() {
-	return gulp.src(path.src.template)
-		.pipe(gulp.dest(path.build.template));
 }
 
 /* copy php in build dir */
@@ -299,7 +290,6 @@ function gulpWatch() {
 
 	gulp.watch(path.watch.scss, gulp.series(gulpSass));
 	gulp.watch(path.watch.pug, gulp.series(gulpPug));
-	gulp.watch(path.watch.template, gulp.series(gulpTemplate));
 	gulp.watch(path.watch.php, gulp.series(gulpPHP));
 	gulp.watch(path.watch.css, gulp.series(gulpCss));
 	gulp.watch(path.watch.js, gulp.series(gulpJS));
@@ -309,8 +299,8 @@ function gulpWatch() {
 	gulp.watch(path.watch.fonts, gulp.series(gulpFonts));
 }
 
-const dev = gulp.series(clean, gulp.parallel(gulp.series(gulpImagesPic, gulpImagesBg, gulpImagesSVG), gulpFonts, gulpCss, gulpSass, gulp.series(gulpTemplate, gulpPHP), gulpPug, gulpJS, gulpFavicon));
-const build = gulp.series(clean, gulp.parallel(gulp.series(gulpImagesPic, gulpImagesBg, gulpImagesSVG), gulpFonts, gulpCss, gulpSass, gulp.series(gulpTemplate, gulpPHP), gulpJS, gulpFavicon));
+const dev = gulp.series(clean, gulp.parallel(gulp.series(gulpImagesPic, gulpImagesBg, gulpImagesSVG), gulpFonts, gulpCss, gulpSass, gulp.series(gulpPug, gulpPHP), gulpJS, gulpFavicon));
+const build = gulp.series(clean, gulp.parallel(gulp.series(gulpImagesPic, gulpImagesBg, gulpImagesSVG), gulpFonts, gulpCss, gulpSass, gulpPHP, gulpJS, gulpFavicon));
 
 exports.default = build;
 exports.watch = gulp.series(build, gulpWatch);

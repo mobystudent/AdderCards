@@ -423,6 +423,12 @@ function datepicker() {
 
 function showUserAvatar(photourl) {
 	console.log(photourl);
+	const reader = new FileReader();
+	reader.readAsDataURL(photourl);
+	// reader.onloadend = () => {
+	// 	const base64data = reader.result;
+	// 	console.log(base64data);
+	// }
 	// $('.img--form-remove').attr('src', photourl);
 }
 
@@ -482,7 +488,7 @@ function getAddUsersInDB(id = '') {
 	const idDepart = $('.main__depart--remove').attr('data-id');
 
 	$.ajax({
-		url: "./php/remove-user-output.php",
+		url: "./php/add-user-output.php",
 		method: "post",
 		dataType: "html",
 		data: {

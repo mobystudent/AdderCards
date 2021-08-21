@@ -1,18 +1,18 @@
 'use strict';
 
 import $ from 'jquery';
-import { nameDeparts } from './nameDepart.js';
-import timeCard from './timecards.js';
-import constCard from './constcards.js';
-import qrCodes from './qrcodes.js';
-import permission from './permission.js';
-import constQR from './constqr.js';
-import addUser from './adduser.js';
-import removeUser from './removeuser.js';
+import './timecards.js';
+import './constcards.js';
+import './qrcodes.js';
+import './permission.js';
+import './constqr.js';
+import './adduser.js';
+import './removeuser.js';
+import './edituser.js';
+import './users-func.js';
+import './report.js';
+import './reject.js';
 import service from './service.js';
-import usersFunc from './users-func.js';
-import report from './report.js';
-import reject from './reject.js';
 
 $(window).on('load', () => {
 	getData();
@@ -32,11 +32,16 @@ function getData() {
 		url: "http://localhost:40001/json/Authenticate",
 		method: "post",
 		dataType: "json",
-		data: data,
-		success: function(data) {
-			console.log('succsess '+data);
+		contentType: 'application/json',
+		data: JSON.stringify(data),
+		success: (data) => {
+			const { UserSID = '', UserToken = 0 } = data;
+
+			if (UserSID) {
+				console.log(data);
+			}
 		},
-		error: function(data) {
+		error: (data) => {
 			console.log(data);
 		}
 	});
@@ -124,14 +129,6 @@ function removeAndFocusActiveBlock(containerBl, block, nameTable) {
 	});
 
 	focusFirstCell(nameTable);
-}
-
-function getTableID(name) {
-	if (name === 'newCard' || name === 'changeCard') {
-		return 'const';
-	} else if (name === 'newQR' || name === 'changeQR') {
-		return 'qr';
-	}
 }
 
 function returnToNextTab(item) {
