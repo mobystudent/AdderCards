@@ -32,7 +32,7 @@ function templateRemoveTable(data) {
 			<div class="table__cell table__cell--body table__cell--titleid">
 				<span class="table__text table__text--body">${titleid}</span>
 			</div>
-			<div class="table__cell table__cell--body table__cell--newdepart">
+			<div class="table__cell table__cell--body table__cell--depart">
 				<span class="table__text table__text--body">${newdepart}</span>
 			</div>
 			<div class="table__cell table__cell--body table__cell--date">
@@ -221,8 +221,6 @@ function dataAdd(nameTable) {
 			<p class="table__nothing">Новых данных нет</p>
 		`);
 
-		// countItems(`${nameTable} .table__content`, 'remove');
-
 		return;
 	}
 
@@ -250,6 +248,10 @@ function showFieldsInTable() {
 	const existDepart = [...removeCollection.values()].every((elem) => elem.newdepart);
 	const existDate = [...removeCollection.values()].every((elem) => elem.date);
 	const wrapDefClasses = 'wrap wrap--content';
+
+	console.log(removeCollection);
+	console.log(existDepart);
+	console.log(existDate);
 
 	if (existDepart && !existDate) {
 		const actionArr = [

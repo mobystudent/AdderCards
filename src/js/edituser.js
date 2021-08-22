@@ -1,7 +1,6 @@
 'use strict';
 
 import $ from 'jquery';
-import { nameDeparts } from './nameDepart.js';
 
 const editCollection = new Map();
 let editObject = {
@@ -20,7 +19,7 @@ $(window).on('load', () => {
 });
 
 function templateEditTable(data) {
-	const { id = '', fio = '', post = '', titleid = '', newdepart = '',  date  = '' } = data;
+	const { id = '', fio = '', post = '', titleid = '', newfio = '', newpost = '', photofile = '' } = data;
 
 	return `
 		<div class="table__row" data-id="${id}">
@@ -33,11 +32,14 @@ function templateEditTable(data) {
 			<div class="table__cell table__cell--body table__cell--titleid">
 				<span class="table__text table__text--body">${titleid}</span>
 			</div>
-			<div class="table__cell table__cell--body table__cell--newdepart">
-				<span class="table__text table__text--body">${newdepart}</span>
+			<div class="table__cell table__cell--body table__cell--fio">
+				<span class="table__text table__text--body">${newfio}</span>
 			</div>
-			<div class="table__cell table__cell--body table__cell--date">
-				<span class="table__text table__text--body">${date}</span>
+			<div class="table__cell table__cell--body table__cell--post">
+				<span class="table__text table__text--body">${newpost}</span>
+			</div>
+			<div class="table__cell table__cell--body table__cell--photofile" title=${photofile}>
+				<span class="table__text table__text--body">${photofile}</span>
 			</div>
 			<div class="table__cell table__cell--body table__cell--edit">
 				<button class="table__btn table__btn--edit" type="button">
@@ -161,8 +163,12 @@ function addUser() {
 			// console.warn($(item));
 
 			if ($(item).hasClass('select')) {
+				const typeSelect = $(item).data('select');
+				const nameId = $(item).find('.select__value--selected').attr(`data-${typeSelect}`);
+				const fieldType = $(item).data('type');
 				const valueItem = $(item).find('.select__value--selected').attr('data-title');
 
+				object[fieldType] = nameId;
 				object[fieldName] = valueItem;
 			} else if ($(item).hasClass('form__item--post')) {
 				const valueItem = $(item).data('value');
@@ -185,12 +191,142 @@ function addUser() {
 
 		console.log(userData);
 
-		// if (validationEmptyFields(userData)) {
-		// 	userFromForm(userData);
-		// 	clearFieldsForm(fields);
-		// 	showFieldsInTable();
-		// }
+		if (validationEmptyFields(userData)) {
+			userFromForm(userData);
+			clearFieldsForm();
+			showFieldsInTable();
+		}
 	});
+}
+
+function userFromForm(object, page = 'edit') {
+	const objToCollection = {
+		id: '',
+		fio: '',
+		date: '',
+		post: '',
+		nameid: '',
+		photofile: '',
+		photourl: '',
+		titleid: '',
+		statusid: '',
+		newpost: '',
+		newfio: '',
+		department: ''
+	};
+	const indexCollection = editCollection.size;
+	const itemObject = Object.assign({}, objToCollection);
+	const departName = $(`.main__depart--${page}`).attr('data-depart');
+	const departID = $(`.main__depart--${page}`).attr('data-id');
+	const postUser = $('#editForm .form__item--post').data('value');
+
+	for (const itemField in itemObject) {
+		for (const key in object) {
+			if (itemField === key) {
+				itemObject[itemField] = object[key];
+			} else if (itemField === 'id') {
+				itemObject[itemField] = indexCollection;
+			} else if (itemField === 'department') {
+				itemObject[itemField] = departName;
+			} else if (itemField === 'nameid') {
+				itemObject[itemField] = departID;
+			} else if (itemField === 'post') {
+				itemObject[itemField] = postUser;
+			}
+		}
+	}
+
+	editCollection.set(indexCollection, itemObject);
+
+	dataAdd('#tableEdit');
+}
+
+function dataAdd(nameTable) {
+	if (editCollection.size) {
+		$('.table__nothing').hide();
+		$(nameTable)
+			.html('')
+			.removeClass('table__body--empty')
+			.append(`
+				<div class="table__content table__content--active">
+				</div>
+			`);
+	} else {
+		addEmptySign(nameTable);
+
+		return;
+	}
+
+	renderTable();
+	$('.main__count--edit').text(editCollection.size);
+	deleteUser();
+	editUser();
+}
+
+function showFieldsInTable() {
+	const existDepart = [...editCollection.values()].every((elem) => elem.newdepart);
+	const existDate = [...editCollection.values()].every((elem) => elem.date);
+	const wrapDefClasses = 'wrap wrap--content';
+
+	console.log(editCollection);
+	console.log(existDepart);
+	console.log(existDate);
+
+	return false;
+
+	if (existDepart && !existDate) {
+		const actionArr = [
+			{
+				name: 'date',
+				action: 'addClass'
+			},
+			{
+				name: 'newdepart',
+				action: 'removeClass'
+			}
+		];
+		const classAttr = `${wrapDefClasses} wrap--content-remove-transfer`;
+
+		changeViewFieldsInTable(actionArr, classAttr);
+	} else if (!existDepart && existDate) {
+		const actionArr = [
+			{
+				name: 'date',
+				action: 'removeClass'
+			},
+			{
+				name: 'newdepart',
+				action: 'addClass'
+			}
+		];
+		const classAttr = `${wrapDefClasses} wrap--content-remove-item`;
+
+		changeViewFieldsInTable(actionArr, classAttr);
+	} else {
+		const actionArr = [
+			{
+				name: 'date',
+				action: 'removeClass'
+			},
+			{
+				name: 'newdepart',
+				action: 'removeClass'
+			}
+		];
+		const classAttr = `${wrapDefClasses} wrap--content-remove-all`;
+
+		changeViewFieldsInTable(actionArr, classAttr);
+	}
+}
+
+function changeViewFieldsInTable(arr, classAttr) {
+	arr.forEach((elem) => {
+		const { name = '', action = '' } = elem;
+
+		$(`.table--remove .table__cell--${name}`)[action]('table__cell--hide');
+	});
+
+	$('.main[data-name="remove"]').find('.wrap--content').attr('class', classAttr);
 }
 
 function setUsersInSelect(users) {
@@ -209,8 +345,8 @@ function setUsersInSelect(users) {
 	clickSelectItem();
 }
 
-function toggleSelect() {
-	$('#editForm .select__header').click((e) => {
+function toggleSelect(nameTable = '#editForm') {
+	$(`${nameTable} .select__header`).click((e) => {
 		$(e.currentTarget).next().slideToggle();
 		$(e.currentTarget).toggleClass('select__header--active');
 	});
@@ -218,8 +354,8 @@ function toggleSelect() {
 	clickSelectItem();
 }
 
-function clickSelectItem() {
-	$('#editForm .select__item').click((e) => {
+function clickSelectItem(nameTable = '#editForm') {
+	$(`${nameTable} .select__item`).click((e) => {
 		const title = $(e.currentTarget).find('.select__name').data('title');
 		const id = $(e.currentTarget).find('.select__name').data('id');
 		const select = $(e.currentTarget).parents('.select').data('select');
@@ -261,15 +397,40 @@ function setDataAttrSelectedItem(title, select, elem) {
 	toggleSelect();
 }
 
+function clearFieldsForm() {
+	const clearObject = {
+		fio: '',
+		titleid: '',
+		statusid: '',
+		post: ''
+	};
+	editObject = {
+		fio: '',
+		statusid: '',
+		titleid: '',
+		newpost: '',
+		newfio: '',
+		photourl: ''
+	};
+
+	$('#editForm .form__wrap').html('').append(templateEditForm(clearObject));
+
+	toggleSelect();
+	getAddUsersInDB();
+}
+
+function addEmptySign(nameTable) {
+	$(nameTable).addClass('table__body--empty').html('');
+	$(nameTable).append(`
+		<p class="table__nothing">Новых данных нет</p>
+	`);
+}
+
 function downloadFoto() {
 	$('#editForm .form__input--file').change((e) => {
-		console.log('After change here');
 		const file = e.target.files[0];
 		const url = URL.createObjectURL(file);
 		const fileName = $(e.target).val();
-
-		console.log(url);
-		console.log(fileName);
 
 		$('.img--form').attr('src', url);
 		editCollection.photourl = url;
@@ -286,6 +447,86 @@ function showUserAvatar(photourl) {
 	// 	console.log(base64data);
 	// }
 	// $('.img--form-remove').attr('src', photourl);
+}
+
+function validationEmptyFields(fields) {
+	const validFields = Object.values(fields).every((item) => item);
+	const statusMess = !validFields ? 'show' : 'hide';
+	const extentionArray = ['giff', 'png', 'jpg', 'jpeg'];
+	let correctName = 'hide';
+	let correctPost = 'hide';
+	let countNameWords = 'hide';
+	let extensionImg = 'hide';
+
+	for (let key in fields) {
+		if (key == 'newfio' && fields[key]) {
+			const countWords = fields[key].trim().split(' ');
+
+			correctName = fields[key].match(/[^а-яА-ЯiIъїё.'-\s]/g) ? 'show' : 'hide';
+			countNameWords = (countWords.length < 2) ? 'show' : 'hide';
+		} else if (key == 'newpost' && fields[key]) {
+			correctPost = fields[key].match(/[^а-яА-ЯiIъїё0-9.'-\s]/g) ? 'show' : 'hide';
+		} else if (key == 'photofile' && fields[key]) {
+			const extenName = fields[key].lastIndexOf('.');
+			const extenImg = fields[key].slice(extenName + 1);
+
+			extensionImg = extentionArray.some((item) => item == extenImg) ? 'hide' : 'show';
+		}
+	}
+
+	const valid = [statusMess, correctName, countNameWords, correctPost, extensionImg].every((mess) => mess === 'hide');
+
+	$('.main[data-name="edit"]').find('.info__item--warn.info__item--fields')[statusMess]();
+	$('.main[data-name="edit"]').find('.info__item--error.info__item--name')[correctName]();
+	$('.main[data-name="edit"]').find('.info__item--error.info__item--post')[correctPost]();
+	$('.main[data-name="edit"]').find('.info__item--error.info__item--short')[countNameWords]();
+	$('.main[data-name="edit"]').find('.info__item--error.info__item--image')[extensionImg]();
+
+	return valid;
+}
+
+function deleteUser() {
+	$('.table__content').click((e) => {
+		if ($(e.target).parents('.table__btn--delete').length || $(e.target).hasClass('table__btn--delete')) {
+			const idRemove = $(e.target).closest('.table__row').data('id');
+
+			editCollection.delete(idRemove);
+			renderTable();
+		}
+
+		if (editCollection.size == 0) {
+			addEmptySign('#tableEdit');
+		}
+
+		$('.main__count--edit').text(editCollection.size);
+	});
+}
+
+function editUser() {
+	$('.table__content').click((e) => {
+		if ($(e.target).parents('.table__btn--edit').length || $(e.target).hasClass('table__btn--edit')) {
+			const idEdit = $(e.target).closest('.table__row').data('id');
+
+			renderForm(idEdit);
+			editCollection.delete(idEdit);
+			renderTable();
+			toggleSelect();
+			getAddUsersInDB();
+		}
+
+		$('.main__count--edit').text(editCollection.size);
+	});
+}
+
+function renderForm(id, nameTable = '#editForm') {
+	$(`${nameTable} .form__wrap`).html('');
+
+	editCollection.forEach((user) => {
+		if (user.id == id) {
+			console.log(user);
+			$(`${nameTable} .form__wrap`).append(templateEditForm(user));
+		}
+	});
 }
 
 function getAddUsersInDB(id = '') {

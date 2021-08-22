@@ -62,6 +62,14 @@ main.main(data-name="edit")
 		.info
 			p.info__item.info__item--warn.info__item--fields
 				| Предупреждение! Не все поля заполненны.
+			p.info__item.info__item--error.info__item--name
+				| Ошибка! Имя содержит недопустимые символы. Разрешены: кириллические буквы, дефис, точка, апостроф.
+			p.info__item.info__item--error.info__item--post
+				| Ошибка! Должность содержит недопустимые символы. Разрешены: кириллические буквы, цифры, дефис, точка, апостроф.
+			p.info__item.info__item--error.info__item--image
+				| Ошибка! Не правильный формат изображение. Допустимы: giff, png, jpg, jpeg.
+			p.info__item.info__item--error.info__item--short
+				| Ошибка! ФИО должно состоять хотя бы из двух слов.
 
 		.wrap.wrap--content.wrap--content-edit-fio
 			.main__cards.main__cards--main
@@ -78,6 +86,9 @@ main.main(data-name="edit")
 							span.table__text.table__text--header
 								| Фамилия Имя Отчество
 							button.btn.btn--sort(type="button" data-direction="true")
+						.table__cell.table__cell--header.table__cell--post
+							span.table__text.table__text--header
+								| Должность
 						.table__cell.table__cell--header.table__cell--titleid
 							span.table__text.table__text--header
 								| Тип изменения
@@ -91,6 +102,12 @@ main.main(data-name="edit")
 						.table__cell.table__cell--header.table__cell--image
 							span.table__text.table__text--header
 								| Новая фотография
+						.table__cell.table__cell--header.table__cell--edit
+							svg.icon.icon--edit.icon--edit-white
+								use.icon__item(xlink:href="./images/sprite.svg#edit")
+						.table__cell.table__cell--header.table__cell--delete
+							svg.icon.icon--delete.icon--delete-white
+								use.icon__item(xlink:href="./images/sprite.svg#delete")
 					.table__body#tableEdit
 						p.table__nothing
 							| Не добавленно ни одного пользователя
