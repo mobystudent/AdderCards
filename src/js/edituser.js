@@ -20,7 +20,26 @@ $(window).on('load', () => {
 });
 
 function templateEditTable(data) {
-	const { id = '', fio = '', post = '', statustitle = '', newfio = '', newpost = '', photofile = '' } = data;
+	const { id = '', fio = '', post = '', statustitle = '', newfio = '', newpost = '', photofile = '', statusNewfio = '', statusNewpost = '', statusPhotofile = '' } = data;
+	const newFioValue = newfio ? newfio : '';
+	const newPostValue = newpost ? newpost : '';
+	const photofileValue = photofile ? photofile : '';
+	console.log(statusNewfio);
+	const newFioView = statusNewfio ? `
+		<div class="table__cell table__cell--body table__cell--fio">
+			<span class="table__text table__text--body">${newFioValue}</span>
+		</div>
+	` : '';
+	const newPostView = statusNewpost ? `
+		<div class="table__cell table__cell--body table__cell--post">
+			<span class="table__text table__text--body">${newPostValue}</span>
+		</div>
+	` : '';
+	const photofileView = statusPhotofile ? `
+		<div class="table__cell table__cell--body table__cell--photofile">
+			<span class="table__text table__text--body">${photofileValue}</span>
+		</div>
+	` : '';
 
 	return `
 		<div class="table__row" data-id="${id}">
@@ -33,15 +52,9 @@ function templateEditTable(data) {
 			<div class="table__cell table__cell--body table__cell--statustitle">
 				<span class="table__text table__text--body">${statustitle}</span>
 			</div>
-			<div class="table__cell table__cell--body table__cell--fio">
-				<span class="table__text table__text--body">${newfio}</span>
-			</div>
-			<div class="table__cell table__cell--body table__cell--post">
-				<span class="table__text table__text--body">${newpost}</span>
-			</div>
-			<div class="table__cell table__cell--body table__cell--photofile" title=${photofile}>
-				<span class="table__text table__text--body">${photofile}</span>
-			</div>
+			${newFioView}
+			${newPostView}
+			${photofileView}
 			<div class="table__cell table__cell--body table__cell--edit">
 				<button class="table__btn table__btn--edit" type="button">
 					<svg class="icon icon--edit icon--edit-black">
@@ -146,6 +159,52 @@ function templateEditForm(data) {
 	`;
 }
 
+function templateEditHeaderTable(data) {
+	const { statusNewfio = '', statusNewpost = '', statusPhotofile = '' } = data;
+	const newFioView = statusNewfio ? `
+		<div class="table__cell table__cell--header table__cell--fio">
+			<span class="table__text table__text--header">Новое Фамилия Имя Отчество</span>
+			<button class="btn btn--sort" type="button" data-direction="true"></button>
+		</div>
+	` : '';
+	const newPostView = statusNewpost ? `
+		<div class="table__cell table__cell--header table__cell--post">
+			<span class="table__text table__text--header">Новая должность</span>
+		</div>
+	` : '';
+	const photofileView = statusPhotofile ? `
+		<div class="table__cell table__cell--header table__cell--image">
+			<span class="table__text table__text--header">Новая фотография</span>
+		</div>
+	` : '';
+
+	return `
+		<div class="table__cell table__cell--header table__cell--fio">
+			<span class="table__text table__text--header">Фамилия Имя Отчество</span>
+			<button class="btn btn--sort" type="button" data-direction="true"></button>
+		</div>
+		<div class="table__cell table__cell--header table__cell--post">
+			<span class="table__text table__text--header">Должность</span>
+		</div>
+		<div class="table__cell table__cell--header table__cell--statustitle">
+			<span class="table__text table__text--header">Тип изменения</span>
+		</div>
+		${newFioView}
+		${newPostView}
+		${photofileView}
+		<div class="table__cell table__cell--header table__cell--edit">
+			<svg class="icon icon--edit icon--edit-white">
+				<use class="icon__item" xlink:href="./images/sprite.svg#edit"></use>
+			</svg>
+		</div>
+		<div class="table__cell table__cell--header table__cell--delete">
+			<svg class="icon icon--delete icon--delete-white">
+				<use class="icon__item" xlink:href="./images/sprite.svg#delete"></use>
+			</svg>
+		</div>
+	`;
+}
+
 function renderTable() {
 	$('#tableEdit .table__content').html('');
 
@@ -160,8 +219,6 @@ function addUser() {
 		const fields = $(form).find('.form__item');
 		const userData = [...fields].reduce((object, item) => {
 			const fieldName = $(item).data('field');
-
-			// console.warn($(item));
 
 			if ($(item).hasClass('select')) {
 				const typeSelect = $(item).data('select');
@@ -195,7 +252,7 @@ function addUser() {
 		if (validationEmptyFields(userData)) {
 			userFromForm(userData);
 			clearFieldsForm();
-			showFieldsInTable();
+			showFieldsInHeaderTable();
 		}
 	});
 }
@@ -239,6 +296,7 @@ function userFromForm(object, page = 'edit') {
 
 	editCollection.set(indexCollection, itemObject);
 
+	showTableCells();
 	dataAdd('#tableEdit');
 }
 
@@ -264,70 +322,60 @@ function dataAdd(nameTable) {
 	editUser();
 }
 
-function showFieldsInTable() {
-	const existDepart = [...editCollection.values()].every((elem) => elem.newdepart);
-	const existDate = [...editCollection.values()].every((elem) => elem.date);
-	const wrapDefClasses = 'wrap wrap--content';
+function showFieldsInHeaderTable() {
+	const arrayStatusCells = [
+		{
+			name: 'newfio',
+			status: 'statusNewfio'
+		},
+		{
+			name: 'newpost',
+			status: 'statusNewpost'
+		},
+		{
+			name: 'newpost',
+			status: 'statusPhotofile'
+		}
+	];
+	const statusFields = {
+		statusNewfio: false,
+		statusNewpost: false,
+		statusPhotofile: false
+	};
 
-	console.log(editCollection);
-	console.log(existDepart);
-	console.log(existDate);
+	$('.table--edit .table__header').html('');
 
-	return false;
+	showTableCells();
 
-	if (existDepart && !existDate) {
-		const actionArr = [
-			{
-				name: 'date',
-				action: 'addClass'
-			},
-			{
-				name: 'newdepart',
-				action: 'removeClass'
+	[...editCollection.values()].forEach((elem) => {
+		for (const key in elem) {
+			for (const { name, status } of arrayStatusCells) {
+				if ((key == name) && elem[status]) {
+					statusFields[status] = elem[status];
+				}
 			}
-		];
-		const classAttr = `${wrapDefClasses} wrap--content-remove-transfer`;
-
-		changeViewFieldsInTable(actionArr, classAttr);
-	} else if (!existDepart && existDate) {
-		const actionArr = [
-			{
-				name: 'date',
-				action: 'removeClass'
-			},
-			{
-				name: 'newdepart',
-				action: 'addClass'
-			}
-		];
-		const classAttr = `${wrapDefClasses} wrap--content-remove-item`;
-
-		changeViewFieldsInTable(actionArr, classAttr);
-	} else {
-		const actionArr = [
-			{
-				name: 'date',
-				action: 'removeClass'
-			},
-			{
-				name: 'newdepart',
-				action: 'removeClass'
-			}
-		];
-		const classAttr = `${wrapDefClasses} wrap--content-remove-all`;
-
-		changeViewFieldsInTable(actionArr, classAttr);
-	}
-}
-
-function changeViewFieldsInTable(arr, classAttr) {
-	arr.forEach((elem) => {
-		const { name = '', action = '' } = elem;
-
-		$(`.table--remove .table__cell--${name}`)[action]('table__cell--hide');
+		}
 	});
 
-	$('.main[data-name="remove"]').find('.wrap--content').attr('class', classAttr);
+	const newfio = [...editCollection.values()].some((cell) => cell.statusNewfio) ? '-newfio' : '';
+	const newpost = [...editCollection.values()].some((cell) => cell.statusNewpost) ? '-newpost' : '';
+	const photofile = [...editCollection.values()].some((cell) => cell.statusPhotofile) ? '-photofile' : '';
+	const className = `wrap wrap--content wrap--content-edit${newfio}${newpost}${photofile}`;
+
+	$('.main[data-name="edit"]').find('.wrap--content').attr('class', className);
+	$('.table--edit .table__header').append(templateEditHeaderTable(statusFields));
+}
+
+function showTableCells() {
+	const statusNewfio = [...editCollection.values()].some((cell) => cell.newfio);
+	const statusNewpost = [...editCollection.values()].some((cell) => cell.newpost);
+	const statusPhotofile = [...editCollection.values()].some((cell) => cell.photofile);
+
+	editCollection.forEach((elem) => {
+		elem.statusNewfio = statusNewfio;
+		elem.statusNewpost = statusNewpost;
+		elem.statusPhotofile = statusPhotofile;
+	});
 }
 
 function setUsersInSelect(users) {
@@ -526,7 +574,6 @@ function renderForm(id, nameTable = '#editForm') {
 
 	editCollection.forEach((user) => {
 		if (user.id == id) {
-			console.log(user);
 			$(`${nameTable} .form__wrap`).append(templateEditForm(user));
 		}
 	});
