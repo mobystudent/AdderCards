@@ -3,4 +3,4 @@ node_modules/
 
 #buid
 build/
-dev/
+src/template
