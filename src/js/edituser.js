@@ -6,7 +6,7 @@ const editCollection = new Map();
 let editObject = {
 	fio: '',
 	statusid: '',
-	titleid: '',
+	statustitle: '',
 	newpost: '',
 	newfio: '',
 	photourl: ''
@@ -16,10 +16,11 @@ $(window).on('load', () => {
 	addUser();
 	toggleSelect();
 	getAddUsersInDB();
+	submitIDinBD();
 });
 
 function templateEditTable(data) {
-	const { id = '', fio = '', post = '', titleid = '', newfio = '', newpost = '', photofile = '' } = data;
+	const { id = '', fio = '', post = '', statustitle = '', newfio = '', newpost = '', photofile = '' } = data;
 
 	return `
 		<div class="table__row" data-id="${id}">
@@ -29,8 +30,8 @@ function templateEditTable(data) {
 			<div class="table__cell table__cell--body table__cell--post">
 				<span class="table__text table__text--body">${post}</span>
 			</div>
-			<div class="table__cell table__cell--body table__cell--titleid">
-				<span class="table__text table__text--body">${titleid}</span>
+			<div class="table__cell table__cell--body table__cell--statustitle">
+				<span class="table__text table__text--body">${statustitle}</span>
 			</div>
 			<div class="table__cell table__cell--body table__cell--fio">
 				<span class="table__text table__text--body">${newfio}</span>
@@ -60,11 +61,11 @@ function templateEditTable(data) {
 }
 
 function templateEditForm(data) {
-	const { fio = '', statusid = '', newpost = '', newfio = '', titleid = '', post = '', photourl = '' } = data;
+	const { fio = '', statusid = '', newpost = '', newfio = '', statustitle = '', post = '', photourl = '' } = data;
 	const fioValue = fio ? fio : 'Выберите пользователя';
 	const fioClassView = fio ? 'select__value--selected' : '';
-	const changeValue = titleid ? titleid : 'Выберите тип изменения';
-	const changeClassView = titleid ? 'select__value--selected' : '';
+	const changeValue = statustitle ? statustitle : 'Выберите тип изменения';
+	const changeClassView = statustitle ? 'select__value--selected' : '';
 	const photoUrl = photourl ? photourl : './images/avatar.svg';
 	const fioView = statusid === 'changeFIO' ? `
 		<div class="form__field" data-name="newfio">
@@ -107,7 +108,7 @@ function templateEditForm(data) {
 			</div>
 			<div class="form__field">
 				<span class="form__name">Тип изменения</span>
-				<div class="form__select form__item select" data-field="titleid" data-type="statusid" data-select="change">
+				<div class="form__select form__item select" data-field="statustitle" data-type="statusid" data-select="change">
 					<header class="select__header">
 						<span class="select__value ${changeClassView}" data-title="${changeValue}" data-change="${statusid}" data-placeholder="Выберите тип изменения">${changeValue}</span>
 					</header>
@@ -208,7 +209,7 @@ function userFromForm(object, page = 'edit') {
 		nameid: '',
 		photofile: '',
 		photourl: '',
-		titleid: '',
+		statustitle: '',
 		statusid: '',
 		newpost: '',
 		newfio: '',
@@ -372,18 +373,18 @@ function clickSelectItem(nameTable = '#editForm') {
 function setDataAttrSelectedItem(title, select, elem) {
 	const statusid = $(elem).find('.select__name').data(select);
 	const fio = select === 'fio' ? title : '';
-	const titleid = select === 'change' ? title : '';
+	const statustitle = select === 'change' ? title : '';
 	const post = $('#editForm .form__item--post').data('value');
 
 	$('#editForm .form__wrap').html('');
 
 	if (select === 'fio') {
 		editObject.fio = fio;
-		editObject.titleid = '';
+		editObject.statustitle = '';
 		editObject.statusid = '';
 		editObject.post = post;
 	} else {
-		editObject.titleid = titleid;
+		editObject.statustitle = statustitle;
 		editObject.statusid = statusid;
 	}
 
@@ -400,14 +401,14 @@ function setDataAttrSelectedItem(title, select, elem) {
 function clearFieldsForm() {
 	const clearObject = {
 		fio: '',
-		titleid: '',
+		statustitle: '',
 		statusid: '',
 		post: ''
 	};
 	editObject = {
 		fio: '',
 		statusid: '',
-		titleid: '',
+		statustitle: '',
 		newpost: '',
 		newfio: '',
 		photourl: ''
@@ -420,10 +421,12 @@ function clearFieldsForm() {
 }
 
 function addEmptySign(nameTable) {
-	$(nameTable).addClass('table__body--empty').html('');
-	$(nameTable).append(`
-		<p class="table__nothing">Новых данных нет</p>
-	`);
+	$(nameTable)
+		.addClass('table__body--empty')
+		.html('')
+		.append(`
+			<p class="table__nothing">Новых данных нет</p>
+		`);
 }
 
 function downloadFoto() {
@@ -525,6 +528,62 @@ function renderForm(id, nameTable = '#editForm') {
 		if (user.id == id) {
 			console.log(user);
 			$(`${nameTable} .form__wrap`).append(templateEditForm(user));
+		}
+	});
+}
+
+function submitIDinBD() {
+	$('#submitEditUser').click(() => {
+		if (!editCollection.size) return;
+
+		const idDepart = $('.main__depart--edit').attr('data-id');
+		const nameDepart = $('.main__depart--edit').attr('data-depart');
+
+		editCollection.forEach((elem) => {
+			elem.nameid = idDepart;
+			elem.department = nameDepart;
+			elem.date = getCurrentDate();
+		});
+
+
+		setEditUsersInDB([...editCollection.values()], idDepart);
+
+		editCollection.clear();
+		addEmptySign('#tableEdit');
+
+		renderTable();
+		$('.main__count--add').text(editCollection.size);
+	});
+}
+
+function getCurrentDate() {
+	const date = new Date();
+	const month = date.getMonth() + 1;
+	const currentDay = date.getDate() < 10 ? `0${date.getDate()}` : date.getDate();
+	const currentMonth = month < 10 ? `0${month}` : month;
+	const currentYear = date.getFullYear() < 10 ? `0${date.getFullYear()}` : date.getFullYear();
+
+	const currentHour = date.getHours() < 10 ? `0${date.getHours()}` : date.getHours();
+	const currentMinute = date.getMinutes() < 10 ? `0${date.getMinutes()}` : date.getMinutes();
+
+	return `${currentDay}-${currentMonth}-${currentYear} ${currentHour}:${currentMinute}`;
+}
+
+function setEditUsersInDB(array, nameid) {
+	$.ajax({
+		url: "./php/add-user-request.php",
+		method: "post",
+		dataType: "html",
+		data: {
+			nameTable: 'request',
+			nameid: nameid,
+			array: array
+		},
+		success: function(data) {
+			console.log('succsess '+data);
+		},
+		error: function(data) {
+			console.log(data);
 		}
 	});
 }
