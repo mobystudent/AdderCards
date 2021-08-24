@@ -9,17 +9,36 @@ datepickerFactory($);
 datepickerRUFactory($);
 
 const removeCollection = new Map();
+let removeObject = {
+	fio: '',
+	statusid: '',
+	statustitle: '',
+	newdepart: '',
+	newnameid: '',
+	date: '',
+	photourl: ''
+};
 
 $(window).on('load', () => {
 	addUser();
 	toggleSelect();
-	datepicker();
-	setDepartInSelect();
 	getAddUsersInDB();
 });
 
 function templateRemoveTable(data) {
-	const { id = '', fio = '', post = '', titleid = '', newdepart = '',  date  = '' } = data;
+	const { id = '', fio = '', post = '', statustitle = '', newdepart = '',  date = '', statusNewdepart = '', statusDate = '' } = data;
+	const newDepartValue = newdepart ? newdepart : '';
+	const dateValue = date ? date : '';
+	const newDepartView = statusNewdepart ? `
+		<div class="table__cell table__cell--body table__cell--department">
+			<span class="table__text table__text--body">${newDepartValue}</span>
+		</div>
+	` : '';
+	const dateView = statusDate ? `
+		<div class="table__cell table__cell--body table__cell--date">
+			<span class="table__text table__text--body">${dateValue}</span>
+		</div>
+	` : '';
 
 	return `
 		<div class="table__row" data-id="${id}">
@@ -29,15 +48,11 @@ function templateRemoveTable(data) {
 			<div class="table__cell table__cell--body table__cell--post">
 				<span class="table__text table__text--body">${post}</span>
 			</div>
-			<div class="table__cell table__cell--body table__cell--titleid">
-				<span class="table__text table__text--body">${titleid}</span>
+			<div class="table__cell table__cell--body table__cell--statustitle">
+				<span class="table__text table__text--body">${statustitle}</span>
 			</div>
-			<div class="table__cell table__cell--body table__cell--depart">
-				<span class="table__text table__text--body">${newdepart}</span>
-			</div>
-			<div class="table__cell table__cell--body table__cell--date">
-				<span class="table__text table__text--body">${date}</span>
-			</div>
+			${newDepartView}
+			${dateView}
 			<div class="table__cell table__cell--body table__cell--edit">
 				<button class="table__btn table__btn--edit" type="button">
 					<svg class="icon icon--edit icon--edit-black">
@@ -57,9 +72,33 @@ function templateRemoveTable(data) {
 }
 
 function templateRemoveForm(data) {
-	const { fio = '', statusid = '', newdepart = '', newnameid = '', titleid = '', date  = '' } = data;
-	const departClassView = statusid == 'changeDepart' ? '' : 'form__field--hide';
-	const dateClassView = statusid == 'remove' ? '' : 'form__field--hide';
+	const { id = '', fio = '', statusid = '', newdepart = '', newnameid = '', statustitle = '', date  = '', post = '', photourl = '' } = data;
+	const fioValue = fio ? fio : 'Выберите пользователя';
+	const fioClassView = fio ? 'select__value--selected' : '';
+	const reasonValue = statustitle ? statustitle : 'Выберите причину удаления';
+	const reasonClassView = statustitle ? 'select__value--selected' : '';
+	const photoUrl = photourl ? photourl : './images/avatar.svg';
+	const newdepartValue = newdepart ? newdepart : 'Выберите подразделение';
+	const newdepartClassView = newdepart ? 'select__value--selected' : '';
+	const departView = statusid === 'changeDepart' ? `
+		<div class="form__field" data-name="depart">
+			<span class="form__name">Новое подразделение</span>
+			<div class="form__select form__item select" data-field="newdepart" data-type="newnameid" data-select="newnameid">
+				<header class="select__header">
+					<span class="select__value ${newdepartClassView}" data-title="${newdepartValue}" data-newnameid="${newnameid}" data-placeholder="Выберите подразделение">${newdepartValue}</span>
+				</header>
+				<ul class="select__list"></ul>
+			</div>
+		</div>
+	` : '';
+	const dateView = statusid === 'remove' ? `
+		<div class="form__field" data-name="date">
+			<label class="form__label">
+				<span class="form__name">Дата завершения действия пропуска</span>
+				<input class="form__input form__item" id="removeDatepicker" data-field="date" name="date" type="text" value="${date}" placeholder="Введите дату завершения действия пропуска" required="required"/>
+			</label>
+		</div>
+	` : '';
 
 	return `
 		<div class="form__fields">
@@ -67,16 +106,16 @@ function templateRemoveForm(data) {
 				<span class="form__name">Пользователь</span>
 				<div class="form__select form__item select" data-field="fio" data-select="fio">
 					<header class="select__header">
-						<span class="select__value select__value--selected" data-title="${fio}" data-fio="fio" data-placeholder="Выберите пользователя">${fio}</span>
+						<span class="select__value ${fioClassView}" data-title="${fioValue}" data-fio="fio" data-placeholder="Выберите пользователя">${fioValue}</span>
 					</header>
 					<ul class="select__list"></ul>
 				</div>
 			</div>
 			<div class="form__field">
 				<span class="form__name">Причина удаления</span>
-				<div class="form__select form__item select" data-field="titleid" data-type="statusid" data-select="reason">
+				<div class="form__select form__item select" data-field="statustitle" data-type="statusid" data-select="reason">
 					<header class="select__header">
-						<span class="select__value select__value--selected" data-title="${titleid}" data-reason="${statusid}" data-placeholder="Выберите причину удаления">${titleid}</span>
+						<span class="select__value ${reasonClassView}" data-title="${reasonValue}" data-reason="${statusid}" data-placeholder="Выберите причину удаления">${reasonValue}</span>
 					</header>
 					<ul class="select__list">
 						<li class="select__item">
@@ -88,26 +127,58 @@ function templateRemoveForm(data) {
 					</ul>
 				</div>
 			</div>
-			<div class="form__field ${departClassView}" data-name="depart">
-				<span class="form__name">Новое подразделение</span>
-				<div class="form__select form__item select" data-field="newdepart" data-type="newnameid" data-select="new-name-id">
-					<header class="select__header">
-						<span class="select__value select__value--selected" data-title="${newdepart}" data-new-name-id="${newnameid}" data-placeholder="Выберите подразделение">${newdepart}</span>
-					</header>
-					<ul class="select__list"></ul>
-				</div>
+			${departView}
+			${dateView}
+			<div class="form__field form__field--hide">
+				<span class="form__item form__item--hide form__item--id" data-field="id" data-value="${id}"></span>
 			</div>
-			<div class="form__field ${dateClassView}" data-name="date">
-				<label class="form__label">
-					<span class="form__name">Дата завершения действия пропуска</span>
-					<input class="form__input form__item" id="removeDatepicker" data-field="date" name="date" type="text" value="${date}" placeholder="Введите дату завершения действия пропуска" required="required"/>
-				</label>
+			<div class="form__field form__field--hide">
+				<span class="form__item form__item--hide form__item--post" data-field="post" data-value="${post}"></span>
 			</div>
 		</div>
 		<div class="form__aside">
 			<div class="form__img">
-				<img class="img img--form img--form-remove" src="./images/avatar.svg" alt="user avatar"/>
+				<img class="img img--form img--form-remove" src="${photoUrl}" alt="user avatar"/>
 			</div>
+		</div>
+	`;
+}
+
+function templateRemoveHeaderTable(data) {
+	const { statusNewdepart = '', statusDate = '' } = data;
+	const newDepartView = statusNewdepart ? `
+		<div class="table__cell table__cell--header table__cell--department">
+			<span class="table__text table__text--header">Новое подразделение</span>
+		</div>
+	` : '';
+	const dateView = statusDate ? `
+		<div class="table__cell table__cell--header table__cell--date">
+			<span class="table__text table__text--header">Дата</span>
+		</div>
+	` : '';
+
+	return `
+		<div class="table__cell table__cell--header table__cell--fio">
+			<span class="table__text table__text--header">Фамилия Имя Отчество</span>
+			<button class="btn btn--sort" type="button" data-direction="true"></button>
+		</div>
+		<div class="table__cell table__cell--header table__cell--post">
+			<span class="table__text table__text--header">Должность</span>
+		</div>
+		<div class="table__cell table__cell--header table__cell--statustitle">
+			<span class="table__text table__text--header">Причина удаления</span>
+		</div>
+		${newDepartView}
+		${dateView}
+		<div class="table__cell table__cell--header table__cell--edit">
+			<svg class="icon icon--edit icon--edit-white">
+				<use class="icon__item" xlink:href="./images/sprite.svg#edit"></use>
+			</svg>
+		</div>
+		<div class="table__cell table__cell--header table__cell--delete">
+			<svg class="icon icon--delete icon--delete-white">
+				<use class="icon__item" xlink:href="./images/sprite.svg#delete"></use>
+			</svg>
 		</div>
 	`;
 }
@@ -142,12 +213,16 @@ function addUser() {
 
 					object[fieldType] = nameId;
 					object[fieldName] = valueItem;
-				} else if (typeSelect == 'new-name-id' && nameId) {
+				} else if (typeSelect == 'newnameid' && nameId) {
 					object[fieldType] = nameId;
 					object[fieldName] = valueItem;
 				} else if (typeSelect == 'fio') {
 					object[fieldName] = valueItem;
 				}
+			} else if ($(item).hasClass('form__item--hide')) {
+				const valueItem = $(item).data('value');
+
+				object[fieldName] = valueItem;
 			}
 
 			return object;
@@ -157,13 +232,13 @@ function addUser() {
 
 		if (validationEmptyFields(userData)) {
 			userFromForm(userData);
-			clearFieldsForm(fields);
-			showFieldsInTable();
+			clearFieldsForm();
+			showFieldsInHeaderTable();
 		}
 	});
 }
 
-function userFromForm(object, page = 'remove') {
+function userFromForm(object, page = 'remove', nameTable = '#removeForm') {
 	const objToCollection = {
 		id: '',
 		fio: '',
@@ -172,24 +247,26 @@ function userFromForm(object, page = 'remove') {
 		nameid: '',
 		photofile: '',
 		photourl: '',
-		titleid: '',
+		statustitle: '',
 		statusid: '',
 		newdepart: '',
 		newnameid: '',
-		department: ''
+		department: '',
+		dateEnd: ''
 	};
 	const indexCollection = removeCollection.size;
 	const itemObject = Object.assign({}, objToCollection);
 	const departName = $(`.main__depart--${page}`).attr('data-depart');
 	const departID = $(`.main__depart--${page}`).attr('data-id');
-	const postUser = $('#removeForm .form__wrap').data('post');
+	const postUser = $(`${nameTable} .form__item--post`).data('value');
+	const idUser = $(`${nameTable} .form__item--id`).data('value');
 
 	for (const itemField in itemObject) {
 		for (const key in object) {
 			if (itemField === key) {
 				itemObject[itemField] = object[key];
 			} else if (itemField === 'id') {
-				itemObject[itemField] = indexCollection;
+				itemObject[itemField] = idUser;
 			} else if (itemField === 'department') {
 				itemObject[itemField] = departName;
 			} else if (itemField === 'nameid') {
@@ -202,6 +279,7 @@ function userFromForm(object, page = 'remove') {
 
 	removeCollection.set(indexCollection, itemObject);
 
+	showTableCells();
 	dataAdd('#tableRemove');
 }
 
@@ -216,10 +294,7 @@ function dataAdd(nameTable) {
 				</div>
 			`);
 	} else {
-		$(nameTable).addClass('table__body--empty').html('');
-		$(nameTable).append(`
-			<p class="table__nothing">Новых данных нет</p>
-		`);
+		addEmptySign(nameTable);
 
 		return;
 	}
@@ -236,7 +311,7 @@ function setDepartInSelect() {
 
 		$('.select[data-field="newdepart"] .select__list').append(`
 			<li class="select__item">
-				<span class="select__name" data-title="${longName}" data-new-name-id="${idName}">${longName}</span>
+				<span class="select__name" data-title="${longName}" data-newnameid="${idName}">${longName}</span>
 			</li>
 		`);
 	});
@@ -244,68 +319,52 @@ function setDepartInSelect() {
 	clickSelectItem();
 }
 
-function showFieldsInTable() {
-	const existDepart = [...removeCollection.values()].every((elem) => elem.newdepart);
-	const existDate = [...removeCollection.values()].every((elem) => elem.date);
-	const wrapDefClasses = 'wrap wrap--content';
+function showFieldsInHeaderTable() {
+	const arrayStatusCells = [
+		{
+			name: 'newdepart',
+			status: 'statusNewdepart'
+		},
+		{
+			name: 'date',
+			status: 'statusDate'
+		}
+	];
+	const statusFields = {
+		statusNewdepart: false,
+		statusDate: false
+	};
 
-	console.log(removeCollection);
-	console.log(existDepart);
-	console.log(existDate);
+	$('.table--remove .table__header').html('');
 
-	if (existDepart && !existDate) {
-		const actionArr = [
-			{
-				name: 'date',
-				action: 'addClass'
-			},
-			{
-				name: 'newdepart',
-				action: 'removeClass'
+	showTableCells();
+
+	[...removeCollection.values()].forEach((elem) => {
+		for (const key in elem) {
+			for (const { name, status } of arrayStatusCells) {
+				if ((key == name) && elem[status]) {
+					statusFields[status] = elem[status];
+				}
 			}
-		];
-		const classAttr = `${wrapDefClasses} wrap--content-remove-transfer`;
-
-		changeViewFieldsInTable(actionArr, classAttr);
-	} else if (!existDepart && existDate) {
-		const actionArr = [
-			{
-				name: 'date',
-				action: 'removeClass'
-			},
-			{
-				name: 'newdepart',
-				action: 'addClass'
-			}
-		];
-		const classAttr = `${wrapDefClasses} wrap--content-remove-item`;
-
-		changeViewFieldsInTable(actionArr, classAttr);
-	} else {
-		const actionArr = [
-			{
-				name: 'date',
-				action: 'removeClass'
-			},
-			{
-				name: 'newdepart',
-				action: 'removeClass'
-			}
-		];
-		const classAttr = `${wrapDefClasses} wrap--content-remove-all`;
-
-		changeViewFieldsInTable(actionArr, classAttr);
-	}
-}
-
-function changeViewFieldsInTable(arr, classAttr) {
-	arr.forEach((elem) => {
-		const { name = '', action = '' } = elem;
-
-		$(`.table--remove .table__cell--${name}`)[action]('table__cell--hide');
+		}
 	});
 
-	$('.main[data-name="remove"]').find('.wrap--content').attr('class', classAttr);
+	const newdepart = [...removeCollection.values()].some((cell) => cell.statusNewdepart) ? '-newdepart' : '';
+	const date = [...removeCollection.values()].some((cell) => cell.statusDate) ? '-date' : '';
+	const className = `wrap wrap--content wrap--content-remove${newdepart}${date}`;
+
+	$('.main[data-name="remove"]').find('.wrap--content').attr('class', className);
+	$('.table--remove .table__header').append(templateRemoveHeaderTable(statusFields));
+}
+
+function showTableCells() {
+	const statusNewdepart = [...removeCollection.values()].some((cell) => cell.newdepart);
+	const statusDate = [...removeCollection.values()].some((cell) => cell.date);
+
+	removeCollection.forEach((elem) => {
+		elem.statusNewdepart = statusNewdepart;
+		elem.statusDate = statusDate;
+	});
 }
 
 function setUsersInSelect(users) {
@@ -324,8 +383,8 @@ function setUsersInSelect(users) {
 	clickSelectItem();
 }
 
-function toggleSelect() {
-	$('#removeForm .select__header').click((e) => {
+function toggleSelect(nameTable = '#removeForm') {
+	$(`${nameTable} .select__header`).click((e) => {
 		$(e.currentTarget).next().slideToggle();
 		$(e.currentTarget).toggleClass('select__header--active');
 	});
@@ -333,83 +392,93 @@ function toggleSelect() {
 	clickSelectItem();
 }
 
-function clickSelectItem() {
-	$('#removeForm .select__item').click((e) => {
+function clickSelectItem(nameTable = '#removeForm') {
+	$(`${nameTable} .select__item`).click((e) => {
 		const title = $(e.currentTarget).find('.select__name').data('title');
 		const id = $(e.currentTarget).find('.select__name').data('id');
 		const select = $(e.currentTarget).parents('.select').data('select');
 
-		$(e.currentTarget).parents('.select').find('.select__value').addClass('select__value--selected').text(title);
-		$(e.currentTarget).parent().slideUp();
-		$(e.currentTarget).parents('.select').find('.select__header').removeClass('select__header--active');
-
 		if (select === 'fio') {
-			getAddUsersInDB(id);
+			getAddUsersInDB(id); // вывести должность в скрытое поле
 		}
 
 		setDataAttrSelectedItem(title, select, e.currentTarget);
+		getAddUsersInDB(); // вывести всех польлзователе в селект
 	});
 }
 
-function setDataAttrSelectedItem(title, select, elem) {
-	const dataType = $(elem).find('.select__name').data(select);
-	let attr = '';
+function setDataAttrSelectedItem(title, select, elem, nameTable = '#removeForm') {
+	const fio = select === 'fio' ? title : '';
+	const post = $(`${nameTable} .form__item--post`).data('value');
+	const id = $(`${nameTable} .form__item--id`).data('value');
+	const statusid = select === 'reason' ? $(elem).find('.select__name').data(select) : '';
+	const statustitle = select === 'reason' ? title : '';
+	const newnameid = select === 'newnameid' ? $(elem).find('.select__name').data(select) : '';
+	const newdepart = select === 'newnameid' ? title : '';
 
-	if (select == 'reason') {
-		if (dataType == 'changeDepart') {
-			$('.main[data-name="remove"] .form__field[data-name="depart"]').removeClass('form__field--hide');
-			$('.main[data-name="remove"] .form__field[data-name="date"]').addClass('form__field--hide');
-			$('.main[data-name="remove"] .form__field[data-name="date"]').find('.form__input').val('');
-		} else {
-			const newDepartFields = $('#removeForm').find('.form__item[data-field="newdepart"]');
+	console.log(post);
+	console.log(id);
 
-			$('.main[data-name="remove"] .form__field[data-name="depart"]').addClass('form__field--hide');
-			$('.main[data-name="remove"] .form__field[data-name="date"]').removeClass('form__field--hide');
+	$(`${nameTable} .form__wrap`).html('');
 
-			const typeSelect = 'newdepart';
-			const placeholder = newDepartFields.find('.select__value').data('placeholder');
-			const attr = {'data-title': 'title', [`data-${typeSelect}`]: typeSelect};
-
-			newDepartFields.find('.select__value--selected')
-				.removeClass('select__value--selected')
-				.attr(attr)
-				.text(placeholder);
-		}
-	}
-
-	if (dataType) {
-		attr = {'data-title': title, [`data-${select}`]: dataType};
+	if (select === 'fio') {
+		removeObject.fio = fio;
+		removeObject.statustitle = '';
+		removeObject.statusid = '';
+		removeObject.newdepart = '';
+		removeObject.newnameid = '';
+		removeObject.post = post;
+		removeObject.id = id;
+	} else if (select === 'reason') {
+		removeObject.statustitle = statustitle;
+		removeObject.statusid = statusid;
 	} else {
-		attr = {'data-title': title};
+		removeObject.newdepart = newdepart;
+		removeObject.newnameid = newnameid;
 	}
 
-	$(elem).parents('.select').find('.select__value--selected').attr(attr);
+	console.log(removeObject);
+
+	$(`${nameTable} .form__wrap`).append(templateRemoveForm(removeObject));
+
+	if (select === 'reason') {
+		setDepartInSelect();
+		datepicker();
+	}
+
+	toggleSelect();
 }
 
-function clearFieldsForm(array) {
-	[...array].forEach((item) => {
-		if ($(item).hasClass('select')) {
-			const typeSelect = $(item).data('select');
-			const placeholder = $(item).find('.select__value').data('placeholder');
-			const attr = {'data-title': 'title', [`data-${typeSelect}`]: typeSelect};
+function clearFieldsForm(nameTable = '#removeForm') {
+	const clearObject = {
+		id: '',
+		fio: '',
+		statustitle: '',
+		statusid: '',
+		post: ''
+	};
+	removeObject = {
+		fio: '',
+		statusid: '',
+		statustitle: '',
+		newpost: '',
+		newfio: '',
+		photourl: ''
+	};
 
-			if (typeSelect == 'new-name-id') {
-				$(item).parents('.form__field').addClass('form__field--hide');
-			}
+	$(`${nameTable} .form__wrap`).html('').append(templateRemoveForm(clearObject));
 
-			$(item).find('.select__value--selected')
-				.removeClass('select__value--selected')
-				.attr(attr)
-				.text(placeholder);
-		} else {
-			$(item).val('');
-		}
-	});
+	toggleSelect();
+	getAddUsersInDB();
+}
 
-	$('.form__field[data-name="date"]').addClass('form__field--hide');
-	$('#removeForm .form__wrap').attr('data-post', '');
-	$('.img--form').attr('src', './images/avatar.svg');
-	$('.form__field--new-post, .form__field--new-fio, .form__field--depart').hide();
+function addEmptySign(nameTable) {
+	$(nameTable)
+		.addClass('table__body--empty')
+		.html('')
+		.append(`
+			<p class="table__nothing">Новых данных нет</p>
+		`);
 }
 
 function datepicker() {
@@ -425,8 +494,8 @@ function datepicker() {
 
 function showUserAvatar(photourl) {
 	console.log(photourl);
-	const reader = new FileReader();
-	reader.readAsDataURL(photourl);
+	// const reader = new FileReader();
+	// reader.readAsDataURL(photourl);
 	// reader.onloadend = () => {
 	// 	const base64data = reader.result;
 	// 	console.log(base64data);
@@ -445,13 +514,17 @@ function validationEmptyFields(fields) {
 	return valid;
 }
 
-function deleteUser() {
+function deleteUser(nameTable = '#tableRemove') {
 	$('.table__content').click((e) => {
 		if ($(e.target).parents('.table__btn--delete').length || $(e.target).hasClass('table__btn--delete')) {
 			const idRemove = $(e.target).closest('.table__row').data('id');
 
 			removeCollection.delete(idRemove);
 			renderTable();
+		}
+
+		if (removeCollection.size == 0) {
+			addEmptySign(nameTable);
 		}
 
 		$('.main__count--remove').text(removeCollection.size);
@@ -476,17 +549,17 @@ function editUser() {
 	});
 }
 
-function renderForm(id) {
-	$('#removeForm .form__wrap').html('');
+function renderForm(id, nameTable = '#removeForm') {
+	$(`${nameTable} .form__wrap`).html('');
 
 	removeCollection.forEach((user) => {
 		if (user.id == id) {
-			$('#removeForm .form__wrap').append(templateRemoveForm(user));
+			$(`${nameTable} .form__wrap`).append(templateRemoveForm(user));
 		}
 	});
 }
 
-function getAddUsersInDB(id = '') {
+function getAddUsersInDB(id = '', nameTable = '#removeForm') {
 	const idDepart = $('.main__depart--remove').attr('data-id');
 
 	$.ajax({
@@ -497,12 +570,14 @@ function getAddUsersInDB(id = '') {
 			id: id,
 			nameid: idDepart
 		},
+		async: false,
 		success: function(data) {
 			if (id) {
-				const { post  = '', photourl  = '' } = JSON.parse(data);
+				const { id = '', post  = '', photourl  = '' } = JSON.parse(data);
 
 				showUserAvatar(photourl);
-				$('#removeForm .form__wrap').attr('data-post', post);
+				$(`${nameTable} .form__item--post`).attr('data-value', post);
+				$(`${nameTable} .form__item--id`).attr('data-value', id);
 			} else {
 				setUsersInSelect(JSON.parse(data));
 			}

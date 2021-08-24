@@ -262,7 +262,7 @@ function addUser() {
 	});
 }
 
-function userFromForm(object, page = 'edit') {
+function userFromForm(object, page = 'edit', nameTable = '#editForm') {
 	const objToCollection = {
 		id: '',
 		fio: '',
@@ -281,8 +281,8 @@ function userFromForm(object, page = 'edit') {
 	const itemObject = Object.assign({}, objToCollection);
 	const departName = $(`.main__depart--${page}`).attr('data-depart');
 	const departID = $(`.main__depart--${page}`).attr('data-id');
-	const postUser = $('#editForm .form__item--post').data('value');
-	const idUser = $('#editForm .form__item--id').data('value');
+	const postUser = $(`${nameTable} .form__item--post`).data('value');
+	const idUser = $(`${nameTable} .form__item--id`).data('value');
 
 	for (const itemField in itemObject) {
 		for (const key in object) {
@@ -424,14 +424,14 @@ function clickSelectItem(nameTable = '#editForm') {
 	});
 }
 
-function setDataAttrSelectedItem(title, select, elem) {
+function setDataAttrSelectedItem(title, select, elem, nameTable = '#editForm') {
 	const statusid = $(elem).find('.select__name').data(select);
 	const fio = select === 'fio' ? title : '';
 	const statustitle = select === 'change' ? title : '';
-	const post = $('#editForm .form__item--post').data('value');
-	const id = $('#editForm .form__item--id').data('value');
+	const post = $(`${nameTable} .form__item--post`).data('value');
+	const id = $(`${nameTable} .form__item--id`).data('value');
 
-	$('#editForm .form__wrap').html('');
+	$(`${nameTable} .form__wrap`).html('');
 
 	if (select === 'fio') {
 		editObject.fio = fio;
@@ -444,7 +444,7 @@ function setDataAttrSelectedItem(title, select, elem) {
 		editObject.statusid = statusid;
 	}
 
-	$('#editForm .form__wrap').append(templateEditForm(editObject));
+	$(`${nameTable} .form__wrap`).append(templateEditForm(editObject));
 
 	if (statusid === 'changeImage') {
 		downloadFoto();
@@ -452,8 +452,9 @@ function setDataAttrSelectedItem(title, select, elem) {
 	toggleSelect();
 }
 
-function clearFieldsForm() {
+function clearFieldsForm(nameTable = '#editForm') {
 	const clearObject = {
+		id: '',
 		fio: '',
 		statustitle: '',
 		statusid: '',
@@ -468,7 +469,7 @@ function clearFieldsForm() {
 		photourl: ''
 	};
 
-	$('#editForm .form__wrap').html('').append(templateEditForm(clearObject));
+	$(`${nameTable} .form__wrap`).html('').append(templateEditForm(clearObject));
 
 	toggleSelect();
 	getAddUsersInDB();
@@ -542,7 +543,7 @@ function validationEmptyFields(fields) {
 	return valid;
 }
 
-function deleteUser() {
+function deleteUser(nameTable = '#tableEdit') {
 	$('.table__content').click((e) => {
 		if ($(e.target).parents('.table__btn--delete').length || $(e.target).hasClass('table__btn--delete')) {
 			const idRemove = $(e.target).closest('.table__row').data('id');
@@ -552,7 +553,7 @@ function deleteUser() {
 		}
 
 		if (editCollection.size == 0) {
-			addEmptySign('#tableEdit');
+			addEmptySign(nameTable);
 		}
 
 		$('.main__count--edit').text(editCollection.size);
@@ -662,7 +663,7 @@ function changeEditUsersInDB(array, nameid, nameTable) {
 	});
 }
 
-function getAddUsersInDB(id = '') {
+function getAddUsersInDB(id = '', nameTable = '#editForm') {
 	const idDepart = $('.main__depart--edit').attr('data-id');
 
 	$.ajax({
@@ -679,8 +680,8 @@ function getAddUsersInDB(id = '') {
 				const { id = '', post  = '', photourl  = '' } = JSON.parse(data);
 
 				showUserAvatar(photourl);
-				$('#editForm .form__item--post').attr('data-value', post);
-				$('#editForm .form__item--id').attr('data-value', id);
+				$(`${nameTable} .form__item--post`).attr('data-value', post);
+				$(`${nameTable} .form__item--id`).attr('data-value', id);
 			} else {
 				setUsersInSelect(JSON.parse(data));
 			}

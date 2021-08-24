@@ -33,17 +33,21 @@ main.main(data-name="remove")
 					.form__field.form__field--hide(data-name="depart")
 						span.form__name
 							| Новое подразделение
-						.form__select.form__item.select(data-field="newdepart" data-type="newnameid" data-select="new-name-id")
+						.form__select.form__item.select(data-field="newdepart" data-type="newnameid" data-select="newnameid")
 							header.select__header
-								span.select__value(data-title="title" data-new-name-id="new-name-id" data-placeholder="Выберите подразделение")
+								span.select__value(data-title="title" data-newnameid="newnameid" data-placeholder="Выберите подразделение")
 									| Выберите подразделение
 							ul.select__list
-								
 					.form__field.form__field--hide(data-name="date")
 						label.form__label
 							span.form__name
 								| Дата завершения действия пропуска
 							input.form__input.form__item#removeDatepicker(data-field="date" name="date" type="text" placeholder="Введите дату завершения действия пропуска" required)
+					.form__field.form__field--hide
+						span.form__item.form__item--hide.form__item--id(data-field="id")
+					.form__field.form__field--hide
+						span.form__item.form__item--hide.form__item--post(data-field="post")
+							
 				.form__aside
 					.form__img
 						img.img.img--form.img--form-remove(src="./images/avatar.svg" alt="user avatar")
@@ -55,7 +59,7 @@ main.main(data-name="remove")
 			p.info__item.info__item--warn.info__item--fields
 				| Предупреждение! Не все поля заполненны.
 
-		.wrap.wrap--content.wrap--content-remove-item
+		.wrap.wrap--content.wrap--content-remove
 			.main__cards.main__cards--main
 				p.main__count-wrap.main__count-wrap--depart
 					span.main__count-text
@@ -73,15 +77,15 @@ main.main(data-name="remove")
 						.table__cell.table__cell--header.table__cell--post
 							span.table__text.table__text--header
 								| Должность
-						.table__cell.table__cell--header.table__cell--titleid
+						.table__cell.table__cell--header.table__cell--statustitle
 							span.table__text.table__text--header
 								| Причина удаления
-						.table__cell.table__cell--header.table__cell--newdepart.table__cell--hide
-							span.table__text.table__text--header
-								| Новое подразделение
-						.table__cell.table__cell--header.table__cell--date
-							span.table__text.table__text--header
-								| Дата
+						//- .table__cell.table__cell--header.table__cell--newdepart.table__cell--hide
+						//- 	span.table__text.table__text--header
+						//- 		| Новое подразделение
+						//- .table__cell.table__cell--header.table__cell--date.table__cell--hide
+						//- 	span.table__text.table__text--header
+						//- 		| Дата
 						.table__cell.table__cell--header.table__cell--edit
 							svg.icon.icon--edit.icon--edit-white
 								use.icon__item(xlink:href="./images/sprite.svg#edit")
