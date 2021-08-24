@@ -24,7 +24,6 @@ function templateEditTable(data) {
 	const newFioValue = newfio ? newfio : '';
 	const newPostValue = newpost ? newpost : '';
 	const photofileValue = photofile ? photofile : '';
-	console.log(statusNewfio);
 	const newFioView = statusNewfio ? `
 		<div class="table__cell table__cell--body table__cell--fio">
 			<span class="table__text table__text--body">${newFioValue}</span>
@@ -74,7 +73,7 @@ function templateEditTable(data) {
 }
 
 function templateEditForm(data) {
-	const { fio = '', statusid = '', newpost = '', newfio = '', statustitle = '', post = '', photourl = '' } = data;
+	const { id = '', fio = '', statusid = '', newpost = '', newfio = '', statustitle = '', post = '', photourl = '' } = data;
 	const fioValue = fio ? fio : 'Выберите пользователя';
 	const fioClassView = fio ? 'select__value--selected' : '';
 	const changeValue = statustitle ? statustitle : 'Выберите тип изменения';
@@ -147,7 +146,10 @@ function templateEditForm(data) {
 			${postView}
 			${fioView}
 			<div class="form__field form__field--hide">
-				<span class="form__item form__item--post" data-field="post" data-value="${post}"></span>
+				<span class="form__item form__item--hide form__item--id" data-field="id" data-value="${id}"></span>
+			</div>
+			<div class="form__field form__field--hide">
+				<span class="form__item form__item--hide form__item--post" data-field="post" data-value="${post}"></span>
 			</div>
 		</div>
 		<div class="form__aside">
@@ -226,9 +228,12 @@ function addUser() {
 				const fieldType = $(item).data('type');
 				const valueItem = $(item).find('.select__value--selected').attr('data-title');
 
-				object[fieldType] = nameId;
+				if (typeSelect === 'change') {
+					object[fieldType] = nameId;
+				}
+
 				object[fieldName] = valueItem;
-			} else if ($(item).hasClass('form__item--post')) {
+			} else if ($(item).hasClass('form__item--hide')) {
 				const valueItem = $(item).data('value');
 
 				object[fieldName] = valueItem;
@@ -277,13 +282,14 @@ function userFromForm(object, page = 'edit') {
 	const departName = $(`.main__depart--${page}`).attr('data-depart');
 	const departID = $(`.main__depart--${page}`).attr('data-id');
 	const postUser = $('#editForm .form__item--post').data('value');
+	const idUser = $('#editForm .form__item--id').data('value');
 
 	for (const itemField in itemObject) {
 		for (const key in object) {
 			if (itemField === key) {
 				itemObject[itemField] = object[key];
 			} else if (itemField === 'id') {
-				itemObject[itemField] = indexCollection;
+				itemObject[itemField] = idUser;
 			} else if (itemField === 'department') {
 				itemObject[itemField] = departName;
 			} else if (itemField === 'nameid') {
@@ -423,6 +429,7 @@ function setDataAttrSelectedItem(title, select, elem) {
 	const fio = select === 'fio' ? title : '';
 	const statustitle = select === 'change' ? title : '';
 	const post = $('#editForm .form__item--post').data('value');
+	const id = $('#editForm .form__item--id').data('value');
 
 	$('#editForm .form__wrap').html('');
 
@@ -431,12 +438,11 @@ function setDataAttrSelectedItem(title, select, elem) {
 		editObject.statustitle = '';
 		editObject.statusid = '';
 		editObject.post = post;
+		editObject.id = id;
 	} else {
 		editObject.statustitle = statustitle;
 		editObject.statusid = statusid;
 	}
-
-	console.warn(editObject);
 
 	$('#editForm .form__wrap').append(templateEditForm(editObject));
 
@@ -513,7 +519,7 @@ function validationEmptyFields(fields) {
 		if (key == 'newfio' && fields[key]) {
 			const countWords = fields[key].trim().split(' ');
 
-			correctName = fields[key].match(/[^а-яА-ЯiIъїё.'-\s]/g) ? 'show' : 'hide';
+			correctName = fields[key].match(/[^а-яА-ЯiIъїЁё.'-\s]/g) ? 'show' : 'hide';
 			countNameWords = (countWords.length < 2) ? 'show' : 'hide';
 		} else if (key == 'newpost' && fields[key]) {
 			correctPost = fields[key].match(/[^а-яА-ЯiIъїё0-9.'-\s]/g) ? 'show' : 'hide';
@@ -592,8 +598,29 @@ function submitIDinBD() {
 			elem.date = getCurrentDate();
 		});
 
+		const changeCardArray = [...editCollection.values()].filter((elem) => elem.statusid === 'changeCard');
+		const changeQRArray = [...editCollection.values()].filter((elem) => elem.statusid === 'changeQR');
+		const changeFIOArray = [...editCollection.values()].filter((elem) => elem.statusid === 'changeFIO');
+		const changePostArray = [...editCollection.values()].filter((elem) => elem.statusid === 'changePost');
+		// const changeImageArray = [...editCollection.values()].filter((elem) => elem.statusid === 'changeImage');
 
-		setEditUsersInDB([...editCollection.values()], idDepart);
+		console.log(changeFIOArray);
+
+		if (changeCardArray) {
+			changeEditUsersInDB(changeCardArray, idDepart, 'permission');
+		}
+		if (changeQRArray) {
+			changeEditUsersInDB(changeQRArray, idDepart, 'permission');
+		}
+		if (changeFIOArray) {
+			changeEditUsersInDB(changeFIOArray, idDepart, 'add');
+		}
+		if (changePostArray) {
+			changeEditUsersInDB(changePostArray, idDepart, 'add');
+		}
+		// if (changeImageArray) {
+		// 	changeEditUsersInDB(changePostArray, idDepart, 'add');
+		// }
 
 		editCollection.clear();
 		addEmptySign('#tableEdit');
@@ -616,13 +643,13 @@ function getCurrentDate() {
 	return `${currentDay}-${currentMonth}-${currentYear} ${currentHour}:${currentMinute}`;
 }
 
-function setEditUsersInDB(array, nameid) {
+function changeEditUsersInDB(array, nameid, nameTable) {
 	$.ajax({
-		url: "./php/add-user-request.php",
+		url: "./php/change-user-request.php",
 		method: "post",
 		dataType: "html",
 		data: {
-			nameTable: 'request',
+			nameTable: nameTable,
 			nameid: nameid,
 			array: array
 		},
@@ -649,10 +676,11 @@ function getAddUsersInDB(id = '') {
 		async: false,
 		success: function(data) {
 			if (id) {
-				const { post  = '', photourl  = '' } = JSON.parse(data);
+				const { id = '', post  = '', photourl  = '' } = JSON.parse(data);
 
 				showUserAvatar(photourl);
 				$('#editForm .form__item--post').attr('data-value', post);
+				$('#editForm .form__item--id').attr('data-value', id);
 			} else {
 				setUsersInSelect(JSON.parse(data));
 			}

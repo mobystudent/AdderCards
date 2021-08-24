@@ -32,24 +32,26 @@ main.main(data-name="edit")
 									li.select__item
 										span.select__name(data-title=arrChanges[i] data-change=arrTypeChanges[i])
 											| #{arrChanges[i]}
-					.form__field.form__field--hide(data-name="newpost")
+					//- .form__field.form__field--hide(data-name="newpost")
 						label.form__label
 							span.form__name
 								| Новая должность
 							input.form__input.form__item(data-field="newpost" name="newpost" type="text" placeholder="Введите новую должность" required)
-					.form__field.form__field--hide(data-name="newfio")
+					//- .form__field.form__field--hide(data-name="newfio")
 						label.form__label
 							span.form__name
 								| Новое ФИО
 							input.form__input.form__item(data-field="newfio" name="newfio" type="text" placeholder="Введите новое ФИО" required)
 					.form__field.form__field--hide
-						span.form__item.form__item--post(data-field="post")
+						span.form__item.form__item--hide.form__item--id(data-field="id")
+					.form__field.form__field--hide
+						span.form__item.form__item--hide.form__item--post(data-field="post")
 								
 				.form__aside
 					.form__img
 						img.img.img--form.img--form-edit(src="./images/avatar.svg" alt="user avatar")
-					.form__field.form__field--hide(data-name="newimage")
-						input.form__input.form__input--file.form__item#editFile(data-field="photofile" data-url="photourl" name="photofile" type="file" required)
+					//- .form__field.form__field--hide(data-name="newimage")
+						input.form__input.form__input--file.form__item#editFile(data-field="newphotofile" data-url="newphotourl" name="photofile" type="file" required)
 						label.form__download(for="editFile")
 							svg.icon.icon--download
 								use(xlink:href="./images/sprite.svg#download")
@@ -111,11 +113,7 @@ main.main(data-name="edit")
 					.table__body#tableEdit
 						p.table__nothing
 							| Не добавленно ни одного пользователя
-	
-		.info
-			p.info__item.info__item--warn.info__item--fields
-				| Предупреждение! Не все поля заполненны.
-	
+		
 		.main__btns
 			button.btn#submitEditUser(type="button")
 				| Подтвердить и отправить

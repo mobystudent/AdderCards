@@ -350,7 +350,7 @@ function validationEmptyFields(fields) {
 		if (key == 'fio' && fields[key]) {
 			const countWords = fields[key].trim().split(' ');
 
-			correctName = fields[key].match(/[^а-яА-ЯiIъїё.'-\s]/g) ? 'show' : 'hide';
+			correctName = fields[key].match(/[^а-яА-ЯiIъїЁё.'-\s]/g) ? 'show' : 'hide';
 			countNameWords = (countWords.length < 2) ? 'show' : 'hide';
 		} else if (key == 'photofile' && fields[key]) {
 			const extenName = fields[key].lastIndexOf('.');

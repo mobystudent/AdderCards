@@ -8,7 +8,7 @@
 	$nameDepart = 'add_depart_'.$nameid;
 
 	if ($id) {
-		if($resultSet = $mysqli->query("SELECT photourl, post FROM `$nameDepart` WHERE id = '$id'")) {
+		if($resultSet = $mysqli->query("SELECT id, post, photourl FROM `$nameDepart` WHERE id = '$id'")) {
 			$data = $resultSet->fetch_assoc();
 		} else {
 			echo $mysqli->error;
