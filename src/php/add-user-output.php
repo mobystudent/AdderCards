@@ -3,9 +3,9 @@
 	$mysqli = new mysqli("localhost", "root", "root", "security-system");
 	$mysqli->query("SET NAMES 'utf8'");
 
-	$nameid = strtolower($_POST['nameid']);
+	$idDepart = strtolower($_POST['idDepart']);
 	$id = $_POST['id'];
-	$nameDepart = 'add_depart_'.$nameid;
+	$nameDepart = 'add_depart_'.$idDepart;
 
 	if ($id) {
 		if($resultSet = $mysqli->query("SELECT id, post, photourl FROM `$nameDepart` WHERE id = '$id'")) {

@@ -608,19 +608,19 @@ function submitIDinBD() {
 		console.log(changeFIOArray);
 
 		if (changeCardArray) {
-			changeEditUsersInDB(changeCardArray, idDepart, 'permission', 'edit');
+			changeEditUsersInDB(changeCardArray, 'permission', 'edit');
 		}
 		if (changeQRArray) {
-			changeEditUsersInDB(changeQRArray, idDepart, 'permission', 'edit');
+			changeEditUsersInDB(changeQRArray, 'permission', 'edit');
 		}
 		if (changeFIOArray) {
-			changeEditUsersInDB(changeFIOArray, idDepart, 'add', 'edit');
+			changeEditUsersInDB(changeFIOArray, 'add', 'edit');
 		}
 		if (changePostArray) {
-			changeEditUsersInDB(changePostArray, idDepart, 'add', 'edit');
+			changeEditUsersInDB(changePostArray, 'add', 'edit');
 		}
 		// if (changeImageArray) {
-		// 	changeEditUsersInDB(changePostArray, idDepart, 'add');
+		// 	changeEditUsersInDB(changePostArray, 'add');
 		// }
 
 		editCollection.clear();
@@ -644,7 +644,7 @@ function getCurrentDate() {
 	return `${currentDay}-${currentMonth}-${currentYear} ${currentHour}:${currentMinute}`;
 }
 
-function changeEditUsersInDB(array, nameid, nameTable, action) {
+function changeEditUsersInDB(array, nameTable, action) {
 	$.ajax({
 		url: "./php/change-user-request.php",
 		method: "post",
@@ -652,7 +652,6 @@ function changeEditUsersInDB(array, nameid, nameTable, action) {
 		data: {
 			action: action,
 			nameTable: nameTable,
-			nameid: nameid,
 			array: array
 		},
 		success: function(data) {
@@ -673,7 +672,7 @@ function getAddUsersInDB(id = '', nameTable = '#editForm') {
 		dataType: "html",
 		data: {
 			id: id,
-			nameid: idDepart
+			idDepart: idDepart
 		},
 		async: false,
 		success: function(data) {

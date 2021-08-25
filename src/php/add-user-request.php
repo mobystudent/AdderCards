@@ -5,12 +5,8 @@
 
 	$nameTable = $_POST['nameTable'];
 	$array = $_POST['array'];
-	$nameid = strtolower($_POST['nameid']);
-	$nameDepart = 'add_depart_'.$nameid;
 
 	var_dump($array);
-	// echo($nameid);
-	// echo($nameDepart);
 
 	if ($nameTable === 'request') {
 		foreach ($array as $item) {

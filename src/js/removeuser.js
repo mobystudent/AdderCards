@@ -574,25 +574,18 @@ function submitIDinBD() {
 
 
 		const removeArray = [...removeCollection.values()].filter((elem) => elem.statusid === 'remove');
-		// const changeQRArray = [...editCollection.values()].filter((elem) => elem.statusid === 'changeQR');
-
-		console.log(removeArray);
+		const changeDepartArray = [...removeCollection.values()].filter((elem) => elem.statusid === 'changeDepart');
 
 		if (removeArray) {
-			changeEditUsersInDB(removeArray, idDepart, 'add' , 'remove');
+			changeEditUsersInDB(removeArray, 'add' , 'remove');
 		}
-		// if (changeQRArray) {
-		// 	changeEditUsersInDB(changeQRArray, idDepart, 'permission');
-		// }
-		// if (changeFIOArray) {
-		// 	changeEditUsersInDB(changeFIOArray, idDepart, 'add');
-		// }
-		// if (changePostArray) {
-		// 	changeEditUsersInDB(changePostArray, idDepart, 'add');
-		// }
-		// if (changeImageArray) {
-		// 	changeEditUsersInDB(changePostArray, idDepart, 'add');
-		// }
+		if (changeDepartArray) {
+			// const idDepartArray = [...removeCollection.values()].map((elem) => elem.newnameid);
+			//
+			// console.log(idDepartArray);
+
+			changeEditUsersInDB(changeDepartArray, 'add', 'transfer');
+		}
 
 		removeCollection.clear();
 		addEmptySign('#tableRemove');
@@ -615,7 +608,7 @@ function getCurrentDate() {
 	return `${currentDay}-${currentMonth}-${currentYear} ${currentHour}:${currentMinute}`;
 }
 
-function changeEditUsersInDB(array, nameid, nameTable, action) {
+function changeEditUsersInDB(array, nameTable, action) {
 	$.ajax({
 		url: "./php/change-user-request.php",
 		method: "post",
@@ -623,7 +616,6 @@ function changeEditUsersInDB(array, nameid, nameTable, action) {
 		data: {
 			action: action,
 			nameTable: nameTable,
-			nameid: nameid,
 			array: array
 		},
 		success: function(data) {
@@ -644,7 +636,7 @@ function getAddUsersInDB(id = '', nameTable = '#removeForm') {
 		dataType: "html",
 		data: {
 			id: id,
-			nameid: idDepart
+			idDepart: idDepart
 		},
 		async: false,
 		success: function(data) {

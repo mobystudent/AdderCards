@@ -6,12 +6,8 @@
 	$action = $_POST['action'];
 	$nameTable = $_POST['nameTable'];
 	$array = $_POST['array'];
-	$nameid = strtolower($_POST['nameid']);
-	$nameDepart = 'add_depart_'.$nameid;
 
 	var_dump($array);
-	// echo($nameid);
-	// echo($nameDepart);
 
 	if (($nameTable === 'add') && ($action === 'edit')) {
 		foreach ($array as $item) {
@@ -37,6 +33,9 @@
 				// 	$newpost = $item['newphotourl'] ? $value : $item['photourl'];
 				// }
 			}
+
+			$idDepart = strtolower($item['nameid']);
+			$nameDepart = 'add_depart_'.$idDepart;
 
 			// if($mysqli->query("UPDATE `$nameDepart` SET fio = '$newfio', post = '$newpost', newphotofile = '$newphotofile', newphotourl = '$newphotourl' WHERE id = $idUser")) {
 			if($mysqli->query("UPDATE `$nameDepart` SET fio = '$newfio', post = '$newpost' WHERE id = $id")) {
@@ -80,10 +79,54 @@
 				if ($key === 'statustitle') $statustitle = $value;
 				if ($key === 'date') $date = $value;
 				if ($key === 'id') $id = $value;
+
 			}
+
+			$idDepart = strtolower($item['nameid']);
+			$nameDepart = 'add_depart_'.$idDepart;
 
 			if($mysqli->query("DELETE FROM `$nameDepart` WHERE id = $id")) {
 				echo('Success delete in BD '.$nameDepart);
+			} else {
+				echo $mysqli->error;
+			}
+
+			if ($mysqli->query("INSERT INTO request (fio, department, nameid, post, statusid, statustitle, date) VALUES ('$fio', '$department', '$nameid', '$post', '$statusid', '$statustitle', '$date')")) {
+				echo('Success add in BD request');
+			} else {
+				echo $mysqli->error;
+			}
+		}
+	} else if (($nameTable === 'add') && ($action === 'transfer')) {
+		foreach ($array as $item) {
+			foreach ($item as $key => $value) {
+				if ($key === 'fio') $fio = $value;
+				if ($key === 'department') $department = $value;
+				if ($key === 'nameid') $nameid = $value;
+				if ($key === 'post') $post = $value;
+				if ($key === 'statusid') $statusid = $value;
+				if ($key === 'statustitle') $statustitle = $value;
+				if ($key === 'date') $date = $value;
+				if ($key === 'id') $id = $value;
+				if ($key === 'photofile') $photofile = $value;
+				if ($key === 'photourl') $photourl = $value;
+				if ($key === 'newnameid') $newnameid = $value;
+				if ($key === 'newdepart') $newdepart = $value;
+			}
+
+			$idDepart = strtolower($item['nameid']);
+			$nameDepart = 'add_depart_'.$idDepart;
+			$idNewDepart = strtolower($item['newnameid']);
+			$nameNewDepart = 'add_depart_'.$idNewDepart;
+
+			if($mysqli->query("DELETE FROM `$nameDepart` WHERE id = $id")) {
+				echo('Success delete in BD '.$nameDepart);
+			} else {
+				echo $mysqli->error;
+			}
+
+			if ($mysqli->query("INSERT INTO `$nameNewDepart` (fio, department, nameid, post, photofile, photourl, statusid, statustitle, date) VALUES ('$fio', '$newdepart', '$newnameid', '$post', '$photofile', '$photourl', '$statusid', '$statustitle', '$date')")) {
+				echo('Success add in BD '.$nameNewDepart);
 			} else {
 				echo $mysqli->error;
 			}
