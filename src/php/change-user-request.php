@@ -3,6 +3,7 @@
 	$mysqli = new mysqli("localhost", "root", "root", "security-system");
 	$mysqli->query("SET NAMES 'utf8'");
 
+	$action = $_POST['action'];
 	$nameTable = $_POST['nameTable'];
 	$array = $_POST['array'];
 	$nameid = strtolower($_POST['nameid']);
@@ -12,7 +13,7 @@
 	// echo($nameid);
 	// echo($nameDepart);
 
-	if ($nameTable === 'add') {
+	if (($nameTable === 'add') && ($action === 'edit')) {
 		foreach ($array as $item) {
 			foreach ($item as $key => $value) {
 				if ($key === 'fio') $fio = $value;
@@ -45,12 +46,12 @@
 			}
 
 			if ($mysqli->query("INSERT INTO request (fio, department, nameid, post, statusid, statustitle, date) VALUES ('$fio', '$department', '$nameid', '$post', '$statusid', '$statustitle', '$date')")) {
-				echo('Success add in BD '.$nameDepart);
+				echo('Success add in BD request');
 			} else {
 				echo $mysqli->error;
 			}
 		}
-	} else if ($nameTable === 'permission') {
+	} else if (($nameTable === 'permission') && ($action === 'edit')) {
 		foreach ($array as $item) {
 			foreach ($item as $key => $value) {
 				if ($key === 'fio') $fio = $value;
@@ -64,6 +65,31 @@
 
 			if ($mysqli->query("INSERT INTO permission (fio, department, photofile, nameid, post, statusid, statustitle) VALUES ('$fio', '$department', '$photofile', '$nameid', '$post', '$statusid', '$statustitle')")) {
 				echo('Success add in BD '.$nameDepart);
+			} else {
+				echo $mysqli->error;
+			}
+		}
+	} else if (($nameTable === 'add') && ($action === 'remove')) {
+		foreach ($array as $item) {
+			foreach ($item as $key => $value) {
+				if ($key === 'fio') $fio = $value;
+				if ($key === 'department') $department = $value;
+				if ($key === 'nameid') $nameid = $value;
+				if ($key === 'post') $post = $value;
+				if ($key === 'statusid') $statusid = $value;
+				if ($key === 'statustitle') $statustitle = $value;
+				if ($key === 'date') $date = $value;
+				if ($key === 'id') $id = $value;
+			}
+
+			if($mysqli->query("DELETE FROM `$nameDepart` WHERE id = $id")) {
+				echo('Success delete in BD '.$nameDepart);
+			} else {
+				echo $mysqli->error;
+			}
+
+			if ($mysqli->query("INSERT INTO request (fio, department, nameid, post, statusid, statustitle, date) VALUES ('$fio', '$department', '$nameid', '$post', '$statusid', '$statustitle', '$date')")) {
+				echo('Success add in BD request');
 			} else {
 				echo $mysqli->error;
 			}

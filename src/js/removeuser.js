@@ -23,6 +23,7 @@ $(window).on('load', () => {
 	addUser();
 	toggleSelect();
 	getAddUsersInDB();
+	submitIDinBD();
 });
 
 function templateRemoveTable(data) {
@@ -416,9 +417,6 @@ function setDataAttrSelectedItem(title, select, elem, nameTable = '#removeForm')
 	const newnameid = select === 'newnameid' ? $(elem).find('.select__name').data(select) : '';
 	const newdepart = select === 'newnameid' ? title : '';
 
-	console.log(post);
-	console.log(id);
-
 	$(`${nameTable} .form__wrap`).html('');
 
 	if (select === 'fio') {
@@ -432,6 +430,8 @@ function setDataAttrSelectedItem(title, select, elem, nameTable = '#removeForm')
 	} else if (select === 'reason') {
 		removeObject.statustitle = statustitle;
 		removeObject.statusid = statusid;
+		removeObject.newdepart = '';
+		removeObject.newnameid = '';
 	} else {
 		removeObject.newdepart = newdepart;
 		removeObject.newnameid = newnameid;
@@ -555,6 +555,82 @@ function renderForm(id, nameTable = '#removeForm') {
 	removeCollection.forEach((user) => {
 		if (user.id == id) {
 			$(`${nameTable} .form__wrap`).append(templateRemoveForm(user));
+		}
+	});
+}
+
+function submitIDinBD() {
+	$('#submitRemoveUser').click(() => {
+		if (!removeCollection.size) return;
+
+		const idDepart = $('.main__depart--edit').attr('data-id');
+		const nameDepart = $('.main__depart--edit').attr('data-depart');
+
+		removeCollection.forEach((elem) => {
+			elem.nameid = idDepart;
+			elem.department = nameDepart;
+			elem.date = getCurrentDate();
+		});
+
+
+		const removeArray = [...removeCollection.values()].filter((elem) => elem.statusid === 'remove');
+		// const changeQRArray = [...editCollection.values()].filter((elem) => elem.statusid === 'changeQR');
+
+		console.log(removeArray);
+
+		if (removeArray) {
+			changeEditUsersInDB(removeArray, idDepart, 'add' , 'remove');
+		}
+		// if (changeQRArray) {
+		// 	changeEditUsersInDB(changeQRArray, idDepart, 'permission');
+		// }
+		// if (changeFIOArray) {
+		// 	changeEditUsersInDB(changeFIOArray, idDepart, 'add');
+		// }
+		// if (changePostArray) {
+		// 	changeEditUsersInDB(changePostArray, idDepart, 'add');
+		// }
+		// if (changeImageArray) {
+		// 	changeEditUsersInDB(changePostArray, idDepart, 'add');
+		// }
+
+		removeCollection.clear();
+		addEmptySign('#tableRemove');
+
+		renderTable();
+		$('.main__count--remove').text(removeCollection.size);
+	});
+}
+
+function getCurrentDate() {
+	const date = new Date();
+	const month = date.getMonth() + 1;
+	const currentDay = date.getDate() < 10 ? `0${date.getDate()}` : date.getDate();
+	const currentMonth = month < 10 ? `0${month}` : month;
+	const currentYear = date.getFullYear() < 10 ? `0${date.getFullYear()}` : date.getFullYear();
+
+	const currentHour = date.getHours() < 10 ? `0${date.getHours()}` : date.getHours();
+	const currentMinute = date.getMinutes() < 10 ? `0${date.getMinutes()}` : date.getMinutes();
+
+	return `${currentDay}-${currentMonth}-${currentYear} ${currentHour}:${currentMinute}`;
+}
+
+function changeEditUsersInDB(array, nameid, nameTable, action) {
+	$.ajax({
+		url: "./php/change-user-request.php",
+		method: "post",
+		dataType: "html",
+		data: {
+			action: action,
+			nameTable: nameTable,
+			nameid: nameid,
+			array: array
+		},
+		success: function(data) {
+			console.log('succsess '+data);
+		},
+		error: function(data) {
+			console.log(data);
 		}
 	});
 }

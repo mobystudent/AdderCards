@@ -608,16 +608,16 @@ function submitIDinBD() {
 		console.log(changeFIOArray);
 
 		if (changeCardArray) {
-			changeEditUsersInDB(changeCardArray, idDepart, 'permission');
+			changeEditUsersInDB(changeCardArray, idDepart, 'permission', 'edit');
 		}
 		if (changeQRArray) {
-			changeEditUsersInDB(changeQRArray, idDepart, 'permission');
+			changeEditUsersInDB(changeQRArray, idDepart, 'permission', 'edit');
 		}
 		if (changeFIOArray) {
-			changeEditUsersInDB(changeFIOArray, idDepart, 'add');
+			changeEditUsersInDB(changeFIOArray, idDepart, 'add', 'edit');
 		}
 		if (changePostArray) {
-			changeEditUsersInDB(changePostArray, idDepart, 'add');
+			changeEditUsersInDB(changePostArray, idDepart, 'add', 'edit');
 		}
 		// if (changeImageArray) {
 		// 	changeEditUsersInDB(changePostArray, idDepart, 'add');
@@ -627,7 +627,7 @@ function submitIDinBD() {
 		addEmptySign('#tableEdit');
 
 		renderTable();
-		$('.main__count--add').text(editCollection.size);
+		$('.main__count--edit').text(editCollection.size);
 	});
 }
 
@@ -644,12 +644,13 @@ function getCurrentDate() {
 	return `${currentDay}-${currentMonth}-${currentYear} ${currentHour}:${currentMinute}`;
 }
 
-function changeEditUsersInDB(array, nameid, nameTable) {
+function changeEditUsersInDB(array, nameid, nameTable, action) {
 	$.ajax({
 		url: "./php/change-user-request.php",
 		method: "post",
 		dataType: "html",
 		data: {
+			action: action,
 			nameTable: nameTable,
 			nameid: nameid,
 			array: array
