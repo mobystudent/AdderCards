@@ -548,7 +548,13 @@ function deleteUser(nameTable = '#tableEdit') {
 		if ($(e.target).parents('.table__btn--delete').length || $(e.target).hasClass('table__btn--delete')) {
 			const idRemove = $(e.target).closest('.table__row').data('id');
 
-			editCollection.delete(idRemove);
+			editCollection.forEach((user, i) => {
+				if (user.id === idRemove) {
+					editCollection.delete(i);
+				}
+			});
+
+			showFieldsInHeaderTable();
 			renderTable();
 		}
 
@@ -565,8 +571,8 @@ function editUser() {
 		if ($(e.target).parents('.table__btn--edit').length || $(e.target).hasClass('table__btn--edit')) {
 			const idEdit = $(e.target).closest('.table__row').data('id');
 
+			showFieldsInHeaderTable();
 			renderForm(idEdit);
-			editCollection.delete(idEdit);
 			renderTable();
 			toggleSelect();
 			getAddUsersInDB();
@@ -579,9 +585,10 @@ function editUser() {
 function renderForm(id, nameTable = '#editForm') {
 	$(`${nameTable} .form__wrap`).html('');
 
-	editCollection.forEach((user) => {
-		if (user.id == id) {
+	editCollection.forEach((user, i) => {
+		if (user.id === id) {
 			$(`${nameTable} .form__wrap`).append(templateEditForm(user));
+			editCollection.delete(i);
 		}
 	});
 }

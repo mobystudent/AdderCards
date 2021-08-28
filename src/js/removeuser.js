@@ -184,11 +184,11 @@ function templateRemoveHeaderTable(data) {
 	`;
 }
 
-function renderTable() {
-	$('#tableRemove .table__content').html('');
+function renderTable(nameTable = '#tableRemove') {
+	$(`${nameTable} .table__content`).html('');
 
 	removeCollection.forEach((item) => {
-		$('#tableRemove .table__content').append(templateRemoveTable(item));
+		$(`${nameTable} .table__content`).append(templateRemoveTable(item));
 	});
 }
 
@@ -239,7 +239,7 @@ function addUser() {
 	});
 }
 
-function userFromForm(object, page = 'remove', nameTable = '#removeForm') {
+function userFromForm(object, page = 'remove', nameForm = '#removeForm') {
 	const objToCollection = {
 		id: '',
 		fio: '',
@@ -259,8 +259,8 @@ function userFromForm(object, page = 'remove', nameTable = '#removeForm') {
 	const itemObject = Object.assign({}, objToCollection);
 	const departName = $(`.main__depart--${page}`).attr('data-depart');
 	const departID = $(`.main__depart--${page}`).attr('data-id');
-	const postUser = $(`${nameTable} .form__item--post`).data('value');
-	const idUser = $(`${nameTable} .form__item--id`).data('value');
+	const postUser = $(`${nameForm} .form__item--post`).data('value');
+	const idUser = $(`${nameForm} .form__item--id`).data('value');
 
 	for (const itemField in itemObject) {
 		for (const key in object) {
@@ -384,8 +384,8 @@ function setUsersInSelect(users) {
 	clickSelectItem();
 }
 
-function toggleSelect(nameTable = '#removeForm') {
-	$(`${nameTable} .select__header`).click((e) => {
+function toggleSelect(nameForm = '#removeForm') {
+	$(`${nameForm} .select__header`).click((e) => {
 		$(e.currentTarget).next().slideToggle();
 		$(e.currentTarget).toggleClass('select__header--active');
 	});
@@ -393,18 +393,21 @@ function toggleSelect(nameTable = '#removeForm') {
 	clickSelectItem();
 }
 
-function clickSelectItem(nameTable = '#removeForm') {
-	$(`${nameTable} .select__item`).click((e) => {
+function clickSelectItem(nameForm = '#removeForm') {
+	$(`${nameForm} .select__item`).click((e) => {
 		const title = $(e.currentTarget).find('.select__name').data('title');
 		const id = $(e.currentTarget).find('.select__name').data('id');
 		const select = $(e.currentTarget).parents('.select').data('select');
 
 		if (select === 'fio') {
 			getAddUsersInDB(id); // вывести должность в скрытое поле
+		// } else if (select === 'newnameid') {
+		// 	console.log('Select');
 		}
 
 		setDataAttrSelectedItem(title, select, e.currentTarget);
 		getAddUsersInDB(); // вывести всех польлзователе в селект
+		setDepartInSelect();
 	});
 }
 
@@ -519,11 +522,17 @@ function deleteUser(nameTable = '#tableRemove') {
 		if ($(e.target).parents('.table__btn--delete').length || $(e.target).hasClass('table__btn--delete')) {
 			const idRemove = $(e.target).closest('.table__row').data('id');
 
-			removeCollection.delete(idRemove);
+			removeCollection.forEach((item, i) => {
+				if (item.id === idRemove) {
+					removeCollection.delete(i);
+				}
+			});
+
+			showFieldsInHeaderTable();
 			renderTable();
 		}
 
-		if (removeCollection.size == 0) {
+		if (!removeCollection.size) {
 			addEmptySign(nameTable);
 		}
 
@@ -536,8 +545,8 @@ function editUser() {
 		if ($(e.target).parents('.table__btn--edit').length || $(e.target).hasClass('table__btn--edit')) {
 			const idEdit = $(e.target).closest('.table__row').data('id');
 
+			showFieldsInHeaderTable();
 			renderForm(idEdit);
-			removeCollection.delete(idEdit);
 			renderTable();
 			toggleSelect();
 			datepicker();
@@ -549,12 +558,13 @@ function editUser() {
 	});
 }
 
-function renderForm(id, nameTable = '#removeForm') {
-	$(`${nameTable} .form__wrap`).html('');
+function renderForm(id, nameForm = '#removeForm') {
+	$(`${nameForm} .form__wrap`).html('');
 
-	removeCollection.forEach((user) => {
-		if (user.id == id) {
-			$(`${nameTable} .form__wrap`).append(templateRemoveForm(user));
+	removeCollection.forEach((user, i) => {
+		if (user.id === id) {
+			$(`${nameForm} .form__wrap`).append(templateRemoveForm(user));
+			removeCollection.delete(i);
 		}
 	});
 }
