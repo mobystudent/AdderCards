@@ -278,6 +278,17 @@ function userFromForm(object, page = 'remove', nameForm = '#removeForm') {
 		}
 	}
 
+	// [...removeCollection].forEach((item, index) => {
+	// 	console.warn(item);
+	// 	console.warn(index);
+	//
+	// 	removeCollection.set(index, item);
+	// });
+	//
+	// console.log(removeCollection);
+
+	console.log(indexCollection);
+
 	removeCollection.set(indexCollection, itemObject);
 
 	showTableCells();
@@ -411,16 +422,16 @@ function clickSelectItem(nameForm = '#removeForm') {
 	});
 }
 
-function setDataAttrSelectedItem(title, select, elem, nameTable = '#removeForm') {
+function setDataAttrSelectedItem(title, select, elem, nameForm = '#removeForm') {
 	const fio = select === 'fio' ? title : '';
-	const post = $(`${nameTable} .form__item--post`).data('value');
-	const id = $(`${nameTable} .form__item--id`).data('value');
+	const post = $(`${nameForm} .form__item--post`).data('value');
+	const id = $(`${nameForm} .form__item--id`).data('value');
 	const statusid = select === 'reason' ? $(elem).find('.select__name').data(select) : '';
 	const statustitle = select === 'reason' ? title : '';
 	const newnameid = select === 'newnameid' ? $(elem).find('.select__name').data(select) : '';
 	const newdepart = select === 'newnameid' ? title : '';
 
-	$(`${nameTable} .form__wrap`).html('');
+	$(`${nameForm} .form__wrap`).html('');
 
 	if (select === 'fio') {
 		removeObject.fio = fio;
@@ -440,9 +451,7 @@ function setDataAttrSelectedItem(title, select, elem, nameTable = '#removeForm')
 		removeObject.newnameid = newnameid;
 	}
 
-	console.log(removeObject);
-
-	$(`${nameTable} .form__wrap`).append(templateRemoveForm(removeObject));
+	$(`${nameForm} .form__wrap`).append(templateRemoveForm(removeObject));
 
 	if (select === 'reason') {
 		setDepartInSelect();
@@ -452,7 +461,7 @@ function setDataAttrSelectedItem(title, select, elem, nameTable = '#removeForm')
 	toggleSelect();
 }
 
-function clearFieldsForm(nameTable = '#removeForm') {
+function clearFieldsForm(nameForm = '#removeForm') {
 	const clearObject = {
 		id: '',
 		fio: '',
@@ -469,7 +478,7 @@ function clearFieldsForm(nameTable = '#removeForm') {
 		photourl: ''
 	};
 
-	$(`${nameTable} .form__wrap`).html('').append(templateRemoveForm(clearObject));
+	$(`${nameForm} .form__wrap`).html('').append(templateRemoveForm(clearObject));
 
 	toggleSelect();
 	getAddUsersInDB();
@@ -590,10 +599,6 @@ function submitIDinBD() {
 			changeEditUsersInDB(removeArray, 'add' , 'remove');
 		}
 		if (changeDepartArray) {
-			// const idDepartArray = [...removeCollection.values()].map((elem) => elem.newnameid);
-			//
-			// console.log(idDepartArray);
-
 			changeEditUsersInDB(changeDepartArray, 'add', 'transfer');
 		}
 
@@ -637,7 +642,7 @@ function changeEditUsersInDB(array, nameTable, action) {
 	});
 }
 
-function getAddUsersInDB(id = '', nameTable = '#removeForm') {
+function getAddUsersInDB(id = '', nameForm = '#removeForm') {
 	const idDepart = $('.main__depart--remove').attr('data-id');
 
 	$.ajax({
@@ -654,8 +659,8 @@ function getAddUsersInDB(id = '', nameTable = '#removeForm') {
 				const { id = '', post  = '', photourl  = '' } = JSON.parse(data);
 
 				showUserAvatar(photourl);
-				$(`${nameTable} .form__item--post`).attr('data-value', post);
-				$(`${nameTable} .form__item--id`).attr('data-value', id);
+				$(`${nameForm} .form__item--post`).attr('data-value', post);
+				$(`${nameForm} .form__item--id`).attr('data-value', id);
 			} else {
 				setUsersInSelect(JSON.parse(data));
 			}
