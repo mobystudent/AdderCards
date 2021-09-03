@@ -331,7 +331,7 @@ function setDepartInSelect() {
 	clickSelectItem();
 }
 
-function showFieldsInHeaderTable() {
+function showFieldsInHeaderTable(page = 'remove') {
 	const arrayStatusCells = [
 		{
 			name: 'newdepart',
@@ -347,7 +347,7 @@ function showFieldsInHeaderTable() {
 		statusDate: false
 	};
 
-	$('.table--remove .table__header').html('');
+	$(`.table--${page} .table__header`).html('');
 
 	showTableCells();
 
@@ -363,10 +363,10 @@ function showFieldsInHeaderTable() {
 
 	const newdepart = [...removeCollection.values()].some((cell) => cell.statusNewdepart) ? '-newdepart' : '';
 	const date = [...removeCollection.values()].some((cell) => cell.statusDate) ? '-date' : '';
-	const className = `wrap wrap--content wrap--content-remove${newdepart}${date}`;
+	const className = `wrap wrap--content wrap--content-${page}${newdepart}${date}`;
 
-	$('.main[data-name="remove"]').find('.wrap--content').attr('class', className);
-	$('.table--remove .table__header').append(templateRemoveHeaderTable(statusFields));
+	$(`.main[data-name="${page}"]`).find('.wrap--content').attr('class', className);
+	$(`.table--${page} .table__header`).append(templateRemoveHeaderTable(statusFields));
 }
 
 function showTableCells() {

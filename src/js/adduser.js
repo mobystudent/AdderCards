@@ -3,23 +3,34 @@
 import $ from 'jquery';
 import datepickerFactory from 'jquery-datepicker';
 import datepickerRUFactory from 'jquery-datepicker/i18n/jquery.ui.datepicker-ru';
-import service from './service.js';
 
 datepickerFactory($);
 datepickerRUFactory($);
 
 const addCollection = new Map();
+let addObject = {
+	fio: '',
+	post: '',
+	statusid: '',
+	statustitle: '',
+	statuscardvalidto: '',
+	сardvalidto: ''
+};
 
 $(window).on('load', () => {
 	addUser();
-	datepicker();
 	toggleSelect();
 	downloadFoto();
 	submitIDinBD();
 });
 
 function templateAddTable(data) {
-	const { id = '', fio = '', post = '', photofile = '', statustitle = '', date  = '' } = data;
+	const { id = '', fio = '', post = '', photofile = '', statustitle = '', cardvalidto = '' } = data;
+	const cardvalidtoView = cardvalidto ? `
+		<div class="table__cell table__cell--body table__cell--cardvalidto">
+			<span class="table__text table__text--body">${cardvalidto}</span>
+		</div>
+	` : '';
 
 	return `
 		<div class="table__row" data-id="${id}">
@@ -35,9 +46,7 @@ function templateAddTable(data) {
 			<div class="table__cell table__cell--body table__cell--statustitle">
 				<span class="table__text table__text--body">${statustitle}</span>
 			</div>
-			<div class="table__cell table__cell--body table__cell--date">
-				<span class="table__text table__text--body">${date}</span>
-			</div>
+			${cardvalidtoView}
 			<div class="table__cell table__cell--body table__cell--edit">
 				<button class="table__btn table__btn--edit" type="button">
 					<svg class="icon icon--edit icon--edit-black">
@@ -57,8 +66,19 @@ function templateAddTable(data) {
 }
 
 function templateAddForm(data) {
-	const { fio = '', photofile = '', photourl = '', post = '', statusid = '', statustitle = '', datestatus = '', datetitle = '', date  = '' } = data;
-	const dateClassView = datestatus == 'date' ? '' : 'form__field--hide';
+	const { fio = '', photofile = '', photourl = '', post = '', statusid = '', statustitle = '', statuscardvalidto = '', cardvalidtotitle = '', сardvalidto = '' } = data;
+	const typeValue = statustitle ? statustitle : 'Выберите тип идентификатора';
+	const typeClassView = statustitle ? 'select__value--selected' : '';
+	const сardvalidtoValue = cardvalidtotitle ? cardvalidtotitle : 'Выберите окончание действия пропуска';
+	const dateClassView = cardvalidtotitle ? 'select__value--selected' : '';
+	const photoValue = photourl ? photourl : './images/avatar.svg';
+	const сardvalidtoView = statuscardvalidto === 'date' ? `
+		<div class="form__field form__field--date">
+			<label class="form__label"><span class="form__name">Дата окончания</span>
+				<input class="form__input form__item form__item--сardvalidto" id="addDatepicker" data-field="date" name="date" type="text" value="${сardvalidto}" placeholder="Введите дату" required="required"/>
+			</label>
+		</div>
+	` : '';
 
 	return `
 		<div class="form__fields">
@@ -78,7 +98,7 @@ function templateAddForm(data) {
 				<span class="form__name">Тип идентификатора</span>
 				<div class="form__select form__item select" data-field="statustitle" data-type="statusid" data-select="type">
 					<header class="select__header">
-						<span class="select__value select__value--selected" data-title="${statustitle}" data-type="${statusid}" data-placeholder="Выберите тип идентификатора">${statustitle}</span>
+						<span class="select__value ${typeClassView}" data-title="${typeValue}" data-type="${statusid}" data-placeholder="Выберите тип идентификатора">${typeValue}</span>
 					</header>
 					<ul class="select__list">
 						<li class="select__item">
@@ -92,9 +112,9 @@ function templateAddForm(data) {
 			</div>
 			<div class="form__field">
 				<span class="form__name">Окончание действия пропуска</span>
-				<div class="form__select form__item select" data-field="datetitle" data-type="datestatus" data-select="date">
+				<div class="form__select form__item select" data-field="datetitle" data-type="statusdate" data-select="date">
 					<header class="select__header">
-						<span class="select__value select__value--selected" data-title="${datetitle}" data-date="${datestatus}" data-placeholder="Выберите окончание действия пропуска">${datetitle}</span>
+						<span class="select__value ${dateClassView}" data-title="${сardvalidtoValue}" data-date="${statuscardvalidto}" data-placeholder="Выберите окончание действия пропуска">${сardvalidtoValue}</span>
 					</header>
 					<ul class="select__list">
 						<li class="select__item">
@@ -106,18 +126,14 @@ function templateAddForm(data) {
 					</ul>
 				</div>
 			</div>
-			<div class="form__field ${dateClassView}" data-name="date">
-				<label class="form__label"><span class="form__name">Дата окончания</span>
-					<input class="form__input form__item" id="addDateField" data-field="date" name="date" type="text" value="${date}" placeholder="Введите дату" required="required"/>
-				</label>
-			</div>
+			${сardvalidtoView}
 		</div>
 		<div class="form__aside">
 			<div class="form__img">
-				<img class="img img--form" src=${photourl} alt="user avatar"/>
+				<img class="img img--form" src=${photoValue} alt="user avatar"/>
 			</div>
 			<div class="form__field">
-				<input class="form__input form__input--file form__item" id="addFile" data-field="photofile" data-value="${photofile}" name="photofile" type="file" required="required"/>
+				<input class="form__input form__input--file form__item" id="addFile" data-field="photofile" data-url="${photoValue}" data-value="${photofile}" name="photofile" type="file" required="required"/>
 				<label class="form__download" for="addFile">
 					<svg class="icon icon--download">
 						<use xlink:href=./images/sprite.svg#download></use>
@@ -129,11 +145,47 @@ function templateAddForm(data) {
 	`;
 }
 
-function renderTable() {
-	$('#tableAdd .table__content').html('');
+function templateAddHeaderTable(data) {
+	const { statusСardvalidto = '' } = data;
+	const сardvalidtoView = statusСardvalidto ? `
+		<div class="table__cell table__cell--header table__cell--date">
+			<span class="table__text table__text--header">Дата</span>
+		</div>
+	` : '';
+
+	return `
+		<div class="table__cell table__cell--header table__cell--fio">
+			<span class="table__text table__text--header">Фамилия Имя Отчество</span>
+			<button class="btn btn--sort" type="button" data-direction="true"></button>
+		</div>
+		<div class="table__cell table__cell--header table__cell--post">
+			<span class="table__text table__text--header">Должность</span>
+		</div>
+		<div class="table__cell table__cell--header table__cell--photofile">
+			<span class="table__text table__text--header">Фотография</span>
+		</div>
+		<div class="table__cell table__cell--header table__cell--statustitle">
+			<span class="table__text table__text--header">Идентификатор</span>
+		</div>
+		${сardvalidtoView}
+		<div class="table__cell table__cell--header table__cell--edit">
+			<svg class="icon icon--edit icon--edit-white">
+				<use class="icon__item" xlink:href="./images/sprite.svg#edit"></use>
+			</svg>
+		</div>
+		<div class="table__cell table__cell--header table__cell--delete">
+			<svg class="icon icon--delete icon--delete-white">
+				<use class="icon__item" xlink:href="./images/sprite.svg#delete"></use>
+			</svg>
+		</div>
+	`;
+}
+
+function renderTable(nameTable = '#tableAdd') {
+	$(`${nameTable} .table__content`).html('');
 
 	addCollection.forEach((item) => {
-		$('#tableAdd .table__content').append(templateAddTable(item));
+		$(`${nameTable} .table__content`).append(templateAddTable(item));
 	});
 }
 
@@ -146,30 +198,28 @@ function addUser() {
 
 			if ($(item).hasClass('select')) {
 				const typeSelect = $(item).data('select');
-				const fieldType = $(item).data('type');
 				const nameId = $(item).find('.select__value--selected').attr(`data-${typeSelect}`);
+				const fieldType = $(item).data('type');
 				const valueItem = $(item).find('.select__value--selected').attr('data-title');
 
 				if (typeSelect == 'date' && nameId == 'date') {
-					const inputValue = $(e.target).parents('.form').find('.form__item[data-field="date"]').val();
+					const inputValue = $(e.target).parents('.form').find('.form__item--сardvalidto').val();
 
-					object.date = inputValue;
+					object.сardvalidto = inputValue;
 				}
 
 				object[fieldType] = nameId;
 				object[fieldName] = valueItem;
+			} else if ($(item).attr('data-field') == 'photofile') {
+				const fieldUrl = $(item).attr('data-url');
+				const inputValue = $(item).attr('data-value');
+
+				object.photourl = fieldUrl;
+				object[fieldName] = inputValue;
 			} else {
 				if ($(item).attr('data-field') != 'date' && $(item).attr('data-field') != 'photofile') {
 					const inputValue = $(item).val();
 
-					object[fieldName] = inputValue;
-				} else if ($(item).attr('data-field') == 'photofile') {
-					const fieldUrl = $(item).data('url');
-					const inputValue = $(item).data('value');
-
-					console.log(fieldUrl);
-
-					object.photourl = fieldUrl;
 					object[fieldName] = inputValue;
 				}
 			}
@@ -180,13 +230,14 @@ function addUser() {
 		console.log(userData);
 
 		if (validationEmptyFields(userData)) {
-			clearFieldsForm(fields);
-			userdFromForm(userData);
+			userFromForm(userData);
+			clearFieldsForm();
+			showFieldsInHeaderTable();
 		}
 	});
 }
 
-function userdFromForm(object) {
+function userFromForm(object, page = 'add') {
 	const objToCollection = {
 		id: '',
 		fio: '',
@@ -197,14 +248,14 @@ function userdFromForm(object) {
 		photourl: '',
 		statusid: '',
 		statustitle: '',
-		datestatus: '',
 		datetitle: '',
-		department: ''
+		department: '',
+		сardvalidto: ''
 	};
 	const indexCollection = addCollection.size;
 	const itemObject = Object.assign({}, objToCollection);
-	const departName = $('.main__depart--add').attr('data-depart');
-	const departID = $('.main__depart--add').attr('data-id');
+	const departName = $(`.main__depart--${page}`).attr('data-depart');
+	const departID = $(`.main__depart--${page}`).attr('data-id');
 
 	for (const itemField in itemObject) {
 		for (const key in object) {
@@ -222,10 +273,12 @@ function userdFromForm(object) {
 
 	addCollection.set(indexCollection, itemObject);
 
+	console.warn(addCollection);
+
 	dataAdd('#tableAdd');
 }
 
-function dataAdd(nameTable) {
+function dataAdd(nameTable, page = 'add') {
 	if (addCollection.size) {
 		$('.table__nothing').hide();
 		$(nameTable)
@@ -236,22 +289,59 @@ function dataAdd(nameTable) {
 				</div>
 			`);
 	} else {
-		$(nameTable).addClass('table__body--empty').html('');
-		$(nameTable).append(`
-			<p class="table__nothing">Новых данных нет</p>
-		`);
+		addEmptySign(nameTable);
 
 		return;
 	}
 
 	renderTable();
-	$('.main__count--add').text(addCollection.size);
+	$(`.main__count--${page}`).text(addCollection.size);
 	deleteUser();
 	editUser();
 }
 
-function toggleSelect() {
-	$('#addForm .select__header').click((e) => {
+function showFieldsInHeaderTable(page = 'add') {
+	const arrayStatusCells = [
+		{
+			name: 'date',
+			status: 'statusDate'
+		}
+	];
+	const statusFields = {
+		statusDate: false
+	};
+
+	$(`.table--${page} .table__header`).html('');
+
+	showTableCells();
+
+	[...addCollection.values()].forEach((elem) => {
+		for (const key in elem) {
+			for (const { name, status } of arrayStatusCells) {
+				if ((key == name) && elem[status]) {
+					statusFields[status] = elem[status];
+				}
+			}
+		}
+	});
+
+	const date = [...addCollection.values()].some((cell) => cell.statusDate) ? '-date' : '';
+	const className = `wrap wrap--content wrap--content-${page}${date}`;
+
+	$(`.main[data-name="${page}"]`).find('.wrap--content').attr('class', className);
+	$(`.table--${page} .table__header`).append(templateAddHeaderTable(statusFields));
+}
+
+function showTableCells() {
+	const statusDate = [...addCollection.values()].some((cell) => cell.date);
+
+	addCollection.forEach((elem) => {
+		elem.statusDate = statusDate;
+	});
+}
+
+function toggleSelect(nameForm = '#addForm') {
+	$(`${nameForm} .select__header`).click((e) => {
 		$(e.currentTarget).next().slideToggle();
 		$(e.currentTarget).toggleClass('select__header--active');
 	});
@@ -259,60 +349,77 @@ function toggleSelect() {
 	clickSelectItem();
 }
 
-function clickSelectItem() {
-	$('#addForm .select__item').click((e) => {
+function clickSelectItem(nameForm = '#addForm') {
+	$(`${nameForm} .select__item`).click((e) => {
 		const title = $(e.currentTarget).find('.select__name').data('title');
 		const select = $(e.currentTarget).parents('.select').data('select');
-
-		$(e.currentTarget).parents('.select').find('.select__value').addClass('select__value--selected').text(title);
-		$(e.currentTarget).parent().slideUp();
-		$(e.currentTarget).parents('.select').find('.select__header').removeClass('select__header--active');
 
 		setDataAttrSelectedItem(title, select, e.currentTarget);
 	});
 }
 
-function setDataAttrSelectedItem(title, select, elem) {
-	const dataType = $(elem).find('.select__name').data(select);
-	let attr = '';
+function setDataAttrSelectedItem(title, select, elem, nameForm = '#addForm') {
+	const statusid = $(elem).find('.select__name').data(select);
+	const fio = $(`${nameForm} .form__item--fio`).val();
+	const post = $(`${nameForm} .form__item--post`).val();
+	const photofile = $(`${nameForm} .form__input--file`).data('value');
+	const photourl = $(`${nameForm} .form__input--file`).data('url'); // default empty
 
-	if (select == 'date') {
-		if (dataType == 'date') {
-			$('.main[data-name="add"] .form__field[data-name="date"]').removeClass('form__field--hide');
-		} else {
-			$('.main[data-name="add"] .form__field[data-name="date"]').addClass('form__field--hide');
-			$('.main[data-name="add"] .form__field[data-name="date"]').find('.form__input').val('');
-		}
-	}
+	$(`${nameForm} .form__wrap`).html('');
 
-	if (dataType) {
-		attr = {'data-title': title, [`data-${select}`]: dataType};
+	addObject.fio = fio ? fio : addObject.fio;
+	addObject.post = post ? post : addObject.post;
+	addObject.photofile = photofile ? photofile : addObject.photofile;
+	addObject.photourl = photourl ? photourl : addObject.photourl;
+
+	if (select === 'type') {
+		addObject.statusid = statusid;
+		addObject.statustitle = title;
 	} else {
-		attr = {'data-title': title};
+		addObject.statuscardvalidto = statusid;
+		addObject.cardvalidtotitle = title;
+		addObject.сardvalidto = statusid === 'date' ? addObject.сardvalidto : '';
 	}
 
-	$(elem).parents('.select').find('.select__value--selected').attr(attr);
+	$(`${nameForm} .form__wrap`).append(templateAddForm(addObject));
+
+	toggleSelect();
+	datepicker();
+	downloadFoto();
+	memberInputField();
 }
 
-function clearFieldsForm(array) {
-	[...array].forEach((item) => {
-		if ($(item).hasClass('select')) {
-			const typeSelect = $(item).data('select');
-			const placeholder = $(item).find('.select__value').data('placeholder');
-			const attr = {'data-title': 'title', [`data-${typeSelect}`]: typeSelect};
+function clearFieldsForm(nameForm = '#addForm') {
+	const clearObject = {
+		id: '',
+		fio: '',
+		statustitle: '',
+		statusid: '',
+		post: ''
+	};
+	addObject = {
+		fio: '',
+		statusid: '',
+		statustitle: '',
+		post: '',
+		photourl: ''
+	};
 
-			$(item).find('.select__value--selected')
-				.removeClass('select__value--selected')
-				.attr(attr)
-				.text(placeholder);
-		} else {
-			$(item).val('');
-		}
+	$(`${nameForm} .form__wrap`).html('').append(templateAddForm(clearObject));
+
+	toggleSelect();
+	datepicker();
+	downloadFoto();
+	memberInputField();
+}
+
+function memberInputField() {
+	$('.form__input').keyup((e) => {
+		const nameField = $(e.currentTarget).data('field');
+		const fieldValue = $(e.currentTarget).val();
+
+		addObject[nameField] = fieldValue ? fieldValue : addObject[nameField];
 	});
-
-	$('.form__field[data-name="date"]').addClass('form__field--hide');
-	$('.img--form').attr('src', './images/avatar.svg');
-	$('.form__field--new-post, .form__field--new-fio, .form__field--depart').hide();
 }
 
 function datepicker() {
@@ -324,24 +431,47 @@ function datepicker() {
 		minDate: "+1D",
 		maxViewMode: 10
 	});
+
+	$('.form__field--date').click(() => {
+		$("#ui-datepicker-div .ui-datepicker").show();
+	});
+
+	$('#addDatepicker').change((e) => {
+		const сardvalidtoValue = $(e.currentTarget).val();
+
+		addObject.сardvalidto = сardvalidtoValue;
+	});
 }
 
-function downloadFoto() {
-	$('#addForm .form__input--file').change((e) => {
+function addEmptySign(nameTable) {
+	$(nameTable)
+		.addClass('table__body--empty')
+		.html('')
+		.append(`
+			<p class="table__nothing">Новых данных нет</p>
+		`);
+}
+
+function downloadFoto(nameForm = '#addForm') {
+	$(`${nameForm} .form__input--file`).change((e) => {
 		const file = e.target.files[0];
 		const url = URL.createObjectURL(file);
-		const fileName = $(e.target).val();
+		const fileNameUrl = $(e.target).val();
+		const indexLastSlash = fileNameUrl.lastIndexOf('\\');
+		const photoName = fileNameUrl.slice(indexLastSlash + 1);
 
 		$('.img--form').attr('src', url);
-		addCollection.photourl = url;
-		$(e.target).attr({ 'data-value': fileName, 'data-url': url });
+
+		addObject.photourl = url;
+		addObject.photofile = photoName;
+		$(e.target).attr({'data-value': photoName, 'data-url': url});
 	});
 }
 
 function validationEmptyFields(fields) {
 	const validFields = Object.values(fields).every((item) => item);
 	const statusMess = !validFields ? 'show' : 'hide';
-	const extentionArray = ['giff', 'png', 'jpg', 'jpeg'];
+	const extentionArray = ['gif', 'png', 'jpg', 'jpeg'];
 	let correctName = 'hide';
 	let countNameWords = 'hide';
 	let extensionImg = 'hide';
@@ -370,13 +500,23 @@ function validationEmptyFields(fields) {
 	return valid;
 }
 
-function deleteUser() {
+function deleteUser(nameTable = '#tableAdd') {
 	$('.table__content').click((e) => {
 		if ($(e.target).parents('.table__btn--delete').length || $(e.target).hasClass('table__btn--delete')) {
 			const idRemove = $(e.target).closest('.table__row').data('id');
 
-			addCollection.delete(idRemove);
+			addCollection.forEach((user, i) => {
+				if (user.id === idRemove) {
+					addCollection.delete(i);
+				}
+			});
+
+			showFieldsInHeaderTable();
 			renderTable();
+		}
+
+		if (!addCollection.size) {
+			addEmptySign(nameTable);
 		}
 
 		$('.main__count--add').text(addCollection.size);
@@ -388,10 +528,10 @@ function editUser() {
 		if ($(e.target).parents('.table__btn--edit').length || $(e.target).hasClass('table__btn--edit')) {
 			const idEdit = $(e.target).closest('.table__row').data('id');
 
+			showFieldsInHeaderTable();
 			renderForm(idEdit);
-			addCollection.delete(idEdit);
 			renderTable();
-			service.toggleSelect();
+			toggleSelect();
 			datepicker();
 			downloadFoto();
 		}
@@ -400,14 +540,17 @@ function editUser() {
 	});
 }
 
-function renderForm(id) {
-	$('#addForm .form__wrap').html('');
+function renderForm(id, nameForm = '#addForm') {
+	$(`${nameForm} .form__wrap`).html('');
 
-	addCollection.forEach((user) => {
+	addCollection.forEach((user, i) => {
 		if (user.id == id) {
-			$('#addForm .form__wrap').append(templateAddForm(user));
+			$(`${nameForm} .form__wrap`).append(templateAddForm(user));
+			addCollection.delete(i);
 		}
 	});
+
+	addUser();
 }
 
 function submitIDinBD() {
@@ -417,37 +560,43 @@ function submitIDinBD() {
 		const idDepart = $('.main__depart--add').attr('data-id');
 		const nameDepart = $('.main__depart--add').attr('data-depart');
 
-		console.log(addCollection);
-
 		addCollection.forEach((elem) => {
 			elem.nameid = idDepart;
 			elem.department = nameDepart;
+			elem.date = getCurrentDate();
 		});
 
-		setAddUsersInDB([...addCollection.values()], idDepart);
+		setAddUsersInDB([...addCollection.values()], 'add' , 'add');
 
 		addCollection.clear();
-		$('#tableAdd')
-			.html('')
-			.addClass('table__body--empty').html('')
-			.append(`
-				<p class="table__nothing">Новых данных нет</p>
-			`);
+		addEmptySign('#tableAdd');
 
 		renderTable();
 		$('.main__count--add').text(addCollection.size);
 	});
 }
 
-function setAddUsersInDB(array, nameid) {
-	console.log(array);
+function getCurrentDate() {
+	const date = new Date();
+	const month = date.getMonth() + 1;
+	const currentDay = date.getDate() < 10 ? `0${date.getDate()}` : date.getDate();
+	const currentMonth = month < 10 ? `0${month}` : month;
+	const currentYear = date.getFullYear() < 10 ? `0${date.getFullYear()}` : date.getFullYear();
 
+	const currentHour = date.getHours() < 10 ? `0${date.getHours()}` : date.getHours();
+	const currentMinute = date.getMinutes() < 10 ? `0${date.getMinutes()}` : date.getMinutes();
+
+	return `${currentDay}-${currentMonth}-${currentYear} ${currentHour}:${currentMinute}`;
+}
+
+function setAddUsersInDB(array,  nameTable, action) {
 	$.ajax({
-		url: "./php/add-user-add.php",
+		url: "./php/change-user-request.php",
 		method: "post",
 		dataType: "html",
 		data: {
-			nameid: nameid,
+			action: action,
+			nameTable: nameTable,
 			array: array
 		},
 		success: function(data) {

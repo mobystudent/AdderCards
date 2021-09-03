@@ -207,11 +207,11 @@ function templateEditHeaderTable(data) {
 	`;
 }
 
-function renderTable() {
-	$('#tableEdit .table__content').html('');
+function renderTable(nameTable = '#tableEdit') {
+	$(`${nameTable} .table__content`).html('');
 
 	editCollection.forEach((item) => {
-		$('#tableEdit .table__content').append(templateEditTable(item));
+		$(`${nameTable} .table__content`).append(templateEditTable(item));
 	});
 }
 
@@ -306,7 +306,7 @@ function userFromForm(object, page = 'edit', nameForm = '#editForm') {
 	dataAdd('#tableEdit');
 }
 
-function dataAdd(nameTable) {
+function dataAdd(nameTable, page = 'edit') {
 	if (editCollection.size) {
 		$('.table__nothing').hide();
 		$(nameTable)
@@ -323,12 +323,12 @@ function dataAdd(nameTable) {
 	}
 
 	renderTable();
-	$('.main__count--edit').text(editCollection.size);
+	$(`.main__count--${page}`).text(editCollection.size);
 	deleteUser();
 	editUser();
 }
 
-function showFieldsInHeaderTable() {
+function showFieldsInHeaderTable(page = 'edit') {
 	const arrayStatusCells = [
 		{
 			name: 'newfio',
@@ -349,7 +349,7 @@ function showFieldsInHeaderTable() {
 		statusPhotofile: false
 	};
 
-	$('.table--edit .table__header').html('');
+	$(`.table--${page} .table__header`).html('');
 
 	showTableCells();
 
@@ -366,10 +366,10 @@ function showFieldsInHeaderTable() {
 	const newfio = [...editCollection.values()].some((cell) => cell.statusNewfio) ? '-newfio' : '';
 	const newpost = [...editCollection.values()].some((cell) => cell.statusNewpost) ? '-newpost' : '';
 	const photofile = [...editCollection.values()].some((cell) => cell.statusPhotofile) ? '-photofile' : '';
-	const className = `wrap wrap--content wrap--content-edit${newfio}${newpost}${photofile}`;
+	const className = `wrap wrap--content wrap--content-${page}${newfio}${newpost}${photofile}`;
 
-	$('.main[data-name="edit"]').find('.wrap--content').attr('class', className);
-	$('.table--edit .table__header').append(templateEditHeaderTable(statusFields));
+	$(`.main[data-name="${page}"]`).find('.wrap--content').attr('class', className);
+	$(`.table--${page} .table__header`).append(templateEditHeaderTable(statusFields));
 }
 
 function showTableCells() {
@@ -485,8 +485,8 @@ function addEmptySign(nameTable) {
 		`);
 }
 
-function downloadFoto() {
-	$('#editForm .form__input--file').change((e) => {
+function downloadFoto(nameForm = '#editForm') {
+	$(`${nameForm} .form__input--file`).change((e) => {
 		const file = e.target.files[0];
 		const url = URL.createObjectURL(file);
 		const fileName = $(e.target).val();
@@ -511,7 +511,7 @@ function showUserAvatar(photourl) {
 function validationEmptyFields(fields) {
 	const validFields = Object.values(fields).every((item) => item);
 	const statusMess = !validFields ? 'show' : 'hide';
-	const extentionArray = ['giff', 'png', 'jpg', 'jpeg'];
+	const extentionArray = ['gif', 'png', 'jpg', 'jpeg'];
 	let correctName = 'hide';
 	let correctPost = 'hide';
 	let countNameWords = 'hide';
@@ -559,7 +559,7 @@ function deleteUser(nameTable = '#tableEdit') {
 			renderTable();
 		}
 
-		if (editCollection.size == 0) {
+		if (!editCollection.size) {
 			addEmptySign(nameTable);
 		}
 

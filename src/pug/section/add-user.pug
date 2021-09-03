@@ -12,12 +12,12 @@ main.main(data-name="add")
 						label.form__label
 							span.form__name
 								| ФИО
-							input.form__input.form__item(data-field="fio" name="name" type="text" placeholder="Введите ФИО" required)
+							input.form__input.form__item.form__item--fio(data-field="fio" name="name" type="text" placeholder="Введите ФИО" required)
 					.form__field
 						label.form__label
 							span.form__name
 								| Должность
-							input.form__input.form__item(data-field="post" name="post" type="text" placeholder="Введите должность" required)
+							input.form__input.form__item.form__item--post(data-field="post" name="post" type="text" placeholder="Введите должность" required)
 					.form__field
 						span.form__name
 							| Тип идентификатора
@@ -46,16 +46,16 @@ main.main(data-name="add")
 								li.select__item
 									span.select__name(data-title="Безвременно" data-date="infinite")
 										| Безвременно
-					.form__field.form__field--hide(data-name="date")
+					//- .form__field.form__field--date
 						label.form__label
 							span.form__name
 								| Дата окончания
-							input.form__input.form__item#addDatepicker(data-field="date" name="date" type="text" placeholder="Введите дату" required)
+							input.form__input.form__item.form__item--date#addDatepicker(data-field="date" name="date" type="text" placeholder="Введите дату" required)
 				.form__aside
 					.form__img
 						img.img.img--form(src="./images/avatar.svg" alt="user avatar")
 					.form__field
-						input.form__input.form__input--file.form__item#addFile(data-field="photofile" data-url="photourl" name="photofile" type="file" required)
+						input.form__input.form__input--file.form__item#addFile(data-field="photofile" name="photofile" type="file" required)
 						label.form__download(for="addFile")
 							svg.icon.icon--download
 								use(xlink:href="./images/sprite.svg#download")
@@ -99,9 +99,9 @@ main.main(data-name="add")
 						.table__cell.table__cell--header.table__cell--statustitle
 							span.table__text.table__text--header
 								| Идентификатор
-						.table__cell.table__cell--header.table__cell--date
-							span.table__text.table__text--header
-								| Дата
+						//- .table__cell.table__cell--header.table__cell--date
+						//- 	span.table__text.table__text--header
+						//- 		| Дата
 						.table__cell.table__cell--header.table__cell--edit
 							svg.icon.icon--edit.icon--edit-white
 								use.icon__item(xlink:href="./images/sprite.svg#edit")
