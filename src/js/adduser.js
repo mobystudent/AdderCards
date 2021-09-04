@@ -202,14 +202,19 @@ function addUser() {
 				const fieldType = $(item).data('type');
 				const valueItem = $(item).find('.select__value--selected').attr('data-title');
 
-				if (typeSelect == 'date' && nameId == 'date') {
-					const inputValue = $(e.target).parents('.form').find('.form__item--сardvalidto').val();
+				if (typeSelect == 'date') {
+					if (nameId == 'date') {
+						const inputValue = $(e.target).parents('.form').find('.form__item--сardvalidto').val();
 
-					object.сardvalidto = inputValue;
+						object.сardvalidto = inputValue;
+					}
+
+					object.statuscardvalidto = nameId;
+					object.cardvalidtotitle = valueItem;
+				} else {
+					object[fieldType] = nameId;
+					object[fieldName] = valueItem;
 				}
-
-				object[fieldType] = nameId;
-				object[fieldName] = valueItem;
 			} else if ($(item).attr('data-field') == 'photofile') {
 				const fieldUrl = $(item).attr('data-url');
 				const inputValue = $(item).attr('data-value');
@@ -250,7 +255,9 @@ function userFromForm(object, page = 'add') {
 		statustitle: '',
 		datetitle: '',
 		department: '',
-		сardvalidto: ''
+		сardvalidto: '',
+		statuscardvalidto: '',
+		cardvalidtotitle: ''
 	};
 	const indexCollection = addCollection.size;
 	const itemObject = Object.assign({}, objToCollection);
@@ -272,8 +279,6 @@ function userFromForm(object, page = 'add') {
 	}
 
 	addCollection.set(indexCollection, itemObject);
-
-	console.warn(addCollection);
 
 	dataAdd('#tableAdd');
 }
