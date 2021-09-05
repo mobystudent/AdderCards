@@ -15,7 +15,7 @@ let removeObject = {
 	statustitle: '',
 	newdepart: '',
 	newnameid: '',
-	date: '',
+	cardvalidto: '',
 	photourl: ''
 };
 
@@ -27,17 +27,17 @@ $(window).on('load', () => {
 });
 
 function templateRemoveTable(data) {
-	const { id = '', fio = '', post = '', statustitle = '', newdepart = '',  date = '', statusNewdepart = '', statusDate = '' } = data;
+	const { id = '', fio = '', post = '', statustitle = '', newdepart = '',  cardvalidto = '', statusNewdepart = '', statusCardvalidto = '' } = data;
 	const newDepartValue = newdepart ? newdepart : '';
-	const dateValue = date ? date : '';
+	const cardvalidtoValue = cardvalidto ? cardvalidto : '';
 	const newDepartView = statusNewdepart ? `
 		<div class="table__cell table__cell--body table__cell--department">
 			<span class="table__text table__text--body">${newDepartValue}</span>
 		</div>
 	` : '';
-	const dateView = statusDate ? `
-		<div class="table__cell table__cell--body table__cell--date">
-			<span class="table__text table__text--body">${dateValue}</span>
+	const cardvalidtoView = statusCardvalidto ? `
+		<div class="table__cell table__cell--body table__cell--cardvalidto">
+			<span class="table__text table__text--body">${cardvalidtoValue}</span>
 		</div>
 	` : '';
 
@@ -53,7 +53,7 @@ function templateRemoveTable(data) {
 				<span class="table__text table__text--body">${statustitle}</span>
 			</div>
 			${newDepartView}
-			${dateView}
+			${cardvalidtoView}
 			<div class="table__cell table__cell--body table__cell--edit">
 				<button class="table__btn table__btn--edit" type="button">
 					<svg class="icon icon--edit icon--edit-black">
@@ -73,7 +73,7 @@ function templateRemoveTable(data) {
 }
 
 function templateRemoveForm(data) {
-	const { id = '', fio = '', statusid = '', newdepart = '', newnameid = '', statustitle = '', date  = '', post = '', photourl = '' } = data;
+	const { id = '', fio = '', statusid = '', newdepart = '', newnameid = '', statustitle = '', cardvalidto  = '', post = '', photourl = '' } = data;
 	const fioValue = fio ? fio : 'Выберите пользователя';
 	const fioClassView = fio ? 'select__value--selected' : '';
 	const reasonValue = statustitle ? statustitle : 'Выберите причину удаления';
@@ -92,11 +92,11 @@ function templateRemoveForm(data) {
 			</div>
 		</div>
 	` : '';
-	const dateView = statusid === 'remove' ? `
+	const cardvalidtoView = statusid === 'remove' ? `
 		<div class="form__field" data-name="date">
 			<label class="form__label">
 				<span class="form__name">Дата завершения действия пропуска</span>
-				<input class="form__input form__item" id="removeDatepicker" data-field="date" name="date" type="text" value="${date}" placeholder="Введите дату завершения действия пропуска" required="required"/>
+				<input class="form__input form__item" id="removeDatepicker" data-field="date" name="date" type="text" value="${cardvalidto}" placeholder="Введите дату завершения действия пропуска" required="required"/>
 			</label>
 		</div>
 	` : '';
@@ -129,7 +129,7 @@ function templateRemoveForm(data) {
 				</div>
 			</div>
 			${departView}
-			${dateView}
+			${cardvalidtoView}
 			<div class="form__field form__field--hide">
 				<span class="form__item form__item--hide form__item--id" data-field="id" data-value="${id}"></span>
 			</div>
@@ -146,14 +146,14 @@ function templateRemoveForm(data) {
 }
 
 function templateRemoveHeaderTable(data) {
-	const { statusNewdepart = '', statusDate = '' } = data;
+	const { statusNewdepart = '', statusCardvalidto = '' } = data;
 	const newDepartView = statusNewdepart ? `
 		<div class="table__cell table__cell--header table__cell--department">
 			<span class="table__text table__text--header">Новое подразделение</span>
 		</div>
 	` : '';
-	const dateView = statusDate ? `
-		<div class="table__cell table__cell--header table__cell--date">
+	const cardvalidtoView = statusCardvalidto ? `
+		<div class="table__cell table__cell--header table__cell--cardvalidto">
 			<span class="table__text table__text--header">Дата</span>
 		</div>
 	` : '';
@@ -170,7 +170,7 @@ function templateRemoveHeaderTable(data) {
 			<span class="table__text table__text--header">Причина удаления</span>
 		</div>
 		${newDepartView}
-		${dateView}
+		${cardvalidtoView}
 		<div class="table__cell table__cell--header table__cell--edit">
 			<svg class="icon icon--edit icon--edit-white">
 				<use class="icon__item" xlink:href="./images/sprite.svg#edit"></use>
@@ -209,7 +209,7 @@ function addUser() {
 					if (nameId == 'remove') {
 						const inputValue = $(e.target).parents('.form').find('.form__item[data-field="date"]').val();
 
-						object.date = inputValue;
+						object.cardvalidto = inputValue;
 					}
 
 					object[fieldType] = nameId;
@@ -243,7 +243,7 @@ function userFromForm(object, page = 'remove', nameForm = '#removeForm', nameTab
 	const objToCollection = {
 		id: '',
 		fio: '',
-		date: '',
+		cardvalidto: '',
 		post: '',
 		nameid: '',
 		photofile: '',
@@ -338,13 +338,13 @@ function showFieldsInHeaderTable(page = 'remove') {
 			status: 'statusNewdepart'
 		},
 		{
-			name: 'date',
-			status: 'statusDate'
+			name: 'cardvalidto',
+			status: 'statusCardvalidto'
 		}
 	];
 	const statusFields = {
 		statusNewdepart: false,
-		statusDate: false
+		statusCardvalidto: false
 	};
 
 	$(`.table--${page} .table__header`).html('');
@@ -362,8 +362,8 @@ function showFieldsInHeaderTable(page = 'remove') {
 	});
 
 	const newdepart = [...removeCollection.values()].some((cell) => cell.statusNewdepart) ? '-newdepart' : '';
-	const date = [...removeCollection.values()].some((cell) => cell.statusDate) ? '-date' : '';
-	const className = `wrap wrap--content wrap--content-${page}${newdepart}${date}`;
+	const cardvalidto = [...removeCollection.values()].some((cell) => cell.statusCardvalidto) ? '-cardvalidto' : '';
+	const className = `wrap wrap--content wrap--content-${page}${newdepart}${cardvalidto}`;
 
 	$(`.main[data-name="${page}"]`).find('.wrap--content').attr('class', className);
 	$(`.table--${page} .table__header`).append(templateRemoveHeaderTable(statusFields));
@@ -371,19 +371,19 @@ function showFieldsInHeaderTable(page = 'remove') {
 
 function showTableCells() {
 	const statusNewdepart = [...removeCollection.values()].some((cell) => cell.newdepart);
-	const statusDate = [...removeCollection.values()].some((cell) => cell.date);
+	const statusCardvalidto = [...removeCollection.values()].some((cell) => cell.cardvalidto);
 
 	removeCollection.forEach((elem) => {
 		elem.statusNewdepart = statusNewdepart;
-		elem.statusDate = statusDate;
+		elem.statusCardvalidto = statusCardvalidto;
 	});
 }
 
-function setUsersInSelect(users) {
+function setUsersInSelect(users, nameForm = '#removeForm') {
 	users.forEach((item) => {
 		const { id = '', fio = '' } = item;
 
-		$('.select[data-select="fio"]').find('.select__list').append(`
+		$(`${nameForm} .select[data-select="fio"]`).find('.select__list').append(`
 			<li class="select__item">
 				<span class="select__name" data-title="${fio}" data-id="${id}">
 					${fio}
@@ -539,6 +539,7 @@ function deleteUser(nameTable = '#tableRemove', page = 'remove') {
 
 			showFieldsInHeaderTable();
 			renderTable();
+			getAddUsersInDB();
 		}
 
 		if (!removeCollection.size) {
@@ -591,7 +592,6 @@ function submitIDinBD(nameTable = '#tableRemove', page = 'remove') {
 			elem.date = getCurrentDate();
 		});
 
-
 		const removeArray = [...removeCollection.values()].filter((elem) => elem.statusid === 'remove');
 		const changeDepartArray = [...removeCollection.values()].filter((elem) => elem.statusid === 'changeDepart');
 
@@ -606,6 +606,7 @@ function submitIDinBD(nameTable = '#tableRemove', page = 'remove') {
 		addEmptySign(nameTable);
 
 		renderTable();
+
 		$(`.main__count--${page}`).text(removeCollection.size);
 	});
 }

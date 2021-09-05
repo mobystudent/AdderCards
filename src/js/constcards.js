@@ -87,7 +87,7 @@ function userFromDB(array, nameTable = '#tableConst') {
 
 		for (const itemField in itemObject) {
 			for (const key in elem) {
-				if (itemField === key.toLocaleLowerCase()) {
+				if (itemField === key) {
 					itemObject[itemField] = elem[key];
 				} else if (itemField === 'id') {
 					itemObject[itemField] = indexCollection;
@@ -189,6 +189,10 @@ function submitIDinBD() {
 			constCollection.forEach((item) => {
 				item.date = getCurrentDate();
 			});
+
+			console.log(constCollection);
+
+			return;
 
 			setAddUsersInDB([...constCollection.values()], 'constcard', 'report');
 

@@ -384,11 +384,11 @@ function showTableCells() {
 	});
 }
 
-function setUsersInSelect(users) {
+function setUsersInSelect(users, nameForm = '#editForm') {
 	users.forEach((item) => {
 		const { id = '', fio = '' } = item;
 
-		$('.select[data-select="fio"]').find('.select__list').append(`
+		$(`${nameForm} .select[data-select="fio"]`).find('.select__list').append(`
 			<li class="select__item">
 				<span class="select__name" data-title="${fio}" data-id="${id}">
 					${fio}

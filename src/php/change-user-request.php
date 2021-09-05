@@ -184,11 +184,18 @@
 	} else if (($nameTable === 'constcard') && ($action === 'report')) {
 		foreach ($array as $item) {
 			foreach ($item as $key => $value) {
+				if ($key === 'id') $id = $value;
 				if ($key === 'fio') $fio = $value;
 				if ($key === 'post') $post = $value;
 				if ($key === 'department') $department = $value;
 				if ($key === 'cardname') $cardname = $value;
 				if ($key === 'date') $date = $value;
+			}
+
+			if($mysqli->query("DELETE FROM const_card WHERE id = $id")) {
+				echo('Success delete in BD const_card');
+			} else {
+				echo $mysqli->error;
 			}
 
 			if($mysqli->query("INSERT INTO report (fio, post, department, cardname, statustitle, date) VALUES ('$fio', '$post', '$department', '$cardname', 'Новая карта', '$date')")) {

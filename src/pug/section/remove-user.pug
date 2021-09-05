@@ -6,7 +6,7 @@ main.main(data-name="remove")
 			| Химический факультет
 		
 		form.form#removeForm(action="#" method="GET")
-			.form__wrap(data-post="")
+			.form__wrap
 				.form__fields
 					.form__field
 						span.form__name
@@ -30,7 +30,7 @@ main.main(data-name="remove")
 								li.select__item
 									span.select__name(data-title="Увольнение" data-reason="remove")
 										| Увольнение
-					.form__field.form__field--hide(data-name="depart")
+					//- .form__field(data-name="depart")
 						span.form__name
 							| Новое подразделение
 						.form__select.form__item.select(data-field="newdepart" data-type="newnameid" data-select="newnameid")
@@ -38,14 +38,14 @@ main.main(data-name="remove")
 								span.select__value(data-title="title" data-newnameid="newnameid" data-placeholder="Выберите подразделение")
 									| Выберите подразделение
 							ul.select__list
-					.form__field.form__field--hide(data-name="date")
+					//- .form__field(data-name="date")
 						label.form__label
 							span.form__name
 								| Дата завершения действия пропуска
 							input.form__input.form__item#removeDatepicker(data-field="date" name="date" type="text" placeholder="Введите дату завершения действия пропуска" required)
-					.form__field.form__field--hide
+					.form__field
 						span.form__item.form__item--hide.form__item--id(data-field="id")
-					.form__field.form__field--hide
+					.form__field
 						span.form__item.form__item--hide.form__item--post(data-field="post")
 							
 				.form__aside
