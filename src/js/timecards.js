@@ -8,24 +8,12 @@ let timeFillOutCollection; // БД временных карт с присвое
 let timeReportCollection; // БД временных карт с присвоеными id для отчета
 
 $(window).on('load', () => {
-	countItems('#tableTime .table__content', 'time');
-
+	defaultValuesInTable();
 	addTimeCard();
 	deleteTimeCard();
 	clearNumberCard();
 	submitIDinBD();
 	convertCardIDInCardName();
-
-	timeCollection.set(1, {
-		id: 1,
-		fio: 'Временная карта',
-		cardid: '',
-		cardname: ''
-	});
-
-	timeCollection.forEach((elem) => {
-		$('#tableTime .table__content').append(templateTimeTable(elem));
-	});
 });
 
 function templateTimeTable(data) {
@@ -67,15 +55,30 @@ function templateTimeTable(data) {
 	`;
 }
 
-function renderTable() {
-	$('#tableTime .table__content').html('');
+function renderTable(nameTable = '#tableTime') {
+	$(`${nameTable} .table__content`).html('');
 
 	timeCollection.forEach((item) => {
-		$('#tableTime .table__content').append(templateTimeTable(item));
+		$(`${nameTable} .table__content`).append(templateTimeTable(item));
 	});
 }
 
-function addTimeCard() {
+function defaultValuesInTable(nameTable = '#tableTime', page = 'time') {
+	timeCollection.set(1, {
+		id: 1,
+		fio: 'Временная карта',
+		cardid: '',
+		cardname: ''
+	});
+
+	timeCollection.forEach((elem) => {
+		$(`${nameTable} .table__content`).append(templateTimeTable(elem));
+	});
+
+	$(`.main__count--${page}`).text(timeCollection.size);
+}
+
+function addTimeCard(page = 'time') {
 	$('#addTimeCard').click(() => {
 		const countIdInCollection = timeCollection.size + 1;
 
@@ -88,11 +91,11 @@ function addTimeCard() {
 
 		renderTable();
 
-		countItems('#tableTime .table__content', 'time');
+		$(`.main__count--${page}`).text(timeCollection.size);
 	});
 }
 
-function deleteTimeCard() {
+function deleteTimeCard(page = 'time') {
 	$('.table__content').click((e) => {
 		if ($(e.target).parents('.table__btn--delete').length || $(e.target).hasClass('table__btn--delete')) {
 			const countItems = timeCollection.size;
@@ -100,16 +103,16 @@ function deleteTimeCard() {
 			blockLastCard(countItems, e.target);
 		}
 
-		countItems('#tableTime .table__content', 'time');
+		$(`.main__count--${page}`).text(timeCollection.size);
 	});
 }
 
-function blockLastCard(countItems, item) {
+function blockLastCard(countItems, item, page = 'time') {
 	if (countItems === 1) {
-		$('.main[data-name="time"]').find('.info__item--last').show();
+		$(`.main[data-name="${page}"]`).find('.info__item--last').show();
 
 		setTimeout(() => {
-			$('.main[data-name="time"]').find('.info__item--last').hide();
+			$(`.main[data-name="${page}"]`).find('.info__item--last').hide();
 		}, 5000);
 
 		return false;
@@ -122,8 +125,8 @@ function blockLastCard(countItems, item) {
 	}
 }
 
-function clearNumberCard() {
-	$('.table__content').click((e) => {
+function clearNumberCard(nameTable = '#tableTime') {
+	$(`${nameTable} .table__content`).click((e) => {
 		if ($(e.target).parents('.table__btn--clear').length || $(e.target).hasClass('table__btn--clear')) {
 			const idClear = $(e.target).closest('.table__row').data('id');
 			const itemClear = timeCollection.get(idClear);
@@ -138,21 +141,21 @@ function clearNumberCard() {
 	});
 }
 
-function convertCardIDInCardName() {
-	$('.table__content').click((e) => {
+function convertCardIDInCardName(nameTable = '#tableTime') {
+	$(`${nameTable} .table__content`).click((e) => {
 		if (!$(e.target).hasClass('table__input')) return;
 
 		$('.table__input').on('input', (e) => {
+			console.log('Enter');
 			const cardIdVal = $(e.target).val().trim();
 			const convertNumCard = convert.convertCardId(cardIdVal);
+			const idAdd = $(e.target).closest('.table__row').data('id');
 
 			if (!convertNumCard) {
 				$(e.target).parents('.main').find('.info__item--error').show();
 
 				return;
 			}
-
-			const idAdd = $(e.target).closest('.table__row').data('id');
 
 			timeCollection.set(idAdd, {
 				id: idAdd,
@@ -161,8 +164,8 @@ function convertCardIDInCardName() {
 				cardname: convertNumCard
 			});
 
-			renderTable();
 
+			renderTable();
 			checkInvalidValueCardID(idAdd);
 			// focusNext(idAdd);
 		});
@@ -188,7 +191,7 @@ function validationEmptyFields() {
 			const statusMess = elem[key] == '' ? 'show' : 'hide';
 			statusFields = elem[key] == '' ? false : true;
 
-			$('.main[data-name="time"]').find('.info__item--warn.info__item--fields')[statusMess]();
+			$('.main[data-name="time"]').find('.info__item--cardid')[statusMess]();
 		}
 	});
 
@@ -233,13 +236,15 @@ function submitIDinBD() {
 		timeReportCollection = deepClone(timeCollection);
 		timeFillOutCollection = deepClone(timeCollection);
 
-		createObjectForBD([...timeReportCollection.values()]);
+		// createObjectForBD([...timeReportCollection.values()]);
+		// createObjectForBD();
+		getData();
 
 		timeFillOutCollection.forEach((item) => {
 			item.date = getCurrentDate();
 		});
 
-		setDatainDB([...timeFillOutCollection.values()]);
+		setAddUsersInDB([...timeFillOutCollection.values()], 'timecard', 'report');
 		const noEmpty = validationEmptyFields();
 
 		if (!noEmpty) return;
@@ -256,41 +261,102 @@ function submitIDinBD() {
 	});
 }
 
-function createObjectForBD(map) {
+function createObjectForBD() {
+	const { UserSID = '', UserToken = 0 } = getData();
+
+	// console.log(UserSID);
+	// console.log(UserToken);
+	console.log(UserSID);
+
 	const object = {
-		FIO: '',
-		Department: '',
-		FieldGroup: '',
-		Badge: '',
-		CardName: '',
-		CardID: '',
-		CardValidTo: '',
-		PIN: '',
-		CardStatus: 1,
-		Security: 0,
-		Disalarm: 0,
-		VIP: 0,
-		DayNightCLM: 0,
-		AntipassbackDisabled: 0,
-		PhotoFile: '',
-		EmployeeNumber: 1,
-		Post: ''
+		"Language":"ua",
+		"UserSID":UserSID,
+		"ResultTokenRequired":true,
+		"AccessGroupInherited":true,
+		"AccessGroupToken":UserToken,
+		"AdditionalFields":[{
+			"Name":"",
+			"Value":""
+		}],
+		"AdditionalFieldsChanged":true,
+		"FieldGroupToken":UserToken,
+		"Name":"Временная карта",
+		"NewCards":[{
+			"AntipassbackDisabled":true,
+			"Code":"",
+			"ConfirmationUrl":"",
+			"Disalarm":true,
+			"Email":"",
+			"EmailRequestCode":"",
+			"IdentifierType":2147483647,
+			"Name":"",
+			"PIN":"",
+			"Security":true,
+			"Status":2147483647,
+			"Token":UserToken,
+			"VIP":true,
+			"ValidTo":"\/Date(928135200000+0300)\/",
+			"ValidToUsed":true
+		}],
+		"OwnAccessRulesChanged":true,
+		"Token":UserToken,
+		"WorktimeInherited":true,
+		"CardCodes":[""],
+		"CardTokens":[UserToken],
+		"CardsChanged":true,
+		"DepartmentToken":UserToken,
+		"EmployeeNumber":"",
+		"NewBiometricIdentifiers":[{
+			"BiometricIndex":2147483647,
+			"BiometricType":"",
+			"Data":"",
+			"Quality":2147483647
+		}],
+		"PhotoBase64":"",
+		"PhotoChanged":true,
+		"PhotoFileExt":"",
+		"Post":"",
+		"OwnAccessRules":[{
+			"DoorToken":UserToken,
+			"PassCounter":2147483647,
+			"ScheduleToken":UserToken
+		}]
 	};
-	const fillOutObjectInBD = map.map((elem) => {
-		const itemObject = Object.assign({}, object);
+	// const fillOutObjectInBD = map.map((elem) => {
+	// 	const itemObject = Object.assign({}, object);
+	//
+	// 	for (const itemField in itemObject) {
+	// 		for (const key in elem) {
+	// 			if (itemField.toLocaleLowerCase() == key) {
+	// 				itemObject[itemField] = elem[key];
+	// 			}
+	// 		}
+	// 	}
+	//
+	// 	return itemObject;
+	// });
 
-		for (const itemField in itemObject) {
-			for (const key in elem) {
-				if (itemField.toLocaleLowerCase() == key) {
-					itemObject[itemField] = elem[key];
-				}
-			}
+	// console.log(object);
+	$.ajax({
+		url: "http://localhost:40001/json/UserSet",
+		method: "post",
+		dataType: "json",
+		contentType: 'application/json',
+		data: JSON.stringify(object),
+		async: false,
+		success: (data) => {
+			console.log(data);
+			// const { UserSID = '', UserToken = 0 } = data;
+			//
+			// resultAuthent = {
+			// 	UserSID,
+			// 	UserToken
+			// };
+		},
+		error: (data) => {
+			console.log(data);
 		}
-
-		return itemObject;
 	});
-
-	console.log(fillOutObjectInBD);
 }
 
 function getCurrentDate() {
@@ -306,18 +372,14 @@ function getCurrentDate() {
 	return `${currentDay}-${currentMonth}-${currentYear} ${currentHour}:${currentMinute}`;
 }
 
-function countItems(tableContent, modDepart) {
-	const countItemfromDep = $(tableContent).eq(0).find('.table__row').length;
-
-	$(`.main__count--${modDepart}`).text(countItemfromDep);
-}
-
-function setDatainDB(array) {
+function setAddUsersInDB(array,  nameTable, action) {
 	$.ajax({
-		url: "./php/report-time-add.php",
+		url: "./php/change-user-request.php",
 		method: "post",
 		dataType: "html",
 		data: {
+			action: action,
+			nameTable: nameTable,
 			array: array
 		},
 		success: function(data) {
@@ -327,6 +389,38 @@ function setDatainDB(array) {
 			console.log(data);
 		}
 	});
+}
+
+function getData() {
+	const data = {
+		"PasswordHash":"88020F057FE7287D8D57494382356F97",
+		"UserName":"admin"
+	};
+	let resultAuthent = {};
+
+	$.ajax({
+		url: "http://localhost:40001/json/Authenticate",
+		method: "post",
+		dataType: "json",
+		contentType: 'application/json',
+		data: JSON.stringify(data),
+		async: false,
+		success: (data) => {
+			const { UserSID = '', UserToken = 0 } = data;
+
+			console.log(data);
+
+			resultAuthent = {
+				UserSID,
+				UserToken
+			};
+		},
+		error: (data) => {
+			console.log(data);
+		}
+	});
+
+	return resultAuthent;
 }
 
 export default {

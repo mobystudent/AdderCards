@@ -2,7 +2,7 @@
 
 import $ from 'jquery';
 import './timecards.js';
-import './constcards.js';
+// import './constcards.js';
 import './qrcodes.js';
 import './permission.js';
 import './constqr.js';
@@ -15,37 +15,11 @@ import './reject.js';
 import service from './service.js';
 
 $(window).on('load', () => {
-	getData();
 	defaultDataInTables();
 
 	//service functions
 	service.showDataInTable();
 });
-
-function getData() {
-	const data = {
-		"PasswordHash":"88020F057FE7287D8D57494382356F97",
-		"UserName":"admin"
-	};
-
-	$.ajax({
-		url: "http://localhost:40001/json/Authenticate",
-		method: "post",
-		dataType: "json",
-		contentType: 'application/json',
-		data: JSON.stringify(data),
-		success: (data) => {
-			const { UserSID = '', UserToken = 0 } = data;
-
-			if (UserSID) {
-				console.log(data);
-			}
-		},
-		error: (data) => {
-			console.log(data);
-		}
-	});
-}
 
 function defaultDataInTables() {
 	$(`.main[data-name="const"]`).show();

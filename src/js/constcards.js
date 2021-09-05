@@ -327,7 +327,7 @@ function setDataInTable(item, cardid, cardname) {
 }
 
 function checkInvalidValueCardID(namePage) {
-	const checkValueCard = [...constCollection.values()].every((user) => convert.convertCardId(user.cardid) || user.cardid === '');
+	const checkValueCard = [...constCollection.values()].every((user) => convert.convertCardId(user.cardid) || (user.cardid === ''));
 
 	if (checkValueCard) $(`.main[data-name=${namePage}]`).find('.info__item--error').hide();
 }
