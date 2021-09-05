@@ -5,7 +5,7 @@ import $ from 'jquery';
 const rejectCollection = new Map(); // БД отклоненных пользователей
 
 $(window).on('load', () => {
-	getDatainDB();
+	getDatainDB('reject');
 });
 
 function templateRejectTable(data) {
@@ -40,20 +40,7 @@ function renderTable(nameTable) {
 	});
 }
 
-function getDatainDB() {
-	$.ajax({
-		url: "./php/reject-output.php",
-		method: "post",
-		success: function(data) {
-			userdFromDB(JSON.parse(data));
-		},
-		error: function(data) {
-			console.log(data);
-		}
-	});
-}
-
-function userdFromDB(array) {
+function userdFromDB(array, nameTable = '#tableReject') {
 	const objToCollection = {
 		id: '',
 		fio: '',
@@ -80,7 +67,7 @@ function userdFromDB(array) {
 		rejectCollection.set(i, itemObject);
 	});
 
-	dataAdd('#tableReject');
+	dataAdd(nameTable);
 }
 
 function dataAdd(nameTable) {
@@ -104,6 +91,28 @@ function dataAdd(nameTable) {
 
 	renderTable(nameTable);
 	$('.main__count--reject').text(rejectCollection.size);
+}
+
+function getDatainDB(nameTable) {
+	// const idDepart = $(`.main__depart--${page}`).attr('data-id');
+	const idDepart = 'chemdep';
+
+	$.ajax({
+		url: "./php/output-request.php",
+		method: "post",
+		dataType: "html",
+		data: {
+			idDepart: idDepart,
+			nameTable: nameTable
+		},
+		async: false,
+		success: function(data) {
+			userdFromDB(JSON.parse(data));
+		},
+		error: function(data) {
+			console.log(data);
+		}
+	});
 }
 
 export default {
