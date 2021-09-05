@@ -36,19 +36,6 @@ function templatePermissionTable(data) {
 	`;
 }
 
-function getDatainDB() {
-	$.ajax({
-		url: "./php/permission-output.php",
-		method: "post",
-		success: function(data) {
-			userdFromDB(JSON.parse(data));
-		},
-		error: function(data) {
-			console.log(data);
-		}
-	});
-}
-
 function userdFromDB(array) {
 	const objToCollection = {
 		id: '',
@@ -170,13 +157,13 @@ function submitIDinBD() {
 
 			if (allowItems.length) {
 				delegationID(allowItems);
-				setDataInDBWithID(allowItems, idActiveDepart, 'permission-remove');
+				changeEditUsersInDB(allowItems, 'permission', 'remove');
 			} else {
 				disallowItems.forEach((item) => {
 					item.date = getCurrentDate();
 				});
 
-				setDataInDBWithID(disallowItems, idActiveDepart, 'reject');
+				changeEditUsersInDB(disallowItems, 'reject', 'add');
 			}
 
 			filterDepatCollection.splice(0);
@@ -204,8 +191,8 @@ function delegationID(users) {
 	const filterArrCards = users.filter((item) => item.statusid == 'newCard' || item.statusid == 'changeCard');
 	const filterArrQRs = users.filter((item) => item.statusid == 'newQR' || item.statusid == 'changeQR');
 
-	setDataInDB(filterArrCards, 'const-card');
-	setDataInDB(filterArrQRs, 'const-qr');
+	changeEditUsersInDB(filterArrCards, 'const', 'add', 'card');
+	changeEditUsersInDB(filterArrQRs, 'const', 'add', 'qr');
 }
 
 function getCurrentDate() {
@@ -311,14 +298,16 @@ function resetControlBtns() {
 	});
 }
 
-function setDataInDBWithID(users, idDepart, nameQuery) {
+function changeEditUsersInDB(array, nameTable, action, typeTable) {
 	$.ajax({
-		url: `./php/${nameQuery}.php`,
+		url: "./php/change-user-request.php",
 		method: "post",
 		dataType: "html",
 		data: {
-			nameid: idDepart,
-			array: users
+			action: action,
+			nameTable: nameTable,
+			array: array,
+			typeTable: typeTable
 		},
 		success: function(data) {
 			console.log('succsess '+data);
@@ -329,16 +318,12 @@ function setDataInDBWithID(users, idDepart, nameQuery) {
 	});
 }
 
-function setDataInDB(users, nameQuery) {
+function getDatainDB() {
 	$.ajax({
-		url: `./php/${nameQuery}.php`,
+		url: "./php/permission-output.php",
 		method: "post",
-		dataType: "html",
-		data: {
-			array: users
-		},
 		success: function(data) {
-			console.log('succsess '+data);
+			userdFromDB(JSON.parse(data));
 		},
 		error: function(data) {
 			console.log(data);

@@ -3,7 +3,6 @@
 
 	border-bottom-left-radius: 10px;
 	border-bottom-right-radius: 10px;
-	overflow-y: auto;
 
 	&--const {
 		@media print {
@@ -29,6 +28,7 @@
 	&__body {
 		padding-bottom: 10px;
 		background: $gray;
+		overflow-y: auto;
 
 		&--empty {
 			height: 370px;
