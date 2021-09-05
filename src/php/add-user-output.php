@@ -9,23 +9,23 @@
 
 	if ($id) {
 		if($resultSet = $mysqli->query("SELECT id, post, photourl FROM `$nameDepart` WHERE id = '$id'")) {
-			$data = $resultSet->fetch_assoc();
+			$array = $resultSet->fetch_assoc();
 		} else {
 			echo $mysqli->error;
 		}
 	} else {
-		$data = array();
+		$array = array();
 
 		if($resultSet = $mysqli->query("SELECT * FROM `$nameDepart`")) {
 			while ($result = $resultSet->fetch_assoc()) {
-				array_push($data, $result);
+				array_push($array, $result);
 			}
 		} else {
 			echo $mysqli->error;
 		}
 	}
 
-	echo json_encode($data);
+	echo json_encode($array);
 
 	$mysqli->close();
 

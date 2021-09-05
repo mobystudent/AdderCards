@@ -181,6 +181,22 @@
 				echo 'False add in BD';
 			}
 		}
+	} else if (($nameTable === 'constcard') && ($action === 'report')) {
+		foreach ($array as $item) {
+			foreach ($item as $key => $value) {
+				if ($key === 'fio') $fio = $value;
+				if ($key === 'post') $post = $value;
+				if ($key === 'department') $department = $value;
+				if ($key === 'cardname') $cardname = $value;
+				if ($key === 'date') $date = $value;
+			}
+
+			if($mysqli->query("INSERT INTO report (fio, post, department, cardname, statustitle, date) VALUES ('$fio', '$post', '$department', '$cardname', 'Новая карта', '$date')")) {
+				echo('Success add in BD');
+			} else {
+				echo 'False add in BD';
+			}
+		}
 	}
 
 	$mysqli->close();

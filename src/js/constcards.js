@@ -13,62 +13,13 @@ $(window).on('load', () => {
 	submitIDinBD();
 });
 
-function getDatainDB() {
-	$.ajax({
-		url: "./php/const-card-get.php",
-		method: "post",
-		success: function(data) {
-			const dataFromDB = JSON.parse(data);
-
-			userdFromDB(dataFromDB);
-		},
-		error: function(data) {
-			console.log(data);
-		}
-	});
-}
-
-function userdFromDB(array) {
-	const objToCollection = {
-		id: '',
-		fio: '',
-		post: '',
-		nameid: '',
-		cardid: '',
-		cardname: '',
-		statusid: '',
-		statustitle: '',
-		department: ''
-	};
-
-	array.forEach((elem, i) => {
-		const itemObject = Object.assign({}, objToCollection);
-
-		for (const itemField in itemObject) {
-			for (const key in elem) {
-				if (itemField === key.toLocaleLowerCase()) {
-					itemObject[itemField] = elem[key];
-				} else if (itemField === 'id') {
-					itemObject[itemField] = i;
-				}
-			}
-		}
-
-		constCollection.set(i, itemObject);
-	});
-
-	dataAdd('#tableConst');
-}
-
 function templateConstTable(data) {
 	const { id = '', fio = '', post  = '', cardid = '', cardname = '', statustitle = '' } = data;
-	let typeIDField = '';
-
-	if (cardid) {
-		typeIDField = `<span class="table__text table__text--body">${cardid}</span>`;
-	} else {
-		typeIDField = `<input class="table__input" />`;
-	}
+	const typeIDField = cardid ? `
+		<span class="table__text table__text--body">${cardid}</span>
+	` : `
+		<input class="table__input" />
+	`;
 
 	return `
 		<div class="table__row table__row--time" data-id="${id}">
@@ -101,6 +52,55 @@ function templateConstTable(data) {
 	`;
 }
 
+// function renderTable(nameTable = '#tableConst') {
+// 	$(nameTable)
+// 		.html('')
+// 		.append(`
+// 			<div class="table__content table__content--active">
+// 			</div>
+// 		`);
+//
+// 	timeCollection.forEach((item) => {
+// 		$(`${nameTable} .table__content`).append(templateTimeTable(item));
+// 	});
+// }
+
+function userFromDB(array, nameTable = '#tableConst') {
+	const objToCollection = {
+		id: '',
+		fio: '',
+		post: '',
+		nameid: '',
+		cardid: '',
+		cardname: '',
+		photofile: '',
+		photourl: '',
+		statusid: '',
+		statustitle: '',
+		department: '',
+		сardvalidto: ''
+	};
+
+	array.forEach((elem) => {
+		const indexCollection = constCollection.size;
+		const itemObject = Object.assign({}, objToCollection);
+
+		for (const itemField in itemObject) {
+			for (const key in elem) {
+				if (itemField === key.toLocaleLowerCase()) {
+					itemObject[itemField] = elem[key];
+				} else if (itemField === 'id') {
+					itemObject[itemField] = indexCollection;
+				}
+			}
+		}
+
+		constCollection.set(indexCollection, itemObject);
+	});
+
+	dataAdd(nameTable);
+}
+
 function dataAdd(nameTable) {
 	const filterNameDepart = filterDepart(constCollection);
 
@@ -109,11 +109,7 @@ function dataAdd(nameTable) {
 	if (constCollection.size) {
 		$(`${nameTable} .table__nothing`).hide();
 	} else {
-		$(nameTable).addClass('table__body--empty').html('');
-		$(nameTable).append(`
-			<p class="table__nothing">Новых данных нет</p>
-		`);
-
+		addEmptySign(nameTable);
 		countItems(filterNameDepart[0], 'const');
 
 		return;
@@ -124,11 +120,12 @@ function dataAdd(nameTable) {
 		showActiveDataOnPage(constCollection , nameTable, 'const', filterNameDepart[0]);
 		changeTabs(nameTable, 'const');
 	} else {
-		$(nameTable).html('');
-		$(nameTable).append(`
-			<div class="table__content table__content--active">
-			</div>
-		`);
+		$(nameTable)
+			.html('')
+			.append(`
+				<div class="table__content table__content--active">
+				</div>
+			`);
 		$(`.tab--const`).html('');
 
 		constCollection.forEach((user) => {
@@ -145,13 +142,15 @@ function dataAdd(nameTable) {
 }
 
 function showActiveDataOnPage(collection, nameTable, modDepart, nameDepart) {
-	$(nameTable).html('');
 	$(`.tab--${modDepart} .tab__item`).removeClass('tab__item--active');
-	$(nameTable).append(`
-		<div class="table__content table__content--active">
-		</div>
-	`);
 	$(`.tab__item[data-depart=${nameDepart}]`).addClass('tab__item--active');
+
+	$(nameTable)
+		.html('')
+		.append(`
+			<div class="table__content table__content--active">
+			</div>
+		`);
 
 	collection.forEach((user) => {
 		if (user.nameid == nameDepart) {
@@ -191,7 +190,7 @@ function submitIDinBD() {
 				item.date = getCurrentDate();
 			});
 
-			setDatainDB([...constCollection.values()]);
+			setAddUsersInDB([...constCollection.values()], 'constcard', 'report');
 
 			filterDepatCollection.splice(0);
 			idFilterUsers.forEach((key) => {
@@ -213,24 +212,6 @@ function submitIDinBD() {
 		// console.warn(constReportCollection); // пойдет в отчет
 		// createObjectForBD();
 		// constFillOutCardCollection.clear();
-	});
-}
-
-function setDatainDB(array) {
-	$.ajax({
-		url: "./php/report-add.php",
-		method: "post",
-		dataType: "html",
-		data: {
-			action: 'reportAdd',
-			array: array
-		},
-		success: function(data) {
-			console.log('succsess '+data);
-		},
-		error: function(data) {
-			console.log(data);
-		}
 	});
 }
 
@@ -271,6 +252,15 @@ function createObjectForBD() {
 	console.log(fillOutObjectInBD);
 }
 
+function addEmptySign(nameTable) {
+	$(nameTable)
+		.addClass('table__body--empty')
+		.html('')
+		.append(`
+			<p class="table__nothing">Новых данных нет</p>
+		`);
+}
+
 function getCurrentDate() {
 	const date = new Date();
 	const month = date.getMonth() + 1;
@@ -292,23 +282,25 @@ function clearNumberCard() {
 	});
 }
 
-function convertCardIDInCardName() {
-	$('.table__input').on('input', (e) => {
+function convertCardIDInCardName(nameTable = '#tableConst') {
+	$(`${nameTable} .table__content`).click((e) => {
 		if (!$(e.target).hasClass('table__input')) return;
 
-		const cardIdVal = $(e.target).val().trim();
-		const convertNumCard = convert.convertCardId(cardIdVal);
+		$('.table__input').on('input', (e) => {
+			const cardIdVal = $(e.target).val().trim();
+			const convertNumCard = convert.convertCardId(cardIdVal);
 
-		if (!convertNumCard) {
-			$(e.target).parents('.main').find('.info__item--error').show();
+			if (!convertNumCard) {
+				$(e.target).parents('.main').find('.info__item--error').show();
 
-			return;
-		}
+				return;
+			}
 
-		setDataInTable(e.target, cardIdVal, convertNumCard);
-		checkInvalidValueCardID('const');
-		// focusNext(e.target);
-		// dataAdd('#tableConst');
+			setDataInTable(e.target, cardIdVal, convertNumCard);
+			checkInvalidValueCardID('const');
+			// focusNext(e.target);
+			// dataAdd('#tableConst');
+		});
 	});
 }
 
@@ -327,7 +319,11 @@ function setDataInTable(item, cardid, cardname) {
 }
 
 function checkInvalidValueCardID(namePage) {
-	const checkValueCard = [...constCollection.values()].every((user) => convert.convertCardId(user.cardid) || (user.cardid === ''));
+	const checkValueCard = [...constCollection.values()].every((user) => {
+		if (user.cardid) {
+			return convert.convertCardId(user.cardid);
+		}
+	});
 
 	if (checkValueCard) $(`.main[data-name=${namePage}]`).find('.info__item--error').hide();
 }
@@ -391,6 +387,40 @@ function filterDepart(collection) {
 	const filterIdDepart = new Set(arrayDepart);
 
 	return [...filterIdDepart];
+}
+
+function getDatainDB() {
+	$.ajax({
+		url: "./php/const-card-get.php",
+		method: "post",
+		success: function(data) {
+			const dataFromDB = JSON.parse(data);
+
+			userFromDB(dataFromDB);
+		},
+		error: function(data) {
+			console.log(data);
+		}
+	});
+}
+
+function setAddUsersInDB(array, nameTable, action) {
+	$.ajax({
+		url: "./php/change-user-request.php",
+		method: "post",
+		dataType: "html",
+		data: {
+			action: action,
+			nameTable: nameTable,
+			array: array
+		},
+		success: function(data) {
+			console.log('succsess '+data);
+		},
+		error: function(data) {
+			console.log(data);
+		}
+	});
 }
 
 export default {

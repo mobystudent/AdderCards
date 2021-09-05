@@ -164,7 +164,6 @@ function convertCardIDInCardName(nameTable = '#tableTime') {
 				cardname: convertNumCard
 			});
 
-
 			renderTable();
 			checkInvalidValueCardID(idAdd);
 			// focusNext(idAdd);
@@ -198,11 +197,11 @@ function validationEmptyFields() {
 	return statusFields;
 }
 
-function checkInvalidValueCardID(idItem) {
+function checkInvalidValueCardID(idItem, page = 'time') {
 	const valuesCardid = timeCollection.get(idItem).cardid;
 	const convertNumCard = convert.convertCardId(valuesCardid);
 
-	if (convertNumCard) $('.main[data-name="time"]').find('.info__item--error').hide();
+	if (convertNumCard) $(`.main[data-name="${page}"]`).find('.info__item--error').hide();
 }
 
 function deepClone(map) {
@@ -372,7 +371,7 @@ function getCurrentDate() {
 	return `${currentDay}-${currentMonth}-${currentYear} ${currentHour}:${currentMinute}`;
 }
 
-function setAddUsersInDB(array,  nameTable, action) {
+function setAddUsersInDB(array, nameTable, action) {
 	$.ajax({
 		url: "./php/change-user-request.php",
 		method: "post",

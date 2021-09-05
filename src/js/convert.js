@@ -1,7 +1,5 @@
 'use strict';
 
-import $ from 'jquery';
-
 // class Convert {
 // 	constructor() {
 // 		this.cardField = $('.table__input');
@@ -22,7 +20,6 @@ function convertCardId(cardNum) {
 	partTwoHEX = addZeroinNum(partTwoHEX, 5);
 
 	const converCore = `${partOneHEX}-${partTwoHEX}`;
-
 	const encrypCode = encryptionCardName(converCore);
 
 	return encrypCode;
@@ -33,7 +30,7 @@ function addZeroinNum(item, numLength) {
 		const diff = numLength - item.length;
 
 		for (let i = 0; i < diff; i++) {
-			item = '0' + item;
+			item = `0${item}`;
 		}
 	}
 
@@ -45,17 +42,14 @@ function encryptionCardName(cardName) {
 	const fullCode = cardName.replace('-', '');
 	const firstPartCode = fullCode.slice(0, 4);
 	const secondPartCode = fullCode.slice(4);
-
 	const inter = +firstPartCode % 15;
 	const interSymb = inter > 9 ? 'D' : 'S';
 	const interFr = inter % 10;
-
 	let firstSymb = 0;
 	let secondSymb = 0;
 
 	if (+firstPartCode > 0) {
 		const fraction = Math.ceil(+firstPartCode / 15);
-
 		const mainFr = Math.ceil(fraction / arrSymbols.length);
 		const subFr = fraction % arrSymbols.length;
 
@@ -66,9 +60,7 @@ function encryptionCardName(cardName) {
 		secondSymb = arrSymbols[0];
 	}
 
-	const encripCode = firstSymb + secondSymb + interSymb + interFr + secondPartCode;
-
-	return encripCode;
+	return `${firstSymb}${secondSymb}${interSymb}${interFr}${secondPartCode}`;
 }
 
 export default {

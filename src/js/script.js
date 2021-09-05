@@ -2,7 +2,7 @@
 
 import $ from 'jquery';
 import './timecards.js';
-// import './constcards.js';
+import './constcards.js';
 import './qrcodes.js';
 import './permission.js';
 import './constqr.js';
