@@ -157,13 +157,13 @@ function submitIDinBD() {
 
 			if (allowItems.length) {
 				delegationID(allowItems);
-				changeEditUsersInDB(allowItems, 'permission', 'remove');
+				setAddUsersInDB(allowItems, 'permission', 'remove');
 			} else {
 				disallowItems.forEach((item) => {
 					item.date = getCurrentDate();
 				});
 
-				changeEditUsersInDB(disallowItems, 'reject', 'add');
+				setAddUsersInDB(disallowItems, 'reject', 'add');
 			}
 
 			filterDepatCollection.splice(0);
@@ -191,8 +191,8 @@ function delegationID(users) {
 	const filterArrCards = users.filter((item) => item.statusid == 'newCard' || item.statusid == 'changeCard');
 	const filterArrQRs = users.filter((item) => item.statusid == 'newQR' || item.statusid == 'changeQR');
 
-	changeEditUsersInDB(filterArrCards, 'const', 'add', 'card');
-	changeEditUsersInDB(filterArrQRs, 'const', 'add', 'qr');
+	setAddUsersInDB(filterArrCards, 'const', 'add', 'card');
+	setAddUsersInDB(filterArrQRs, 'const', 'add', 'qr');
 }
 
 function getCurrentDate() {
@@ -298,16 +298,16 @@ function resetControlBtns() {
 	});
 }
 
-function changeEditUsersInDB(array, nameTable, action, typeTable) {
+function setAddUsersInDB(array, nameTable, action, typeTable) {
 	$.ajax({
 		url: "./php/change-user-request.php",
 		method: "post",
 		dataType: "html",
 		data: {
+			typeTable: typeTable,
 			action: action,
 			nameTable: nameTable,
-			array: array,
-			typeTable: typeTable
+			array: array
 		},
 		success: function(data) {
 			console.log('succsess '+data);

@@ -179,7 +179,7 @@
 			if($mysqli->query("INSERT INTO report (fio, cardname, statustitle, date) VALUES ('$fio', '$cardname', 'Новая карта', '$date')")) {
 				echo('Success add in BD report');
 			} else {
-				echo 'False add in BD report';
+				echo $mysqli->error;
 			}
 		}
 	} else if (($nameTable === 'const') && ($action === 'report')) {
@@ -194,10 +194,17 @@
 				if ($key === 'cardid') $cardid = $value;
 				if ($key === 'cardname') $cardname = $value;
 				if ($key === 'date') $date = $value;
+
+				if ($key === 'nameid') $nameid = $value; // - заменить на id
 			}
 
-			if($mysqli->query("DELETE FROM const_card WHERE id = $id")) {
-				echo('Success delete in BD const_card');
+			$typeBDTable = 'const_'.$typeTable;
+
+			echo $nameid;
+
+			// if($mysqli->query("DELETE FROM `$typeBDTable` WHERE id = $id")) {
+			if($mysqli->query("DELETE FROM `$typeBDTable` WHERE nameid = '$nameid'")) {
+				echo('Success delete in BD '.$typeBDTable);
 			} else {
 				echo $mysqli->error;
 			}
@@ -205,7 +212,7 @@
 			if($mysqli->query("INSERT INTO report (fio, post, department, statusid, statustitle, cardid, cardname, date) VALUES ('$fio', '$post', '$department', '$statusid', '$statustitle', '$cardid', '$cardname', '$date')")) {
 				echo('Success add in BD report');
 			} else {
-				echo 'False add in BD report';
+				echo $mysqli->error;
 			}
 		}
 	} else if (($nameTable === 'permission') && ($action === 'remove')) {
@@ -255,19 +262,18 @@
 	} else if (($nameTable === 'const') && ($action === 'add')) {
 		foreach ($array as $item) {
 			foreach ($item as $key => $value) {
-				// if ($key === 'id') $id = $value; - заменить на id
 				if ($key === 'id') $id = $value;
 				if ($key === 'fio') $fio = $value;
 				if ($key === 'department') $department = $value;
 				if ($key === 'post') $post = $value;
 				if ($key === 'photofile') $photofile = $value;
 				if ($key === 'photourl') $photourl = $value;
-				if ($key === 'nameid') $nameid = $value;
+				if ($key === 'nameid') $nameid = $value; // - заменить на id
 				if ($key === 'statusid') $statusid = $value;
 				if ($key === 'statustitle') $statustitle = $value;
 			}
 
-			$nameDepart = 'const_'.$typeTable;
+			$typeBDTable = 'const_'.$typeTable;
 
 			if($mysqli->query("DELETE FROM permission WHERE nameid = '$nameid'")) {
 				echo('Success remove in BD permission');
@@ -275,8 +281,8 @@
 				echo $mysqli->error;
 			}
 
-			if ($mysqli->query("INSERT INTO `$nameDepart` (fio, department, post, photofile, photourl, nameid, statusid, statustitle) VALUES ('$fio', '$department', '$post', '$photofile', '$photourl', '$nameid', '$statusid', '$statustitle')")) {
-				echo('Success add in BD '.$nameDepart);
+			if ($mysqli->query("INSERT INTO `$typeBDTable` (fio, department, post, photofile, photourl, nameid, statusid, statustitle) VALUES ('$fio', '$department', '$post', '$photofile', '$photourl', '$nameid', '$statusid', '$statustitle')")) {
+				echo('Success add in BD '.$typeBDTable);
 			} else {
 				echo $mysqli->error;
 			}

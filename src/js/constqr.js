@@ -227,12 +227,13 @@ function filterDepart(collection) {
 	return [...filterIdDepart];
 }
 
-function getDatainDB(nameTable) {
+function getDatainDB(nameTable, typeTable) {
 	$.ajax({
 		url: "./php/output-request.php",
 		method: "post",
 		data: {
-			nameTable: nameTable
+			nameTable: nameTable,
+			typeTable: typeTable
 		},
 		success: function(data) {
 			const dataFromDB = JSON.parse(data);

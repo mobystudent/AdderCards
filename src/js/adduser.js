@@ -25,8 +25,8 @@ $(window).on('load', () => {
 });
 
 function templateAddTable(data) {
-	const { id = '', fio = '', post = '', photofile = '', statustitle = '', cardvalidto = '' } = data;
-	const cardvalidtoView = cardvalidto ? `
+	const { id = '', fio = '', post = '', photofile = '', statustitle = '', statusСardvalidto = '', cardvalidto = '' } = data;
+	const cardvalidtoView = statusСardvalidto ? `
 		<div class="table__cell table__cell--body table__cell--cardvalidto">
 			<span class="table__text table__text--body">${cardvalidto}</span>
 		</div>
@@ -307,11 +307,11 @@ function showFieldsInHeaderTable(page = 'add') {
 	const arrayStatusCells = [
 		{
 			name: 'cardvalidto',
-			status: 'statusсardvalidto'
+			status: 'statusСardvalidto'
 		}
 	];
 	const statusFields = {
-		statusсardvalidto: false
+		statusСardvalidto: false
 	};
 
 	$(`.table--${page} .table__header`).html('');
@@ -328,7 +328,8 @@ function showFieldsInHeaderTable(page = 'add') {
 		}
 	});
 
-	const cardvalidto = [...addCollection.values()].some((cell) => cell.statusсardvalidto) ? '-cardvalidto' : '';
+	console.log(addCollection.values());
+	const cardvalidto = [...addCollection.values()].some((cell) => cell.statusСardvalidto) ? '-cardvalidto' : '';
 	const className = `wrap wrap--content wrap--content-${page}${cardvalidto}`;
 
 	$(`.main[data-name="${page}"]`).find('.wrap--content').attr('class', className);
@@ -336,10 +337,10 @@ function showFieldsInHeaderTable(page = 'add') {
 }
 
 function showTableCells() {
-	const statusсardvalidto = [...addCollection.values()].some((cell) => cell.cardvalidto);
+	const statusСardvalidto = [...addCollection.values()].some((cell) => cell.cardvalidto);
 
 	addCollection.forEach((elem) => {
-		elem.statusсardvalidto = statusсardvalidto;
+		elem.statusСardvalidto = statusСardvalidto;
 	});
 }
 
@@ -592,7 +593,7 @@ function getCurrentDate() {
 	return `${currentDay}-${currentMonth}-${currentYear} ${currentHour}:${currentMinute}`;
 }
 
-function setAddUsersInDB(array,  nameTable, action) {
+function setAddUsersInDB(array, nameTable, action) {
 	$.ajax({
 		url: "./php/change-user-request.php",
 		method: "post",

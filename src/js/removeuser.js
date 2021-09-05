@@ -596,10 +596,10 @@ function submitIDinBD(nameTable = '#tableRemove', page = 'remove') {
 		const changeDepartArray = [...removeCollection.values()].filter((elem) => elem.statusid === 'changeDepart');
 
 		if (removeArray) {
-			changeEditUsersInDB(removeArray, 'add' , 'remove');
+			setAddUsersInDB(removeArray, 'add' , 'remove');
 		}
 		if (changeDepartArray) {
-			changeEditUsersInDB(changeDepartArray, 'add', 'transfer');
+			setAddUsersInDB(changeDepartArray, 'add', 'transfer');
 		}
 
 		removeCollection.clear();
@@ -624,7 +624,7 @@ function getCurrentDate() {
 	return `${currentDay}-${currentMonth}-${currentYear} ${currentHour}:${currentMinute}`;
 }
 
-function changeEditUsersInDB(array, nameTable, action) {
+function setAddUsersInDB(array, nameTable, action) {
 	$.ajax({
 		url: "./php/change-user-request.php",
 		method: "post",

@@ -616,19 +616,19 @@ function submitIDinBD(nameTable = '#tableEdit', page = 'edit') {
 		console.log(changeFIOArray);
 
 		if (changeCardArray) {
-			changeEditUsersInDB(changeCardArray, 'permission', page);
+			setAddUsersInDB(changeCardArray, 'permission', page);
 		}
 		if (changeQRArray) {
-			changeEditUsersInDB(changeQRArray, 'permission', page);
+			setAddUsersInDB(changeQRArray, 'permission', page);
 		}
 		if (changeFIOArray) {
-			changeEditUsersInDB(changeFIOArray, 'add', page);
+			setAddUsersInDB(changeFIOArray, 'add', page);
 		}
 		if (changePostArray) {
-			changeEditUsersInDB(changePostArray, 'add', page);
+			setAddUsersInDB(changePostArray, 'add', page);
 		}
 		// if (changeImageArray) {
-		// 	changeEditUsersInDB(changePostArray, 'add');
+		// 	setAddUsersInDB(changePostArray, 'add');
 		// }
 
 		editCollection.clear();
@@ -652,7 +652,7 @@ function getCurrentDate() {
 	return `${currentDay}-${currentMonth}-${currentYear} ${currentHour}:${currentMinute}`;
 }
 
-function changeEditUsersInDB(array, nameTable, action) {
+function setAddUsersInDB(array, nameTable, action) {
 	$.ajax({
 		url: "./php/change-user-request.php",
 		method: "post",

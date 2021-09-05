@@ -41,7 +41,7 @@ function templateConstTable(data) {
 			<div class="table__cell table__cell--body table__cell--clear">
 				<button class="table__btn table__btn--clear" type="button">
 					<svg class="icon icon--clear">
-						<use class="icon__item" xlink:href="#clear"></use>
+						<use class="icon__item" xlink:href="./images/sprite.svg#clear"></use>
 					</svg>
 				</button>
 			</div>
@@ -192,7 +192,7 @@ function submitIDinBD() {
 
 			console.log(constCollection);
 
-			setAddUsersInDB([...constCollection.values()], 'const', 'report');
+			setAddUsersInDB([...constCollection.values()], 'const', 'report', 'card');
 
 			filterDepatCollection.splice(0);
 			idFilterUsers.forEach((key) => {
@@ -391,13 +391,14 @@ function filterDepart(collection) {
 	return [...filterIdDepart];
 }
 
-function getDatainDB(nameTable) {
+function getDatainDB(nameTable, typeTable) {
 	$.ajax({
 		url: "./php/output-request.php",
 		method: "post",
 		dataType: "html",
 		data: {
-			nameTable: nameTable
+			nameTable: nameTable,
+			typeTable: typeTable
 		},
 		success: function(data) {
 			const dataFromDB = JSON.parse(data);
@@ -410,12 +411,13 @@ function getDatainDB(nameTable) {
 	});
 }
 
-function setAddUsersInDB(array, nameTable, action) {
+function setAddUsersInDB(array, nameTable, action, typeTable) {
 	$.ajax({
 		url: "./php/change-user-request.php",
 		method: "post",
 		dataType: "html",
 		data: {
+			typeTable: typeTable,
 			action: action,
 			nameTable: nameTable,
 			array: array
