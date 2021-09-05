@@ -177,18 +177,21 @@
 			}
 
 			if($mysqli->query("INSERT INTO report (fio, cardname, statustitle, date) VALUES ('$fio', '$cardname', 'Новая карта', '$date')")) {
-				echo('Success add in BD');
+				echo('Success add in BD report');
 			} else {
-				echo 'False add in BD';
+				echo 'False add in BD report';
 			}
 		}
-	} else if (($nameTable === 'constcard') && ($action === 'report')) {
+	} else if (($nameTable === 'const') && ($action === 'report')) {
 		foreach ($array as $item) {
 			foreach ($item as $key => $value) {
 				if ($key === 'id') $id = $value;
 				if ($key === 'fio') $fio = $value;
 				if ($key === 'post') $post = $value;
 				if ($key === 'department') $department = $value;
+				if ($key === 'statusid') $statusid = $value;
+				if ($key === 'statustitle') $statustitle = $value;
+				if ($key === 'cardid') $cardid = $value;
 				if ($key === 'cardname') $cardname = $value;
 				if ($key === 'date') $date = $value;
 			}
@@ -199,10 +202,10 @@
 				echo $mysqli->error;
 			}
 
-			if($mysqli->query("INSERT INTO report (fio, post, department, cardname, statustitle, date) VALUES ('$fio', '$post', '$department', '$cardname', 'Новая карта', '$date')")) {
-				echo('Success add in BD');
+			if($mysqli->query("INSERT INTO report (fio, post, department, statusid, statustitle, cardid, cardname, date) VALUES ('$fio', '$post', '$department', '$statusid', '$statustitle', '$cardid', '$cardname', '$date')")) {
+				echo('Success add in BD report');
 			} else {
-				echo 'False add in BD';
+				echo 'False add in BD report';
 			}
 		}
 	} else if (($nameTable === 'permission') && ($action === 'remove')) {

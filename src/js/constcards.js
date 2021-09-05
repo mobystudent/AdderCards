@@ -9,7 +9,7 @@ const constCollection = new Map(); // БД пользователей котор
 // const constReportCollection = new Set(); // БД постоянных карт с присвоеными id для отчета
 
 $(window).on('load', () => {
-	getDatainDB();
+	getDatainDB('constcard', 'card');
 	submitIDinBD();
 });
 
@@ -192,9 +192,7 @@ function submitIDinBD() {
 
 			console.log(constCollection);
 
-			return;
-
-			setAddUsersInDB([...constCollection.values()], 'constcard', 'report');
+			setAddUsersInDB([...constCollection.values()], 'const', 'report');
 
 			filterDepatCollection.splice(0);
 			idFilterUsers.forEach((key) => {
@@ -393,10 +391,14 @@ function filterDepart(collection) {
 	return [...filterIdDepart];
 }
 
-function getDatainDB() {
+function getDatainDB(nameTable) {
 	$.ajax({
-		url: "./php/const-card-get.php",
+		url: "./php/output-request.php",
 		method: "post",
+		dataType: "html",
+		data: {
+			nameTable: nameTable
+		},
 		success: function(data) {
 			const dataFromDB = JSON.parse(data);
 

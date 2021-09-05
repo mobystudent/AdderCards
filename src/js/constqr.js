@@ -7,23 +7,8 @@ import QRCode from 'qrcode';
 const qrCollection = new Map(); // БД пользователей которым разрешили выдачу qr-кодов
 
 $(window).on('load', () => {
-	getDatainDB();
+	getDatainDB('constqr', 'qr');
 });
-
-function getDatainDB() {
-	$.ajax({
-		url: "./php/const-qr-get.php",
-		method: "post",
-		success: function(data) {
-			const dataFromDB = JSON.parse(data);
-
-			userdFromDB(dataFromDB);
-		},
-		error: function(data) {
-			console.log(data);
-		}
-	});
-}
 
 function userdFromDB(array) {
 	const objToCollection = {
@@ -240,6 +225,24 @@ function filterDepart(collection) {
 	const filterIdDepart = new Set(arrayDepart);
 
 	return [...filterIdDepart];
+}
+
+function getDatainDB(nameTable) {
+	$.ajax({
+		url: "./php/output-request.php",
+		method: "post",
+		data: {
+			nameTable: nameTable
+		},
+		success: function(data) {
+			const dataFromDB = JSON.parse(data);
+
+			userdFromDB(dataFromDB);
+		},
+		error: function(data) {
+			console.log(data);
+		}
+	});
 }
 
 export default {

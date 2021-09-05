@@ -107,7 +107,9 @@ function getDatainDB(nameTable) {
 		},
 		async: false,
 		success: function(data) {
-			userdFromDB(JSON.parse(data));
+			const dataFromDB = JSON.parse(data);
+
+			userdFromDB(dataFromDB);
 		},
 		error: function(data) {
 			console.log(data);

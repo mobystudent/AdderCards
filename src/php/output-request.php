@@ -5,6 +5,7 @@
 
 	$nameTable = $_POST['nameTable'];
 	$idDepart = $_POST['idDepart'];
+	$typeTable = $_POST['typeTable'];
 
 	$array = array();
 
@@ -18,9 +19,19 @@
 		} else {
 			echo $mysqli->error;
 		}
+	} else if ($nameTable === 'constcard') {
+		$typeBDTable = 'const_'.$typeTable;
 
-		echo json_encode($array);
+		if($resultSet = $mysqli->query("SELECT * FROM `$typeBDTable`")) {
+			while ($result = $resultSet->fetch_assoc()) {
+				array_push($array, $result);
+			}
+		} else {
+			echo $mysqli->error;
+		}
 	}
+
+	echo json_encode($array);
 
 	$mysqli->close();
 
