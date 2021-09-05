@@ -70,10 +70,10 @@ function templateAddForm(data) {
 	const typeValue = statustitle ? statustitle : 'Выберите тип идентификатора';
 	const typeClassView = statustitle ? 'select__value--selected' : '';
 	const сardvalidtoValue = cardvalidtotitle ? cardvalidtotitle : 'Выберите окончание действия пропуска';
-	const dateClassView = cardvalidtotitle ? 'select__value--selected' : '';
+	const сardvalidtoClassView = cardvalidtotitle ? 'select__value--selected' : '';
 	const photoValue = photourl ? photourl : './images/avatar.svg';
 	const сardvalidtoView = statuscardvalidto === 'date' ? `
-		<div class="form__field form__field--date">
+		<div class="form__field form__field--cardvalidto">
 			<label class="form__label"><span class="form__name">Дата окончания</span>
 				<input class="form__input form__item form__item--сardvalidto" id="addDatepicker" data-field="date" name="date" type="text" value="${сardvalidto}" placeholder="Введите дату" required="required"/>
 			</label>
@@ -112,16 +112,16 @@ function templateAddForm(data) {
 			</div>
 			<div class="form__field">
 				<span class="form__name">Окончание действия пропуска</span>
-				<div class="form__select form__item select" data-field="datetitle" data-type="statusdate" data-select="date">
+				<div class="form__select form__item select" data-field="cardvalidtotitle" data-type="statusCardvalidto" data-select="сardvalidto">
 					<header class="select__header">
-						<span class="select__value ${dateClassView}" data-title="${сardvalidtoValue}" data-date="${statuscardvalidto}" data-placeholder="Выберите окончание действия пропуска">${сardvalidtoValue}</span>
+						<span class="select__value ${сardvalidtoClassView}" data-title="${сardvalidtoValue}" data-сardvalidto="${statuscardvalidto}" data-placeholder="Выберите окончание действия пропуска">${сardvalidtoValue}</span>
 					</header>
 					<ul class="select__list">
 						<li class="select__item">
-							<span class="select__name" data-title="Ввести дату" data-date="date">Ввести дату</span>
+							<span class="select__name" data-title="Ввести дату" data-сardvalidto="date">Ввести дату</span>
 						</li>
 						<li class="select__item">
-							<span class="select__name" data-title="Безвременно" data-date="infinite">Безвременно</span>
+							<span class="select__name" data-title="Безвременно" data-сardvalidto="infinite">Безвременно</span>
 						</li>
 					</ul>
 				</div>
@@ -148,7 +148,7 @@ function templateAddForm(data) {
 function templateAddHeaderTable(data) {
 	const { statusСardvalidto = '' } = data;
 	const сardvalidtoView = statusСardvalidto ? `
-		<div class="table__cell table__cell--header table__cell--date">
+		<div class="table__cell table__cell--header table__cell--сardvalidto">
 			<span class="table__text table__text--header">Дата</span>
 		</div>
 	` : '';
@@ -202,7 +202,7 @@ function addUser() {
 				const fieldType = $(item).data('type');
 				const valueItem = $(item).find('.select__value--selected').attr('data-title');
 
-				if (typeSelect == 'date') {
+				if (typeSelect == 'сardvalidto') {
 					if (nameId == 'date') {
 						const inputValue = $(e.target).parents('.form').find('.form__item--сardvalidto').val();
 
@@ -246,14 +246,12 @@ function userFromForm(object, page = 'add', nameTable = '#tableAdd') {
 	const objToCollection = {
 		id: '',
 		fio: '',
-		date: '',
 		post: '',
 		nameid: '',
 		photofile: '',
 		photourl: '',
 		statusid: '',
 		statustitle: '',
-		datetitle: '',
 		department: '',
 		сardvalidto: '',
 		statuscardvalidto: '',
@@ -308,12 +306,12 @@ function dataAdd(nameTable, page = 'add') {
 function showFieldsInHeaderTable(page = 'add') {
 	const arrayStatusCells = [
 		{
-			name: 'date',
-			status: 'statusDate'
+			name: 'cardvalidto',
+			status: 'statusCardvalidto'
 		}
 	];
 	const statusFields = {
-		statusDate: false
+		statusCardvalidto: false
 	};
 
 	$(`.table--${page} .table__header`).html('');
@@ -330,18 +328,18 @@ function showFieldsInHeaderTable(page = 'add') {
 		}
 	});
 
-	const date = [...addCollection.values()].some((cell) => cell.statusDate) ? '-date' : '';
-	const className = `wrap wrap--content wrap--content-${page}${date}`;
+	const cardvalidto = [...addCollection.values()].some((cell) => cell.statusCardvalidto) ? '-cardvalidto' : '';
+	const className = `wrap wrap--content wrap--content-${page}${cardvalidto}`;
 
 	$(`.main[data-name="${page}"]`).find('.wrap--content').attr('class', className);
 	$(`.table--${page} .table__header`).append(templateAddHeaderTable(statusFields));
 }
 
 function showTableCells() {
-	const statusDate = [...addCollection.values()].some((cell) => cell.date);
+	const statusCardvalidto = [...addCollection.values()].some((cell) => cell.cardvalidto);
 
 	addCollection.forEach((elem) => {
-		elem.statusDate = statusDate;
+		elem.statusCardvalidto = statusCardvalidto;
 	});
 }
 
@@ -437,7 +435,7 @@ function datepicker() {
 		maxViewMode: 10
 	});
 
-	$('.form__field--date').click(() => {
+	$('.form__field--сardvalidto').click(() => {
 		$("#ui-datepicker-div .ui-datepicker").show();
 	});
 
