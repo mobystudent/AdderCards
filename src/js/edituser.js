@@ -262,7 +262,7 @@ function addUser() {
 	});
 }
 
-function userFromForm(object, page = 'edit', nameForm = '#editForm') {
+function userFromForm(object, page = 'edit', nameForm = '#editForm', nameTable = '#tableEdit') {
 	const objToCollection = {
 		id: '',
 		fio: '',
@@ -303,7 +303,7 @@ function userFromForm(object, page = 'edit', nameForm = '#editForm') {
 	editCollection.set(indexCollection, itemObject);
 
 	showTableCells();
-	dataAdd('#tableEdit');
+	dataAdd(nameTable);
 }
 
 function dataAdd(nameTable, page = 'edit') {
@@ -544,7 +544,7 @@ function validationEmptyFields(fields) {
 	return valid;
 }
 
-function deleteUser(nameTable = '#tableEdit') {
+function deleteUser(nameTable = '#tableEdit', page = 'edit') {
 	$('.table__content').click((e) => {
 		if ($(e.target).parents('.table__btn--delete').length || $(e.target).hasClass('table__btn--delete')) {
 			const idRemove = $(e.target).closest('.table__row').data('id');
@@ -563,11 +563,11 @@ function deleteUser(nameTable = '#tableEdit') {
 			addEmptySign(nameTable);
 		}
 
-		$('.main__count--edit').text(editCollection.size);
+		$(`.main__count--${page}`).text(editCollection.size);
 	});
 }
 
-function editUser() {
+function editUser(page = 'edit') {
 	$('.table__content').click((e) => {
 		if ($(e.target).parents('.table__btn--edit').length || $(e.target).hasClass('table__btn--edit')) {
 			const idEdit = $(e.target).closest('.table__row').data('id');
@@ -579,7 +579,7 @@ function editUser() {
 			getAddUsersInDB();
 		}
 
-		$('.main__count--edit').text(editCollection.size);
+		$(`.main__count--${page}`).text(editCollection.size);
 	});
 }
 
@@ -594,12 +594,12 @@ function renderForm(id, nameForm = '#editForm') {
 	});
 }
 
-function submitIDinBD() {
+function submitIDinBD(nameTable = '#tableEdit', page = 'edit') {
 	$('#submitEditUser').click(() => {
 		if (!editCollection.size) return;
 
-		const idDepart = $('.main__depart--edit').attr('data-id');
-		const nameDepart = $('.main__depart--edit').attr('data-depart');
+		const idDepart = $(`.main__depart--${page}`).attr('data-id');
+		const nameDepart = $(`.main__depart--${page}`).attr('data-depart');
 
 		editCollection.forEach((elem) => {
 			elem.nameid = idDepart;
@@ -616,26 +616,26 @@ function submitIDinBD() {
 		console.log(changeFIOArray);
 
 		if (changeCardArray) {
-			changeEditUsersInDB(changeCardArray, 'permission', 'edit');
+			changeEditUsersInDB(changeCardArray, 'permission', page);
 		}
 		if (changeQRArray) {
-			changeEditUsersInDB(changeQRArray, 'permission', 'edit');
+			changeEditUsersInDB(changeQRArray, 'permission', page);
 		}
 		if (changeFIOArray) {
-			changeEditUsersInDB(changeFIOArray, 'add', 'edit');
+			changeEditUsersInDB(changeFIOArray, 'add', page);
 		}
 		if (changePostArray) {
-			changeEditUsersInDB(changePostArray, 'add', 'edit');
+			changeEditUsersInDB(changePostArray, 'add', page);
 		}
 		// if (changeImageArray) {
 		// 	changeEditUsersInDB(changePostArray, 'add');
 		// }
 
 		editCollection.clear();
-		addEmptySign('#tableEdit');
+		addEmptySign(nameTable);
 
 		renderTable();
-		$('.main__count--edit').text(editCollection.size);
+		$(`.main__count--${page}`).text(editCollection.size);
 	});
 }
 
@@ -671,8 +671,8 @@ function changeEditUsersInDB(array, nameTable, action) {
 	});
 }
 
-function getAddUsersInDB(id = '', nameForm = '#editForm') {
-	const idDepart = $('.main__depart--edit').attr('data-id');
+function getAddUsersInDB(id = '', nameForm = '#editForm', page = 'edit') {
+	const idDepart = $(`.main__depart--${page}`).attr('data-id');
 
 	$.ajax({
 		url: "./php/add-user-output.php",

@@ -242,7 +242,7 @@ function addUser() {
 	});
 }
 
-function userFromForm(object, page = 'add') {
+function userFromForm(object, page = 'add', nameTable = '#tableAdd') {
 	const objToCollection = {
 		id: '',
 		fio: '',
@@ -280,7 +280,7 @@ function userFromForm(object, page = 'add') {
 
 	addCollection.set(indexCollection, itemObject);
 
-	dataAdd('#tableAdd');
+	dataAdd(nameTable);
 }
 
 function dataAdd(nameTable, page = 'add') {
@@ -473,7 +473,7 @@ function downloadFoto(nameForm = '#addForm') {
 	});
 }
 
-function validationEmptyFields(fields) {
+function validationEmptyFields(fields, page = 'add') {
 	const validFields = Object.values(fields).every((item) => item);
 	const statusMess = !validFields ? 'show' : 'hide';
 	const extentionArray = ['gif', 'png', 'jpg', 'jpeg'];
@@ -497,15 +497,15 @@ function validationEmptyFields(fields) {
 
 	const valid = [statusMess, correctName, countNameWords, extensionImg].every((mess) => mess === 'hide');
 
-	$('.main[data-name="add"]').find('.info__item--warn.info__item--fields')[statusMess]();
-	$('.main[data-name="add"]').find('.info__item--error.info__item--name')[correctName]();
-	$('.main[data-name="add"]').find('.info__item--error.info__item--short')[countNameWords]();
-	$('.main[data-name="add"]').find('.info__item--error.info__item--image')[extensionImg]();
+	$(`.main[data-name="${page}"]`).find('.info__item--warn.info__item--fields')[statusMess]();
+	$(`.main[data-name="${page}"]`).find('.info__item--error.info__item--name')[correctName]();
+	$(`.main[data-name="${page}"]`).find('.info__item--error.info__item--short')[countNameWords]();
+	$(`.main[data-name="${page}"]`).find('.info__item--error.info__item--image')[extensionImg]();
 
 	return valid;
 }
 
-function deleteUser(nameTable = '#tableAdd') {
+function deleteUser(nameTable = '#tableAdd', page = 'add') {
 	$('.table__content').click((e) => {
 		if ($(e.target).parents('.table__btn--delete').length || $(e.target).hasClass('table__btn--delete')) {
 			const idRemove = $(e.target).closest('.table__row').data('id');
@@ -524,11 +524,11 @@ function deleteUser(nameTable = '#tableAdd') {
 			addEmptySign(nameTable);
 		}
 
-		$('.main__count--add').text(addCollection.size);
+		$(`.main__count--${page}`).text(addCollection.size);
 	});
 }
 
-function editUser() {
+function editUser(page = 'add') {
 	$('.table__content').click((e) => {
 		if ($(e.target).parents('.table__btn--edit').length || $(e.target).hasClass('table__btn--edit')) {
 			const idEdit = $(e.target).closest('.table__row').data('id');
@@ -541,7 +541,7 @@ function editUser() {
 			downloadFoto();
 		}
 
-		$('.main__count--add').text(addCollection.size);
+		$(`.main__count--${page}`).text(addCollection.size);
 	});
 }
 
@@ -558,12 +558,12 @@ function renderForm(id, nameForm = '#addForm') {
 	addUser();
 }
 
-function submitIDinBD() {
+function submitIDinBD(nameTable = '#tableAdd', page = 'add') {
 	$('#submitAddUser').click(() => {
 		if (!addCollection.size) return;
 
-		const idDepart = $('.main__depart--add').attr('data-id');
-		const nameDepart = $('.main__depart--add').attr('data-depart');
+		const idDepart = $(`.main__depart--${page}`).attr('data-id');
+		const nameDepart = $(`.main__depart--${page}`).attr('data-depart');
 
 		addCollection.forEach((elem) => {
 			elem.nameid = idDepart;
@@ -574,10 +574,10 @@ function submitIDinBD() {
 		setAddUsersInDB([...addCollection.values()], 'add' , 'add');
 
 		addCollection.clear();
-		addEmptySign('#tableAdd');
+		addEmptySign(nameTable);
 
 		renderTable();
-		$('.main__count--add').text(addCollection.size);
+		$(`.main__count--${page}`).text(addCollection.size);
 	});
 }
 

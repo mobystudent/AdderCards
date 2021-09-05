@@ -239,7 +239,7 @@ function addUser() {
 	});
 }
 
-function userFromForm(object, page = 'remove', nameForm = '#removeForm') {
+function userFromForm(object, page = 'remove', nameForm = '#removeForm', nameTable = '#tableRemove') {
 	const objToCollection = {
 		id: '',
 		fio: '',
@@ -292,10 +292,10 @@ function userFromForm(object, page = 'remove', nameForm = '#removeForm') {
 	removeCollection.set(indexCollection, itemObject);
 
 	showTableCells();
-	dataAdd('#tableRemove');
+	dataAdd(nameTable);
 }
 
-function dataAdd(nameTable) {
+function dataAdd(nameTable, page = 'remove') {
 	if (removeCollection.size) {
 		$('.table__nothing').hide();
 		$(nameTable)
@@ -312,7 +312,7 @@ function dataAdd(nameTable) {
 	}
 
 	renderTable();
-	$('.main__count--remove').text(removeCollection.size);
+	$(`.main__count--${page}`).text(removeCollection.size);
 	deleteUser();
 	editUser();
 }
@@ -526,7 +526,7 @@ function validationEmptyFields(fields) {
 	return valid;
 }
 
-function deleteUser(nameTable = '#tableRemove') {
+function deleteUser(nameTable = '#tableRemove', page = 'remove') {
 	$('.table__content').click((e) => {
 		if ($(e.target).parents('.table__btn--delete').length || $(e.target).hasClass('table__btn--delete')) {
 			const idRemove = $(e.target).closest('.table__row').data('id');
@@ -545,11 +545,11 @@ function deleteUser(nameTable = '#tableRemove') {
 			addEmptySign(nameTable);
 		}
 
-		$('.main__count--remove').text(removeCollection.size);
+		$(`.main__count--${page}`).text(removeCollection.size);
 	});
 }
 
-function editUser() {
+function editUser(page = 'remove') {
 	$('.table__content').click((e) => {
 		if ($(e.target).parents('.table__btn--edit').length || $(e.target).hasClass('table__btn--edit')) {
 			const idEdit = $(e.target).closest('.table__row').data('id');
@@ -563,7 +563,7 @@ function editUser() {
 			setDepartInSelect();
 		}
 
-		$('.main__count--remove').text(removeCollection.size);
+		$(`.main__count--${page}`).text(removeCollection.size);
 	});
 }
 
@@ -578,7 +578,7 @@ function renderForm(id, nameForm = '#removeForm') {
 	});
 }
 
-function submitIDinBD() {
+function submitIDinBD(nameTable = '#tableRemove', page = 'remove') {
 	$('#submitRemoveUser').click(() => {
 		if (!removeCollection.size) return;
 
@@ -603,10 +603,10 @@ function submitIDinBD() {
 		}
 
 		removeCollection.clear();
-		addEmptySign('#tableRemove');
+		addEmptySign(nameTable);
 
 		renderTable();
-		$('.main__count--remove').text(removeCollection.size);
+		$(`.main__count--${page}`).text(removeCollection.size);
 	});
 }
 
@@ -642,8 +642,8 @@ function changeEditUsersInDB(array, nameTable, action) {
 	});
 }
 
-function getAddUsersInDB(id = '', nameForm = '#removeForm') {
-	const idDepart = $('.main__depart--remove').attr('data-id');
+function getAddUsersInDB(id = '', nameForm = '#removeForm', page = 'remove') {
+	const idDepart = $(`.main__depart--${page}`).attr('data-id');
 
 	$.ajax({
 		url: "./php/add-user-output.php",
