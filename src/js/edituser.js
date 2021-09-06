@@ -308,16 +308,9 @@ function userFromForm(object, page = 'edit', nameForm = '#editForm', nameTable =
 
 function dataAdd(nameTable, page = 'edit') {
 	if (editCollection.size) {
-		$('.table__nothing').hide();
-		$(nameTable)
-			.html('')
-			.removeClass('table__body--empty')
-			.append(`
-				<div class="table__content table__content--active">
-				</div>
-			`);
+		emptySign(nameTable, 'full');
 	} else {
-		addEmptySign(nameTable);
+		emptySign(nameTable, 'empty');
 
 		return;
 	}
@@ -476,13 +469,18 @@ function clearFieldsForm(nameForm = '#editForm') {
 	getAddUsersInDB();
 }
 
-function addEmptySign(nameTable) {
-	$(nameTable)
-		.addClass('table__body--empty')
-		.html('')
-		.append(`
-			<p class="table__nothing">Новых данных нет</p>
-		`);
+function emptySign(nameTable, status) {
+	if (status == 'empty') {
+		$(nameTable)
+			.addClass('table__body--empty')
+			.html('')
+			.append('<p class="table__nothing">Новых данных нет</p>');
+	} else {
+		$(nameTable)
+			.removeClass('table__body--empty')
+			.html('')
+			.append('<div class="table__content"></div>');
+	}
 }
 
 function downloadFoto(nameForm = '#editForm') {
@@ -560,7 +558,7 @@ function deleteUser(nameTable = '#tableEdit', page = 'edit') {
 		}
 
 		if (!editCollection.size) {
-			addEmptySign(nameTable);
+			emptySign(nameTable, 'empty');
 		}
 
 		$(`.main__count--${page}`).text(editCollection.size);
@@ -632,7 +630,7 @@ function submitIDinBD(nameTable = '#tableEdit', page = 'edit') {
 		// }
 
 		editCollection.clear();
-		addEmptySign(nameTable);
+		emptySign(nameTable, 'empty');
 
 		renderTable();
 		$(`.main__count--${page}`).text(editCollection.size);

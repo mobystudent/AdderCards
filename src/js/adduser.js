@@ -283,16 +283,9 @@ function userFromForm(object, page = 'add', nameTable = '#tableAdd') {
 
 function dataAdd(nameTable, page = 'add') {
 	if (addCollection.size) {
-		$('.table__nothing').hide();
-		$(nameTable)
-			.html('')
-			.removeClass('table__body--empty')
-			.append(`
-				<div class="table__content table__content--active">
-				</div>
-			`);
+		emptySign(nameTable, 'full');
 	} else {
-		addEmptySign(nameTable);
+		emptySign(nameTable, 'empty');
 
 		return;
 	}
@@ -447,13 +440,18 @@ function datepicker() {
 	});
 }
 
-function addEmptySign(nameTable) {
-	$(nameTable)
-		.addClass('table__body--empty')
-		.html('')
-		.append(`
-			<p class="table__nothing">Новых данных нет</p>
-		`);
+function emptySign(nameTable, status) {
+	if (status == 'empty') {
+		$(nameTable)
+			.addClass('table__body--empty')
+			.html('')
+			.append('<p class="table__nothing">Новых данных нет</p>');
+	} else {
+		$(nameTable)
+			.removeClass('table__body--empty')
+			.html('')
+			.append('<div class="table__content"></div>');
+	}
 }
 
 function downloadFoto(nameForm = '#addForm') {
@@ -520,7 +518,7 @@ function deleteUser(nameTable = '#tableAdd', page = 'add') {
 		}
 
 		if (!addCollection.size) {
-			addEmptySign(nameTable);
+			emptySign(nameTable, 'empty');
 		}
 
 		$(`.main__count--${page}`).text(addCollection.size);
@@ -573,9 +571,9 @@ function submitIDinBD(nameTable = '#tableAdd', page = 'add') {
 		setAddUsersInDB([...addCollection.values()], 'add' , 'add');
 
 		addCollection.clear();
-		addEmptySign(nameTable);
-
+		emptySign(nameTable, 'empty');
 		renderTable();
+
 		$(`.main__count--${page}`).text(addCollection.size);
 	});
 }

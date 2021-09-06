@@ -297,16 +297,9 @@ function userFromForm(object, page = 'remove', nameForm = '#removeForm', nameTab
 
 function dataAdd(nameTable, page = 'remove') {
 	if (removeCollection.size) {
-		$('.table__nothing').hide();
-		$(nameTable)
-			.html('')
-			.removeClass('table__body--empty')
-			.append(`
-				<div class="table__content table__content--active">
-				</div>
-			`);
+		emptySign(nameTable, 'full');
 	} else {
-		addEmptySign(nameTable);
+		emptySign(nameTable, 'empty');
 
 		return;
 	}
@@ -484,13 +477,18 @@ function clearFieldsForm(nameForm = '#removeForm') {
 	getAddUsersInDB();
 }
 
-function addEmptySign(nameTable) {
-	$(nameTable)
-		.addClass('table__body--empty')
-		.html('')
-		.append(`
-			<p class="table__nothing">Новых данных нет</p>
-		`);
+function emptySign(nameTable, status) {
+	if (status == 'empty') {
+		$(nameTable)
+			.addClass('table__body--empty')
+			.html('')
+			.append('<p class="table__nothing">Новых данных нет</p>');
+	} else {
+		$(nameTable)
+			.removeClass('table__body--empty')
+			.html('')
+			.append('<div class="table__content"></div>');
+	}
 }
 
 function datepicker() {
@@ -543,7 +541,7 @@ function deleteUser(nameTable = '#tableRemove', page = 'remove') {
 		}
 
 		if (!removeCollection.size) {
-			addEmptySign(nameTable);
+			emptySign(nameTable, 'empty');
 		}
 
 		$(`.main__count--${page}`).text(removeCollection.size);
@@ -603,8 +601,7 @@ function submitIDinBD(nameTable = '#tableRemove', page = 'remove') {
 		}
 
 		removeCollection.clear();
-		addEmptySign(nameTable);
-
+		emptySign(nameTable, 'empty');
 		renderTable();
 
 		$(`.main__count--${page}`).text(removeCollection.size);
