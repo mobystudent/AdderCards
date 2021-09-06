@@ -645,14 +645,16 @@ function setAddUsersInDB(array, nameTable, action) {
 
 function getAddUsersInDB(id = '', nameForm = '#removeForm', page = 'remove') {
 	const idDepart = $(`.main__depart--${page}`).attr('data-id');
+	const nameTable = 'remove';
 
 	$.ajax({
-		url: "./php/add-user-output.php",
+		url: "./php/output-request.php",
 		method: "post",
 		dataType: "html",
 		data: {
 			id: id,
-			idDepart: idDepart
+			idDepart: idDepart,
+			nameTable: nameTable
 		},
 		async: false,
 		success: function(data) {

@@ -6,13 +6,12 @@
 	$nameTable = $_POST['nameTable'];
 	$idDepart = $_POST['idDepart'];
 	$typeTable = $_POST['typeTable'];
+	$id = $_POST['id'];
 
 	$array = array();
 
 	if ($nameTable === 'reject') {
-		$nameDepart = 'reject_depart_'.$idDepart;
-
-		if($resultSet = $mysqli->query("SELECT * FROM `$nameDepart`")) {
+		if($resultSet = $mysqli->query("SELECT * FROM request")) {
 			while ($result = $resultSet->fetch_assoc()) {
 				array_push($array, $result);
 			}
@@ -32,7 +31,7 @@
 	} else if ($nameTable === 'permission') {
 		if($resultSet = $mysqli->query("SELECT * FROM permission")) {
 			while ($result = $resultSet->fetch_assoc()) {
-				array_push($data, $result);
+				array_push($array, $result);
 			}
 		} else {
 			echo $mysqli->error;
@@ -40,10 +39,37 @@
 	} else if ($nameTable === 'report') {
 		if($resultSet = $mysqli->query("SELECT * FROM report")) {
 			while ($result = $resultSet->fetch_assoc()) {
-				array_push($data, $result);
+				array_push($array, $result);
 			}
 		} else {
 			echo $mysqli->error;
+		}
+	} else if ($nameTable === 'request') {
+		if($resultSet = $mysqli->query("SELECT * FROM request")) {
+			while ($result = $resultSet->fetch_assoc()) {
+				array_push($array, $result);
+			}
+		} else {
+			echo $mysqli->error;
+		}
+	} else if (($nameTable === 'edit') || ($nameTable === 'remove')) {
+		$idDepart = strtolower($_POST['idDepart']);
+		$nameDepart = 'add_depart_'.$idDepart;
+
+		if ($id) {
+			if($resultSet = $mysqli->query("SELECT id, post, photourl FROM `$nameDepart` WHERE id = '$id'")) {
+				$array = $resultSet->fetch_assoc();
+			} else {
+				echo $mysqli->error;
+			}
+		} else {
+			if($resultSet = $mysqli->query("SELECT * FROM `$nameDepart`")) {
+				while ($result = $resultSet->fetch_assoc()) {
+					array_push($array, $result);
+				}
+			} else {
+				echo $mysqli->error;
+			}
 		}
 	}
 

@@ -673,14 +673,16 @@ function setAddUsersInDB(array, nameTable, action) {
 
 function getAddUsersInDB(id = '', nameForm = '#editForm', page = 'edit') {
 	const idDepart = $(`.main__depart--${page}`).attr('data-id');
+	const nameTable = 'edit';
 
 	$.ajax({
-		url: "./php/add-user-output.php",
+		url: "./php/output-request.php",
 		method: "post",
 		dataType: "html",
 		data: {
 			id: id,
-			idDepart: idDepart
+			idDepart: idDepart,
+			nameTable: nameTable
 		},
 		async: false,
 		success: function(data) {

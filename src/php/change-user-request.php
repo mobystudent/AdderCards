@@ -36,17 +36,30 @@
 			}
 
 			$idDepart = strtolower($item['nameid']);
-			$nameDepart = 'add_depart_'.$idDepart;
+			$addDepart = 'add_depart_'.$idDepart;
+			$reportDepart = 'report_depart_'.$idDepart;
 
 			// if($mysqli->query("UPDATE `$nameDepart` SET fio = '$newfio', post = '$newpost', newphotofile = '$newphotofile', newphotourl = '$newphotourl' WHERE id = $idUser")) {
-			if($mysqli->query("UPDATE `$nameDepart` SET fio = '$newfio', post = '$newpost' WHERE id = $id")) {
-				echo('Success update in BD '.$nameDepart);
+			if($mysqli->query("UPDATE `$addDepart` SET fio = '$newfio', post = '$newpost' WHERE id = $id")) {
+				echo('Success update in BD '.$addDepart);
 			} else {
 				echo $mysqli->error;
 			}
 
 			if ($mysqli->query("INSERT INTO request (fio, department, nameid, post, statusid, statustitle, date) VALUES ('$fio', '$department', '$nameid', '$post', '$statusid', '$statustitle', '$date')")) {
 				echo('Success add in BD request');
+			} else {
+				echo $mysqli->error;
+			}
+
+			if($mysqli->query("INSERT INTO `$reportDepart` (fio, post, statusid, statustitle, date) VALUES ('$fio', '$post', '$statusid', '$statustitle', '$date')")) {
+				echo('Success add in BD '.$reportDepart);
+			} else {
+				echo $mysqli->error;
+			}
+
+			if($mysqli->query("INSERT INTO report (fio, department, post, statusid, statustitle, date) VALUES ('$fio', '$department', '$post', '$statusid', '$statustitle', '$date')")) {
+				echo('Success add in BD report');
 			} else {
 				echo $mysqli->error;
 			}
@@ -80,20 +93,32 @@
 				if ($key === 'statustitle') $statustitle = $value;
 				if ($key === 'date') $date = $value;
 				if ($key === 'id') $id = $value;
-
 			}
 
 			$idDepart = strtolower($item['nameid']);
-			$nameDepart = 'add_depart_'.$idDepart;
+			$addDepart = 'add_depart_'.$idDepart;
+			$reportDepart = 'report_depart_'.$idDepart;
 
-			if($mysqli->query("DELETE FROM `$nameDepart` WHERE id = $id")) {
-				echo('Success delete in BD '.$nameDepart);
+			if($mysqli->query("DELETE FROM `$addDepart` WHERE id = $id")) {
+				echo('Success delete in BD '.$addDepart);
 			} else {
 				echo $mysqli->error;
 			}
 
 			if ($mysqli->query("INSERT INTO request (fio, department, nameid, post, statusid, statustitle, date) VALUES ('$fio', '$department', '$nameid', '$post', '$statusid', '$statustitle', '$date')")) {
 				echo('Success add in BD request');
+			} else {
+				echo $mysqli->error;
+			}
+
+			if($mysqli->query("INSERT INTO `$reportDepart` (fio, post, statusid, statustitle, date) VALUES ('$fio', '$post', '$statusid', '$statustitle', '$date')")) {
+				echo('Success add in BD '.$reportDepart);
+			} else {
+				echo $mysqli->error;
+			}
+
+			if($mysqli->query("INSERT INTO report (fio, department, post, statusid, statustitle, date) VALUES ('$fio', '$department', '$post', '$statusid', '$statustitle', '$date')")) {
+				echo('Success add in BD report');
 			} else {
 				echo $mysqli->error;
 			}
@@ -116,24 +141,37 @@
 			}
 
 			$idDepart = strtolower($item['nameid']);
-			$nameDepart = 'add_depart_'.$idDepart;
+			$addDepart = 'add_depart_'.$idDepart;
 			$idNewDepart = strtolower($item['newnameid']);
-			$nameNewDepart = 'add_depart_'.$idNewDepart;
+			$newDepart = 'add_depart_'.$idNewDepart;
+			$reportDepart = 'report_depart_'.$idDepart;
 
-			if($mysqli->query("DELETE FROM `$nameDepart` WHERE id = $id")) {
-				echo('Success delete in BD '.$nameDepart);
+			if($mysqli->query("DELETE FROM `$addDepart` WHERE id = $id")) {
+				echo('Success delete in BD '.$addDepart);
 			} else {
 				echo $mysqli->error;
 			}
 
-			if ($mysqli->query("INSERT INTO `$nameNewDepart` (fio, department, nameid, post, photofile, photourl, statusid, statustitle, date) VALUES ('$fio', '$newdepart', '$newnameid', '$post', '$photofile', '$photourl', '$statusid', '$statustitle', '$date')")) {
-				echo('Success add in BD '.$nameNewDepart);
+			if ($mysqli->query("INSERT INTO `$newDepart` (fio, department, nameid, post, photofile, photourl, statusid, statustitle, date) VALUES ('$fio', '$newdepart', '$newnameid', '$post', '$photofile', '$photourl', '$statusid', '$statustitle', '$date')")) {
+				echo('Success add in BD '.$newDepart);
 			} else {
 				echo $mysqli->error;
 			}
 
 			if ($mysqli->query("INSERT INTO request (fio, department, nameid, post, statusid, statustitle, date) VALUES ('$fio', '$department', '$nameid', '$post', '$statusid', '$statustitle', '$date')")) {
 				echo('Success add in BD request');
+			} else {
+				echo $mysqli->error;
+			}
+
+			if($mysqli->query("INSERT INTO `$reportDepart` (fio, post, statusid, statustitle, date) VALUES ('$fio', '$post', '$statusid', '$statustitle', '$date')")) {
+				echo('Success add in BD '.$reportDepart);
+			} else {
+				echo $mysqli->error;
+			}
+
+			if($mysqli->query("INSERT INTO report (fio, department, post, statusid, statustitle, date) VALUES ('$fio', '$department', '$post', '$statusid', '$statustitle', '$date')")) {
+				echo('Success add in BD report');
 			} else {
 				echo $mysqli->error;
 			}

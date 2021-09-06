@@ -12,6 +12,7 @@ import './edituser.js';
 import './users-func.js';
 import './report.js';
 import './reject.js';
+import './requestchange.js';
 import service from './service.js';
 
 $(window).on('load', () => {

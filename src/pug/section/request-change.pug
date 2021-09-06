@@ -2,7 +2,9 @@ main.main(data-name="request")
 	.container
 		h1.main__title
 			| Запрос на изменение данных
-		span.main__depart.main__depart--request
+		span.main__depart.main__depart--request(data-depart="Химический факультет" data-id="ChemDep")
+			| Химический факультет
+
 		.wrap.wrap--content.wrap--content-request
 			.main__cards.main__cards--main
 				p.main__count-wrap.main__count-wrap--depart
@@ -26,6 +28,9 @@ main.main(data-name="request")
 						.table__cell.table__cell--header.table__cell--post
 							span.table__text.table__text--header
 								| Должность
+						.table__cell.table__cell--header.table__cell--department
+							span.table__text.table__text--header
+								| Подразделение/факультет
 						.table__cell.table__cell--header.table__cell--statustitle
 							span.table__text.table__text--header
 								| Статус
