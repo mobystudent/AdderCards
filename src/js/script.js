@@ -1,5 +1,6 @@
 'use strict';
 
+// import $ from '../../node_modules/jquery';
 import $ from 'jquery';
 import './timecards.js';
 import './constcards.js';
@@ -9,7 +10,6 @@ import './constqr.js';
 import './adduser.js';
 import './removeuser.js';
 import './edituser.js';
-import './users-func.js';
 import './report.js';
 import './reject.js';
 import './requestchange.js';

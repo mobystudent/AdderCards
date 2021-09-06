@@ -95,4 +95,9 @@
 		@extend %text--premedium;
 		color: $deepDarkBlue;
 	}
+
+	&__wrap-info {
+		display: flex;
+		justify-content: space-between;
+	}
 }

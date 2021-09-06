@@ -8,6 +8,7 @@ const permissionCollection = new Map(); // БД пользователей пр�
 $(window).on('load', () => {
 	getDatainDB('permission');
 	submitIDinBD();
+	autoRefresh();
 });
 
 function templatePermissionTable(data) {
@@ -295,6 +296,24 @@ function resetControlBtns() {
 
 		$(item).removeClass(`btn--${typeBtn}-disabled btn--${typeBtn}-cancel`).removeAttr('disabled', 'disabled');
 		$(`.table__header .btn--${typeBtn}`).text(textBtn);
+	});
+}
+
+function autoRefresh(page = 'permis') {
+	const timeReload = 15000 * 5;  //5 минут
+	let markInterval;
+
+	$(`.switch--${page}`).click(() => {
+		const statusSwitch = $('.switch__input').prop('checked');
+
+		if (statusSwitch && !markInterval) {
+			markInterval = setInterval(() => {
+				getDatainDB('permission');
+			}, timeReload);
+		} else {
+			clearInterval(markInterval);
+			markInterval = false;
+		}
 	});
 }
 

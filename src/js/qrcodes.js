@@ -1,7 +1,6 @@
 'use strict';
 
 import $ from 'jquery';
-import QRCode from 'qrcode';
 
 const downloadCollection = new Set(); // БД сформированных qr-кодов
 const qrNeedsUsersCollection = new Set(); // БД qr-кодов которые будут присвоены пользователям в QRconst
