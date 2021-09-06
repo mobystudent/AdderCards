@@ -19,12 +19,28 @@
 		} else {
 			echo $mysqli->error;
 		}
-	} else if ($nameTable === 'constcard') {
+	} else if ($nameTable === 'const') {
 		$typeBDTable = 'const_'.$typeTable;
 
 		if($resultSet = $mysqli->query("SELECT * FROM `$typeBDTable`")) {
 			while ($result = $resultSet->fetch_assoc()) {
 				array_push($array, $result);
+			}
+		} else {
+			echo $mysqli->error;
+		}
+	} else if ($nameTable === 'permission') {
+		if($resultSet = $mysqli->query("SELECT * FROM permission")) {
+			while ($result = $resultSet->fetch_assoc()) {
+				array_push($data, $result);
+			}
+		} else {
+			echo $mysqli->error;
+		}
+	} else if ($nameTable === 'report') {
+		if($resultSet = $mysqli->query("SELECT * FROM report")) {
+			while ($result = $resultSet->fetch_assoc()) {
+				array_push($data, $result);
 			}
 		} else {
 			echo $mysqli->error;

@@ -6,7 +6,7 @@ import { nameDeparts } from './nameDepart.js';
 const permissionCollection = new Map(); // БД пользователей при старте
 
 $(window).on('load', () => {
-	getDatainDB();
+	getDatainDB('permission');
 	submitIDinBD();
 });
 
@@ -318,12 +318,17 @@ function setAddUsersInDB(array, nameTable, action, typeTable) {
 	});
 }
 
-function getDatainDB() {
+function getDatainDB(nameTable) {
 	$.ajax({
-		url: "./php/permission-output.php",
+		url: "./php/output-request.php",
 		method: "post",
+		data: {
+			nameTable: nameTable
+		},
 		success: function(data) {
-			userdFromDB(JSON.parse(data));
+			const dataFromDB = JSON.parse(data);
+
+			userdFromDB(dataFromDB);
 		},
 		error: function(data) {
 			console.log(data);

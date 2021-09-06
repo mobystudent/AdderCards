@@ -5,27 +5,8 @@ import $ from 'jquery';
 const reportCollection = new Map(); // БД отчета
 
 $(window).on('load', () => {
-	getDatainDB();
+	getDatainDB('report');
 });
-
-function getDatainDB() {
-	$.ajax({
-		url: "./php/report-output.php",
-		method: "post",
-		success: function(data) {
-			const dataFromDB = JSON.parse(data);
-
-			dataFromDB.forEach((item, i) => {
-				reportCollection.set(i, item);
-			});
-
-			dataAdd('#tableReport');
-		},
-		error: function(data) {
-			console.log(data);
-		}
-	});
-}
 
 function templateReportTable(data) {
 	const { id = '', fio = '', post = '', department = '', cardname = '', statustitle = '', date = '' } = data;
@@ -79,6 +60,28 @@ function dataAdd(nameTable) {
 
 		return;
 	}
+}
+
+function getDatainDB(nameTable) {
+	$.ajax({
+		url: "./php/output-request.php",
+		method: "post",
+		data: {
+			nameTable: nameTable
+		},
+		success: function(data) {
+			const dataFromDB = JSON.parse(data);
+
+			dataFromDB.forEach((item, i) => {
+				reportCollection.set(i, item);
+			});
+
+			dataAdd('#tableReport');
+		},
+		error: function(data) {
+			console.log(data);
+		}
+	});
 }
 
 export default {

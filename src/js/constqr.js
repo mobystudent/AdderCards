@@ -7,7 +7,7 @@ import QRCode from 'qrcode';
 const qrCollection = new Map(); // БД пользователей которым разрешили выдачу qr-кодов
 
 $(window).on('load', () => {
-	getDatainDB('constqr', 'qr');
+	getDatainDB('const', 'qr');
 });
 
 function userdFromDB(array) {

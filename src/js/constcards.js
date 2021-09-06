@@ -9,8 +9,9 @@ const constCollection = new Map(); // БД пользователей котор
 // const constReportCollection = new Set(); // БД постоянных карт с присвоеными id для отчета
 
 $(window).on('load', () => {
-	getDatainDB('constcard', 'card');
+	getDatainDB('const', 'card');
 	submitIDinBD();
+	printReport();
 });
 
 function templateConstTable(data) {
@@ -343,6 +344,12 @@ function countItems(idDepart, modDepart) {
 	const countItemfromDep = [...constCollection.values()].filter((user) => user.nameid === idDepart);
 
 	$(`.main__count--${modDepart}`).text(countItemfromDep.length);
+}
+
+function printReport() {
+	$('.btn--print').click(() => {
+		window.print();
+	});
 }
 
 function viewAllCount(collection, modDepart) {
