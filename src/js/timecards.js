@@ -39,14 +39,14 @@ function templateTimeTable(data) {
 			</div>
 			<div class="table__cell table__cell--body table__cell--clear">
 				<button class="table__btn table__btn--clear" type="button">
-					<svg class="icon icon--clear">
+					<svg class="icon icon--clear icon--clear-black">
 						<use class="icon__item" xlink:href="./images/sprite.svg#clear"></use>
 					</svg>
 				</button>
 			</div>
 			<div class="table__cell table__cell--body table__cell--delete">
 				<button class="table__btn table__btn--delete" type="button">
-					<svg class="icon icon--delete">
+					<svg class="icon icon--delete icon--delete-black">
 						<use class="icon__item" xlink:href="./images/sprite.svg#delete"></use>
 					</svg>
 				</button>
@@ -337,7 +337,7 @@ function createObjectForBD() {
 
 	// console.log(object);
 	$.ajax({
-		url: "http://localhost:40001/json/UserSet",
+		url: "http://localhost:40001/json/EmployeeSet",
 		method: "post",
 		dataType: "json",
 		contentType: 'application/json',
@@ -345,12 +345,6 @@ function createObjectForBD() {
 		async: false,
 		success: (data) => {
 			console.log(data);
-			// const { UserSID = '', UserToken = 0 } = data;
-			//
-			// resultAuthent = {
-			// 	UserSID,
-			// 	UserToken
-			// };
 		},
 		error: (data) => {
 			console.log(data);

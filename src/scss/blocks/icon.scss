@@ -25,6 +25,14 @@
 		width: 18px;
 		height: 18px;
 		margin: auto;
+
+		&-black {
+			fill: $black;
+		}
+
+		&-white {
+			fill: $white;
+		}
 	}
 
 	&--download {
