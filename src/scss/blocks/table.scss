@@ -40,16 +40,16 @@
 	}
 
 	&__content {
-		display: none;
+		// display: none;
 		height: 370px;
 
 		@media print {
 			height: auto;
 		}
 
-		&--active {
-			display: block;
-		}
+		// &--active {
+		// 	display: block;
+		// }
 	}
 
 	&__row {

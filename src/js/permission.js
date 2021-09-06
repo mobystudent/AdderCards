@@ -37,6 +37,17 @@ function templatePermissionTable(data) {
 	`;
 }
 
+function templatePermissionTabs(data) {
+	const { idname = '', shortname = '', status = '' } = data;
+	const statusView = status ? 'tab__item--active' : '';
+
+	return `
+		<button class="tab__item ${statusView}" type="button" data-depart=${idname}>
+			<span class="tab__name">${shortname}</span>
+		</button>
+	`;
+}
+
 function userdFromDB(array) {
 	const objToCollection = {
 		id: '',
@@ -75,28 +86,20 @@ function dataAdd(nameTable) {
 	viewAllCount(permissionCollection, 'permis');
 
 	if (permissionCollection.size) {
-		$('.table__nothing').hide();
+		emptySign(nameTable, 'full');
 	} else {
-		$(nameTable).addClass('table__body--empty').html('');
-		$(nameTable).append(`
-			<p class="table__nothing">Новых данных нет</p>
-		`);
-
+		emptySign(nameTable, 'empty');
 		countItems(filterNameDepart[0], 'permis');
 
 		return;
 	}
 
 	if (filterNameDepart.length > 1) {
-		addTabs(permissionCollection, 'permis');
-		showActiveDataOnPage(permissionCollection , nameTable, 'permis', filterNameDepart[0]);
+		addTabs(permissionCollection, filterNameDepart[0]);
+		showActiveDataOnPage(permissionCollection , nameTable, filterNameDepart[0]);
 		changeTabs(nameTable, 'permis');
 	} else {
-		$(nameTable).html('');
-		$(nameTable).append(`
-			<div class="table__content table__content--active">
-			</div>
-		`);
+		$(`${nameTable} .table__content`).html('');
 		$(`.tab--permis`).html('');
 
 		permissionCollection.forEach((user) => {
@@ -104,42 +107,36 @@ function dataAdd(nameTable) {
 
 			showTitleDepart(department, nameid, 'permis');
 
-			$(`${nameTable} .table__content--active`).append(templatePermissionTable(user));
+			$(`${nameTable} .table__content`).append(templatePermissionTable(user));
 		});
 
 		clickAllowDisallowPermiss();
 	}
 }
 
-function showActiveDataOnPage(collection, nameTable, modDepart, nameDepart) {
-	$(nameTable).html('');
-	$(`.tab--${modDepart} .tab__item`).removeClass('tab__item--active');
-	$(nameTable).append(`
-		<div class="table__content table__content--active">
-		</div>
-	`);
-	$(`.tab__item[data-depart=${nameDepart}]`).addClass('tab__item--active');
+function showActiveDataOnPage(collection, nameTable, nameDepart, page = 'permis') {
+	$(`${nameTable} .table__content`).html('');
 
 	collection.forEach((user) => {
 		if (user.nameid == nameDepart) {
-			$(`${nameTable} .table__content--active`).append(templatePermissionTable(user));
+			$(`${nameTable} .table__content`).append(templatePermissionTable(user));
 		}
 	});
 
 	nameDeparts.forEach((depart) => {
-		const { idName = '', longName = '' } = depart;
+		const { idname = '', longname = '' } = depart;
 
-		if (idName == nameDepart) {
-			showTitleDepart(longName, idName, modDepart);
+		if (idname == nameDepart) {
+			showTitleDepart(longname, idname, page);
 		}
 	});
 
-	countItems(nameDepart, modDepart);
+	countItems(nameDepart, page);
 	clickAllowDisallowPermiss();
 }
 
-function showTitleDepart(depart, id, modDepart) {
-	$(`.main__depart--${modDepart}`).text(depart).attr({'data-depart': depart, 'data-id': id});
+function showTitleDepart(depart, id, page) {
+	$(`.main__depart--${page}`).text(depart).attr({'data-depart': depart, 'data-id': id});
 }
 
 function submitIDinBD() {
@@ -194,6 +191,20 @@ function delegationID(users) {
 
 	setAddUsersInDB(filterArrCards, 'const', 'add', 'card');
 	setAddUsersInDB(filterArrQRs, 'const', 'add', 'qr');
+}
+
+function emptySign(nameTable, status) {
+	if (status == 'empty') {
+		$(nameTable)
+			.addClass('table__body--empty')
+			.html('')
+			.append('<p class="table__nothing">Новых данных нет</p>');
+	} else {
+		$(nameTable)
+			.removeClass('table__body--empty')
+			.html('')
+			.append('<div class="table__content"></div>');
+	}
 }
 
 function getCurrentDate() {
@@ -270,7 +281,7 @@ function confirmAllAllowDisallow() {
 
 function resetTableControlBtns(status) {
 	const classBtns = ['allow', 'disallow'];
-	const rowsActive = $('.table--permis .table__content--active .table__row');
+	const rowsActive = $('.table--permis .table__content .table__row');
 	const statusBtns = status == true ? 'attr' : 'removeAttr';
 	const statusClass = status == true ? 'addClass' : 'removeClass';
 
@@ -356,57 +367,56 @@ function getDatainDB(nameTable) {
 }
 
 // Общие функции с картами и кодами
-function countItems(idDepart, modDepart) {
+function countItems(idDepart, page) {
 	const countItemfromDep = [...permissionCollection.values()].filter((user) => user.nameid === idDepart);
 
-	$(`.main__count--${modDepart}`).text(countItemfromDep.length);
+	$(`.main__count--${page}`).text(countItemfromDep.length);
 }
 
-function viewAllCount(collection, modDepart) {
-	$(`.main__count--all-${modDepart}`).text(collection.size);
+function viewAllCount(collection, page) {
+	$(`.main__count--all-${page}`).text(collection.size);
 }
 
-function addTabs(collection, modDepart) {
+function addTabs(collection, activeTab, page = 'permis') {
 	const filterNameDepart = filterDepart(collection);
 
-	$(`.tab--${modDepart}`).html('');
+	$(`.tab--${page}`).html('');
 
 	if (filterNameDepart.length > 1) {
 		filterNameDepart.forEach((item) => {
 			nameDeparts.forEach((depart) => {
-				const { idName = '', shortName = '' } = depart;
+				const { idname = '', shortname = '' } = depart;
 
-				if (item == idName) {
-					$(`.tab--${modDepart}`).append(`
-						<button class="tab__item" type="button" data-depart=${idName}>
-							<span class="tab__name">${shortName}</span>
-						</button>
-					`);
+				if (item == idname) {
+					const objTab = {
+						idname,
+						shortname,
+						status: activeTab === idname ? true : false
+					};
+
+					$(`.tab--${page}`).append(templatePermissionTabs(objTab));
 				}
 			});
 		});
 	}
 }
 
-function changeTabs(nameTable, modDepart) {
-	$(`.tab--${modDepart}`).click((e) => {
+function changeTabs(nameTable, page) {
+	$(`.tab--${page}`).click((e) => {
 		if (!$(e.target).parents('.tab__item').length && !$(e.target).hasClass('tab__item')) return;
 
 		const nameDepart = $(e.target).closest('.tab__item').data('depart');
 
-		showActiveDataOnPage(permissionCollection, nameTable, modDepart, nameDepart);
+		addTabs(permissionCollection, nameDepart);
+		showActiveDataOnPage(permissionCollection, nameTable, nameDepart);
 		resetControlBtns();
 	});
 }
 
 function filterDepart(collection) {
-	const arrayDepart = [...collection.values()].reduce((acc, item) => {
-		acc.push(item.nameid);
-		return acc;
-	}, []);
-	const filterIdDepart = new Set(arrayDepart);
+	const arrayDepart = [...collection.values()].map((item) => item.nameid);
 
-	return [...filterIdDepart];
+	return [...new Set(arrayDepart)];
 }
 
 export default {

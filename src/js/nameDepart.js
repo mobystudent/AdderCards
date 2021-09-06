@@ -2,528 +2,528 @@
 
 export const nameDeparts = new Map([
 		[0, {
-			idName: 'ChemDep',
-			shortName: 'Химфак',
-			longName: 'Химический факультет'
+			idname: 'ChemDep',
+			shortname: 'Химфак',
+			longname: 'Химический факультет'
 		}],
 		[1, {
-			idName: 'CSDep',
-			shortName: 'ФКН',
-			longName: 'Факультет компьютерных наук'
+			idname: 'CSDep',
+			shortname: 'ФКН',
+			longname: 'Факультет компьютерных наук'
 		}],
 		[2, {
-			idName: 'PhTechDep',
-			shortName: 'Физтехфак',
-			longName: 'Физико-технический факультет'
+			idname: 'PhTechDep',
+			shortname: 'Физтехфак',
+			longname: 'Физико-технический факультет'
 		}],
 		[3, {
-			idName: 'PhDep',
-			shortName: 'Физфак',
-			longName: 'Физический факультет'
+			idname: 'PhDep',
+			shortname: 'Физфак',
+			longname: 'Физический факультет'
 		}],
 		[4, {
-			idName: 'BioDep',
-			shortName: 'Биофак',
-			longName: 'Биологический факультет'
+			idname: 'BioDep',
+			shortname: 'Биофак',
+			longname: 'Биологический факультет'
 		}],
 		[5, {
-			idName: 'PhysEnDep',
-			shortName: 'Физэнфак',
-			longName: 'Физико-энергетический факультет'
+			idname: 'PhysEnDep',
+			shortname: 'Физэнфак',
+			longname: 'Физико-энергетический факультет'
 		}],
 		[6, {
-			idName: 'EcoDep',
-			shortName: 'Екофак',
-			longName: 'Экологический факультет'
+			idname: 'EcoDep',
+			shortname: 'Екофак',
+			longname: 'Экологический факультет'
 		}],
 		[7, {
-			idName: 'PsyDep',
-			shortName: 'Псифак',
-			longName: 'Факультет психологии'
+			idname: 'PsyDep',
+			shortname: 'Псифак',
+			longname: 'Факультет психологии'
 		}],
 		[8, {
-			idName: 'PhilolDep',
-			shortName: 'Филолфак',
-			longName: 'Филологический факультет'
+			idname: 'PhilolDep',
+			shortname: 'Филолфак',
+			longname: 'Филологический факультет'
 		}],
 		[9, {
-			idName: 'PhilosDep',
-			shortName: 'Филосфак',
-			longName: 'Философский факультет'
+			idname: 'PhilosDep',
+			shortname: 'Филосфак',
+			longname: 'Философский факультет'
 		}],
 		[10, {
-			idName: 'EconomDep',
-			shortName: 'Экономфак',
-			longName: 'Экономический факультет'
+			idname: 'EconomDep',
+			shortname: 'Экономфак',
+			longname: 'Экономический факультет'
 		}],
 		[11, {
-			idName: 'SocDep',
-			shortName: 'Соцфак',
-			longName: 'Социологический факультет'
+			idname: 'SocDep',
+			shortname: 'Соцфак',
+			longname: 'Социологический факультет'
 		}],
 		[12, {
-			idName: 'HisDep',
-			shortName: 'Истфак',
-			longName: 'Исторический факультет'
+			idname: 'HisDep',
+			shortname: 'Истфак',
+			longname: 'Исторический факультет'
 		}],
 		[13, {
-			idName: 'RadDep',
-			shortName: 'Радиофак',
-			longName: 'Факультет радиофизики, биомедицинской электроники и компьютерных систем'
+			idname: 'RadDep',
+			shortname: 'Радиофак',
+			longname: 'Факультет радиофизики, биомедицинской электроники и компьютерных систем'
 		}],
 		[14, {
-			idName: 'MedDep',
-			shortName: 'Медфак',
-			longName: 'Медицинский факультет'
+			idname: 'MedDep',
+			shortname: 'Медфак',
+			longname: 'Медицинский факультет'
 		}],
 		[15, {
-			idName: 'ForLanDep',
-			shortName: 'Инязфак',
-			longName: 'Факультет іноземних мов'
+			idname: 'ForLanDep',
+			shortname: 'Инязфак',
+			longname: 'Факультет іноземних мов'
 		}],
 		[16, {
-			idName: 'GeoDep',
-			shortName: 'Геофак',
-			longName: 'Факультет геологии, географии, рекреации и туризма'
+			idname: 'GeoDep',
+			shortname: 'Геофак',
+			longname: 'Факультет геологии, географии, рекреации и туризма'
 		}],
 		[17, {
-			idName: 'IERDep',
-			shortName: 'МЭОфак',
-			longName: 'Факультет международных экономических отношений и туристического бизнеса'
+			idname: 'IERDep',
+			shortname: 'МЭОфак',
+			longname: 'Факультет международных экономических отношений и туристического бизнеса'
 		}],
 		[18, {
-			idName: 'MathDep',
-			shortName: 'Мехматфак',
-			longName: 'Факультет математики и информатики'
+			idname: 'MathDep',
+			shortname: 'Мехматфак',
+			longname: 'Факультет математики и информатики'
 		}],
 		[19, {
-			idName: 'LawDep',
-			shortName: 'Юрфак',
-			longName: 'Юридический факультет'
+			idname: 'LawDep',
+			shortname: 'Юрфак',
+			longname: 'Юридический факультет'
 		}],
 		[20, {
-			idName: 'LawDiv',
-			shortName: 'Юротдел',
-			longName: 'Юридический отдел'
+			idname: 'LawDiv',
+			shortname: 'Юротдел',
+			longname: 'Юридический отдел'
 		}],
 		[21, {
-			idName: 'CSL',
-			shortName: 'ЦНБ',
-			longName: 'Центральная Научная Библиотека'
+			idname: 'CSL',
+			shortname: 'ЦНБ',
+			longname: 'Центральная Научная Библиотека'
 		}],
 		[22, {
-			idName: 'CIE',
-			shortName: 'ЦМО',
-			longName: 'Центр международного образования'
+			idname: 'CIE',
+			shortname: 'ЦМО',
+			longname: 'Центр международного образования'
 		}],
 		[23, {
-			idName: 'CTTC',
-			shortName: 'НЦКТ',
-			longName: 'Учебный центр компьютерных технологий'
+			idname: 'CTTC',
+			shortname: 'НЦКТ',
+			longname: 'Учебный центр компьютерных технологий'
 		}],
 		[24, {
-			idName: 'UniCort',
-			shortName: 'Уникорт',
-			longName: 'Теннисный клуб «Уникорт»'
+			idname: 'UniCort',
+			shortname: 'Уникорт',
+			longname: 'Теннисный клуб «Уникорт»'
 		}],
 		[25, {
-			idName: 'Bunker',
-			shortName: 'Бункер',
-			longName: 'ООО "Бункер'
+			idname: 'Bunker',
+			shortname: 'Бункер',
+			longname: 'ООО "Бункер'
 		}],
 		[26, {
-			idName: 'StudCity',
-			shortName: 'Студгор',
-			longName: 'Студгородок'
+			idname: 'StudCity',
+			shortname: 'Студгор',
+			longname: 'Студгородок'
 		}],
 		[27, {
-			idName: 'InnovCen',
-			shortName: 'Иннцентр',
-			longName: 'Инновационный центр'
+			idname: 'InnovCen',
+			shortname: 'Иннцентр',
+			longname: 'Инновационный центр'
 		}],
 		[28, {
-			idName: 'SecSer',
-			shortName: 'Охрана',
-			longName: 'Служба охраны'
+			idname: 'SecSer',
+			shortname: 'Охрана',
+			longname: 'Служба охраны'
 		}],
 		[29, {
-			idName: 'RepConSer',
-			shortName: 'Ремстрой',
-			longName: 'Ремонтно-строительная служба'
+			idname: 'RepConSer',
+			shortname: 'Ремстрой',
+			longname: 'Ремонтно-строительная служба'
 		}],
 		[30, {
-			idName: 'EducDiv',
-			shortName: 'Учотдел',
-			longName: 'Учебный отдел'
+			idname: 'EducDiv',
+			shortname: 'Учотдел',
+			longname: 'Учебный отдел'
 		}],
 		[31, {
-			idName: 'MusNat',
-			shortName: 'Музприр',
-			longName: 'Музей природы'
+			idname: 'MusNat',
+			shortname: 'Музприр',
+			longname: 'Музей природы'
 		}],
 		[32, {
-			idName: 'MusHis',
-			shortName: 'Музист',
-			longName: 'Музей истории'
+			idname: 'MusHis',
+			shortname: 'Музист',
+			longname: 'Музей истории'
 		}],
 		[33, {
-			idName: 'MusArch',
-			shortName: 'Музарх',
-			longName: 'Музей археологии'
+			idname: 'MusArch',
+			shortname: 'Музарх',
+			longname: 'Музей археологии'
 		}],
 		[34, {
-			idName: 'SportCath',
-			shortName: 'Спорткаф',
-			longName: 'Кафедра физического воспитания и спорта'
+			idname: 'SportCath',
+			shortname: 'Спорткаф',
+			longname: 'Кафедра физического воспитания и спорта'
 		}],
 		[35, {
-			idName: 'PropDiv',
-			shortName: 'Хозотдел',
-			longName: 'Хозяйственный отдел'
+			idname: 'PropDiv',
+			shortname: 'Хозотдел',
+			longname: 'Хозяйственный отдел'
 		}],
 		[36, {
-			idName: 'BotGar',
-			shortName: 'Ботсад',
-			longName: 'Ботанический сад'
+			idname: 'BotGar',
+			shortname: 'Ботсад',
+			longname: 'Ботанический сад'
 		}],
 		[37, {
-			idName: 'Bookkeep',
-			shortName: 'Бухотдел',
-			longName: 'Бухгалтерия'
+			idname: 'Bookkeep',
+			shortname: 'Бухотдел',
+			longname: 'Бухгалтерия'
 		}],
 		[38, {
-			idName: 'HRD',
-			shortName: 'Кадротдел',
-			longName: 'Отдел кадров'
+			idname: 'HRD',
+			shortname: 'Кадротдел',
+			longname: 'Отдел кадров'
 		}],
 		[39, {
-			idName: 'CIC',
-			shortName: 'ЦМС',
-			longName: 'Центр международного сотрудничества'
+			idname: 'CIC',
+			shortname: 'ЦМС',
+			longname: 'Центр международного сотрудничества'
 		}],
 		[40, {
-			idName: 'CPE',
-			shortName: 'ЦПДО',
-			longName: 'Центр последипломного образования'
+			idname: 'CPE',
+			shortname: 'ЦПДО',
+			longname: 'Центр последипломного образования'
 		}],
 		[41, {
-			idName: 'MedCen',
-			shortName: 'Медцентр',
-			longName: 'Центр первичной медико-санитарной помощи'
+			idname: 'MedCen',
+			shortname: 'Медцентр',
+			longname: 'Центр первичной медико-санитарной помощи'
 		}],
 		[42, {
-			idName: 'CSHR',
-			shortName: 'ЦСГИ',
-			longName: 'Центр социально-гуманитарных исследований'
+			idname: 'CSHR',
+			shortname: 'ЦСГИ',
+			longname: 'Центр социально-гуманитарных исследований'
 		}],
 		[43, {
-			idName: 'EmlCen',
-			shortName: 'Трудцентр',
-			longName: 'Центр трудоустройства студентов и выпускников'
+			idname: 'EmlCen',
+			shortname: 'Трудцентр',
+			longname: 'Центр трудоустройства студентов и выпускников'
 		}],
 		[44, {
-			idName: 'LocCen',
-			shortName: 'Краецентр',
-			longName: 'Центр краеведения'
+			idname: 'LocCen',
+			shortname: 'Краецентр',
+			longname: 'Центр краеведения'
 		}],
 		[45, {
-			idName: 'DocCen',
-			shortName: 'Докцентр',
-			longName: 'Центр документации'
+			idname: 'DocCen',
+			shortname: 'Докцентр',
+			longname: 'Центр документации'
 		}],
 		[46, {
-			idName: 'CPR',
-			shortName: 'ЦСО',
-			longName: 'Центр связей с общественностью'
+			idname: 'CPR',
+			shortname: 'ЦСО',
+			longname: 'Центр связей с общественностью'
 		}],
 		[47, {
-			idName: 'CivProt',
-			shortName: 'Гражзащит',
-			longName: 'Штаб гражданской защиты'
+			idname: 'CivProt',
+			shortname: 'Гражзащит',
+			longname: 'Штаб гражданской защиты'
 		}],
 		[48, {
-			idName: 'WebCen',
-			shortName: 'Вебцентр',
-			longName: 'Центр веб-коммуникаций'
+			idname: 'WebCen',
+			shortname: 'Вебцентр',
+			longname: 'Центр веб-коммуникаций'
 		}],
 		[49, {
-			idName: 'PUEC',
-			shortName: 'ЦДО',
-			longName: 'Центр довузовского образования'
+			idname: 'PUEC',
+			shortname: 'ЦДО',
+			longname: 'Центр довузовского образования'
 		}],
 		[50, {
-			idName: 'PerManSer',
-			shortName: 'Упрперсон',
-			longName: 'Служба управления персоналом'
+			idname: 'PerManSer',
+			shortname: 'Упрперсон',
+			longname: 'Служба управления персоналом'
 		}],
 		[51, {
-			idName: 'RadSafSer',
-			shortName: 'Радиобез',
-			longName: 'Служба радиационной безопасности'
+			idname: 'RadSafSer',
+			shortname: 'Радиобез',
+			longname: 'Служба радиационной безопасности'
 		}],
 		[52, {
-			idName: 'ChMechSer',
-			shortName: 'Главмех',
-			longName: 'Служба главного механика'
+			idname: 'ChMechSer',
+			shortname: 'Главмех',
+			longname: 'Служба главного механика'
 		}],
 		[53, {
-			idName: 'ChMetSer',
-			shortName: 'Главмет',
-			longName: 'Служба главного метролога'
+			idname: 'ChMetSer',
+			shortname: 'Главмет',
+			longname: 'Служба главного метролога'
 		}],
 		[54, {
-			idName: 'ChPEngSer',
-			shortName: 'Главэнер',
-			longName: 'Служба главного энергетика'
+			idname: 'ChPEngSer',
+			shortname: 'Главэнер',
+			longname: 'Служба главного энергетика'
 		}],
 		[55, {
-			idName: 'ChEngSer',
-			shortName: 'Главинж',
-			longName: 'Служба главного инженера'
+			idname: 'ChEngSer',
+			shortname: 'Главинж',
+			longname: 'Служба главного инженера'
 		}],
 		[56, {
-			idName: 'FinDiv',
-			shortName: 'Финотдел',
-			longName: 'Планово-финансовый отдел'
+			idname: 'FinDiv',
+			shortname: 'Финотдел',
+			longname: 'Планово-финансовый отдел'
 		}],
 		[57, {
-			idName: 'RIC',
-			shortName: 'НИИХ',
-			longName: 'Научно-исследовательский институт химии'
+			idname: 'RIC',
+			shortname: 'НИИХ',
+			longname: 'Научно-исследовательский институт химии'
 		}],
 		[58, {
-			idName: 'RIB',
-			shortName: 'НИИБ',
-			longName: 'Научно-исследовательский институт биологии'
+			idname: 'RIB',
+			shortname: 'НИИБ',
+			longname: 'Научно-исследовательский институт биологии'
 		}],
 		[59, {
-			idName: 'RIA',
-			shortName: 'НИИА',
-			longName: 'Научно-исследовательский институт астрономии'
+			idname: 'RIA',
+			shortname: 'НИИА',
+			longname: 'Научно-исследовательский институт астрономии'
 		}],
 		[60, {
-			idName: 'SPTC',
-			shortName: 'НФТЦ',
-			longName: 'Научный физико-технологический центр'
+			idname: 'SPTC',
+			shortname: 'НФТЦ',
+			longname: 'Научный физико-технологический центр'
 		}],
 		[61, {
-			idName: 'ESIIE',
-			shortName: 'УНИМО',
-			longName: 'Учебно-научный институт международного образования'
+			idname: 'ESIIE',
+			shortname: 'УНИМО',
+			longname: 'Учебно-научный институт международного образования'
 		}],
 		[62, {
-			idName: 'ESPS',
-			shortName: 'УНПС',
-			longName: 'Учебно-научная психологическая служба'
+			idname: 'ESPS',
+			shortname: 'УНПС',
+			longname: 'Учебно-научная психологическая служба'
 		}],
 		[63, {
-			idName: 'EMC',
-			shortName: 'УМЦ',
-			longName: 'Учебно-методический центр'
+			idname: 'EMC',
+			shortname: 'УМЦ',
+			longname: 'Учебно-методический центр'
 		}],
 		[64, {
-			idName: 'TPWFP',
-			shortName: 'УПМФФ',
-			longName: 'Учебно-производственная мастерская физического факультета'
+			idname: 'TPWFP',
+			shortname: 'УПМФФ',
+			longname: 'Учебно-производственная мастерская физического факультета'
 		}],
 		[65, {
-			idName: 'TCPTE',
-			shortName: 'УЦППТ',
-			longName: 'Учебный центр практической подготовки и трудоустройства'
+			idname: 'TCPTE',
+			shortname: 'УЦППТ',
+			longname: 'Учебный центр практической подготовки и трудоустройства'
 		}],
 		[66, {
-			idName: 'TCSENEA',
-			shortName: 'УЦСВВОД',
-			longName: 'Учебный центр социально-воспитательной и внеобразовательной деятельности'
+			idname: 'TCSENEA',
+			shortname: 'УЦСВВОД',
+			longname: 'Учебный центр социально-воспитательной и внеобразовательной деятельности'
 		}],
 		[67, {
-			idName: 'TCOEP',
-			shortName: 'УЦООП',
-			longName: 'Учебный центр организации образовательного процесса'
+			idname: 'TCOEP',
+			shortname: 'УЦООП',
+			longname: 'Учебный центр организации образовательного процесса'
 		}],
 		[68, {
-			idName: 'CulCen',
-			shortName: 'Кулцентр',
-			longName: 'Культурный центр'
+			idname: 'CulCen',
+			shortname: 'Кулцентр',
+			longname: 'Культурный центр'
 		}],
 		[69, {
-			idName: 'LanCen',
-			shortName: 'Ландау',
-			longName: 'Ландау Центр'
+			idname: 'LanCen',
+			shortname: 'Ландау',
+			longname: 'Ландау Центр'
 		}],
 		[70, {
-			idName: 'OTD',
-			shortName: 'ЭТотдел',
-			longName: 'Эксплуатационно-технический отдел'
+			idname: 'OTD',
+			shortname: 'ЭТотдел',
+			longname: 'Эксплуатационно-технический отдел'
 		}],
 		[71, {
-			idName: 'PubHouse',
-			shortName: 'Издат',
-			longName: 'Издательство'
+			idname: 'PubHouse',
+			shortname: 'Издат',
+			longname: 'Издательство'
 		}],
 		[72, {
-			idName: 'MMD',
-			shortName: 'Военмоб',
-			longName: 'Военно-мобилизационный отдел'
+			idname: 'MMD',
+			shortname: 'Военмоб',
+			longname: 'Военно-мобилизационный отдел'
 		}],
 		[73, {
-			idName: 'ABD',
-			shortName: 'Рекотдел',
-			longName: 'Отдел рекламы и брендинга'
+			idname: 'ABD',
+			shortname: 'Рекотдел',
+			longname: 'Отдел рекламы и брендинга'
 		}],
 		[74, {
-			idName: 'PurDiv',
-			shortName: 'Снаботдел',
-			longName: 'Отдел снабжения'
+			idname: 'PurDiv',
+			shortname: 'Снаботдел',
+			longname: 'Отдел снабжения'
 		}],
 		[75, {
-			idName: 'LabProDiv',
-			shortName: 'Охртруда',
-			longName: 'Отдел охраны труда'
+			idname: 'LabProDiv',
+			shortname: 'Охртруда',
+			longname: 'Отдел охраны труда'
 		}],
 		[76, {
-			idName: 'DPDS',
-			shortName: 'АДотдел',
-			longName: 'Отдел аспирантуры и докторантурыа'
+			idname: 'DPDS',
+			shortname: 'АДотдел',
+			longname: 'Отдел аспирантуры и докторантурыа'
 		}],
 		[77, {
-			idName: 'DCCRM',
-			shortName: 'ОКСРТР',
-			longName: 'Отдел капитального строительства, реконструкции и текущего ремонта'
+			idname: 'DCCRM',
+			shortname: 'ОКСРТР',
+			longname: 'Отдел капитального строительства, реконструкции и текущего ремонта'
 		}],
 		[78, {
-			idName: 'DCT',
-			shortName: 'Контотдел',
-			longName: 'Отдел контрактного обучения'
+			idname: 'DCT',
+			shortname: 'Контотдел',
+			longname: 'Отдел контрактного обучения'
 		}],
 		[79, {
-			idName: 'DOIA',
-			shortName: 'ООМД',
-			longName: 'Отдел организации международной деятельности'
+			idname: 'DOIA',
+			shortname: 'ООМД',
+			longname: 'Отдел организации международной деятельности'
 		}],
 		[80, {
-			idName: 'MTD',
-			shortName: 'Автоотдел',
-			longName: 'Автотранспортный отдел'
+			idname: 'MTD',
+			shortname: 'Автоотдел',
+			longname: 'Автотранспортный отдел'
 		}],
 		[81, {
-			idName: 'IPEDL',
-			shortName: 'ИПОЗДО',
-			longName: 'Институт последипломного образования и заочного (дистанционного) обучения'
+			idname: 'IPEDL',
+			shortname: 'ИПОЗДО',
+			longname: 'Институт последипломного образования и заочного (дистанционного) обучения'
 		}],
 		[82, {
-			idName: 'ConfInst',
-			shortName: 'Конфинст',
-			longName: 'Институт Конфуци'
+			idname: 'ConfInst',
+			shortname: 'Конфинст',
+			longname: 'Институт Конфуци'
 		}],
 		[83, {
-			idName: 'IERT',
-			shortName: 'ИЭРТ',
-			longName: 'Институт электроники и радиационных технологий'
+			idname: 'IERT',
+			shortname: 'ИЭРТ',
+			longname: 'Институт электроники и радиационных технологий'
 		}],
 		[84, {
-			idName: 'IIE',
-			shortName: 'ИМО',
-			longName: 'Институт международного образования'
+			idname: 'IIE',
+			shortname: 'ИМО',
+			longname: 'Институт международного образования'
 		}],
 		[85, {
-			idName: 'ErmCen',
-			shortName: 'Ермилов',
-			longName: 'Ермилов Центр'
+			idname: 'ErmCen',
+			shortname: 'Ермилов',
+			longname: 'Ермилов Центр'
 		}],
 		[86, {
-			idName: 'KBI',
-			shortName: 'УНИКБИ',
-			longName: 'УНИ "Каразинский банковский институт"'
+			idname: 'KBI',
+			shortname: 'УНИКБИ',
+			longname: 'УНИ "Каразинский банковский институт"'
 		}],
 		[87, {
-			idName: 'KBS',
-			shortName: 'УНИКШБ',
-			longName: 'УНИ "Каразинская школа бизнеса"'
+			idname: 'KBS',
+			shortname: 'УНИКШБ',
+			longname: 'УНИ "Каразинская школа бизнеса"'
 		}],
 		[88, {
-			idName: 'SecDiv',
-			shortName: 'Секротдел',
-			longName: 'Режимно-секретный отдел'
+			idname: 'SecDiv',
+			shortname: 'Секротдел',
+			longname: 'Режимно-секретный отдел'
 		}],
 		[89, {
-			idName: 'PressSer',
-			shortName: 'Пресслуж',
-			longName: 'Пресс-служба'
+			idname: 'PressSer',
+			shortname: 'Пресслуж',
+			longname: 'Пресс-служба'
 		}],
 		[90, {
-			idName: 'PsySer',
-			shortName: 'Психслуж',
-			longName: 'Психологическая служба'
+			idname: 'PsySer',
+			shortname: 'Психслуж',
+			longname: 'Психологическая служба'
 		}],
 		[91, {
-			idName: 'SSS',
-			shortName: 'СУС',
-			longName: 'Служба Ученого секретаря'
+			idname: 'SSS',
+			shortname: 'СУС',
+			longname: 'Служба Ученого секретаря'
 		}],
 		[92, {
-			idName: 'SportCom',
-			shortName: 'Спортком',
-			longName: 'Спортивный комплекс "Каразинский"'
+			idname: 'SportCom',
+			shortname: 'Спортком',
+			longname: 'Спортивный комплекс "Каразинский"'
 		}],
 		[93, {
-			idName: 'UCAQE',
-			shortName: 'УЦОКО',
-			longName: 'Украинский центр оценивания качества образования'
+			idname: 'UCAQE',
+			shortname: 'УЦОКО',
+			longname: 'Украинский центр оценивания качества образования'
 		}],
 		[94, {
-			idName: 'UInAC',
-			shortName: 'УИнАЦ',
-			longName: 'Украинский-Индийский академический центр'
+			idname: 'UInAC',
+			shortname: 'УИнАЦ',
+			longname: 'Украинский-Индийский академический центр'
 		}],
 		[95, {
-			idName: 'UArAC',
-			shortName: 'УАрАЦ',
-			longName: 'Украинский-Арабский академический центр'
+			idname: 'UArAC',
+			shortname: 'УАрАЦ',
+			longname: 'Украинский-Арабский академический центр'
 		}],
 		[96, {
-			idName: 'UAfAC',
-			shortName: 'УАфАЦ',
-			longName: 'Украинский-Африканский академический центр'
+			idname: 'UAfAC',
+			shortname: 'УАфАЦ',
+			longname: 'Украинский-Африканский академический центр'
 		}],
 		[97, {
-			idName: 'UGAC',
-			shortName: 'УНАЦ',
-			longName: 'Украинский-Немецкий академический центр'
+			idname: 'UGAC',
+			shortname: 'УНАЦ',
+			longname: 'Украинский-Немецкий академический центр'
 		}],
 		[98, {
-			idName: 'UPAC',
-			shortName: 'УПАЦ',
-			longName: 'Украинский-Польский академический центр'
+			idname: 'UPAC',
+			shortname: 'УПАЦ',
+			longname: 'Украинский-Польский академический центр'
 		}],
 		[99, {
-			idName: 'UItAC',
-			shortName: 'УИтАЦ',
-			longName: 'Украинский-Итальянский академический центр'
+			idname: 'UItAC',
+			shortname: 'УИтАЦ',
+			longname: 'Украинский-Итальянский академический центр'
 		}],
 		[100, {
-			idName: 'UFAC',
-			shortName: 'УФАЦ',
-			longName: 'Украинский-франкофонные академический центр'
+			idname: 'UFAC',
+			shortname: 'УФАЦ',
+			longname: 'Украинский-франкофонные академический центр'
 		}],
 		[101, {
-			idName: 'UMS',
-			shortName: 'Медиа',
-			longName: 'Университетская медиа-студия'
+			idname: 'UMS',
+			shortname: 'Медиа',
+			longname: 'Университетская медиа-студия'
 		}],
 		[102, {
-			idName: 'DIR',
-			shortName: 'УМО',
-			longName: 'Управление международных отношений'
+			idname: 'DIR',
+			shortname: 'УМО',
+			longname: 'Управление международных отношений'
 		}],
 		[103, {
-			idName: 'CIEM',
-			shortName: 'ЦИМО',
-			longName: 'Центр инновационных методов образования'
+			idname: 'CIEM',
+			shortname: 'ЦИМО',
+			longname: 'Центр инновационных методов образования'
 		}]
 	]);
 
-// export const shortNameDepart = {
+// export const shortnameDepart = {
 // 	// ChemDep: 'Химфак', // Химический факультет
 // 	// CSDep: 'ФКН', // Факультет компьютерных наук
 // 	// PhTechDep: 'Физтехфак', // Физико-технический факультет
