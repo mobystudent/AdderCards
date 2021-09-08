@@ -5,6 +5,9 @@ main.main(data-name="reject")
 		span.main__depart.main__depart--add(data-depart="Химический факультет" data-id="ChemDep")
 			| Химический факультет
 			
+		form.form#rejectForm(action="#" method="GET")
+			.form__wrap.form__wrap--hide
+			
 		.wrap.wrap--content.wrap--content-reject
 			.main__wrap-info
 				.main__cards.main__cards--main
@@ -38,6 +41,9 @@ main.main(data-name="reject")
 						.table__cell.table__cell--header.table__cell--btn-choice
 							button.btn.btn--choice#choiceAll(type="button")
 								| Выбрать все
+						.table__cell.table__cell--header.table__cell--view
+							svg.icon.icon--view.icon--view-white
+								use.icon__item(xlink:href="./images/sprite.svg#view")
 					.table__body.table__body--empty#tableReject
 						p.table__nothing
 							| Новых данных нет

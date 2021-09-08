@@ -55,4 +55,18 @@
 			fill: $white;
 		}
 	}
+
+	&--view {
+		width: 20px;
+		height: 20px;
+		margin: auto;
+
+		&-black {
+			fill: $black;
+		}
+
+		&-white {
+			fill: $white;
+		}
+	}
 }
