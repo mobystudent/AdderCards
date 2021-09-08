@@ -17,7 +17,7 @@ License URI: http://www.gnu.org/licenses/gpl-2.0.html
 @import "common/common.scss";
 
 //Vendors
-@import "vendors/ui-datepicker.scss";
+@import "vendors/*.scss";
 
 //Blocks
 @import "blocks/*.scss";

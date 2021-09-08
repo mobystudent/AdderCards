@@ -1,0 +1,15 @@
+.table__body {
+	.scrollbar {
+		&-track {
+			width: 10px;
+			opacity: 1;
+			background: $darkGray;
+			box-shadow: 0 0 0 1px $black;
+		}
+
+		&-thumb {
+			width: 10px;
+			background: $deepDarkBlue;
+		}
+	}
+}

@@ -61,6 +61,6 @@
     "jquery": "^3.5.1",
     "jquery-datepicker": "^1.12.3",
     "qrcode": "^1.4.4",
-    "slick-carousel": "^1.8.1"
+    "smooth-scrollbar": "^8.6.3"
   }
 }

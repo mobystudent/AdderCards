@@ -1,6 +1,7 @@
 'use strict';
 
 import $ from 'jquery';
+import Scrollbar from 'smooth-scrollbar';
 
 $(window).on('load', () => {
 	printReport();
@@ -106,8 +107,17 @@ function modal(action) {
 	});
 }
 
+function scrollbar() {
+	const tables = $('.table__body');
+
+	[...tables].forEach((item) => {
+		Scrollbar.init(item);
+	});
+}
+
 export default {
 	printReport,
 	showDataInTable,
-	modal
+	modal,
+	scrollbar
 };

@@ -1,11 +1,14 @@
 'use strict';
 
 import $ from 'jquery';
+import service from './service.js';
 
 const rejectCollection = new Map(); // БД отклоненных пользователей
 
 $(window).on('load', () => {
 	getDatainDB('reject');
+
+	service.scrollbar();
 });
 
 function templateRejectTable(data) {
@@ -32,7 +35,7 @@ function templateRejectTable(data) {
 	`;
 }
 
-function renderTable(nameTable) {
+function renderTable(nameTable = '#tableReject') {
 	$(`${nameTable} .table__content`).html('');
 
 	rejectCollection.forEach((item) => {
@@ -70,32 +73,35 @@ function userdFromDB(array, nameTable = '#tableReject') {
 	dataAdd(nameTable);
 }
 
-function dataAdd(nameTable) {
+function dataAdd(nameTable, page = 'reject') {
 	if (rejectCollection.size) {
-		$('.table__nothing').hide();
-		$(nameTable)
-			.html('')
-			.removeClass('table__body--empty')
-			.append(`
-				<div class="table__content table__content--active">
-				</div>
-			`);
+		emptySign(nameTable, 'full');
 	} else {
-		$(nameTable).addClass('table__body--empty').html('');
-		$(nameTable).append(`
-			<p class="table__nothing">Новых данных нет</p>
-		`);
+		emptySign(nameTable, 'empty');
 
 		return;
 	}
 
-	renderTable(nameTable);
-	$('.main__count--reject').text(rejectCollection.size);
+	renderTable();
+	$(`.main__count--${page}`).text(rejectCollection.size);
 }
 
-function getDatainDB(nameTable) {
-	// const idDepart = $(`.main__depart--${page}`).attr('data-id');
-	const idDepart = 'chemdep';
+function emptySign(nameTable, status) {
+	if (status == 'empty') {
+		$(nameTable)
+			.addClass('table__body--empty')
+			.html('')
+			.append('<p class="table__nothing">Новых данных нет</p>');
+	} else {
+		$(nameTable)
+			.removeClass('table__body--empty')
+			.html('')
+			.append('<div class="table__content"></div>');
+	}
+}
+
+function getDatainDB(nameTable, page = 'reject') {
+	const idDepart = $(`.main__depart--${page}`).attr('data-id');
 
 	$.ajax({
 		url: "./php/output-request.php",
@@ -111,8 +117,8 @@ function getDatainDB(nameTable) {
 
 			userdFromDB(dataFromDB);
 		},
-		error: function(data) {
-			console.log(data);
+		error: function() {
+			service.modal('download');
 		}
 	});
 }
