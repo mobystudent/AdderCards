@@ -1,13 +1,19 @@
 .control {
-	display: flex;
-	flex-flow: column;
 	grid-area: aside;
 	margin-right: 20px;
-	padding: 50px 0;
 	background: $gray;
 
 	@media print {
 		display: none;
+	}
+
+	&__container {
+		display: flex;
+		flex-flow: column;
+		position: sticky;
+		top: 0;
+		padding: 40px 0 0;
+		min-height: 100vh;
 	}
 
 	&__item {

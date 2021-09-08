@@ -462,14 +462,12 @@ function clearFieldsForm(nameForm = '#removeForm') {
 		statusid: '',
 		post: ''
 	};
-	removeObject = {
-		fio: '',
-		statusid: '',
-		statustitle: '',
-		newpost: '',
-		newfio: '',
-		photourl: ''
-	};
+	removeObject.fio = '';
+	removeObject.statusid = '';
+	removeObject.statustitle = '';
+	removeObject.newpost = '';
+	removeObject.newfio = '';
+	removeObject.photourl = '';
 
 	$(`${nameForm} .form__wrap`).html('').append(templateRemoveForm(clearObject));
 
