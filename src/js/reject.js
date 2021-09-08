@@ -9,7 +9,7 @@ $(window).on('load', () => {
 });
 
 function templateRejectTable(data) {
-	const { id = '', fio = '', post = '', department = '', statustitle = '', date = '' } = data;
+	const { id = '', fio = '', post = '', statustitle = '', date = '' } = data;
 
 	return `
 		<div class="table__row table__row--permis" data-id="${id}">
@@ -19,14 +19,14 @@ function templateRejectTable(data) {
 			<div class="table__cell table__cell--body table__cell--post">
 				<span class="table__text table__text--body">${post}</span>
 			</div>
-			<div class="table__cell table__cell--body table__cell--department">
-				<span class="table__text table__text--body">${department}</span>
-			</div>
 			<div class="table__cell table__cell--body table__cell--statustitle">
 				<span class="table__text table__text--body">${statustitle}</span>
 			</div>
 			<div class="table__cell table__cell--body table__cell--date">
 				<span class="table__text table__text--body">${date}</span>
+			</div>
+			<div class="table__cell table__cell--body table__cell--btn-choice">
+				<button class="btn btn--choice" id="choice" type="button">Выбрать</button>
 			</div>
 		</div>
 	`;

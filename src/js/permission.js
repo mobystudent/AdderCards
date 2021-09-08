@@ -40,7 +40,7 @@ function templatePermissionTable(data) {
 			<div class="table__cell table__cell--body table__cell--statustitle">
 				<span class="table__text table__text--body">${statustitle}</span>
 			</div>
-			<div class="table__cell table__cell--body table__cell--control">
+			<div class="table__cell table__cell--body table__cell--btn-permis">
 				<button class="btn btn--allow ${allowBtnClassView} ${allowDiffClassView}" type="button" data-type="allow" ${allowBtnBlock}>
 					${allowBtnValue}
 				</button>
@@ -86,7 +86,7 @@ function templatePermissionHeaderTable(data) {
 		<div class="table__cell table__cell--header table__cell--statustitle">
 			<span class="table__text table__text--header">Статус</span>
 		</div>
-		<div class="table__cell table__cell--header table__cell--control">
+		<div class="table__cell table__cell--header table__cell--btn-permis">
 			<button class="btn btn--allow ${allowBtnClassView} ${allowDiffClassView}" id="allowAll" type="button" data-type="allow" ${allowBtnBlock}>
 				${allowBtnValue}
 			</button>

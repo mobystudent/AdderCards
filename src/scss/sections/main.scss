@@ -38,18 +38,20 @@
 		justify-content: center;
 	}
 
+	&__wrap-info {
+		display: flex;
+		justify-content: space-between;
+		margin-bottom: 20px;
+
+		@media print {
+			margin-bottom: 10px;
+		}
+	}
+
 	&__cards {
 		display: flex;
 		flex-flow: column;
 		align-items: flex-start;
-
-		&--main {
-			margin-bottom: 20px;
-
-			@media print {
-				margin-bottom: 10px;
-			}
-		}
 	}
 
 	&__count-wrap {
@@ -94,10 +96,5 @@
 	&__btn-text {
 		@extend %text--premedium;
 		color: $deepDarkBlue;
-	}
-
-	&__wrap-info {
-		display: flex;
-		justify-content: space-between;
 	}
 }

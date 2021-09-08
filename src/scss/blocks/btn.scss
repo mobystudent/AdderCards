@@ -6,7 +6,6 @@
 	padding: 15px 20px;
 	border-radius: 10px;
 	background: $green;
-	text-transform: uppercase;
 
 	@media print {
 		display: none;
@@ -14,6 +13,7 @@
 
 	&--add {
 		margin-right: 20px;
+		text-transform: uppercase;
 	}
 
 	&--control {
@@ -104,10 +104,21 @@
 
 	&--form {
 		margin: 0 auto;
+		text-transform: uppercase;
 	}
 
 	&--download,
 	&--assign {
 		margin: 0 auto 20px;
+		text-transform: uppercase;
+	}
+
+	&--choice {
+		padding: 12px 15px;
+		background: $spaceBlack;
+
+		&-cancel {
+			background: $middleGray;
+		}
 	}
 }

@@ -36,10 +36,10 @@ main.main(data-name="permis")
 						.table__cell.table__cell--header.table__cell--statustitle
 							span.table__text.table__text--header
 								| Статус
-						.table__cell.table__cell--header.table__cell--control
-							button.btn.btn--allow#allowAll(type='button' data-type="allow" data-cancel="Отменить" data-allow="Разрешить все")
+						.table__cell.table__cell--header.table__cell--btn-permis
+							button.btn.btn--allow#allowAll(type='button' data-type="allow")
 								| Разрешить все
-							button.btn.btn--disallow#disallowAll(type='button' data-type="disallow" data-cancel="Отменить" data-disallow="Запретить все")
+							button.btn.btn--disallow#disallowAll(type='button' data-type="disallow")
 								| Запретить все
 					.table__body.table__body--empty#tablePermis
 						p.table__nothing
