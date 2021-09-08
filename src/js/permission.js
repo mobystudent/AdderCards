@@ -1,6 +1,7 @@
 'use strict';
 
 import $ from 'jquery';
+import service from './service.js';
 import { nameDeparts } from './nameDepart.js';
 
 const permissionCollection = new Map(); // БД пользователей при старте
@@ -13,6 +14,7 @@ $(window).on('load', () => {
 	getDatainDB('permission');
 	submitIDinBD();
 	autoRefresh();
+	confirmAllAllowDisallow();
 });
 
 function templatePermissionTable(data) {
@@ -338,7 +340,7 @@ function autoRefresh(page = 'permis') {
 			}, timeReload);
 		} else {
 			clearInterval(markInterval);
-			
+
 			markInterval = false;
 		}
 	});
@@ -355,11 +357,11 @@ function setAddUsersInDB(array, nameTable, action, typeTable) {
 			nameTable: nameTable,
 			array: array
 		},
-		success: function(data) {
-			console.log('succsess '+data);
+		success: function() {
+			service.modal('success');
 		},
-		error: function(data) {
-			console.log(data);
+		error: function() {
+			service.modal('error');
 		}
 	});
 }
@@ -376,8 +378,8 @@ function getDatainDB(nameTable) {
 
 			userFromDB(dataFromDB);
 		},
-		error: function(data) {
-			console.log(data);
+		error: function() {
+			service.modal('download');
 		}
 	});
 }

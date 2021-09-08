@@ -1,0 +1,11 @@
+.modal
+	.modal__item
+		p.modal__message.modal__message--success
+			| Данные успешно отправлены
+		p.modal__message.modal__message--error
+			| Извините! #[br] При отправке возникла ошибка, попробуйте отправить позже
+		p.modal__message.modal__message--download
+			| Извините! #[br] При загрузке данных возникла ошибка, попробуйте позже
+		button.modal__close(type='modal')
+			svg.icon.icon--delete.icon--delete-black
+				use.icon__item(xlink:href="./images/sprite.svg#delete")

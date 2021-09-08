@@ -94,7 +94,20 @@ function showDataInTable() {
 	});
 }
 
+function modal(action) {
+	$('.modal').addClass('modal--active');
+	$('.modal__item').addClass('modal__item--active');
+	$('.modal__message').hide();
+	$(`.modal__message--${action}`).show();
+
+	$('.modal__close').click(() => {
+		$('.modal').removeClass('modal--active');
+		$('.modal__item').removeClass('modal__item--active');
+	});
+}
+
 export default {
 	printReport,
 	showDataInTable,
+	modal
 };
