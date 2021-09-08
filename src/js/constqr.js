@@ -10,7 +10,7 @@ $(window).on('load', () => {
 	getDatainDB('const', 'qr');
 });
 
-function userdFromDB(array) {
+function userFromDB(array) {
 	const objToCollection = {
 		id: '',
 		fio: '',
@@ -238,7 +238,7 @@ function getDatainDB(nameTable, typeTable) {
 		success: function(data) {
 			const dataFromDB = JSON.parse(data);
 
-			userdFromDB(dataFromDB);
+			userFromDB(dataFromDB);
 		},
 		error: function(data) {
 			console.log(data);

@@ -348,12 +348,15 @@ function showFieldsInHeaderTable(page = 'remove') {
 		for (const key in elem) {
 			for (const { name, status } of arrayStatusCells) {
 				if ((key == name) && elem[status]) {
+					console.log(key);
+					console.log(name);
 					statusFields[status] = elem[status];
 				}
 			}
 		}
 	});
 
+	console.log(removeCollection);
 	const newdepart = [...removeCollection.values()].some((cell) => cell.statusNewdepart) ? '-newdepart' : '';
 	const cardvalidto = [...removeCollection.values()].some((cell) => cell.statusCardvalidto) ? '-cardvalidto' : '';
 	const className = `wrap wrap--content wrap--content-${page}${newdepart}${cardvalidto}`;
@@ -462,6 +465,7 @@ function clearFieldsForm(nameForm = '#removeForm') {
 		statusid: '',
 		post: ''
 	};
+
 	removeObject.fio = '';
 	removeObject.statusid = '';
 	removeObject.statustitle = '';

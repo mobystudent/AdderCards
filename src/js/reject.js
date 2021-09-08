@@ -49,7 +49,7 @@ function templateRejectForm(data) {
 	return `
 		<div class="form__fields">
 			<div class="form__field">
-				<span class="form__name">ФИО</span>
+				<span class="form__name">Фамилия Имя Отчество</span>
 				<span class="form__item form__item--static" data-field="fio">${fio}</span>
 			</div>
 			<div class="form__field">

@@ -13,8 +13,8 @@ const addObject = {
 	post: '',
 	statusid: '',
 	statustitle: '',
-	statusсardvalidto: '',
-	сardvalidto: ''
+	statuscardvalidto: '',
+	cardvalidto: ''
 };
 
 $(window).on('load', () => {
@@ -25,8 +25,8 @@ $(window).on('load', () => {
 });
 
 function templateAddTable(data) {
-	const { id = '', fio = '', post = '', photofile = '', statustitle = '', statusСardvalidto = '', cardvalidto = '' } = data;
-	const cardvalidtoView = statusСardvalidto ? `
+	const { id = '', fio = '', post = '', photofile = '', statustitle = '', statuscardvalidto = '', cardvalidto = '' } = data;
+	const cardvalidtoView = statuscardvalidto === 'date' ? `
 		<div class="table__cell table__cell--body table__cell--cardvalidto">
 			<span class="table__text table__text--body">${cardvalidto}</span>
 		</div>
@@ -66,16 +66,16 @@ function templateAddTable(data) {
 }
 
 function templateAddForm(data) {
-	const { fio = '', photofile = '', photourl = '', post = '', statusid = '', statustitle = '', statusсardvalidto = '', cardvalidtotitle = '', сardvalidto = '' } = data;
+	const { fio = '', photofile = '', photourl = '', post = '', statusid = '', statustitle = '', statuscardvalidto = '', cardvalidtotitle = '', cardvalidto = '' } = data;
 	const typeValue = statustitle ? statustitle : 'Выберите тип идентификатора';
 	const typeClassView = statustitle ? 'select__value--selected' : '';
-	const сardvalidtoValue = cardvalidtotitle ? cardvalidtotitle : 'Выберите окончание действия пропуска';
-	const сardvalidtoClassView = cardvalidtotitle ? 'select__value--selected' : '';
+	const cardvalidtoValue = cardvalidtotitle ? cardvalidtotitle : 'Выберите окончание действия пропуска';
+	const cardvalidtoClassView = cardvalidtotitle ? 'select__value--selected' : '';
 	const photoValue = photourl ? photourl : './images/avatar.svg';
-	const сardvalidtoView = statusсardvalidto === 'date' ? `
+	const cardvalidtoView = statuscardvalidto === 'date' ? `
 		<div class="form__field form__field--cardvalidto">
 			<label class="form__label"><span class="form__name">Дата окончания</span>
-				<input class="form__input form__item form__item--сardvalidto" id="addDatepicker" data-field="date" name="date" type="text" value="${сardvalidto}" placeholder="Введите дату" required="required"/>
+				<input class="form__input form__item form__item--cardvalidto" id="addDatepicker" data-field="date" name="date" type="text" value="${cardvalidto}" placeholder="Введите дату" required="required"/>
 			</label>
 		</div>
 	` : '';
@@ -112,21 +112,21 @@ function templateAddForm(data) {
 			</div>
 			<div class="form__field">
 				<span class="form__name">Окончание действия пропуска</span>
-				<div class="form__select form__item select" data-field="cardvalidtotitle" data-type="statusсardvalidto" data-select="сardvalidto">
+				<div class="form__select form__item select" data-field="cardvalidtotitle" data-type="statuscardvalidto" data-select="cardvalidto">
 					<header class="select__header">
-						<span class="select__value ${сardvalidtoClassView}" data-title="${сardvalidtoValue}" data-сardvalidto="${statusсardvalidto}" data-placeholder="Выберите окончание действия пропуска">${сardvalidtoValue}</span>
+						<span class="select__value ${cardvalidtoClassView}" data-title="${cardvalidtoValue}" data-cardvalidto="${statuscardvalidto}" data-placeholder="Выберите окончание действия пропуска">${cardvalidtoValue}</span>
 					</header>
 					<ul class="select__list">
 						<li class="select__item">
-							<span class="select__name" data-title="Ввести дату" data-сardvalidto="date">Ввести дату</span>
+							<span class="select__name" data-title="Ввести дату" data-cardvalidto="date">Ввести дату</span>
 						</li>
 						<li class="select__item">
-							<span class="select__name" data-title="Безвременно" data-сardvalidto="infinite">Безвременно</span>
+							<span class="select__name" data-title="Безвременно" data-cardvalidto="infinite">Безвременно</span>
 						</li>
 					</ul>
 				</div>
 			</div>
-			${сardvalidtoView}
+			${cardvalidtoView}
 		</div>
 		<div class="form__aside">
 			<div class="form__img">
@@ -146,9 +146,10 @@ function templateAddForm(data) {
 }
 
 function templateAddHeaderTable(data) {
-	const { statusСardvalidto = '' } = data;
-	const сardvalidtoView = statusСardvalidto ? `
-		<div class="table__cell table__cell--header table__cell--сardvalidto">
+	const { statuscardvalidto = '' } = data;
+	console.warn(data);
+	const cardvalidtoView = statuscardvalidto === 'date' ? `
+		<div class="table__cell table__cell--header table__cell--cardvalidto">
 			<span class="table__text table__text--header">Дата</span>
 		</div>
 	` : '';
@@ -167,7 +168,7 @@ function templateAddHeaderTable(data) {
 		<div class="table__cell table__cell--header table__cell--statustitle">
 			<span class="table__text table__text--header">Идентификатор</span>
 		</div>
-		${сardvalidtoView}
+		${cardvalidtoView}
 		<div class="table__cell table__cell--header table__cell--edit">
 			<svg class="icon icon--edit icon--edit-white">
 				<use class="icon__item" xlink:href="./images/sprite.svg#edit"></use>
@@ -202,27 +203,27 @@ function addUser() {
 				const fieldType = $(item).data('type');
 				const valueItem = $(item).find('.select__value--selected').attr('data-title');
 
-				if (typeSelect == 'сardvalidto') {
-					if (nameId == 'date') {
-						const inputValue = $(e.target).parents('.form').find('.form__item--сardvalidto').val();
+				if (typeSelect === 'cardvalidto') {
+					if (nameId === 'date') {
+						const inputValue = $(e.target).parents('.form').find('.form__item--cardvalidto').val();
 
-						object.сardvalidto = inputValue;
+						object.cardvalidto = inputValue;
 					}
 
-					object.statusсardvalidto = nameId;
+					object.statuscardvalidto = nameId;
 					object.cardvalidtotitle = valueItem;
 				} else {
 					object[fieldType] = nameId;
 					object[fieldName] = valueItem;
 				}
-			} else if ($(item).attr('data-field') == 'photofile') {
+			} else if ($(item).attr('data-field') === 'photofile') {
 				const fieldUrl = $(item).attr('data-url');
 				const inputValue = $(item).attr('data-value');
 
 				object.photourl = fieldUrl;
 				object[fieldName] = inputValue;
 			} else {
-				if ($(item).attr('data-field') != 'date' && $(item).attr('data-field') != 'photofile') {
+				if ($(item).attr('data-field') !== 'date' && $(item).attr('data-field') !== 'photofile') {
 					const inputValue = $(item).val();
 
 					object[fieldName] = inputValue;
@@ -253,8 +254,8 @@ function userFromForm(object, page = 'add', nameTable = '#tableAdd') {
 		statusid: '',
 		statustitle: '',
 		department: '',
-		сardvalidto: '',
-		statusсardvalidto: '',
+		cardvalidto: '',
+		statuscardvalidto: '',
 		cardvalidtotitle: ''
 	};
 	const indexCollection = addCollection.size;
@@ -297,44 +298,13 @@ function dataAdd(nameTable, page = 'add') {
 }
 
 function showFieldsInHeaderTable(page = 'add') {
-	const arrayStatusCells = [
-		{
-			name: 'cardvalidto',
-			status: 'statusСardvalidto'
-		}
-	];
-	const statusFields = {
-		statusСardvalidto: false
-	};
-
-	$(`.table--${page} .table__header`).html('');
-
-	showTableCells();
-
-	[...addCollection.values()].forEach((elem) => {
-		for (const key in elem) {
-			for (const { name, status } of arrayStatusCells) {
-				if ((key == name) && elem[status]) {
-					statusFields[status] = elem[status];
-				}
-			}
-		}
-	});
-
-	console.log(addCollection.values());
-	const cardvalidto = [...addCollection.values()].some((cell) => cell.statusСardvalidto) ? '-cardvalidto' : '';
-	const className = `wrap wrap--content wrap--content-${page}${cardvalidto}`;
+	const cardvalidtoCheck = [...addCollection.values()].some((cell) => cell.statuscardvalidto === 'date') ? 'date' : false;
+	const cardvalidtoMod = cardvalidtoCheck ? '-cardvalidto' : '';
+	const className = `wrap wrap--content wrap--content-${page}${cardvalidtoMod}`;
 
 	$(`.main[data-name="${page}"]`).find('.wrap--content').attr('class', className);
-	$(`.table--${page} .table__header`).append(templateAddHeaderTable(statusFields));
-}
-
-function showTableCells() {
-	const statusСardvalidto = [...addCollection.values()].some((cell) => cell.cardvalidto);
-
-	addCollection.forEach((elem) => {
-		elem.statusСardvalidto = statusСardvalidto;
-	});
+	$(`.table--${page} .table__header`).html('');
+	$(`.table--${page} .table__header`).append(templateAddHeaderTable({ statuscardvalidto: cardvalidtoCheck }));
 }
 
 function toggleSelect(nameForm = '#addForm') {
@@ -373,9 +343,9 @@ function setDataAttrSelectedItem(title, select, elem, nameForm = '#addForm') {
 		addObject.statusid = statusid;
 		addObject.statustitle = title;
 	} else {
-		addObject.statusсardvalidto = statusid;
+		addObject.statuscardvalidto = statusid;
 		addObject.cardvalidtotitle = title;
-		addObject.сardvalidto = statusid === 'date' ? addObject.сardvalidto : '';
+		addObject.cardvalidto = statusid === 'date' ? addObject.cardvalidto : '';
 	}
 
 	$(`${nameForm} .form__wrap`).append(templateAddForm(addObject));
@@ -394,13 +364,15 @@ function clearFieldsForm(nameForm = '#addForm') {
 		statusid: '',
 		post: ''
 	};
-	addObject = {
-		fio: '',
-		statusid: '',
-		statustitle: '',
-		post: '',
-		photourl: ''
-	};
+
+	addObject.fio = '';
+	addObject.statusid = '';
+	addObject.statustitle = '';
+	addObject.post = '';
+	addObject.photourl = '';
+	addObject.statuscardvalidto = '';
+	addObject.cardvalidtotitle = '';
+	addObject.cardvalidto = '';
 
 	$(`${nameForm} .form__wrap`).html('').append(templateAddForm(clearObject));
 
@@ -429,14 +401,14 @@ function datepicker() {
 		maxViewMode: 10
 	});
 
-	$('.form__field--сardvalidto').click(() => {
+	$('.form__field--cardvalidto').click(() => {
 		$("#ui-datepicker-div .ui-datepicker").show();
 	});
 
 	$('#addDatepicker').change((e) => {
-		const сardvalidtoValue = $(e.currentTarget).val();
+		const cardvalidtoValue = $(e.currentTarget).val();
 
-		addObject.сardvalidto = сardvalidtoValue;
+		addObject.cardvalidto = cardvalidtoValue;
 	});
 }
 
