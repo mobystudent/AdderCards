@@ -7,23 +7,12 @@
 		margin-right: 10px;
 	}
 
-	&--delete {
+	&--delete,
+	&--clear,
+	&--edit,
+	&--view {
 		width: 20px;
 		height: 20px;
-		margin: auto;
-
-		&-black {
-			fill: $black;
-		}
-
-		&-white {
-			fill: $white;
-		}
-	}
-
-	&--clear {
-		width: 18px;
-		height: 18px;
 		margin: auto;
 
 		&-black {
@@ -40,33 +29,5 @@
 		height: 20px;
 		fill: $white;
 		margin-right: 10px;
-	}
-
-	&--edit {
-		width: 20px;
-		height: 20px;
-		margin: auto;
-
-		&-black {
-			fill: $black;
-		}
-
-		&-white {
-			fill: $white;
-		}
-	}
-
-	&--view {
-		width: 20px;
-		height: 20px;
-		margin: auto;
-
-		&-black {
-			fill: $black;
-		}
-
-		&-white {
-			fill: $white;
-		}
 	}
 }

@@ -9,8 +9,7 @@ const rejectCollection = new Map(); // БД отклоненных пользо�
 $(window).on('load', () => {
 	getDatainDB('reject');
 	viewDataUser();
-
-	service.scrollbar();
+	autoRefresh();
 });
 
 function templateRejectTable(data) {
@@ -96,7 +95,7 @@ function renderForm(id, nameForm = '#rejectForm') {
 	});
 }
 
-function userdFromDB(array, nameTable = '#tableReject') {
+function userFromDB(array, nameTable = '#tableReject') {
 	const objToCollection = {
 		id: '',
 		fio: '',
@@ -168,6 +167,27 @@ function viewDataUser(nameTable = '#tableReject') {
 	});
 }
 
+function autoRefresh(page = 'permis') {
+	const timeReload = 15000 * 15;  //  15 минут
+	let markInterval;
+
+	$(`.switch--${page}`).click(() => {
+		const statusSwitch = $('.switch__input').prop('checked');
+
+		if (statusSwitch && !markInterval) {
+			getDatainDB('permission');
+
+			markInterval = setInterval(() => {
+				getDatainDB('permission');
+			}, timeReload);
+		} else {
+			clearInterval(markInterval);
+
+			markInterval = false;
+		}
+	});
+}
+
 function getDatainDB(nameTable, page = 'reject') {
 	const idDepart = $(`.main__depart--${page}`).attr('data-id');
 
@@ -180,12 +200,12 @@ function getDatainDB(nameTable, page = 'reject') {
 			nameTable: nameTable
 		},
 		async: false,
-		success: function(data) {
+		success: (data) => {
 			const dataFromDB = JSON.parse(data);
 
-			userdFromDB(dataFromDB);
+			userFromDB(dataFromDB);
 		},
-		error: function() {
+		error: ()  => {
 			service.modal('download');
 		}
 	});

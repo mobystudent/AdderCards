@@ -1,11 +1,13 @@
 'use strict';
 
 import $ from 'jquery';
+import service from './service.js';
 
 const requestCollection = new Map(); // БД отчета
 
 $(window).on('load', () => {
 	getDatainDB('request');
+	autoRefresh();
 });
 
 function templateRequestTable(data) {
@@ -40,7 +42,7 @@ function renderTable(nameTable = '#tableRequest') {
 	});
 }
 
-function userdFromDB(array, nameTable = '#tableRequest') {
+function userFromDB(array, nameTable = '#tableRequest') {
 	const objToCollection = {
 		id: '',
 		fio: '',
@@ -70,49 +72,74 @@ function userdFromDB(array, nameTable = '#tableRequest') {
 	dataAdd(nameTable);
 }
 
-function dataAdd(nameTable) {
+function dataAdd(nameTable, page = 'request') {
 	if (requestCollection.size) {
-		$(`${nameTable} .table__nothing`).hide();
-		$(nameTable).append(`
-			<div class="table__content table__content--active">
-			</div>
-		`);
-
-		renderTable();
+		emptySign(nameTable, 'full');
 	} else {
-		$(nameTable).addClass('table__body--empty').html('');
-		$(nameTable).append(`
-			<p class="table__nothing">Новых данных нет</p>
-		`);
+		emptySign(nameTable, 'empty');
 
 		return;
 	}
+
+	renderTable();
+
+	$(`.main__count--${page}`).text(requestCollection.size);
 }
 
-function getDatainDB(nameTable) {
-	// const idDepart = $(`.main__depart--${page}`).attr('data-id');
-	const idDepart = 'chemdep';
+function emptySign(nameTable, status) {
+	if (status == 'empty') {
+		$(nameTable)
+			.addClass('table__body--empty')
+			.html('')
+			.append('<p class="table__nothing">Новых данных нет</p>');
+	} else {
+		$(nameTable)
+			.removeClass('table__body--empty')
+			.html('')
+			.append('<div class="table__content"></div>');
+	}
+}
+
+function autoRefresh(page = 'permis') {
+	const timeReload = 15000 * 15;  //  15 минут
+	let markInterval;
+
+	$(`.switch--${page}`).click(() => {
+		const statusSwitch = $('.switch__input').prop('checked');
+
+		if (statusSwitch && !markInterval) {
+			getDatainDB('permission');
+
+			markInterval = setInterval(() => {
+				getDatainDB('permission');
+			}, timeReload);
+		} else {
+			clearInterval(markInterval);
+
+			markInterval = false;
+		}
+	});
+}
+
+function getDatainDB(nameTable, page = 'request') {
+	const idDepart = $(`.main__depart--${page}`).attr('data-id');
 
 	$.ajax({
 		url: "./php/output-request.php",
 		method: "post",
+		dataType: "html",
 		data: {
-			nameTable: nameTable,
-			idDepart: idDepart
+			idDepart: idDepart,
+			nameTable: nameTable
 		},
 		async: false,
-		success: function(data) {
+		success: (data) => {
 			const dataFromDB = JSON.parse(data);
 
-			// dataFromDB.forEach((item, i) => {
-			// 	requestCollection.set(i, item);
-			// });
-
-			// dataAdd('#tableRequest');
-			userdFromDB(dataFromDB);
+			userFromDB(dataFromDB);
 		},
-		error: function(data) {
-			console.log(data);
+		error: () => {
+			service.modal('download');
 		}
 	});
 }

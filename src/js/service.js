@@ -111,7 +111,9 @@ function scrollbar() {
 	const tables = $('.table__body');
 
 	[...tables].forEach((item) => {
-		Scrollbar.init(item);
+		Scrollbar.init(item, {
+			alwaysShowTracks: true
+		});
 	});
 }
 

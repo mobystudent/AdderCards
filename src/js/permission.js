@@ -357,10 +357,10 @@ function setAddUsersInDB(array, nameTable, action, typeTable) {
 			nameTable: nameTable,
 			array: array
 		},
-		success: function() {
+		success: () => {
 			service.modal('success');
 		},
-		error: function() {
+		error: () => {
 			service.modal('error');
 		}
 	});
@@ -373,12 +373,12 @@ function getDatainDB(nameTable) {
 		data: {
 			nameTable: nameTable
 		},
-		success: function(data) {
+		success: (data) => {
 			const dataFromDB = JSON.parse(data);
 
 			userFromDB(dataFromDB);
 		},
-		error: function() {
+		error: () => {
 			service.modal('download');
 		}
 	});
