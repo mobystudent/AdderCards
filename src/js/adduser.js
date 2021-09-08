@@ -8,7 +8,7 @@ datepickerFactory($);
 datepickerRUFactory($);
 
 const addCollection = new Map();
-let addObject = {
+const addObject = {
 	fio: '',
 	post: '',
 	statusid: '',

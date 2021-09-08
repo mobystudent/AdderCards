@@ -4,6 +4,10 @@ import $ from 'jquery';
 import { nameDeparts } from './nameDepart.js';
 
 const permissionCollection = new Map(); // БД пользователей при старте
+const permisObject = {
+	statusAllow: false,
+	statusDisallow: false
+};
 
 $(window).on('load', () => {
 	getDatainDB('permission');
@@ -12,10 +16,19 @@ $(window).on('load', () => {
 });
 
 function templatePermissionTable(data) {
-	const { id = '', fio = '', post = '', statustitle = '' } = data;
+	const { id = '', fio = '', post = '', statustitle = '', statususer = '', allow = '', disallow = '', allowblock = '', disallowblock = '' } = data;
+	const rowClassView = statususer ? 'table__row--disabled' : '';
+	const allowBtnValue = allow ? 'Отменить' : 'Разрешить';
+	const disallowBtnValue = disallow ? 'Отменить' : 'Запретить';
+	const allowBtnClassView = allow ? 'btn--allow-cancel' : '';
+	const disallowBtnClassView = disallow ? 'btn--disallow-cancel' : '';
+	const allowDiffClassView = allowblock ? 'btn--allow-disabled' : '';
+	const disallowDiffClassView = disallowblock ? 'btn--disallow-disabled' : '';
+	const allowBtnBlock = allowblock ? 'disabled="disabled"' : '';
+	const disallowBtnBlock = disallowblock ? 'disabled="disabled"' : '';
 
 	return `
-		<div class="table__row table__row--permis" data-id="${id}">
+		<div class="table__row table__row--permis ${rowClassView}" data-id="${id}">
 			<div class="table__cell table__cell--body table__cell--fio">
 				<span class="table__text table__text--body">${fio}</span>
 			</div>
@@ -26,11 +39,11 @@ function templatePermissionTable(data) {
 				<span class="table__text table__text--body">${statustitle}</span>
 			</div>
 			<div class="table__cell table__cell--body table__cell--control">
-				<button class="btn btn--allow" data-type="allow" data-cancel="Отменить" data-allow="Разрешить" type="button">
-					Разрешить
+				<button class="btn btn--allow ${allowBtnClassView} ${allowDiffClassView}" type="button" data-type="allow" ${allowBtnBlock}>
+					${allowBtnValue}
 				</button>
-				<button class="btn btn--disallow" data-type="disallow" data-cancel="Отменить" data-disallow="Запретить" type="button">
-					Запретить
+				<button class="btn btn--disallow ${disallowBtnClassView} ${disallowDiffClassView}" type="button" data-type="disallow" ${disallowBtnBlock}>
+					${disallowBtnValue}
 				</button>
 			</div>
 		</div>
@@ -48,7 +61,56 @@ function templatePermissionTabs(data) {
 	`;
 }
 
-function userdFromDB(array) {
+function templatePermissionHeaderTable(data) {
+	const { statusAllow = '', statusDisallow = '' } = data;
+	const allowBtnValue = statusAllow ? 'Отменить' : 'Разрешить все';
+	const disallowBtnValue = statusDisallow ? 'Отменить' : 'Запретить все';
+	const allowBtnClassView = statusAllow ? 'btn--allow-cancel' : '';
+	const disallowBtnClassView = statusDisallow ? 'btn--disallow-cancel' : '';
+	const allowDiffClassView = statusDisallow ? 'btn--allow-disabled' : '';
+	const disallowDiffClassView = statusAllow ? 'btn--disallow-disabled' : '';
+	const allowBtnBlock = statusDisallow ? 'disabled="disabled"' : '';
+	const disallowBtnBlock = statusAllow ? 'disabled="disabled"' : '';
+
+	return `
+		<div class="table__cell table__cell--header table__cell--fio">
+			<span class="table__text table__text--header">Фамилия Имя Отчество</span>
+			<button class="btn btn--sort" type="button" data-direction="true"></button>
+		</div>
+		<div class="table__cell table__cell--header table__cell--post">
+			<span class="table__text table__text--header">Должность</span>
+			<button class="btn btn--sort" type="button" data-direction="true"></button>
+		</div>
+		<div class="table__cell table__cell--header table__cell--statustitle">
+			<span class="table__text table__text--header">Статус</span>
+		</div>
+		<div class="table__cell table__cell--header table__cell--control">
+			<button class="btn btn--allow ${allowBtnClassView} ${allowDiffClassView}" id="allowAll" type="button" data-type="allow" ${allowBtnBlock}>
+				${allowBtnValue}
+			</button>
+			<button class="btn btn--disallow ${disallowBtnClassView} ${disallowDiffClassView}" id="disallowAll" type="button" data-type="disallow" ${disallowBtnBlock}>
+				${disallowBtnValue}
+			</button>
+		</div>
+	`;
+}
+
+function renderTable(activeDepart, nameTable = '#tablePermis') {
+	$(`${nameTable} .table__content`).html('');
+
+	permissionCollection.forEach((item) => {
+		if (item.nameid == activeDepart) {
+			$(`${nameTable} .table__content`).append(templatePermissionTable(item));
+		}
+	});
+}
+
+function renderHeaderTable(page) {
+	$(`.table--${page} .table__header`).html('');
+	$(`.table--${page} .table__header`).append(templatePermissionHeaderTable(permisObject));
+}
+
+function userFromDB(array, nameTable = '#tablePermis') {
 	const objToCollection = {
 		id: '',
 		fio: '',
@@ -57,7 +119,8 @@ function userdFromDB(array) {
 		statusid: '',
 		statustitle: '',
 		department: '',
-		statuspermiss: ''
+		statususer: '',
+		statuspermis: ''
 	};
 
 	array.forEach((elem, i) => {
@@ -76,82 +139,61 @@ function userdFromDB(array) {
 		permissionCollection.set(i, itemObject);
 	});
 
-	dataAdd('#tablePermis');
-	confirmAllAllowDisallow();
+	dataAdd(nameTable);
 }
 
-function dataAdd(nameTable) {
+function dataAdd(nameTable, page = 'permis') {
 	const filterNameDepart = filterDepart(permissionCollection);
 
-	viewAllCount(permissionCollection, 'permis');
+	viewAllCount();
 
 	if (permissionCollection.size) {
 		emptySign(nameTable, 'full');
 	} else {
 		emptySign(nameTable, 'empty');
-		countItems(filterNameDepart[0], 'permis');
+		countItems(filterNameDepart[0]);
 
 		return;
 	}
 
 	if (filterNameDepart.length > 1) {
-		addTabs(permissionCollection, filterNameDepart[0]);
-		showActiveDataOnPage(permissionCollection , nameTable, filterNameDepart[0]);
-		changeTabs(nameTable, 'permis');
+		addTabs(filterNameDepart[0]);
+		changeTabs();
 	} else {
-		$(`${nameTable} .table__content`).html('');
-		$(`.tab--permis`).html('');
-
-		permissionCollection.forEach((user) => {
-			const { nameid = '', department = '' } = user;
-
-			showTitleDepart(department, nameid, 'permis');
-
-			$(`${nameTable} .table__content`).append(templatePermissionTable(user));
-		});
-
-		clickAllowDisallowPermiss();
+		$(`.tab--${page}`).html('');
 	}
+
+	showActiveDataOnPage(filterNameDepart[0]);
+	clickAllowDisallowPermis();
 }
 
-function showActiveDataOnPage(collection, nameTable, nameDepart, page = 'permis') {
-	$(`${nameTable} .table__content`).html('');
-
-	collection.forEach((user) => {
-		if (user.nameid == nameDepart) {
-			$(`${nameTable} .table__content`).append(templatePermissionTable(user));
-		}
-	});
-
+function showActiveDataOnPage(activeDepart) {
 	nameDeparts.forEach((depart) => {
 		const { idname = '', longname = '' } = depart;
 
-		if (idname == nameDepart) {
-			showTitleDepart(longname, idname, page);
+		if (idname === activeDepart) {
+			showTitleDepart(longname, idname);
 		}
 	});
 
-	countItems(nameDepart, page);
-	clickAllowDisallowPermiss();
+	renderTable(activeDepart);
+	countItems(activeDepart);
 }
 
-function showTitleDepart(depart, id, page) {
+function showTitleDepart(depart, id, page = 'permis') {
 	$(`.main__depart--${page}`).text(depart).attr({'data-depart': depart, 'data-id': id});
 }
 
-function submitIDinBD() {
+function submitIDinBD(page = 'permis', nameTable = '#tablePermis') {
 	$('#submitPermis').click(() => {
-		const idActiveDepart = $('.main__depart--permis').attr('data-id');
-		const filterDepatCollection = [...permissionCollection.values()].filter((user) => user.nameid == idActiveDepart);
-		const checkedItems = filterDepatCollection.every((user) => user.statuspermiss);
+		const activeDepart = $(`.main__depart--${page}`).attr('data-id');
+		const filterDepatCollection = [...permissionCollection.values()].filter((user) => user.nameid == activeDepart);
+		const checkedItems = filterDepatCollection.every((user) => user.statuspermis);
 
 		if (checkedItems) {
-			const allowItems = filterDepatCollection.filter((item) => item.statuspermiss === 'allow');
-			const disallowItems = filterDepatCollection.filter((item) => item.statuspermiss === 'disallow');
+			const allowItems = filterDepatCollection.filter((item) => item.statuspermis === 'allow');
+			const disallowItems = filterDepatCollection.filter((item) => item.statuspermis === 'disallow');
 			const idFilterUsers = filterDepatCollection.map((item) => item.id);
-
-			console.log(allowItems);
-			console.log(disallowItems);
 
 			if (allowItems.length) {
 				delegationID(allowItems);
@@ -169,18 +211,20 @@ function submitIDinBD() {
 				permissionCollection.delete(key);
 			});
 
-			dataAdd('#tablePermis');
+			dataAdd(nameTable);
+			clickAllowDisallowPermis();
 			resetControlBtns();
+			confirmAllAllowDisallow();
 
 			if (!permissionCollection.size) {
-				showTitleDepart('', '', 'permis');
+				showTitleDepart('', '');
 			}
 
 		// 	returnToNextTab(e.target);
 
-			$('.info__warn').hide();
+			$('.info__item--warn').hide();
 		} else {
-			$('.info__warn').show();
+			$('.info__item--warn').show();
 		}
 	});
 }
@@ -207,122 +251,94 @@ function emptySign(nameTable, status) {
 	}
 }
 
-function getCurrentDate() {
-	const date = new Date();
-	const month = date.getMonth() + 1;
-	const currentDay = date.getDate() < 10 ? `0${date.getDate()}` : date.getDate();
-	const currentMonth = month < 10 ? `0${month}` : month;
-	const currentYear = date.getFullYear() < 10 ? `0${date.getFullYear()}` : date.getFullYear();
-
-	const currentHour = date.getHours() < 10 ? `0${date.getHours()}` : date.getHours();
-	const currentMinute = date.getMinutes() < 10 ? `0${date.getMinutes()}` : date.getMinutes();
-
-	return `${currentDay}-${currentMonth}-${currentYear} ${currentHour}:${currentMinute}`;
-}
-
-function clickAllowDisallowPermiss() {
-	$('.table__content').click((e) => {
+function clickAllowDisallowPermis(nameTable = '#tablePermis') {
+	$(`${nameTable} .table__content`).click((e) => {
 		if (!$(e.target).hasClass('btn--allow') && !$(e.target).hasClass('btn--disallow')) return;
 
-		const typeBtn = $(e.target).data('type');
-		const diffBtn = typeBtn === 'disallow' ? 'allow' : 'disallow';
 		const userID = $(e.target).parents('.table__row').data('id');
+		const typeBtn = $(e.target).data('type');
 
-		$(e.target).parents('.table__row').toggleClass('table__row--disabled');
-		$(e.target).siblings(`.btn--${diffBtn}`).toggleClass(`btn--${diffBtn}-disabled`);
+		permissionCollection.forEach((item) => {
+			if (item.id === userID) {
+				const status = item[typeBtn] ? false : true;
 
-		if ($(e.target).hasClass(`btn--${typeBtn}-cancel`)) {
-			changeStatusDisallowBtn(e.target, 'removeClass', false, typeBtn, typeBtn, diffBtn, userID);
-		} else {
-			changeStatusDisallowBtn(e.target, 'addClass', true, 'cancel', typeBtn, diffBtn, userID);
-		}
+				item.statususer = status ? true : false;
+				item.statuspermis = typeBtn;
+				item[typeBtn] = status;
+				item.allowblock = typeBtn === 'disallow' && status ? true : false;
+				item.disallowblock = typeBtn === 'allow' && status ? true : false;
+
+				renderTable(item.nameid);
+			}
+		});
 	});
 }
 
-function changeStatusDisallowBtn(elem, classStatus, disabled, valText, typeBtn, diffBtn, userID) {
-	const typePesmiss = valText === 'cancel' ? typeBtn : '';
-	const textBtn = $(elem).data(valText);
-
-	$(elem).siblings(`.btn--${diffBtn}`).attr('disabled', disabled);
-	$(elem).parents('.table__row');
-	$(elem)[classStatus](`btn--${typeBtn}-cancel`);
-	$(elem).text(textBtn);
-
-	permissionCollection.forEach((user) => {
-		if (user.id === userID) {
-			user.statuspermiss = typePesmiss;
-		}
-	});
-}
-
-function confirmAllAllowDisallow() {
+function confirmAllAllowDisallow(page = 'permis') {
 	$('#allowAll, #disallowAll').click((e) => {
 		const typeBtn = $(e.target).data('type');
-		const diffBtn = typeBtn === 'disallow' ? 'allow' : 'disallow';
-		const typeAttrItemsBtn = $(e.target).hasClass(`btn--${typeBtn}-cancel`) ? typeBtn : 'cancel';
-		const attrPermiss = $(e.target).hasClass(`btn--${typeBtn}-cancel`)  ? '' : typeBtn;
-		const dataTypeItem = $(e.target).hasClass(`btn--${typeBtn}-cancel`) ? false : true;
-		const textBtn = $(e.target).data(typeAttrItemsBtn);
-		const activeDepart = $('.main__depart--permis').attr('data-id');
-		const filterDepatCollection = [...permissionCollection.values()].filter((user) => user.nameid == activeDepart);
+		const statusTypeBtn = typeBtn === 'allow' ? 'statusAllow' : 'statusDisallow';
+		const activeDepart = $(`.main__depart--${page}`).attr('data-id');
 
-		$(e.target).toggleClass(`btn--${typeBtn}-cancel`);
-		$(e.target).text(textBtn);
-		$(e.target).siblings(`.btn--${diffBtn}`).toggleClass(`btn--${diffBtn}-disabled`);
-		$(e.target).siblings(`.btn--${diffBtn}`).attr('disabled', dataTypeItem);
+		permisObject[statusTypeBtn] = permisObject[statusTypeBtn] ? false : true;
 
-		filterDepatCollection.forEach((user) => {
-			user.statuspermiss = attrPermiss;
+		permissionCollection.forEach((item) => {
+			if (item.nameid === activeDepart) {
+				item.statususer = permisObject[statusTypeBtn] ? true : false;
+				item.statuspermis = typeBtn;
+				item.allow = '';
+				item.disallow = '';
+				item.allowblock = permisObject[statusTypeBtn] ? true : false;
+				item.disallowblock = permisObject[statusTypeBtn] ? true : false;
+			}
 		});
 
-		resetTableControlBtns(dataTypeItem);
+		renderHeaderTable(page);
+		renderTable(activeDepart);
+		confirmAllAllowDisallow();
 	});
 }
 
-function resetTableControlBtns(status) {
-	const classBtns = ['allow', 'disallow'];
-	const rowsActive = $('.table--permis .table__content .table__row');
-	const statusBtns = status == true ? 'attr' : 'removeAttr';
-	const statusClass = status == true ? 'addClass' : 'removeClass';
+function resetControlBtns(nameTable = '#tablePermis', page = 'permis') {
+	const activeDepart = $(`.main__depart--${page}`).attr('data-id');
 
-	[...rowsActive].forEach((item) => {
-		$(item)[statusClass]('table__row--disabled');
+	permisObject.statusAllow = '';
+	permisObject.statusDisallow = '';
 
-		classBtns.forEach((btn) => {
-			const typeBtn = $(item).find(`.btn--${btn}`).data(btn);
+	$(`${nameTable} .table__content`).html('');
 
-			$(item).find(`.btn--${btn}`)[statusClass](`btn--${btn}-disabled`)[statusBtns]('disabled', 'disabled');
-			$(item).find(`.btn--${btn}`).removeClass(`btn--${btn}-cancel`);
-			$(item).find(`.btn--${btn}`).text(typeBtn);
-		});
+	permissionCollection.forEach((item) => {
+		if (item.nameid == activeDepart) {
+			item.statususer = '';
+			item.statuspermis = '';
+			item.allow = '';
+			item.disallow = '';
+			item.allowblock = '';
+			item.disallowblock = '';
+
+			$(`${nameTable} .table__content`).append(templatePermissionTable(item));
+		}
 	});
-}
 
-function resetControlBtns() {
-	const classBtns = ['#allowAll', '#disallowAll'];
-
-	classBtns.forEach((item) => {
-		const typeBtn = $(item).data('type');
-		const textBtn = $(item).data(typeBtn);
-
-		$(item).removeClass(`btn--${typeBtn}-disabled btn--${typeBtn}-cancel`).removeAttr('disabled', 'disabled');
-		$(`.table__header .btn--${typeBtn}`).text(textBtn);
-	});
+	renderHeaderTable(page);
 }
 
 function autoRefresh(page = 'permis') {
-	const timeReload = 15000 * 5;  //5 минут
+	const timeReload = 15000 * 15;  //  15 минут
 	let markInterval;
 
 	$(`.switch--${page}`).click(() => {
 		const statusSwitch = $('.switch__input').prop('checked');
 
 		if (statusSwitch && !markInterval) {
+			getDatainDB('permission');
+
 			markInterval = setInterval(() => {
 				getDatainDB('permission');
 			}, timeReload);
 		} else {
 			clearInterval(markInterval);
+			
 			markInterval = false;
 		}
 	});
@@ -358,7 +374,7 @@ function getDatainDB(nameTable) {
 		success: function(data) {
 			const dataFromDB = JSON.parse(data);
 
-			userdFromDB(dataFromDB);
+			userFromDB(dataFromDB);
 		},
 		error: function(data) {
 			console.log(data);
@@ -366,19 +382,32 @@ function getDatainDB(nameTable) {
 	});
 }
 
+function getCurrentDate() {
+	const date = new Date();
+	const month = date.getMonth() + 1;
+	const currentDay = date.getDate() < 10 ? `0${date.getDate()}` : date.getDate();
+	const currentMonth = month < 10 ? `0${month}` : month;
+	const currentYear = date.getFullYear() < 10 ? `0${date.getFullYear()}` : date.getFullYear();
+
+	const currentHour = date.getHours() < 10 ? `0${date.getHours()}` : date.getHours();
+	const currentMinute = date.getMinutes() < 10 ? `0${date.getMinutes()}` : date.getMinutes();
+
+	return `${currentDay}-${currentMonth}-${currentYear} ${currentHour}:${currentMinute}`;
+}
+
 // Общие функции с картами и кодами
-function countItems(idDepart, page) {
-	const countItemfromDep = [...permissionCollection.values()].filter((user) => user.nameid === idDepart);
+function countItems(activeDepart, page = 'permis') {
+	const countItemfromDep = [...permissionCollection.values()].filter((user) => user.nameid === activeDepart);
 
 	$(`.main__count--${page}`).text(countItemfromDep.length);
 }
 
-function viewAllCount(collection, page) {
-	$(`.main__count--all-${page}`).text(collection.size);
+function viewAllCount(page = 'permis') {
+	$(`.main__count--all-${page}`).text(permissionCollection.size);
 }
 
-function addTabs(collection, activeTab, page = 'permis') {
-	const filterNameDepart = filterDepart(collection);
+function addTabs(activeTab, page = 'permis') {
+	const filterNameDepart = filterDepart(permissionCollection);
 
 	$(`.tab--${page}`).html('');
 
@@ -401,15 +430,16 @@ function addTabs(collection, activeTab, page = 'permis') {
 	}
 }
 
-function changeTabs(nameTable, page) {
+function changeTabs(nameTable = '#tablePermis', page = 'permis') {
 	$(`.tab--${page}`).click((e) => {
 		if (!$(e.target).parents('.tab__item').length && !$(e.target).hasClass('tab__item')) return;
 
-		const nameDepart = $(e.target).closest('.tab__item').data('depart');
+		const activeDepart = $(e.target).closest('.tab__item').data('depart');
 
-		addTabs(permissionCollection, nameDepart);
-		showActiveDataOnPage(permissionCollection, nameTable, nameDepart);
+		addTabs(activeDepart);
+		showActiveDataOnPage(activeDepart);
 		resetControlBtns();
+		confirmAllAllowDisallow();
 	});
 }
 

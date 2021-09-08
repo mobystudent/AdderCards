@@ -3,7 +3,7 @@
 import $ from 'jquery';
 
 const editCollection = new Map();
-let editObject = {
+const editObject = {
 	fio: '',
 	statusid: '',
 	statustitle: '',

@@ -9,7 +9,7 @@ datepickerFactory($);
 datepickerRUFactory($);
 
 const removeCollection = new Map();
-let removeObject = {
+const removeObject = {
 	fio: '',
 	statusid: '',
 	statustitle: '',
