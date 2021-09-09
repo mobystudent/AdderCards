@@ -1,6 +1,7 @@
 'use strict';
 
 import $ from 'jquery';
+import service from './service.js';
 
 const editCollection = new Map();
 const editObject = {
@@ -9,34 +10,36 @@ const editObject = {
 	statustitle: '',
 	newpost: '',
 	newfio: '',
-	photourl: ''
+	photourl: '',
+	statusnewfio: '',
+	statusnewpost: '',
+	statusphotofile: ''
 };
+let counter = 0;
 
 $(window).on('load', () => {
 	addUser();
 	toggleSelect();
 	getAddUsersInDB();
 	submitIDinBD();
+	showDataFromStorage();
 });
 
 function templateEditTable(data) {
-	const { id = '', fio = '', post = '', statustitle = '', newfio = '', newpost = '', photofile = '', statusNewfio = '', statusNewpost = '', statusPhotofile = '' } = data;
-	const newFioValue = newfio ? newfio : '';
-	const newPostValue = newpost ? newpost : '';
-	const photofileValue = photofile ? photofile : '';
-	const newFioView = statusNewfio ? `
+	const { id = '', fio = '', post = '', statustitle = '', newfio = '', newpost = '', photofile = '' } = data;
+	const newfioView = editObject.statusnewfio ? `
 		<div class="table__cell table__cell--body table__cell--fio">
-			<span class="table__text table__text--body">${newFioValue}</span>
+			<span class="table__text table__text--body">${newfio}</span>
 		</div>
 	` : '';
-	const newPostView = statusNewpost ? `
+	const newpostView = editObject.statusnewpost ? `
 		<div class="table__cell table__cell--body table__cell--post">
-			<span class="table__text table__text--body">${newPostValue}</span>
+			<span class="table__text table__text--body">${newpost}</span>
 		</div>
 	` : '';
-	const photofileView = statusPhotofile ? `
+	const photofileView = editObject.statusphotofile ? `
 		<div class="table__cell table__cell--body table__cell--photofile">
-			<span class="table__text table__text--body">${photofileValue}</span>
+			<span class="table__text table__text--body">${photofile}</span>
 		</div>
 	` : '';
 
@@ -51,8 +54,8 @@ function templateEditTable(data) {
 			<div class="table__cell table__cell--body table__cell--statustitle">
 				<span class="table__text table__text--body">${statustitle}</span>
 			</div>
-			${newFioView}
-			${newPostView}
+			${newfioView}
+			${newpostView}
 			${photofileView}
 			<div class="table__cell table__cell--body table__cell--edit">
 				<button class="table__btn table__btn--edit" type="button">
@@ -161,20 +164,19 @@ function templateEditForm(data) {
 	`;
 }
 
-function templateEditHeaderTable(data) {
-	const { statusNewfio = '', statusNewpost = '', statusPhotofile = '' } = data;
-	const newFioView = statusNewfio ? `
+function templateEditHeaderTable() {
+	const newfioView = editObject.statusnewfio ? `
 		<div class="table__cell table__cell--header table__cell--fio">
 			<span class="table__text table__text--header">Новое Фамилия Имя Отчество</span>
 			<button class="btn btn--sort" type="button" data-direction="true"></button>
 		</div>
 	` : '';
-	const newPostView = statusNewpost ? `
+	const newpostView = editObject.statusnewpost ? `
 		<div class="table__cell table__cell--header table__cell--post">
 			<span class="table__text table__text--header">Новая должность</span>
 		</div>
 	` : '';
-	const photofileView = statusPhotofile ? `
+	const photofileView = editObject.statusphotofile ? `
 		<div class="table__cell table__cell--header table__cell--image">
 			<span class="table__text table__text--header">Новая фотография</span>
 		</div>
@@ -191,8 +193,8 @@ function templateEditHeaderTable(data) {
 		<div class="table__cell table__cell--header table__cell--statustitle">
 			<span class="table__text table__text--header">Тип изменения</span>
 		</div>
-		${newFioView}
-		${newPostView}
+		${newfioView}
+		${newpostView}
 		${photofileView}
 		<div class="table__cell table__cell--header table__cell--edit">
 			<svg class="icon icon--edit icon--edit-white">
@@ -213,6 +215,26 @@ function renderTable(nameTable = '#tableEdit') {
 	editCollection.forEach((item) => {
 		$(`${nameTable} .table__content`).append(templateEditTable(item));
 	});
+}
+
+function renderForm(obj, action, nameForm = '#editForm') {
+	$(`${nameForm} .form__wrap`).html('');
+
+	if (action === 'edit') {
+		editCollection.forEach((user, i) => {
+			if (user.id === obj) {
+				$(`${nameForm} .form__wrap`).append(templateEditForm(user));
+				editCollection.delete(i);
+			}
+		});
+	} else {
+		$(`${nameForm} .form__wrap`).append(templateEditForm(editObject));
+	}
+}
+
+function renderHeaderTable(page = 'edit') {
+	$(`.table--${page} .table__header`).html('');
+	$(`.table--${page} .table__header`).append(templateEditHeaderTable());
 }
 
 function addUser() {
@@ -257,7 +279,6 @@ function addUser() {
 		if (validationEmptyFields(userData)) {
 			userFromForm(userData);
 			clearFieldsForm();
-			showFieldsInHeaderTable();
 		}
 	});
 }
@@ -277,7 +298,6 @@ function userFromForm(object, page = 'edit', nameForm = '#editForm', nameTable =
 		newfio: '',
 		department: ''
 	};
-	const indexCollection = editCollection.size;
 	const itemObject = Object.assign({}, objToCollection);
 	const departName = $(`.main__depart--${page}`).attr('data-depart');
 	const departID = $(`.main__depart--${page}`).attr('data-id');
@@ -300,9 +320,10 @@ function userFromForm(object, page = 'edit', nameForm = '#editForm', nameTable =
 		}
 	}
 
-	editCollection.set(indexCollection, itemObject);
+	editCollection.set(counter, itemObject);
+	counter++;
 
-	showTableCells();
+	setDataInStorage();
 	dataAdd(nameTable);
 }
 
@@ -315,66 +336,48 @@ function dataAdd(nameTable, page = 'edit') {
 		return;
 	}
 
-	renderTable();
 	$(`.main__count--${page}`).text(editCollection.size);
+
+	showFieldsInHeaderTable();
+	renderTable();
 	deleteUser();
 	editUser();
 }
 
-function showFieldsInHeaderTable(page = 'edit') {
-	const arrayStatusCells = [
-		{
-			name: 'newfio',
-			status: 'statusNewfio'
-		},
-		{
-			name: 'newpost',
-			status: 'statusNewpost'
-		},
-		{
-			name: 'newpost',
-			status: 'statusPhotofile'
+function showDataFromStorage(nameTable = '#tableEdit') {
+	if (localStorage.length && !editCollection.size) {
+		const storageCollection = JSON.parse(localStorage.getItem('edit'));
+
+		if (storageCollection) {
+			storageCollection.collection.forEach((item) => {
+				editCollection.set(counter, item);
+				counter++;
+			});
 		}
-	];
-	const statusFields = {
-		statusNewfio: false,
-		statusNewpost: false,
-		statusPhotofile: false
-	};
 
-	$(`.table--${page} .table__header`).html('');
-
-	showTableCells();
-
-	[...editCollection.values()].forEach((elem) => {
-		for (const key in elem) {
-			for (const { name, status } of arrayStatusCells) {
-				if ((key == name) && elem[status]) {
-					statusFields[status] = elem[status];
-				}
-			}
-		}
-	});
-
-	const newfio = [...editCollection.values()].some((cell) => cell.statusNewfio) ? '-newfio' : '';
-	const newpost = [...editCollection.values()].some((cell) => cell.statusNewpost) ? '-newpost' : '';
-	const photofile = [...editCollection.values()].some((cell) => cell.statusPhotofile) ? '-photofile' : '';
-	const className = `wrap wrap--content wrap--content-${page}${newfio}${newpost}${photofile}`;
-
-	$(`.main[data-name="${page}"]`).find('.wrap--content').attr('class', className);
-	$(`.table--${page} .table__header`).append(templateEditHeaderTable(statusFields));
+		dataAdd(nameTable);
+	}
 }
 
-function showTableCells() {
-	const statusNewfio = [...editCollection.values()].some((cell) => cell.newfio);
-	const statusNewpost = [...editCollection.values()].some((cell) => cell.newpost);
-	const statusPhotofile = [...editCollection.values()].some((cell) => cell.photofile);
+function setDataInStorage(page = 'edit') {
+	const statusTable = {
+		collection: [...editCollection.values()]
+	};
+	localStorage.setItem(page, JSON.stringify(statusTable));
+}
 
-	editCollection.forEach((elem) => {
-		elem.statusNewfio = statusNewfio;
-		elem.statusNewpost = statusNewpost;
-		elem.statusPhotofile = statusPhotofile;
-	});
+function showFieldsInHeaderTable(page = 'edit') {
+	editObject.statusnewfio = [...editCollection.values()].some((cell) => cell.newfio) ? true : false;
+	editObject.statusnewpost = [...editCollection.values()].some((cell) => cell.newpost) ? true : false;
+	editObject.statusphotofile = [...editCollection.values()].some((cell) => cell.photofile) ? true : false;
+	const newfioMod = editObject.statusnewfio ? '-newfio' : '';
+	const newpostMod = editObject.statusnewpost ? '-newpost' : '';
+	const photofileMod = editObject.statusphotofile ? '-photofile' : '';
+	const className = `wrap wrap--content wrap--content-${page}${newfioMod}${newpostMod}${photofileMod}`;
+
+	$(`.main[data-name="${page}"]`).find('.wrap--content').attr('class', className);
+
+	renderHeaderTable();
 }
 
 function setUsersInSelect(users, nameForm = '#editForm') {
@@ -424,8 +427,6 @@ function setDataAttrSelectedItem(title, select, elem, nameForm = '#editForm') {
 	const post = $(`${nameForm} .form__item--post`).data('value');
 	const id = $(`${nameForm} .form__item--id`).data('value');
 
-	$(`${nameForm} .form__wrap`).html('');
-
 	if (select === 'fio') {
 		editObject.fio = fio;
 		editObject.statustitle = '';
@@ -437,7 +438,7 @@ function setDataAttrSelectedItem(title, select, elem, nameForm = '#editForm') {
 		editObject.statusid = statusid;
 	}
 
-	$(`${nameForm} .form__wrap`).append(templateEditForm(editObject));
+	renderForm(editObject, 'clear'); //  сначала очистка, потом проверка statusid === 'changeImage'
 
 	if (statusid === 'changeImage') {
 		downloadFoto();
@@ -446,25 +447,17 @@ function setDataAttrSelectedItem(title, select, elem, nameForm = '#editForm') {
 	toggleSelect();
 }
 
-function clearFieldsForm(nameForm = '#editForm') {
-	const clearObject = {
-		id: '',
-		fio: '',
-		statustitle: '',
-		statusid: '',
-		post: ''
-	};
-	editObject = {
-		fio: '',
-		statusid: '',
-		statustitle: '',
-		newpost: '',
-		newfio: '',
-		photourl: ''
-	};
+function clearFieldsForm() {
+	editObject.id = '';
+	editObject.fio = '';
+	editObject.statusid = '';
+	editObject.statustitle = '';
+	editObject.post = '';
+	editObject.newpost = '';
+	editObject.newfio = '';
+	editObject.photourl = '';
 
-	$(`${nameForm} .form__wrap`).html('').append(templateEditForm(clearObject));
-
+	renderForm(editObject, 'clear');
 	toggleSelect();
 	getAddUsersInDB();
 }
@@ -496,7 +489,7 @@ function downloadFoto(nameForm = '#editForm') {
 }
 
 function showUserAvatar(photourl) {
-	console.log(photourl);
+	// console.log(photourl);
 	// const reader = new FileReader();
 	// reader.readAsDataURL(photourl);
 	// reader.onloadend = function() {
@@ -506,7 +499,7 @@ function showUserAvatar(photourl) {
 	// $('.img--form-remove').attr('src', photourl);
 }
 
-function validationEmptyFields(fields) {
+function validationEmptyFields(fields, page = 'edit') {
 	const validFields = Object.values(fields).every((item) => item);
 	const statusMess = !validFields ? 'show' : 'hide';
 	const extentionArray = ['gif', 'png', 'jpg', 'jpeg'];
@@ -516,28 +509,28 @@ function validationEmptyFields(fields) {
 	let extensionImg = 'hide';
 
 	for (let key in fields) {
-		if (key == 'newfio' && fields[key]) {
+		if (key === 'newfio' && fields[key]) {
 			const countWords = fields[key].trim().split(' ');
 
 			correctName = fields[key].match(/[^а-яА-ЯiIъїЁё.'-\s]/g) ? 'show' : 'hide';
 			countNameWords = (countWords.length < 2) ? 'show' : 'hide';
-		} else if (key == 'newpost' && fields[key]) {
+		} else if (key === 'newpost' && fields[key]) {
 			correctPost = fields[key].match(/[^а-яА-ЯiIъїё0-9.'-\s]/g) ? 'show' : 'hide';
-		} else if (key == 'photofile' && fields[key]) {
+		} else if (key === 'photofile' && fields[key]) {
 			const extenName = fields[key].lastIndexOf('.');
 			const extenImg = fields[key].slice(extenName + 1);
 
-			extensionImg = extentionArray.some((item) => item == extenImg) ? 'hide' : 'show';
+			extensionImg = extentionArray.some((item) => item === extenImg) ? 'hide' : 'show';
 		}
 	}
 
 	const valid = [statusMess, correctName, countNameWords, correctPost, extensionImg].every((mess) => mess === 'hide');
 
-	$('.main[data-name="edit"]').find('.info__item--warn.info__item--fields')[statusMess]();
-	$('.main[data-name="edit"]').find('.info__item--error.info__item--name')[correctName]();
-	$('.main[data-name="edit"]').find('.info__item--error.info__item--post')[correctPost]();
-	$('.main[data-name="edit"]').find('.info__item--error.info__item--short')[countNameWords]();
-	$('.main[data-name="edit"]').find('.info__item--error.info__item--image')[extensionImg]();
+	$(`.main[data-name=${page}]`).find('.info__item--warn.info__item--fields')[statusMess]();
+	$(`.main[data-name=${page}]`).find('.info__item--error.info__item--name')[correctName]();
+	$(`.main[data-name=${page}]`).find('.info__item--error.info__item--post')[correctPost]();
+	$(`.main[data-name=${page}]`).find('.info__item--error.info__item--short')[countNameWords]();
+	$(`.main[data-name=${page}]`).find('.info__item--error.info__item--image')[extensionImg]();
 
 	return valid;
 }
@@ -553,8 +546,10 @@ function deleteUser(nameTable = '#tableEdit', page = 'edit') {
 				}
 			});
 
+			setDataInStorage();
 			showFieldsInHeaderTable();
 			renderTable();
+			getAddUsersInDB();
 		}
 
 		if (!editCollection.size) {
@@ -569,25 +564,31 @@ function editUser(page = 'edit') {
 	$('.table__content').click((e) => {
 		if ($(e.target).parents('.table__btn--edit').length || $(e.target).hasClass('table__btn--edit')) {
 			const idEdit = $(e.target).closest('.table__row').data('id');
+			let fillFields;
 
-			showFieldsInHeaderTable();
-			renderForm(idEdit);
-			renderTable();
-			toggleSelect();
-			getAddUsersInDB();
-		}
+			for (let key in editObject) {
+				if (key !== 'statusnewfio' && key !== 'statusnewpost' && key !== 'statusphotofile') {
+					fillFields = editObject[key] ? false : true;
+				}
+			}
 
-		$(`.main__count--${page}`).text(editCollection.size);
-	});
-}
+			if (fillFields) {
+				editCollection.forEach((item) => {
+					if (item.id === idEdit) {
+						for (let key in editObject) {
+							editObject[key] = item[key];
+						}
+					}
+				});
 
-function renderForm(id, nameForm = '#editForm') {
-	$(`${nameForm} .form__wrap`).html('');
+				showFieldsInHeaderTable();
+				renderForm(idEdit, 'edit');
+				renderTable();
+				toggleSelect();
+				getAddUsersInDB();
 
-	editCollection.forEach((user, i) => {
-		if (user.id === id) {
-			$(`${nameForm} .form__wrap`).append(templateEditForm(user));
-			editCollection.delete(i);
+				$(`.main__count--${page}`).text(editCollection.size);
+			}
 		}
 	});
 }
@@ -631,9 +632,11 @@ function submitIDinBD(nameTable = '#tableEdit', page = 'edit') {
 
 		editCollection.clear();
 		emptySign(nameTable, 'empty');
-
 		renderTable();
+
 		$(`.main__count--${page}`).text(editCollection.size);
+		localStorage.clear();
+		counter = 0;
 	});
 }
 
@@ -643,7 +646,6 @@ function getCurrentDate() {
 	const currentDay = date.getDate() < 10 ? `0${date.getDate()}` : date.getDate();
 	const currentMonth = month < 10 ? `0${month}` : month;
 	const currentYear = date.getFullYear() < 10 ? `0${date.getFullYear()}` : date.getFullYear();
-
 	const currentHour = date.getHours() < 10 ? `0${date.getHours()}` : date.getHours();
 	const currentMinute = date.getMinutes() < 10 ? `0${date.getMinutes()}` : date.getMinutes();
 
@@ -660,11 +662,11 @@ function setAddUsersInDB(array, nameTable, action) {
 			nameTable: nameTable,
 			array: array
 		},
-		success: function(data) {
-			console.log('succsess '+data);
+		success: () => {
+			service.modal('success');
 		},
-		error: function(data) {
-			console.log(data);
+		error: () => {
+			service.modal('error');
 		}
 	});
 }
@@ -683,7 +685,7 @@ function getAddUsersInDB(id = '', nameForm = '#editForm', page = 'edit') {
 			nameTable: nameTable
 		},
 		async: false,
-		success: function(data) {
+		success: (data) => {
 			if (id) {
 				const { id = '', post  = '', photourl  = '' } = JSON.parse(data);
 
@@ -694,8 +696,8 @@ function getAddUsersInDB(id = '', nameForm = '#editForm', page = 'edit') {
 				setUsersInSelect(JSON.parse(data));
 			}
 		},
-		error: function(data) {
-			console.log(data);
+		error: () => {
+			service.modal('download');
 		}
 	});
 }

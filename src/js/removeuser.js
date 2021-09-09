@@ -325,10 +325,12 @@ function showDataFromStorage(nameTable = '#tableRemove') {
 	if (localStorage.length && !removeCollection.size) {
 		const storageCollection = JSON.parse(localStorage.getItem('remove'));
 
-		storageCollection.collection.forEach((item) => {
-			removeCollection.set(counter, item);
-			counter++;
-		});
+		if (storageCollection) {
+			storageCollection.collection.forEach((item) => {
+				removeCollection.set(counter, item);
+				counter++;
+			});
+		}
 
 		dataAdd(nameTable);
 	}
@@ -502,12 +504,12 @@ function showUserAvatar(photourl) {
 }
 
 function validationEmptyFields(fields, page = 'remove') {
-	const validFields = Object.values(fields).every((item) => item);
-	const statusMess = !validFields ? 'show' : 'hide';
+	const valid = Object.values(fields).every((item) => item);
+	const statusMess = !valid ? 'show' : 'hide';
 
 	$(`.main[data-name=${page}]`).find('.info__item--warn.info__item--fields')[statusMess]();
 
-	return validFields;
+	return valid;
 }
 
 function deleteUser(nameTable = '#tableRemove', page = 'remove') {
@@ -548,7 +550,7 @@ function editUser(page = 'remove') {
 			}
 
 			if (fillFields) {
-				removeCollection.forEach((item, i) => {
+				removeCollection.forEach((item) => {
 					if (item.id === idEdit) {
 						for (let key in removeObject) {
 							removeObject[key] = item[key];
@@ -574,8 +576,8 @@ function submitIDinBD(nameTable = '#tableRemove', page = 'remove') {
 	$('#submitRemoveUser').click(() => {
 		if (!removeCollection.size) return;
 
-		const idDepart = $('.main__depart--edit').attr('data-id');
-		const nameDepart = $('.main__depart--edit').attr('data-depart');
+		const idDepart = $(`.main__depart--${page}`).attr('data-id');
+		const nameDepart = $(`.main__depart--${page}`).attr('data-depart');
 
 		removeCollection.forEach((elem) => {
 			elem.nameid = idDepart;
@@ -609,7 +611,6 @@ function getCurrentDate() {
 	const currentDay = date.getDate() < 10 ? `0${date.getDate()}` : date.getDate();
 	const currentMonth = month < 10 ? `0${month}` : month;
 	const currentYear = date.getFullYear() < 10 ? `0${date.getFullYear()}` : date.getFullYear();
-
 	const currentHour = date.getHours() < 10 ? `0${date.getHours()}` : date.getHours();
 	const currentMinute = date.getMinutes() < 10 ? `0${date.getMinutes()}` : date.getMinutes();
 
