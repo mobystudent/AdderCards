@@ -16,8 +16,11 @@ const removeObject = {
 	newdepart: '',
 	newnameid: '',
 	cardvalidto: '',
-	photourl: ''
+	photourl: '',
+	statusnewdepart: '',
+	statuscardvalidto: ''
 };
+let counter = 0;
 
 $(window).on('load', () => {
 	addUser();
@@ -27,17 +30,15 @@ $(window).on('load', () => {
 });
 
 function templateRemoveTable(data) {
-	const { id = '', fio = '', post = '', statustitle = '', newdepart = '',  cardvalidto = '', statusNewdepart = '', statusCardvalidto = '' } = data;
-	const newDepartValue = newdepart ? newdepart : '';
-	const cardvalidtoValue = cardvalidto ? cardvalidto : '';
-	const newDepartView = statusNewdepart ? `
+	const { id = '', fio = '', post = '', statustitle = '', newdepart = '',  cardvalidto = '' } = data;
+	const newdepartView = removeObject.statusnewdepart ? `
 		<div class="table__cell table__cell--body table__cell--department">
-			<span class="table__text table__text--body">${newDepartValue}</span>
+			<span class="table__text table__text--body">${newdepart}</span>
 		</div>
 	` : '';
-	const cardvalidtoView = statusCardvalidto ? `
+	const cardvalidtoView = removeObject.statuscardvalidto ? `
 		<div class="table__cell table__cell--body table__cell--cardvalidto">
-			<span class="table__text table__text--body">${cardvalidtoValue}</span>
+			<span class="table__text table__text--body">${cardvalidto}</span>
 		</div>
 	` : '';
 
@@ -52,7 +53,7 @@ function templateRemoveTable(data) {
 			<div class="table__cell table__cell--body table__cell--statustitle">
 				<span class="table__text table__text--body">${statustitle}</span>
 			</div>
-			${newDepartView}
+			${newdepartView}
 			${cardvalidtoView}
 			<div class="table__cell table__cell--body table__cell--edit">
 				<button class="table__btn table__btn--edit" type="button">
@@ -145,14 +146,13 @@ function templateRemoveForm(data) {
 	`;
 }
 
-function templateRemoveHeaderTable(data) {
-	const { statusNewdepart = '', statusCardvalidto = '' } = data;
-	const newDepartView = statusNewdepart ? `
+function templateRemoveHeaderTable() {
+	const newDepartView = removeObject.statusnewdepart ? `
 		<div class="table__cell table__cell--header table__cell--department">
 			<span class="table__text table__text--header">Новое подразделение</span>
 		</div>
 	` : '';
-	const cardvalidtoView = statusCardvalidto ? `
+	const cardvalidtoView = removeObject.statuscardvalidto ? `
 		<div class="table__cell table__cell--header table__cell--cardvalidto">
 			<span class="table__text table__text--header">Дата</span>
 		</div>
@@ -190,6 +190,26 @@ function renderTable(nameTable = '#tableRemove') {
 	removeCollection.forEach((item) => {
 		$(`${nameTable} .table__content`).append(templateRemoveTable(item));
 	});
+}
+
+function renderForm(obj, action, nameForm = '#removeForm') {
+	$(`${nameForm} .form__wrap`).html('');
+
+	if (action === 'edit') {
+		removeCollection.forEach((user, i) => {
+			if (user.id === obj) {
+				$(`${nameForm} .form__wrap`).append(templateRemoveForm(user));
+				removeCollection.delete(i);
+			}
+		});
+	} else {
+		$(`${nameForm} .form__wrap`).append(templateRemoveForm(removeObject));
+	}
+}
+
+function renderHeaderTable(page = 'remove') {
+	$(`.table--${page} .table__header`).html('');
+	$(`.table--${page} .table__header`).append(templateRemoveHeaderTable());
 }
 
 function addUser() {
@@ -234,7 +254,6 @@ function addUser() {
 		if (validationEmptyFields(userData)) {
 			userFromForm(userData);
 			clearFieldsForm();
-			showFieldsInHeaderTable();
 		}
 	});
 }
@@ -252,10 +271,8 @@ function userFromForm(object, page = 'remove', nameForm = '#removeForm', nameTab
 		statusid: '',
 		newdepart: '',
 		newnameid: '',
-		department: '',
-		dateEnd: ''
+		department: ''
 	};
-	const indexCollection = removeCollection.size;
 	const itemObject = Object.assign({}, objToCollection);
 	const departName = $(`.main__depart--${page}`).attr('data-depart');
 	const departID = $(`.main__depart--${page}`).attr('data-id');
@@ -278,20 +295,11 @@ function userFromForm(object, page = 'remove', nameForm = '#removeForm', nameTab
 		}
 	}
 
-	// [...removeCollection].forEach((item, index) => {
-	// 	console.warn(item);
-	// 	console.warn(index);
-	//
-	// 	removeCollection.set(index, item);
-	// });
-	//
-	// console.log(removeCollection);
+	console.log(removeCollection);
 
-	console.log(indexCollection);
+	removeCollection.set(counter, itemObject);
+	counter++;
 
-	removeCollection.set(indexCollection, itemObject);
-
-	showTableCells();
 	dataAdd(nameTable);
 }
 
@@ -304,19 +312,21 @@ function dataAdd(nameTable, page = 'remove') {
 		return;
 	}
 
-	renderTable();
 	$(`.main__count--${page}`).text(removeCollection.size);
+
+	showFieldsInHeaderTable();
+	renderTable();
 	deleteUser();
 	editUser();
 }
 
 function setDepartInSelect() {
 	nameDeparts.forEach((depart) => {
-		const { idName = '', longName = '' } = depart;
+		const { idname = '', longname = '' } = depart;
 
 		$('.select[data-field="newdepart"] .select__list').append(`
 			<li class="select__item">
-				<span class="select__name" data-title="${longName}" data-newnameid="${idName}">${longName}</span>
+				<span class="select__name" data-title="${longname}" data-newnameid="${idname}">${longname}</span>
 			</li>
 		`);
 	});
@@ -325,54 +335,15 @@ function setDepartInSelect() {
 }
 
 function showFieldsInHeaderTable(page = 'remove') {
-	const arrayStatusCells = [
-		{
-			name: 'newdepart',
-			status: 'statusNewdepart'
-		},
-		{
-			name: 'cardvalidto',
-			status: 'statusCardvalidto'
-		}
-	];
-	const statusFields = {
-		statusNewdepart: false,
-		statusCardvalidto: false
-	};
-
-	$(`.table--${page} .table__header`).html('');
-
-	showTableCells();
-
-	[...removeCollection.values()].forEach((elem) => {
-		for (const key in elem) {
-			for (const { name, status } of arrayStatusCells) {
-				if ((key == name) && elem[status]) {
-					console.log(key);
-					console.log(name);
-					statusFields[status] = elem[status];
-				}
-			}
-		}
-	});
-
-	console.log(removeCollection);
-	const newdepart = [...removeCollection.values()].some((cell) => cell.statusNewdepart) ? '-newdepart' : '';
-	const cardvalidto = [...removeCollection.values()].some((cell) => cell.statusCardvalidto) ? '-cardvalidto' : '';
-	const className = `wrap wrap--content wrap--content-${page}${newdepart}${cardvalidto}`;
+	removeObject.statusnewdepart = [...removeCollection.values()].some((cell) => cell.newdepart) ? true : false;
+	removeObject.statuscardvalidto = [...removeCollection.values()].some((cell) => cell.cardvalidto) ? true : false;
+	const newdepartMod = removeObject.statusnewdepart ? '-newdepart' : '';
+	const cardvalidtoMod = removeObject.statuscardvalidto ? '-cardvalidto' : '';
+	const className = `wrap wrap--content wrap--content-${page}${newdepartMod}${cardvalidtoMod}`;
 
 	$(`.main[data-name="${page}"]`).find('.wrap--content').attr('class', className);
-	$(`.table--${page} .table__header`).append(templateRemoveHeaderTable(statusFields));
-}
 
-function showTableCells() {
-	const statusNewdepart = [...removeCollection.values()].some((cell) => cell.newdepart);
-	const statusCardvalidto = [...removeCollection.values()].some((cell) => cell.cardvalidto);
-
-	removeCollection.forEach((elem) => {
-		elem.statusNewdepart = statusNewdepart;
-		elem.statusCardvalidto = statusCardvalidto;
-	});
+	renderHeaderTable();
 }
 
 function setUsersInSelect(users, nameForm = '#removeForm') {
@@ -427,8 +398,6 @@ function setDataAttrSelectedItem(title, select, elem, nameForm = '#removeForm') 
 	const newnameid = select === 'newnameid' ? $(elem).find('.select__name').data(select) : '';
 	const newdepart = select === 'newnameid' ? title : '';
 
-	$(`${nameForm} .form__wrap`).html('');
-
 	if (select === 'fio') {
 		removeObject.fio = fio;
 		removeObject.statustitle = '';
@@ -447,7 +416,7 @@ function setDataAttrSelectedItem(title, select, elem, nameForm = '#removeForm') 
 		removeObject.newnameid = newnameid;
 	}
 
-	$(`${nameForm} .form__wrap`).append(templateRemoveForm(removeObject));
+	renderForm(removeObject, 'clear'); //  сначала очистка, потом проверка select === 'reason'
 
 	if (select === 'reason') {
 		setDepartInSelect();
@@ -457,24 +426,19 @@ function setDataAttrSelectedItem(title, select, elem, nameForm = '#removeForm') 
 	toggleSelect();
 }
 
-function clearFieldsForm(nameForm = '#removeForm') {
-	const clearObject = {
-		id: '',
-		fio: '',
-		statustitle: '',
-		statusid: '',
-		post: ''
-	};
-
+function clearFieldsForm() {
+	removeObject.id = '';
 	removeObject.fio = '';
 	removeObject.statusid = '';
 	removeObject.statustitle = '';
-	removeObject.newpost = '';
+	removeObject.post = '';
 	removeObject.newfio = '';
+	removeObject.newpost = '';
+	removeObject.newdepart = '';
+	removeObject.newnameid = '';
 	removeObject.photourl = '';
 
-	$(`${nameForm} .form__wrap`).html('').append(templateRemoveForm(clearObject));
-
+	renderForm(removeObject, 'clear');
 	toggleSelect();
 	getAddUsersInDB();
 }
@@ -519,11 +483,9 @@ function validationEmptyFields(fields) {
 	const validFields = Object.values(fields).every((item) => item);
 	const statusMess = !validFields ? 'show' : 'hide';
 
-	const valid = statusMess === 'hide' ? true : false;
-
 	$('.main[data-name="remove"]').find('.info__item--warn.info__item--fields')[statusMess]();
 
-	return valid;
+	return validFields;
 }
 
 function deleteUser(nameTable = '#tableRemove', page = 'remove') {
@@ -556,7 +518,7 @@ function editUser(page = 'remove') {
 			const idEdit = $(e.target).closest('.table__row').data('id');
 
 			showFieldsInHeaderTable();
-			renderForm(idEdit);
+			renderForm(idEdit, 'edit');
 			renderTable();
 			toggleSelect();
 			datepicker();
@@ -565,17 +527,6 @@ function editUser(page = 'remove') {
 		}
 
 		$(`.main__count--${page}`).text(removeCollection.size);
-	});
-}
-
-function renderForm(id, nameForm = '#removeForm') {
-	$(`${nameForm} .form__wrap`).html('');
-
-	removeCollection.forEach((user, i) => {
-		if (user.id === id) {
-			$(`${nameForm} .form__wrap`).append(templateRemoveForm(user));
-			removeCollection.delete(i);
-		}
 	});
 }
 
@@ -607,6 +558,7 @@ function submitIDinBD(nameTable = '#tableRemove', page = 'remove') {
 		renderTable();
 
 		$(`.main__count--${page}`).text(removeCollection.size);
+		counter = 0;
 	});
 }
 
