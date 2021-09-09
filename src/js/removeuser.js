@@ -3,6 +3,7 @@
 import $ from 'jquery';
 import datepickerFactory from 'jquery-datepicker';
 import datepickerRUFactory from 'jquery-datepicker/i18n/jquery.ui.datepicker-ru';
+import service from './service.js';
 import { nameDeparts } from './nameDepart.js';
 
 datepickerFactory($);
@@ -114,17 +115,17 @@ function templateRemoveForm(data) {
 				</div>
 			</div>
 			<div class="form__field">
-				<span class="form__name">Причина удаления</span>
+				<span class="form__name">Причина удаления/отчисления</span>
 				<div class="form__select form__item select" data-field="statustitle" data-type="statusid" data-select="reason">
 					<header class="select__header">
-						<span class="select__value ${reasonClassView}" data-title="${reasonValue}" data-reason="${statusid}" data-placeholder="Выберите причину удаления">${reasonValue}</span>
+						<span class="select__value ${reasonClassView}" data-title="${reasonValue}" data-reason="${statusid}" data-placeholder="Выберите причину удаления/отчисления">${reasonValue}</span>
 					</header>
 					<ul class="select__list">
 						<li class="select__item">
 							<span class="select__name" data-title="Перевод в другое подразделение" data-reason="changeDepart">Перевод в другое подразделение</span>
 						</li>
 						<li class="select__item">
-							<span class="select__name" data-title="Увольнение" data-reason="remove">Увольнение</span>
+							<span class="select__name" data-title="Увольнение/отчисление" data-reason="remove">Увольнение/отчисление</span>
 						</li>
 					</ul>
 				</div>
@@ -419,7 +420,6 @@ function setDataAttrSelectedItem(title, select, elem, nameForm = '#removeForm') 
 	renderForm(removeObject, 'clear'); //  сначала очистка, потом проверка select === 'reason'
 
 	if (select === 'reason') {
-		setDepartInSelect();
 		datepicker();
 	}
 
@@ -479,11 +479,11 @@ function showUserAvatar(photourl) {
 	// $('.img--form-remove').attr('src', photourl);
 }
 
-function validationEmptyFields(fields) {
+function validationEmptyFields(fields, page = 'remove') {
 	const validFields = Object.values(fields).every((item) => item);
 	const statusMess = !validFields ? 'show' : 'hide';
 
-	$('.main[data-name="remove"]').find('.info__item--warn.info__item--fields')[statusMess]();
+	$(`.main[data-name=${page}]`).find('.info__item--warn.info__item--fields')[statusMess]();
 
 	return validFields;
 }
@@ -585,11 +585,11 @@ function setAddUsersInDB(array, nameTable, action) {
 			nameTable: nameTable,
 			array: array
 		},
-		success: function(data) {
-			console.log('succsess '+data);
+		success: () => {
+			service.modal('success');
 		},
-		error: function(data) {
-			console.log(data);
+		error: () => {
+			service.modal('error');
 		}
 	});
 }
@@ -608,7 +608,7 @@ function getAddUsersInDB(id = '', nameForm = '#removeForm', page = 'remove') {
 			nameTable: nameTable
 		},
 		async: false,
-		success: function(data) {
+		success: (data) => {
 			if (id) {
 				const { id = '', post  = '', photourl  = '' } = JSON.parse(data);
 
@@ -619,8 +619,8 @@ function getAddUsersInDB(id = '', nameForm = '#removeForm', page = 'remove') {
 				setUsersInSelect(JSON.parse(data));
 			}
 		},
-		error: function(data) {
-			console.log(data);
+		error: () => {
+			service.modal('download');
 		}
 	});
 }
