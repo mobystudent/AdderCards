@@ -28,6 +28,7 @@ $(window).on('load', () => {
 	toggleSelect();
 	getAddUsersInDB();
 	submitIDinBD();
+	showDataFromStorage();
 });
 
 function templateRemoveTable(data) {
@@ -299,6 +300,7 @@ function userFromForm(object, page = 'remove', nameForm = '#removeForm', nameTab
 	removeCollection.set(counter, itemObject);
 	counter++;
 
+	setDataInStorage();
 	dataAdd(nameTable);
 }
 
@@ -317,6 +319,26 @@ function dataAdd(nameTable, page = 'remove') {
 	renderTable();
 	deleteUser();
 	editUser();
+}
+
+function showDataFromStorage(nameTable = '#tableRemove') {
+	if (localStorage.length && !removeCollection.size) {
+		const storageCollection = JSON.parse(localStorage.getItem('remove'));
+
+		storageCollection.collection.forEach((item) => {
+			removeCollection.set(counter, item);
+			counter++;
+		});
+
+		dataAdd(nameTable);
+	}
+}
+
+function setDataInStorage(page = 'remove') {
+	const statusTable = {
+		collection: [...removeCollection.values()]
+	};
+	localStorage.setItem(page, JSON.stringify(statusTable));
 }
 
 function setDepartInSelect() {
@@ -435,6 +457,8 @@ function clearFieldsForm() {
 	removeObject.newdepart = '';
 	removeObject.newnameid = '';
 	removeObject.photourl = '';
+	removeObject.photofile = '';
+	removeObject.cardvalidto = '';
 
 	renderForm(removeObject, 'clear');
 	toggleSelect();
@@ -467,7 +491,7 @@ function datepicker() {
 }
 
 function showUserAvatar(photourl) {
-	console.log(photourl);
+	// console.log(photourl);
 	// const reader = new FileReader();
 	// reader.readAsDataURL(photourl);
 	// reader.onloadend = () => {
@@ -497,6 +521,7 @@ function deleteUser(nameTable = '#tableRemove', page = 'remove') {
 				}
 			});
 
+			setDataInStorage();
 			showFieldsInHeaderTable();
 			renderTable();
 			getAddUsersInDB();
@@ -517,13 +542,13 @@ function editUser(page = 'remove') {
 			let fillFields;
 
 			for (let key in removeObject) {
-				if (key !== 'statuscardvalidto' || key !== 'statusnewdepart') {
+				if (key !== 'statuscardvalidto' && key !== 'statusnewdepart') {
 					fillFields = removeObject[key] ? false : true;
 				}
 			}
 
 			if (fillFields) {
-				removeCollection.forEach((item) => {
+				removeCollection.forEach((item, i) => {
 					if (item.id === idEdit) {
 						for (let key in removeObject) {
 							removeObject[key] = item[key];
@@ -573,6 +598,7 @@ function submitIDinBD(nameTable = '#tableRemove', page = 'remove') {
 		renderTable();
 
 		$(`.main__count--${page}`).text(removeCollection.size);
+		localStorage.clear();
 		counter = 0;
 	});
 }
