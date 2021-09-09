@@ -296,8 +296,6 @@ function userFromForm(object, page = 'remove', nameForm = '#removeForm', nameTab
 		}
 	}
 
-	console.log(removeCollection);
-
 	removeCollection.set(counter, itemObject);
 	counter++;
 
@@ -324,10 +322,11 @@ function dataAdd(nameTable, page = 'remove') {
 function setDepartInSelect() {
 	nameDeparts.forEach((depart) => {
 		const { idname = '', longname = '' } = depart;
+		const quoteName = longname.replace(/["']/g , '&quot;');
 
 		$('.select[data-field="newdepart"] .select__list').append(`
 			<li class="select__item">
-				<span class="select__name" data-title="${longname}" data-newnameid="${idname}">${longname}</span>
+				<span class="select__name" data-title="${quoteName}" data-newnameid="${idname}">${quoteName}</span>
 			</li>
 		`);
 	});
@@ -398,6 +397,7 @@ function setDataAttrSelectedItem(title, select, elem, nameForm = '#removeForm') 
 	const statustitle = select === 'reason' ? title : '';
 	const newnameid = select === 'newnameid' ? $(elem).find('.select__name').data(select) : '';
 	const newdepart = select === 'newnameid' ? title : '';
+	const quoteNewdepart = newdepart ? newdepart.replace(/["']/g , '&quot;') : '';
 
 	if (select === 'fio') {
 		removeObject.fio = fio;
@@ -413,7 +413,7 @@ function setDataAttrSelectedItem(title, select, elem, nameForm = '#removeForm') 
 		removeObject.newdepart = '';
 		removeObject.newnameid = '';
 	} else {
-		removeObject.newdepart = newdepart;
+		removeObject.newdepart = quoteNewdepart;
 		removeObject.newnameid = newnameid;
 	}
 
