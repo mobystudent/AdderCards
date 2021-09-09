@@ -432,8 +432,6 @@ function clearFieldsForm() {
 	removeObject.statusid = '';
 	removeObject.statustitle = '';
 	removeObject.post = '';
-	removeObject.newfio = '';
-	removeObject.newpost = '';
 	removeObject.newdepart = '';
 	removeObject.newnameid = '';
 	removeObject.photourl = '';
@@ -516,17 +514,34 @@ function editUser(page = 'remove') {
 	$('.table__content').click((e) => {
 		if ($(e.target).parents('.table__btn--edit').length || $(e.target).hasClass('table__btn--edit')) {
 			const idEdit = $(e.target).closest('.table__row').data('id');
+			let fillFields;
 
-			showFieldsInHeaderTable();
-			renderForm(idEdit, 'edit');
-			renderTable();
-			toggleSelect();
-			datepicker();
-			getAddUsersInDB();
-			setDepartInSelect();
+			for (let key in removeObject) {
+				if (key !== 'statuscardvalidto' || key !== 'statusnewdepart') {
+					fillFields = removeObject[key] ? false : true;
+				}
+			}
+
+			if (fillFields) {
+				removeCollection.forEach((item) => {
+					if (item.id === idEdit) {
+						for (let key in removeObject) {
+							removeObject[key] = item[key];
+						}
+					}
+				});
+
+				showFieldsInHeaderTable();
+				renderForm(idEdit, 'edit');
+				renderTable();
+				toggleSelect();
+				datepicker();
+				getAddUsersInDB();
+				setDepartInSelect();
+
+				$(`.main__count--${page}`).text(removeCollection.size);
+			}
 		}
-
-		$(`.main__count--${page}`).text(removeCollection.size);
 	});
 }
 
