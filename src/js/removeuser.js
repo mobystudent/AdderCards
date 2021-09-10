@@ -324,15 +324,18 @@ function dataAdd(nameTable, page = 'remove') {
 function showDataFromStorage(nameTable = '#tableRemove') {
 	if (localStorage.length && !removeCollection.size) {
 		const storageCollection = JSON.parse(localStorage.getItem('remove'));
-		const lengthStorage = storageCollection.collection.length;
-		counter = storageCollection.collection[lengthStorage - 1].id; // id последнего элемента в localStorage
 
-		storageCollection.collection.forEach((item) => {
-			removeCollection.set(counter, item);
-			counter++;
-		});
+		if (storageCollection) {
+			const lengthStorage = storageCollection.collection.length;
+			counter = storageCollection.collection[lengthStorage - 1].id; // id последнего элемента в localStorage
 
-		dataAdd(nameTable);
+			storageCollection.collection.forEach((item) => {
+				removeCollection.set(counter, item);
+				counter++;
+			});
+
+			dataAdd(nameTable);
+		}
 	}
 }
 

@@ -125,7 +125,8 @@ function userFromDB(array, nameTable = '#tablePermis') {
 		statuspermis: ''
 	};
 
-	array.forEach((elem, i) => {
+	array.forEach((elem) => {
+		const indexCollection = permissionCollection.size;
 		const itemObject = Object.assign({}, objToCollection);
 
 		for (const itemField in itemObject) {
@@ -133,12 +134,12 @@ function userFromDB(array, nameTable = '#tablePermis') {
 				if (itemField === key) {
 					itemObject[itemField] = elem[key];
 				} else if (itemField === 'id') {
-					itemObject[itemField] = i;
+					itemObject[itemField] = indexCollection;
 				}
 			}
 		}
 
-		permissionCollection.set(i, itemObject);
+		permissionCollection.set(indexCollection, itemObject);
 	});
 
 	dataAdd(nameTable);
@@ -153,7 +154,6 @@ function dataAdd(nameTable, page = 'permis') {
 		emptySign(nameTable, 'full');
 	} else {
 		emptySign(nameTable, 'empty');
-		countItems(filterNameDepart[0]);
 
 		return;
 	}
@@ -370,6 +370,7 @@ function getDatainDB(nameTable) {
 	$.ajax({
 		url: "./php/output-request.php",
 		method: "post",
+		dataType: "html",
 		data: {
 			nameTable: nameTable
 		},
@@ -390,7 +391,6 @@ function getCurrentDate() {
 	const currentDay = date.getDate() < 10 ? `0${date.getDate()}` : date.getDate();
 	const currentMonth = month < 10 ? `0${month}` : month;
 	const currentYear = date.getFullYear() < 10 ? `0${date.getFullYear()}` : date.getFullYear();
-
 	const currentHour = date.getHours() < 10 ? `0${date.getHours()}` : date.getHours();
 	const currentMinute = date.getMinutes() < 10 ? `0${date.getMinutes()}` : date.getMinutes();
 
@@ -432,7 +432,7 @@ function addTabs(activeTab, page = 'permis') {
 	}
 }
 
-function changeTabs(nameTable = '#tablePermis', page = 'permis') {
+function changeTabs(page = 'permis') {
 	$(`.tab--${page}`).click((e) => {
 		if (!$(e.target).parents('.tab__item').length && !$(e.target).hasClass('tab__item')) return;
 

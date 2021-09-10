@@ -347,15 +347,18 @@ function dataAdd(nameTable, page = 'edit') {
 function showDataFromStorage(nameTable = '#tableEdit') {
 	if (localStorage.length && !editCollection.size) {
 		const storageCollection = JSON.parse(localStorage.getItem('edit'));
-		const lengthStorage = storageCollection.collection.length;
-		counter = storageCollection.collection[lengthStorage - 1].id; // id последнего элемента в localStorage
 
-		storageCollection.collection.forEach((item) => {
-			editCollection.set(counter, item);
-			counter++;
-		});
+		if (storageCollection) {
+			const lengthStorage = storageCollection.collection.length;
+			counter = storageCollection.collection[lengthStorage - 1].id; // id последнего элемента в localStorage
 
-		dataAdd(nameTable);
+			storageCollection.collection.forEach((item) => {
+				editCollection.set(counter, item);
+				counter++;
+			});
+
+			dataAdd(nameTable);
+		}
 	}
 }
 
