@@ -125,8 +125,7 @@ function userFromDB(array, nameTable = '#tablePermis') {
 		statuspermis: ''
 	};
 
-	array.forEach((elem) => {
-		const indexCollection = permissionCollection.size;
+	array.forEach((elem, i) => {
 		const itemObject = Object.assign({}, objToCollection);
 
 		for (const itemField in itemObject) {
@@ -134,12 +133,12 @@ function userFromDB(array, nameTable = '#tablePermis') {
 				if (itemField === key) {
 					itemObject[itemField] = elem[key];
 				} else if (itemField === 'id') {
-					itemObject[itemField] = indexCollection;
+					itemObject[itemField] = i;
 				}
 			}
 		}
 
-		permissionCollection.set(indexCollection, itemObject);
+		permissionCollection.set(i, itemObject);
 	});
 
 	dataAdd(nameTable);
@@ -221,8 +220,6 @@ function submitIDinBD(page = 'permis', nameTable = '#tablePermis') {
 			if (!permissionCollection.size) {
 				showTitleDepart('', '');
 			}
-
-		// 	returnToNextTab(e.target);
 
 			$('.info__item--warn').hide();
 		} else {
@@ -325,12 +322,14 @@ function resetControlBtns(nameTable = '#tablePermis', page = 'permis') {
 	renderHeaderTable(page);
 }
 
-function autoRefresh(page = 'permis') {
+function autoRefresh(nameTable = '#tablePermis', page = 'permis') {
 	const timeReload = 15000 * 15;  //  15 минут
 	let markInterval;
 
-	$(`.switch--${page}`).click(() => {
-		const statusSwitch = $('.switch__input').prop('checked');
+	$(`.switch--${page}`).click((e) => {
+		const statusSwitch = $(e.currentTarget).find('.switch__input').prop('checked');
+
+		permissionCollection.clear();
 
 		if (statusSwitch && !markInterval) {
 			getDatainDB('permission');
@@ -343,6 +342,8 @@ function autoRefresh(page = 'permis') {
 
 			markInterval = false;
 		}
+
+		getDatainDB('permission');
 	});
 }
 

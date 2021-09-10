@@ -6,13 +6,12 @@ import service from './service.js';
 import { nameDeparts } from './nameDepart.js';
 
 const constCollection = new Map(); // БД пользователей которым разрешили выдачу карт
-// const constFillOutCardCollection = new Set(); // БД постоянных карт с присвоеными id
-// const constReportCollection = new Set(); // БД постоянных карт с присвоеными id для отчета
 
 $(window).on('load', () => {
 	getDatainDB('const', 'card');
 	submitIDinBD();
 	printReport();
+	autoRefresh();
 });
 
 function templateConstTable(data) {
@@ -91,8 +90,7 @@ function userFromDB(array, nameTable = '#tableConst') {
 		сardvalidto: ''
 	};
 
-	array.forEach((elem) => {
-		const indexCollection = constCollection.size;
+	array.forEach((elem, i) => {
 		const itemObject = Object.assign({}, objToCollection);
 
 		for (const itemField in itemObject) {
@@ -100,12 +98,12 @@ function userFromDB(array, nameTable = '#tableConst') {
 				if (itemField === key) {
 					itemObject[itemField] = elem[key];
 				} else if (itemField === 'id') {
-					itemObject[itemField] = indexCollection;
+					itemObject[itemField] = i;
 				}
 			}
 		}
 
-		constCollection.set(indexCollection, itemObject);
+		constCollection.set(i, itemObject);
 	});
 
 	dataAdd(nameTable);
@@ -186,10 +184,7 @@ function submitIDinBD(nameTable = '#tableConst') {
 			$('.info__item--warn').show();
 		}
 
-		// console.warn(constFillOutCardCollection); // пойдет в БД
-		// console.warn(constReportCollection); // пойдет в отчет
 		// createObjectForBD();
-		// constFillOutCardCollection.clear();
 	});
 }
 
@@ -302,6 +297,29 @@ function checkInvalidValueCardID(namePage) {
 	if (checkValueCard) {
 		$(`.main[data-name=${namePage}]`).find('.info__item--error').hide();
 	}
+}
+
+function autoRefresh(page = 'const') {
+	const timeReload = 15000 * 15;  //  15 минут
+	let markInterval;
+
+	$(`.switch--${page}`).click((e) => {
+		const statusSwitch = $(e.target).find('.switch__input').prop('checked');
+
+		constCollection.clear();
+
+		if (statusSwitch && !markInterval) {
+			markInterval = setInterval(() => {
+				getDatainDB('const', 'card');
+			}, timeReload);
+		} else {
+			clearInterval(markInterval);
+
+			markInterval = false;
+		}
+
+		getDatainDB('const', 'card');
+	});
 }
 
 function setAddUsersInDB(array, nameTable, action, typeTable) {
