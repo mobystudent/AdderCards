@@ -3,6 +3,10 @@
 
 	cursor: pointer;
 
+	@media print {
+		display: none;
+	}
+
 	&__name {
 		display: inline-block;
 		position: relative;

@@ -4,16 +4,9 @@ import $ from 'jquery';
 import Scrollbar from 'smooth-scrollbar';
 
 $(window).on('load', () => {
-	printReport();
 	switchControl();
 	sortItems();
 });
-
-function printReport() {
-	$('.btn--print').click(() => {
-		window.print();
-	});
-}
 
 function switchControl() {
 	$('.control').click((e) => {
@@ -118,7 +111,6 @@ function scrollbar() {
 }
 
 export default {
-	printReport,
 	showDataInTable,
 	modal,
 	scrollbar

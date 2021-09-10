@@ -4,16 +4,11 @@
 	border-bottom-left-radius: 10px;
 	border-bottom-right-radius: 10px;
 
-	&--const {
-		@media print {
-			border: 1px solid $spaceBlack;
-			border-bottom: none;
-			border-radius: 0;
-		}
-	}
-
 	@media print {
-		display: none;
+		border: 1px solid $spaceBlack;
+		border-bottom: none;
+		border-radius: 0;
+		width: 970px;
 	}
 
 	&__header {
@@ -31,6 +26,10 @@
 
 		&--empty {
 			height: 370px;
+
+			@media print {
+				display: none;
+			}
 		}
 
 		@media print {
@@ -39,16 +38,11 @@
 	}
 
 	&__content {
-		// display: none;
 		height: 370px;
 
 		@media print {
 			height: auto;
 		}
-
-		// &--active {
-		// 	display: block;
-		// }
 	}
 
 	&__row {
@@ -97,14 +91,10 @@
 			display: inline-flex;
 			align-items: center;
 			padding: 15px;
+			border-right: 1px solid $white;
 
 			@media print {
 				padding: 10px;
-			}
-
-			&:not(:last-child),
-			&--delete {
-				border-right: 1px solid $white;
 			}
 		}
 
@@ -112,13 +102,10 @@
 			display: flex;
 			align-items: center;
 			padding: 10px 15px;
+			border-right: 1px solid $spaceBlack;
 
 			@media print {
-				padding: 15px 10px;
-			}
-
-			&:not(:last-child) {
-				border-right: 1px solid $spaceBlack;
+				padding: 5px 10px;
 			}
 		}
 
@@ -144,8 +131,6 @@
 		&--fio,
 		&--post,
 		&--department {
-			// display: flex;
-			// align-items: center;
 			justify-content: space-between;
 		}
 
@@ -253,8 +238,9 @@
 			}
 
 			&--signature {
-				display: inline-flex;
-				border-right: none;
+				display: block;
+				background: #000;
+				// border-right: none;
 			}
 		}
 	}

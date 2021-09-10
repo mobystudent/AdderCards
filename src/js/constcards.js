@@ -39,15 +39,15 @@ function templateConstTable(data) {
 			<div class="table__cell table__cell--body table__cell--statustitle">
 				<span class="table__text table__text--body">${statustitle}</span>
 			</div>
+			<div class="table__cell table__cell--body table__cell--signature">
+				<span class="table__text table__text--body"></span>
+			</div>
 			<div class="table__cell table__cell--body table__cell--clear">
 				<button class="table__btn table__btn--clear" type="button">
 					<svg class="icon icon--clear">
 						<use class="icon__item" xlink:href="./images/sprite.svg#clear"></use>
 					</svg>
 				</button>
-			</div>
-			<div class="table__cell table__cell--body table__cell--signature">
-				<span class="table__text table__text--body">Подпись</span>
 			</div>
 		</div>
 	`;
@@ -269,7 +269,7 @@ function convertCardIDInCardName(nameTable = '#tableConst') {
 			}
 
 			setDataInTable(userID, cardObj);
-			checkInvalidValueCardID('const');
+			checkInvalidValueCardID();
 		});
 	});
 }
@@ -287,7 +287,7 @@ function setDataInTable(userID, cardObj, page = 'const') {
 	showActiveDataOnPage(activeDepart);
 }
 
-function checkInvalidValueCardID(namePage) {
+function checkInvalidValueCardID(page = 'const') {
 	const checkValueCard = [...constCollection.values()].every((user) => {
 		if (user.cardid) {
 			return convert.convertCardId(user.cardid);
@@ -295,7 +295,7 @@ function checkInvalidValueCardID(namePage) {
 	});
 
 	if (checkValueCard) {
-		$(`.main[data-name=${namePage}]`).find('.info__item--error').hide();
+		$(`.main[data-name=${page}]`).find('.info__item--error').hide();
 	}
 }
 
@@ -385,8 +385,8 @@ function viewAllCount(page = 'const') {
 	$(`.main__count--all-${page}`).text(constCollection.size);
 }
 
-function printReport() {
-	$('.btn--print').click(() => {
+function printReport(page = 'const') {
+	$(`.main[data-name=${page}] .btn--print`).click(() => {
 		window.print();
 	});
 }
