@@ -344,21 +344,19 @@ function dataAdd(nameTable, page = 'edit') {
 	editUser();
 }
 
-function showDataFromStorage(nameTable = '#tableEdit') {
-	if (localStorage.length && !editCollection.size) {
-		const storageCollection = JSON.parse(localStorage.getItem('edit'));
+function showDataFromStorage(nameTable = '#tableEdit', page = 'edit') {
+	const storageCollection = JSON.parse(localStorage.getItem(page));
 
-		if (storageCollection) {
-			const lengthStorage = storageCollection.collection.length;
-			counter = storageCollection.collection[lengthStorage - 1].id; // id последнего элемента в localStorage
+	if (storageCollection && !editCollection.size) {
+		const lengthStorage = storageCollection.collection.length;
+		counter = storageCollection.collection[lengthStorage - 1].id; // id последнего элемента в localStorage
 
-			storageCollection.collection.forEach((item) => {
-				editCollection.set(counter, item);
-				counter++;
-			});
+		storageCollection.collection.forEach((item) => {
+			editCollection.set(counter, item);
+			counter++;
+		});
 
-			dataAdd(nameTable);
-		}
+		dataAdd(nameTable);
 	}
 }
 

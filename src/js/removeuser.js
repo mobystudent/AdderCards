@@ -321,21 +321,19 @@ function dataAdd(nameTable, page = 'remove') {
 	editUser();
 }
 
-function showDataFromStorage(nameTable = '#tableRemove') {
-	if (localStorage.length && !removeCollection.size) {
-		const storageCollection = JSON.parse(localStorage.getItem('remove'));
+function showDataFromStorage(nameTable = '#tableRemove', page = 'remove') {
+	const storageCollection = JSON.parse(localStorage.getItem(page));
 
-		if (storageCollection) {
-			const lengthStorage = storageCollection.collection.length;
-			counter = storageCollection.collection[lengthStorage - 1].id; // id последнего элемента в localStorage
+	if (storageCollection && !removeCollection.size) {
+		const lengthStorage = storageCollection.collection.length;
+		counter = storageCollection.collection[lengthStorage - 1].id; // id последнего элемента в localStorage
 
-			storageCollection.collection.forEach((item) => {
-				removeCollection.set(counter, item);
-				counter++;
-			});
+		storageCollection.collection.forEach((item) => {
+			removeCollection.set(counter, item);
+			counter++;
+		});
 
-			dataAdd(nameTable);
-		}
+		dataAdd(nameTable);
 	}
 }
 

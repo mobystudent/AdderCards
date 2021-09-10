@@ -6,12 +6,13 @@ import service from './service.js';
 import { nameDeparts } from './nameDepart.js';
 
 const constCollection = new Map(); // БД пользователей которым разрешили выдачу карт
+let counter = 0;
 
 $(window).on('load', () => {
-	getDatainDB('const', 'card');
 	submitIDinBD();
 	printReport();
 	autoRefresh();
+	showDataFromStorage();
 });
 
 function templateConstTable(data) {
@@ -132,6 +133,30 @@ function dataAdd(nameTable, page = 'const') {
 	showActiveDataOnPage(filterNameDepart[0]);
 	convertCardIDInCardName();
 	clearNumberCard();
+}
+
+function showDataFromStorage(nameTable = '#tableConst', page = 'const') {
+	const storageCollection = JSON.parse(localStorage.getItem(page));
+
+	if (storageCollection && !constCollection.size) {
+		const lengthStorage = storageCollection.collection.length;
+		counter = storageCollection.collection[lengthStorage - 1].id; // id последнего элемента в localStorage
+
+		storageCollection.collection.forEach((item) => {
+			constCollection.set(counter, item);
+			counter++;
+		});
+
+		dataAdd(nameTable);
+	} else {
+		getDatainDB('const', 'card');
+	}
+}
+
+function setDataInStorage(page = 'const') {
+	localStorage.setItem(page, JSON.stringify({
+		collection: [...constCollection.values()]
+	}));
 }
 
 function showActiveDataOnPage(activeDepart) {
@@ -285,6 +310,7 @@ function setDataInTable(userID, cardObj, page = 'const') {
 	});
 
 	showActiveDataOnPage(activeDepart);
+	setDataInStorage();
 }
 
 function checkInvalidValueCardID(page = 'const') {

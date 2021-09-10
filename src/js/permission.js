@@ -169,27 +169,25 @@ function dataAdd(nameTable, page = 'permis') {
 	clickAllowDisallowPermis();
 }
 
-function showDataFromStorage(nameTable = '#tablePermis') {
-	if (localStorage.length && !permissionCollection.size) {
-		const storageCollection = JSON.parse(localStorage.getItem('permis'));
+function showDataFromStorage(nameTable = '#tablePermis', page = 'permis') {
+	const storageCollection = JSON.parse(localStorage.getItem(page));
 
-		if (storageCollection) {
-			const { statusAllow, statusDisallow } = storageCollection.controls;
-			const lengthStorage = storageCollection.collection.length;
-			counter = storageCollection.collection[lengthStorage - 1].id; // id последнего элемента в localStorage
+	if (storageCollection && !permissionCollection.size) {
+		const { statusAllow, statusDisallow } = storageCollection.controls;
+		const lengthStorage = storageCollection.collection.length;
+		counter = storageCollection.collection[lengthStorage - 1].id; // id последнего элемента в localStorage
 
-			storageCollection.collection.forEach((item) => {
-				permissionCollection.set(counter, item);
-				counter++;
-			});
+		storageCollection.collection.forEach((item) => {
+			permissionCollection.set(counter, item);
+			counter++;
+		});
 
-			permisObject.statusAllow = statusAllow;
-			permisObject.statusDisallow = statusDisallow;
+		permisObject.statusAllow = statusAllow;
+		permisObject.statusDisallow = statusDisallow;
 
-			renderHeaderTable();
-			dataAdd(nameTable);
-			confirmAllAllowDisallow();
-		}
+		renderHeaderTable();
+		dataAdd(nameTable);
+		confirmAllAllowDisallow();
 	} else {
 		getDatainDB('permis');
 	}
