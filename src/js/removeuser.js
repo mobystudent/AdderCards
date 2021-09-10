@@ -600,7 +600,7 @@ function submitIDinBD(nameTable = '#tableRemove', page = 'remove') {
 		renderTable();
 
 		$(`.main__count--${page}`).text(removeCollection.size);
-		localStorage.clear();
+		localStorage.removeItem(page);
 		counter = 0;
 	});
 }

@@ -64,7 +64,7 @@
 				echo $mysqli->error;
 			}
 		}
-	} else if (($nameTable === 'permission') && ($action === 'edit')) {
+	} else if (($nameTable === 'permis') && ($action === 'edit')) {
 		foreach ($array as $item) {
 			foreach ($item as $key => $value) {
 				if ($key === 'fio') $fio = $value;
@@ -253,7 +253,7 @@
 				echo $mysqli->error;
 			}
 		}
-	} else if (($nameTable === 'permission') && ($action === 'remove')) {
+	} else if (($nameTable === 'permis') && ($action === 'remove')) {
 		foreach ($array as $item) {
 			foreach ($item as $key => $value) {
 				// if ($key === 'id') $id = $value; - заменить на id

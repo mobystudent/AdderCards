@@ -637,7 +637,7 @@ function submitIDinBD(nameTable = '#tableEdit', page = 'edit') {
 		renderTable();
 
 		$(`.main__count--${page}`).text(editCollection.size);
-		localStorage.clear();
+		localStorage.removeItem(page);
 		counter = 0;
 	});
 }

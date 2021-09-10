@@ -19,7 +19,7 @@ $(window).on('load', () => {
 	defaultDataInTables();
 
 	//service functions
-	service.scrollbar();
+	// service.scrollbar();
 	service.showDataInTable();
 });
 

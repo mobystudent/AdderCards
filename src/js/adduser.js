@@ -587,7 +587,7 @@ function submitIDinBD(nameTable = '#tableAdd', page = 'add') {
 		renderTable();
 
 		$(`.main__count--${page}`).text(addCollection.size);
-		localStorage.clear();
+		localStorage.removeItem(page);
 		counter = 0;
 	});
 }

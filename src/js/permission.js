@@ -9,12 +9,13 @@ const permisObject = {
 	statusAllow: false,
 	statusDisallow: false
 };
+let counter = 0;
 
 $(window).on('load', () => {
-	getDatainDB('permission');
 	submitIDinBD();
 	autoRefresh();
 	confirmAllAllowDisallow();
+	showDataFromStorage();
 });
 
 function templatePermissionTable(data) {
@@ -107,7 +108,7 @@ function renderTable(activeDepart, nameTable = '#tablePermis') {
 	});
 }
 
-function renderHeaderTable(page) {
+function renderHeaderTable(page = 'permis') {
 	$(`.table--${page} .table__header`).html('');
 	$(`.table--${page} .table__header`).append(templatePermissionHeaderTable(permisObject));
 }
@@ -168,6 +169,39 @@ function dataAdd(nameTable, page = 'permis') {
 	clickAllowDisallowPermis();
 }
 
+function showDataFromStorage(nameTable = '#tablePermis') {
+	if (localStorage.length && !permissionCollection.size) {
+		const storageCollection = JSON.parse(localStorage.getItem('permis'));
+
+		if (storageCollection) {
+			const { statusAllow, statusDisallow } = storageCollection.controls;
+			const lengthStorage = storageCollection.collection.length;
+			counter = storageCollection.collection[lengthStorage - 1].id; // id последнего элемента в localStorage
+
+			storageCollection.collection.forEach((item) => {
+				permissionCollection.set(counter, item);
+				counter++;
+			});
+
+			permisObject.statusAllow = statusAllow;
+			permisObject.statusDisallow = statusDisallow;
+
+			renderHeaderTable();
+			dataAdd(nameTable);
+			confirmAllAllowDisallow();
+		}
+	} else {
+		getDatainDB('permis');
+	}
+}
+
+function setDataInStorage(page = 'permis') {
+	localStorage.setItem(page, JSON.stringify({
+		controls: permisObject,
+		collection: [...permissionCollection.values()]
+	}));
+}
+
 function showActiveDataOnPage(activeDepart) {
 	nameDeparts.forEach((depart) => {
 		const { idname = '', longname = '' } = depart;
@@ -198,7 +232,7 @@ function submitIDinBD(page = 'permis', nameTable = '#tablePermis') {
 
 			if (allowItems.length) {
 				delegationID(allowItems);
-				setAddUsersInDB(allowItems, 'permission', 'remove');
+				setAddUsersInDB(allowItems, 'permis', 'remove');
 			} else {
 				disallowItems.forEach((item) => {
 					item.date = getCurrentDate();
@@ -220,6 +254,10 @@ function submitIDinBD(page = 'permis', nameTable = '#tablePermis') {
 			if (!permissionCollection.size) {
 				showTitleDepart('', '');
 			}
+
+			$(`.main__count--${page}`).text(permissionCollection.size);
+			localStorage.removeItem(page);
+			counter = 0;
 
 			$('.info__item--warn').hide();
 		} else {
@@ -270,6 +308,8 @@ function clickAllowDisallowPermis(nameTable = '#tablePermis') {
 				renderTable(item.nameid);
 			}
 		});
+
+		setDataInStorage();
 	});
 }
 
@@ -292,7 +332,8 @@ function confirmAllAllowDisallow(page = 'permis') {
 			}
 		});
 
-		renderHeaderTable(page);
+		setDataInStorage();
+		renderHeaderTable();
 		renderTable(activeDepart);
 		confirmAllAllowDisallow();
 	});
@@ -319,10 +360,11 @@ function resetControlBtns(nameTable = '#tablePermis', page = 'permis') {
 		}
 	});
 
-	renderHeaderTable(page);
+	setDataInStorage();
+	renderHeaderTable();
 }
 
-function autoRefresh(nameTable = '#tablePermis', page = 'permis') {
+function autoRefresh(page = 'permis') {
 	const timeReload = 15000 * 15;  //  15 минут
 	let markInterval;
 
@@ -332,10 +374,8 @@ function autoRefresh(nameTable = '#tablePermis', page = 'permis') {
 		permissionCollection.clear();
 
 		if (statusSwitch && !markInterval) {
-			getDatainDB('permission');
-
 			markInterval = setInterval(() => {
-				getDatainDB('permission');
+				getDatainDB('permis');
 			}, timeReload);
 		} else {
 			clearInterval(markInterval);
@@ -343,7 +383,7 @@ function autoRefresh(nameTable = '#tablePermis', page = 'permis') {
 			markInterval = false;
 		}
 
-		getDatainDB('permission');
+		getDatainDB('permis');
 	});
 }
 

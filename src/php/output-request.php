@@ -28,7 +28,7 @@
 		} else {
 			echo $mysqli->error;
 		}
-	} else if ($nameTable === 'permission') {
+	} else if ($nameTable === 'permis') {
 		if($resultSet = $mysqli->query("SELECT * FROM permission")) {
 			while ($result = $resultSet->fetch_assoc()) {
 				array_push($array, $result);
