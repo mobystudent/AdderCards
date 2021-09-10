@@ -324,23 +324,22 @@ function dataAdd(nameTable, page = 'remove') {
 function showDataFromStorage(nameTable = '#tableRemove') {
 	if (localStorage.length && !removeCollection.size) {
 		const storageCollection = JSON.parse(localStorage.getItem('remove'));
+		const lengthStorage = storageCollection.collection.length;
+		counter = storageCollection.collection[lengthStorage - 1].id; // id последнего элемента в localStorage
 
-		if (storageCollection) {
-			storageCollection.collection.forEach((item) => {
-				removeCollection.set(counter, item);
-				counter++;
-			});
-		}
+		storageCollection.collection.forEach((item) => {
+			removeCollection.set(counter, item);
+			counter++;
+		});
 
 		dataAdd(nameTable);
 	}
 }
 
 function setDataInStorage(page = 'remove') {
-	const statusTable = {
+	localStorage.setItem(page, JSON.stringify({
 		collection: [...removeCollection.values()]
-	};
-	localStorage.setItem(page, JSON.stringify(statusTable));
+	}));
 }
 
 function setDepartInSelect() {
@@ -403,8 +402,6 @@ function clickSelectItem(nameForm = '#removeForm') {
 
 		if (select === 'fio') {
 			getAddUsersInDB(id); // вывести должность в скрытое поле
-		// } else if (select === 'newnameid') {
-		// 	console.log('Select');
 		}
 
 		setDataAttrSelectedItem(title, select, e.currentTarget);
@@ -622,6 +619,7 @@ function setAddUsersInDB(array, nameTable, action) {
 		url: "./php/change-user-request.php",
 		method: "post",
 		dataType: "html",
+		async: false,
 		data: {
 			action: action,
 			nameTable: nameTable,

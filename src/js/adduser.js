@@ -3,6 +3,7 @@
 import $ from 'jquery';
 import datepickerFactory from 'jquery-datepicker';
 import datepickerRUFactory from 'jquery-datepicker/i18n/jquery.ui.datepicker-ru';
+import service from './service.js';
 
 datepickerFactory($);
 datepickerRUFactory($);
@@ -14,19 +15,22 @@ const addObject = {
 	statusid: '',
 	statustitle: '',
 	statuscardvalidto: '',
-	cardvalidto: ''
+	cardvalidto: '',
+	photourl: ''
 };
+let counter = 0;
 
 $(window).on('load', () => {
 	addUser();
 	toggleSelect();
 	downloadFoto();
 	submitIDinBD();
+	showDataFromStorage();
 });
 
 function templateAddTable(data) {
-	const { id = '', fio = '', post = '', photofile = '', statustitle = '', statuscardvalidto = '', cardvalidto = '' } = data;
-	const cardvalidtoView = statuscardvalidto === 'date' ? `
+	const { id = '', fio = '', post = '', photofile = '', statustitle = '', cardvalidto = '' } = data;
+	const cardvalidtoView = addObject.statuscardvalidto ? `
 		<div class="table__cell table__cell--body table__cell--cardvalidto">
 			<span class="table__text table__text--body">${cardvalidto}</span>
 		</div>
@@ -66,13 +70,13 @@ function templateAddTable(data) {
 }
 
 function templateAddForm(data) {
-	const { fio = '', photofile = '', photourl = '', post = '', statusid = '', statustitle = '', statuscardvalidto = '', cardvalidtotitle = '', cardvalidto = '' } = data;
+	const { fio = '', photofile = '', photourl = '', post = '', statusid = '', statustitle = '', cardvalidtotitle = '', cardvalidtoid = '', cardvalidto = '' } = data;
 	const typeValue = statustitle ? statustitle : 'Выберите тип идентификатора';
 	const typeClassView = statustitle ? 'select__value--selected' : '';
 	const cardvalidtoValue = cardvalidtotitle ? cardvalidtotitle : 'Выберите окончание действия пропуска';
 	const cardvalidtoClassView = cardvalidtotitle ? 'select__value--selected' : '';
 	const photoValue = photourl ? photourl : './images/avatar.svg';
-	const cardvalidtoView = statuscardvalidto === 'date' ? `
+	const cardvalidtoView = addObject.statuscardvalidto ? `
 		<div class="form__field form__field--cardvalidto">
 			<label class="form__label"><span class="form__name">Дата окончания</span>
 				<input class="form__input form__item form__item--cardvalidto" id="addDatepicker" data-field="date" name="date" type="text" value="${cardvalidto}" placeholder="Введите дату" required="required"/>
@@ -114,7 +118,7 @@ function templateAddForm(data) {
 				<span class="form__name">Окончание действия пропуска</span>
 				<div class="form__select form__item select" data-field="cardvalidtotitle" data-type="statuscardvalidto" data-select="cardvalidto">
 					<header class="select__header">
-						<span class="select__value ${cardvalidtoClassView}" data-title="${cardvalidtoValue}" data-cardvalidto="${statuscardvalidto}" data-placeholder="Выберите окончание действия пропуска">${cardvalidtoValue}</span>
+						<span class="select__value ${cardvalidtoClassView}" data-title="${cardvalidtoValue}" data-cardvalidto="${cardvalidtoid}" data-placeholder="Выберите окончание действия пропуска">${cardvalidtoValue}</span>
 					</header>
 					<ul class="select__list">
 						<li class="select__item">
@@ -145,10 +149,8 @@ function templateAddForm(data) {
 	`;
 }
 
-function templateAddHeaderTable(data) {
-	const { statuscardvalidto = '' } = data;
-	console.warn(data);
-	const cardvalidtoView = statuscardvalidto === 'date' ? `
+function templateAddHeaderTable() {
+	const cardvalidtoView = addObject.statuscardvalidto ? `
 		<div class="table__cell table__cell--header table__cell--cardvalidto">
 			<span class="table__text table__text--header">Дата</span>
 		</div>
@@ -190,6 +192,26 @@ function renderTable(nameTable = '#tableAdd') {
 	});
 }
 
+function renderForm(obj, action, nameForm = '#addForm') {
+	$(`${nameForm} .form__wrap`).html('');
+
+	if (action === 'edit') {
+		addCollection.forEach((user, i) => {
+			if (user.id === obj) {
+				$(`${nameForm} .form__wrap`).append(templateAddForm(user));
+				addCollection.delete(i);
+			}
+		});
+	} else {
+		$(`${nameForm} .form__wrap`).append(templateAddForm(addObject));
+	}
+}
+
+function renderHeaderTable(page = 'add') {
+	$(`.table--${page} .table__header`).html('');
+	$(`.table--${page} .table__header`).append(templateAddHeaderTable());
+}
+
 function addUser() {
 	$('#addUser').click((e) => {
 		const form = $(e.target).parents('.form');
@@ -210,7 +232,7 @@ function addUser() {
 						object.cardvalidto = inputValue;
 					}
 
-					object.statuscardvalidto = nameId;
+					object.cardvalidtoid = nameId;
 					object.cardvalidtotitle = valueItem;
 				} else {
 					object[fieldType] = nameId;
@@ -238,7 +260,6 @@ function addUser() {
 		if (validationEmptyFields(userData)) {
 			userFromForm(userData);
 			clearFieldsForm();
-			showFieldsInHeaderTable();
 		}
 	});
 }
@@ -255,10 +276,9 @@ function userFromForm(object, page = 'add', nameTable = '#tableAdd') {
 		statustitle: '',
 		department: '',
 		cardvalidto: '',
-		statuscardvalidto: '',
+		cardvalidtoid: '',
 		cardvalidtotitle: ''
 	};
-	const indexCollection = addCollection.size;
 	const itemObject = Object.assign({}, objToCollection);
 	const departName = $(`.main__depart--${page}`).attr('data-depart');
 	const departID = $(`.main__depart--${page}`).attr('data-id');
@@ -268,7 +288,7 @@ function userFromForm(object, page = 'add', nameTable = '#tableAdd') {
 			if (itemField === key) {
 				itemObject[itemField] = object[key];
 			} else if (itemField === 'id') {
-				itemObject[itemField] = indexCollection;
+				itemObject[itemField] = counter;
 			} else if (itemField === 'department') {
 				itemObject[itemField] = departName;
 			} else if (itemField === 'nameid') {
@@ -277,8 +297,10 @@ function userFromForm(object, page = 'add', nameTable = '#tableAdd') {
 		}
 	}
 
-	addCollection.set(indexCollection, itemObject);
+	addCollection.set(counter, itemObject);
+	counter++;
 
+	setDataInStorage();
 	dataAdd(nameTable);
 }
 
@@ -291,20 +313,43 @@ function dataAdd(nameTable, page = 'add') {
 		return;
 	}
 
-	renderTable();
 	$(`.main__count--${page}`).text(addCollection.size);
+
+	showFieldsInHeaderTable();
+	renderTable();
 	deleteUser();
 	editUser();
 }
 
+function showDataFromStorage(nameTable = '#tableAdd') {
+	if (localStorage.length && !addCollection.size) {
+		const storageCollection = JSON.parse(localStorage.getItem('add'));
+		const lengthStorage = storageCollection.collection.length;
+		counter = storageCollection.collection[lengthStorage - 1].id; // id последнего элемента в localStorage
+
+		storageCollection.collection.forEach((item) => {
+			addCollection.set(counter, item);
+			counter++;
+		});
+
+		dataAdd(nameTable);
+	}
+}
+
+function setDataInStorage(page = 'add') {
+	localStorage.setItem(page, JSON.stringify({
+		collection: [...addCollection.values()]
+	}));
+}
+
 function showFieldsInHeaderTable(page = 'add') {
-	const cardvalidtoCheck = [...addCollection.values()].some((cell) => cell.statuscardvalidto === 'date') ? 'date' : false;
-	const cardvalidtoMod = cardvalidtoCheck ? '-cardvalidto' : '';
+	addObject.statuscardvalidto = [...addCollection.values()].some((cell) => cell.cardvalidtoid === 'date') ? true : false;
+	const cardvalidtoMod = addObject.statuscardvalidto ? '-cardvalidto' : '';
 	const className = `wrap wrap--content wrap--content-${page}${cardvalidtoMod}`;
 
 	$(`.main[data-name="${page}"]`).find('.wrap--content').attr('class', className);
-	$(`.table--${page} .table__header`).html('');
-	$(`.table--${page} .table__header`).append(templateAddHeaderTable({ statuscardvalidto: cardvalidtoCheck }));
+
+	renderHeaderTable();
 }
 
 function toggleSelect(nameForm = '#addForm') {
@@ -332,8 +377,6 @@ function setDataAttrSelectedItem(title, select, elem, nameForm = '#addForm') {
 	const photofile = $(`${nameForm} .form__input--file`).data('value');
 	const photourl = $(`${nameForm} .form__input--file`).data('url'); // default empty
 
-	$(`${nameForm} .form__wrap`).html('');
-
 	addObject.fio = fio ? fio : addObject.fio;
 	addObject.post = post ? post : addObject.post;
 	addObject.photofile = photofile ? photofile : addObject.photofile;
@@ -343,39 +386,32 @@ function setDataAttrSelectedItem(title, select, elem, nameForm = '#addForm') {
 		addObject.statusid = statusid;
 		addObject.statustitle = title;
 	} else {
-		addObject.statuscardvalidto = statusid;
+		addObject.cardvalidtoid = statusid;
 		addObject.cardvalidtotitle = title;
 		addObject.cardvalidto = statusid === 'date' ? addObject.cardvalidto : '';
+		addObject.statuscardvalidto = statusid === 'date' ? true : false;
 	}
 
-	$(`${nameForm} .form__wrap`).append(templateAddForm(addObject));
-
+	renderForm(addObject, 'clear');
 	toggleSelect();
 	datepicker();
 	downloadFoto();
 	memberInputField();
 }
 
-function clearFieldsForm(nameForm = '#addForm') {
-	const clearObject = {
-		id: '',
-		fio: '',
-		statustitle: '',
-		statusid: '',
-		post: ''
-	};
-
+function clearFieldsForm() {
+	addObject.id = '';
 	addObject.fio = '';
 	addObject.statusid = '';
 	addObject.statustitle = '';
 	addObject.post = '';
 	addObject.photourl = '';
+	addObject.photofile = '';
 	addObject.statuscardvalidto = '';
 	addObject.cardvalidtotitle = '';
 	addObject.cardvalidto = '';
 
-	$(`${nameForm} .form__wrap`).html('').append(templateAddForm(clearObject));
-
+	renderForm(addObject, 'clear');
 	toggleSelect();
 	datepicker();
 	downloadFoto();
@@ -391,27 +427,6 @@ function memberInputField() {
 	});
 }
 
-function datepicker() {
-	$("#addDatepicker").datepicker({
-		changeMonth: true,
-		changeYear: true,
-		showOtherMonths: true,
-		selectOtherMonths: true,
-		minDate: "+1D",
-		maxViewMode: 10
-	});
-
-	$('.form__field--cardvalidto').click(() => {
-		$("#ui-datepicker-div .ui-datepicker").show();
-	});
-
-	$('#addDatepicker').change((e) => {
-		const cardvalidtoValue = $(e.currentTarget).val();
-
-		addObject.cardvalidto = cardvalidtoValue;
-	});
-}
-
 function emptySign(nameTable, status) {
 	if (status == 'empty') {
 		$(nameTable)
@@ -424,6 +439,23 @@ function emptySign(nameTable, status) {
 			.html('')
 			.append('<div class="table__content"></div>');
 	}
+}
+
+function datepicker() {
+	$("#addDatepicker").datepicker({
+		changeMonth: true,
+		changeYear: true,
+		showOtherMonths: true,
+		selectOtherMonths: true,
+		minDate: "+1D",
+		maxViewMode: 10
+	});
+
+	$('#addDatepicker').change((e) => {
+		const cardvalidtoValue = $(e.currentTarget).val();
+
+		addObject.cardvalidto = cardvalidtoValue;
+	});
 }
 
 function downloadFoto(nameForm = '#addForm') {
@@ -466,10 +498,10 @@ function validationEmptyFields(fields, page = 'add') {
 
 	const valid = [statusMess, correctName, countNameWords, extensionImg].every((mess) => mess === 'hide');
 
-	$(`.main[data-name="${page}"]`).find('.info__item--warn.info__item--fields')[statusMess]();
-	$(`.main[data-name="${page}"]`).find('.info__item--error.info__item--name')[correctName]();
-	$(`.main[data-name="${page}"]`).find('.info__item--error.info__item--short')[countNameWords]();
-	$(`.main[data-name="${page}"]`).find('.info__item--error.info__item--image')[extensionImg]();
+	$(`.main[data-name=${page}]`).find('.info__item--warn.info__item--fields')[statusMess]();
+	$(`.main[data-name=${page}]`).find('.info__item--error.info__item--name')[correctName]();
+	$(`.main[data-name=${page}]`).find('.info__item--error.info__item--short')[countNameWords]();
+	$(`.main[data-name=${page}]`).find('.info__item--error.info__item--image')[extensionImg]();
 
 	return valid;
 }
@@ -485,6 +517,7 @@ function deleteUser(nameTable = '#tableAdd', page = 'add') {
 				}
 			});
 
+			setDataInStorage();
 			showFieldsInHeaderTable();
 			renderTable();
 		}
@@ -501,30 +534,34 @@ function editUser(page = 'add') {
 	$('.table__content').click((e) => {
 		if ($(e.target).parents('.table__btn--edit').length || $(e.target).hasClass('table__btn--edit')) {
 			const idEdit = $(e.target).closest('.table__row').data('id');
+			let fillFields;
 
-			showFieldsInHeaderTable();
-			renderForm(idEdit);
-			renderTable();
-			toggleSelect();
-			datepicker();
-			downloadFoto();
+			for (let key in addObject) {
+				if (key !== 'statuscardvalidto') {
+					fillFields = addObject[key] ? false : true;
+				}
+			}
+
+			if (fillFields) {
+				addCollection.forEach((item) => {
+					if (item.id === idEdit) {
+						for (let key in addObject) {
+							addObject[key] = item[key];
+						}
+					}
+				});
+
+				showFieldsInHeaderTable();
+				renderForm(idEdit, 'edit');
+				renderTable();
+				toggleSelect();
+				datepicker();
+				downloadFoto();
+
+				$(`.main__count--${page}`).text(addCollection.size);
+			}
 		}
-
-		$(`.main__count--${page}`).text(addCollection.size);
 	});
-}
-
-function renderForm(id, nameForm = '#addForm') {
-	$(`${nameForm} .form__wrap`).html('');
-
-	addCollection.forEach((user, i) => {
-		if (user.id == id) {
-			$(`${nameForm} .form__wrap`).append(templateAddForm(user));
-			addCollection.delete(i);
-		}
-	});
-
-	addUser();
 }
 
 function submitIDinBD(nameTable = '#tableAdd', page = 'add') {
@@ -547,6 +584,8 @@ function submitIDinBD(nameTable = '#tableAdd', page = 'add') {
 		renderTable();
 
 		$(`.main__count--${page}`).text(addCollection.size);
+		localStorage.clear();
+		counter = 0;
 	});
 }
 
@@ -556,7 +595,6 @@ function getCurrentDate() {
 	const currentDay = date.getDate() < 10 ? `0${date.getDate()}` : date.getDate();
 	const currentMonth = month < 10 ? `0${month}` : month;
 	const currentYear = date.getFullYear() < 10 ? `0${date.getFullYear()}` : date.getFullYear();
-
 	const currentHour = date.getHours() < 10 ? `0${date.getHours()}` : date.getHours();
 	const currentMinute = date.getMinutes() < 10 ? `0${date.getMinutes()}` : date.getMinutes();
 
@@ -568,16 +606,17 @@ function setAddUsersInDB(array, nameTable, action) {
 		url: "./php/change-user-request.php",
 		method: "post",
 		dataType: "html",
+		async: false,
 		data: {
 			action: action,
 			nameTable: nameTable,
 			array: array
 		},
-		success: function(data) {
-			console.log('succsess '+data);
+		success: () => {
+			service.modal('success');
 		},
-		error: function(data) {
-			console.log(data);
+		error: () => {
+			service.modal('error');
 		}
 	});
 }
