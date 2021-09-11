@@ -6,7 +6,6 @@ import service from './service.js';
 import { nameDeparts } from './nameDepart.js';
 
 const constCollection = new Map(); // БД пользователей которым разрешили выдачу карт
-let counter = 0;
 
 $(window).on('load', () => {
 	submitIDinBD();
@@ -139,9 +138,6 @@ function showDataFromStorage(nameTable = '#tableConst', page = 'const') {
 	const storageCollection = JSON.parse(localStorage.getItem(page));
 
 	if (storageCollection && !constCollection.size) {
-		const lengthStorage = storageCollection.collection.length;
-		counter = storageCollection.collection[lengthStorage - 1].id + 1; // id последнего элемента в localStorage
-
 		storageCollection.collection.forEach((item, i) => {
 			const itemID = storageCollection.collection[i].id;
 
@@ -206,7 +202,6 @@ function submitIDinBD(nameTable = '#tableConst', page = 'const') {
 			}
 
 			localStorage.removeItem(page);
-			counter = 0;
 
 			$('.info__item--warn').hide();
 		} else {

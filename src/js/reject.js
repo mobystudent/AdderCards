@@ -5,18 +5,26 @@ import service from './service.js';
 import Scrollbar from 'smooth-scrollbar';
 
 const rejectCollection = new Map(); // БД отклоненных пользователей
+const rejectObject = {
+	statusResend: false
+}
 
 $(window).on('load', () => {
-	getDatainDB('reject');
 	viewDataUser();
 	autoRefresh();
+	showDataFromStorage();
 });
 
 function templateRejectTable(data) {
-	const { id = '', fio = '', post = '', statustitle = '', date = '' } = data;
+	const { id = '', fio = '', post = '', statustitle = '', date = '', statususer = '', resend = '', resendblock = '' } = data;
+	const rowClassView = statususer ? 'table__row--disabled' : '';
+	const resendBtnValue = resend ? 'Отменить' : 'Выбрать';
+	const resendBtnClassView = resend  ? 'btn--resend-cancel' : '';
+	const resendClassView = resendblock ? 'btn--allow-disabled' : '';
+	const resendBtnBlock = resendblock ? 'disabled="disabled"' : '';
 
 	return `
-		<div class="table__row table__row--permis" data-id="${id}">
+		<div class="table__row ${rowClassView}" data-id="${id}">
 			<div class="table__cell table__cell--body table__cell--fio">
 				<span class="table__text table__text--body">${fio}</span>
 			</div>
@@ -29,8 +37,8 @@ function templateRejectTable(data) {
 			<div class="table__cell table__cell--body table__cell--date">
 				<span class="table__text table__text--body">${date}</span>
 			</div>
-			<div class="table__cell table__cell--body table__cell--btn-choice">
-				<button class="btn btn--choice" id="choice" type="button">Выбрать</button>
+			<div class="table__cell table__cell--body table__cell--btn-resend">
+				<button class="btn btn--resend ${resendBtnClassView} ${resendClassView}" type="button" ${resendBtnBlock}>${resendBtnValue}</button>
 			</div>
 			<div class="table__cell table__cell--body table__cell--view">
 				<button class="table__btn table__btn--view" type="button">
@@ -77,6 +85,36 @@ function templateRejectForm(data) {
 	`;
 }
 
+function templateRejectHeaderTable() {
+	const resendBtnValue = rejectObject.statusResend ? 'Отменить' : 'Выбрать все';
+	const resendBtnClassView = rejectObject.statusResend ? 'btn--resend-cancel' : '';
+
+	return `
+		<div class="table__cell table__cell--header table__cell--fio">
+			<span class="table__text table__text--header">Фамилия Имя Отчество</span>
+			<button class="btn btn--sort" type="button" data-direction="true"></button>
+		</div>
+		<div class="table__cell table__cell--header table__cell--post">
+			<span class="table__text table__text--header">Должность</span>
+			<button class="btn btn--sort" type="button" data-direction="true"></button>
+		</div>
+		<div class="table__cell table__cell--header table__cell--statustitle">
+			<span class="table__text table__text--header">Статус</span>
+		</div>
+		<div class="table__cell table__cell--header table__cell--date">
+			<span class="table__text table__text--header">Дата</span>
+		</div>
+		<div class="table__cell table__cell--header table__cell--btn-resend">
+			<button class="btn btn--resend ${resendBtnClassView}" id="resendAll" type="button">${resendBtnValue}</button>
+		</div>
+		<div class="table__cell table__cell--header table__cell--view">
+			<svg class="icon icon--view icon--view-white">
+				<use class="icon__item" xlink:href="./images/sprite.svg#view"></use>
+			</svg>
+		</div>
+	`;
+}
+
 function renderTable(nameTable = '#tableReject') {
 	$(`${nameTable} .table__content`).html('');
 
@@ -95,6 +133,11 @@ function renderForm(id, nameForm = '#rejectForm') {
 	});
 }
 
+function renderHeaderTable(page = 'reject') {
+	$(`.table--${page} .table__header`).html('');
+	$(`.table--${page} .table__header`).append(templateRejectHeaderTable());
+}
+
 function userFromDB(array, nameTable = '#tableReject') {
 	const objToCollection = {
 		id: '',
@@ -103,7 +146,8 @@ function userFromDB(array, nameTable = '#tableReject') {
 		statusid: '',
 		statustitle: '',
 		department: '',
-		date: ''
+		statususer: '',
+		resend: ''
 	};
 
 	array.forEach((elem, i) => {
@@ -135,8 +179,39 @@ function dataAdd(nameTable, page = 'reject') {
 	}
 
 	renderTable();
+	resendUsers();
 
 	$(`.main__count--${page}`).text(rejectCollection.size);
+}
+
+function showDataFromStorage(nameTable = '#tableReject', page = 'reject') {
+	const storageCollection = JSON.parse(localStorage.getItem(page));
+
+	if (storageCollection && !rejectCollection.size) {
+		const { statusResend } = storageCollection.controls;
+
+		storageCollection.collection.forEach((item, i) => {
+			const itemID = storageCollection.collection[i].id;
+
+			rejectCollection.set(itemID, item);
+		});
+
+		rejectObject.statusResend = statusResend;
+
+		dataAdd(nameTable);
+	} else {
+		getDatainDB('reject');
+	}
+
+	renderHeaderTable();
+	resendAllUsers();
+}
+
+function setDataInStorage(page = 'reject') {
+	localStorage.setItem(page, JSON.stringify({
+		controls: rejectObject,
+		collection: [...rejectCollection.values()]
+	}));
 }
 
 function emptySign(nameTable, status) {
@@ -167,7 +242,41 @@ function viewDataUser(nameTable = '#tableReject') {
 	});
 }
 
-function autoRefresh(page = 'permis') {
+function resendUsers(nameTable = '#tableReject') {
+	$(`${nameTable} .table__content`).click((e) => {
+		if (!$(e.target).hasClass('btn--resend')) return;
+
+		const userID = $(e.target).parents('.table__row').data('id');
+		const user = rejectCollection.get(userID);
+
+		user.resend = user.resend ? false : true;
+		user.statususer = user.resend ? true : false;
+
+		setDataInStorage();
+		renderTable();
+	});
+}
+
+function resendAllUsers() {
+	$('#resendAll').click(() => {
+		rejectObject.statusResend = rejectObject.statusResend ? false : true;
+
+		rejectCollection.forEach((item) => {
+			item.resend = '';
+			item.statususer = rejectObject.statusResend;
+			item.resendblock = rejectObject.statusResend;
+		});
+
+		console.log(rejectCollection);
+
+		setDataInStorage();
+		renderHeaderTable();
+		renderTable();
+		resendAllUsers();
+	});
+}
+
+function autoRefresh(page = 'reject') {
 	const timeReload = 15000 * 15;  //  15 минут
 	let markInterval;
 
@@ -175,10 +284,10 @@ function autoRefresh(page = 'permis') {
 		const statusSwitch = $('.switch__input').prop('checked');
 
 		if (statusSwitch && !markInterval) {
-			getDatainDB('permission');
+			getDatainDB('reject');
 
 			markInterval = setInterval(() => {
-				getDatainDB('permission');
+				getDatainDB('reject');
 			}, timeReload);
 		} else {
 			clearInterval(markInterval);

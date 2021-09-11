@@ -9,7 +9,6 @@ const permisObject = {
 	statusAllow: false,
 	statusDisallow: false
 };
-let counter = 0;
 
 $(window).on('load', () => {
 	submitIDinBD();
@@ -31,7 +30,7 @@ function templatePermissionTable(data) {
 	const disallowBtnBlock = disallowblock ? 'disabled="disabled"' : '';
 
 	return `
-		<div class="table__row table__row--permis ${rowClassView}" data-id="${id}">
+		<div class="table__row ${rowClassView}" data-id="${id}">
 			<div class="table__cell table__cell--body table__cell--fio">
 				<span class="table__text table__text--body">${fio}</span>
 			</div>
@@ -64,16 +63,15 @@ function templatePermissionTabs(data) {
 	`;
 }
 
-function templatePermissionHeaderTable(data) {
-	const { statusAllow = '', statusDisallow = '' } = data;
-	const allowBtnValue = statusAllow ? 'Отменить' : 'Разрешить все';
-	const disallowBtnValue = statusDisallow ? 'Отменить' : 'Запретить все';
-	const allowBtnClassView = statusAllow ? 'btn--allow-cancel' : '';
-	const disallowBtnClassView = statusDisallow ? 'btn--disallow-cancel' : '';
-	const allowDiffClassView = statusDisallow ? 'btn--allow-disabled' : '';
-	const disallowDiffClassView = statusAllow ? 'btn--disallow-disabled' : '';
-	const allowBtnBlock = statusDisallow ? 'disabled="disabled"' : '';
-	const disallowBtnBlock = statusAllow ? 'disabled="disabled"' : '';
+function templatePermissionHeaderTable() {
+	const allowBtnValue = permisObject.statusAllow ? 'Отменить' : 'Разрешить все';
+	const disallowBtnValue = permisObject.statusDisallow ? 'Отменить' : 'Запретить все';
+	const allowBtnClassView = permisObject.statusAllow ? 'btn--allow-cancel' : '';
+	const disallowBtnClassView = permisObject.statusDisallow ? 'btn--disallow-cancel' : '';
+	const allowDiffClassView = permisObject.statusDisallow ? 'btn--allow-disabled' : '';
+	const disallowDiffClassView = permisObject.statusAllow ? 'btn--disallow-disabled' : '';
+	const allowBtnBlock = permisObject.statusDisallow ? 'disabled="disabled"' : '';
+	const disallowBtnBlock = permisObject.statusAllow ? 'disabled="disabled"' : '';
 
 	return `
 		<div class="table__cell table__cell--header table__cell--fio">
@@ -110,7 +108,7 @@ function renderTable(activeDepart, nameTable = '#tablePermis') {
 
 function renderHeaderTable(page = 'permis') {
 	$(`.table--${page} .table__header`).html('');
-	$(`.table--${page} .table__header`).append(templatePermissionHeaderTable(permisObject));
+	$(`.table--${page} .table__header`).append(templatePermissionHeaderTable());
 }
 
 function userFromDB(array, nameTable = '#tablePermis') {
@@ -174,8 +172,6 @@ function showDataFromStorage(nameTable = '#tablePermis', page = 'permis') {
 
 	if (storageCollection && !permissionCollection.size) {
 		const { statusAllow, statusDisallow } = storageCollection.controls;
-		const lengthStorage = storageCollection.collection.length;
-		counter = storageCollection.collection[lengthStorage - 1].id + 1; // id последнего элемента в localStorage
 
 		storageCollection.collection.forEach((item, i) => {
 			const itemID = storageCollection.collection[i].id;
@@ -188,7 +184,6 @@ function showDataFromStorage(nameTable = '#tablePermis', page = 'permis') {
 
 		renderHeaderTable();
 		dataAdd(nameTable);
-		confirmAllAllowDisallow();
 	} else {
 		getDatainDB('permis');
 	}
@@ -256,7 +251,6 @@ function submitIDinBD(page = 'permis', nameTable = '#tablePermis') {
 
 			$(`.main__count--${page}`).text(permissionCollection.size);
 			localStorage.removeItem(page);
-			counter = 0;
 
 			$('.info__item--warn').hide();
 		} else {

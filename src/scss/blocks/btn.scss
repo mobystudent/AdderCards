@@ -113,9 +113,14 @@
 		text-transform: uppercase;
 	}
 
-	&--choice {
+	&--resend {
 		padding: 12px 15px;
 		background: $spaceBlack;
+
+		&-disabled {
+			background: $disabledRed;
+			color: $gray;
+		}
 
 		&-cancel {
 			background: $middleGray;
