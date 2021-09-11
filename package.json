@@ -10,7 +10,7 @@
     "elem": "gulp elem",
     "js": "gulp js",
     "fonts": "gulp fonts",
-    "img": "gulp cleimgan",
+    "img": "gulp img",
     "sprite": "gulp sprite",
     "favicon": "gulp favicon"
   },

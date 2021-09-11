@@ -13,6 +13,7 @@ import './edituser.js';
 import './report.js';
 import './reject.js';
 import './requestchange.js';
+import './login.js';
 import service from './service.js';
 
 $(window).on('load', () => {

@@ -7,7 +7,7 @@ import Scrollbar from 'smooth-scrollbar';
 const rejectCollection = new Map(); // БД отклоненных пользователей
 const rejectObject = {
 	statusResend: false
-}
+};
 
 $(window).on('load', () => {
 	viewDataUser();

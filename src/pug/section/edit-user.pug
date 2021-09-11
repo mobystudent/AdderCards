@@ -5,7 +5,7 @@ main.main(data-name="edit")
 		span.main__depart.main__depart--edit(data-depart="Химический факультет" data-id="ChemDep")
 			| Химический факультет
 		
-		form.form#editForm(action="#" method="GET")
+		form.form.form--page#editForm(action="#" method="GET")
 			.form__wrap
 				.form__fields
 					.form__field
@@ -55,7 +55,7 @@ main.main(data-name="edit")
 						label.form__download(for="editFile")
 							svg.icon.icon--download
 								use(xlink:href="./images/sprite.svg#download")
-							span.form__title
+							span.form__title.form__title--page
 								| Загрузить фото
 									
 			button.btn.btn--form#editUser(type="button" data-type="edit-user")

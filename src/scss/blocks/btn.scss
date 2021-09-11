@@ -105,6 +105,11 @@
 	&--form {
 		margin: 0 auto;
 		text-transform: uppercase;
+
+		&--login {
+			width: 150px;
+			justify-content: center;
+		}
 	}
 
 	&--download,

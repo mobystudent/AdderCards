@@ -6,15 +6,31 @@ body {
 }
 
 .wrapper {
-	display: grid;
-	grid-template:  'aside main main' 1fr
-					'aside footer footer' 40px
-					/ 320px 1fr 1fr;
-	height: 100%;
-	background: $deepDarkGray;
+	&--page {
+		display: grid;
+		grid-template:  'aside header' 60px
+						'aside main' 1fr
+						'aside footer' 40px
+						/ 320px 1fr;
+		height: 100%;
+		background: $deepDarkGray;
 
-	@media print {
-		grid-template: 'main' 1fr
-						/ 1fr;
+		@media print {
+			grid-template: 'main' 1fr
+							/ 1fr;
+		}
+	}
+
+	&--login {
+		position: fixed;
+		width: 100%;
+		height: 100%;
+		background: url(images/univer-bg.jpg) center/cover no-repeat, rgba($black, .9);
+		background-blend-mode: overlay;
+		z-index: 12;
+	}
+
+	&--hide {
+		display: none;
 	}
 }

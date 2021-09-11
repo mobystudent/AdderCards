@@ -142,7 +142,7 @@ function templateAddForm(data) {
 					<svg class="icon icon--download">
 						<use xlink:href=./images/sprite.svg#download></use>
 					</svg>
-					<span class="form__title">Загрузить фото</span>
+					<span class="form__title form__title--page">Загрузить фото</span>
 				</label>
 			</div>
 		</div>
