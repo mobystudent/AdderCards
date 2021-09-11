@@ -176,7 +176,7 @@ function showTitleDepart(depart, id, page = 'const') {
 	$(`.main__depart--${page}`).text(depart).attr({'data-depart': depart, 'data-id': id});
 }
 
-function submitIDinBD(nameTable = '#tableConst') {
+function submitIDinBD(nameTable = '#tableConst', page = 'const') {
 	$('#submitConstCard').click(() => {
 		const activeDepart = $('.main__depart--const').attr('data-id');
 		const filterDepatCollection = [...constCollection.values()].filter((user) => user.nameid == activeDepart);
@@ -204,6 +204,9 @@ function submitIDinBD(nameTable = '#tableConst') {
 				showTitleDepart('', '');
 			}
 
+			localStorage.removeItem(page);
+			counter = 0;
+
 			$('.info__item--warn').hide();
 		} else {
 			$('.info__item--warn').show();
@@ -211,43 +214,6 @@ function submitIDinBD(nameTable = '#tableConst') {
 
 		// createObjectForBD();
 	});
-}
-
-function createObjectForBD() {
-	const object = {
-		FIO: '',
-		Department: '',
-		FieldGroup: '',
-		Badge: '',
-		CardName: '',
-		CardID: '',
-		CardValidTo: '',
-		PIN: '',
-		CardStatus: 1,
-		Security: 0,
-		Disalarm: 0,
-		VIP: 0,
-		DayNightCLM: 0,
-		AntipassbackDisabled: 0,
-		PhotoFile: '',
-		EmployeeNumber: '',
-		Post: ''
-	};
-	const fillOutObjectInBD = [...constFillOutCardCollection].map((elem) => {
-		const itemObject = Object.assign({}, object);
-
-		for (const itemField in itemObject) {
-			for (const key in elem) {
-				if (itemField.toLocaleLowerCase() == key) {
-					itemObject[itemField] = elem[key];
-				}
-			}
-		}
-
-		return itemObject;
-	});
-
-	console.log(fillOutObjectInBD);
 }
 
 function emptySign(nameTable, status) {
@@ -302,11 +268,9 @@ function convertCardIDInCardName(nameTable = '#tableConst') {
 function setDataInTable(userID, cardObj, page = 'const') {
 	const activeDepart = $(`.main__depart--${page}`).attr('data-id');
 
-	constCollection.forEach((user) => {
-		if (user.id === userID) {
-			user.cardid = cardObj ? cardObj.cardid : '';
-			user.cardname = cardObj ? cardObj.cardname : '';
-		}
+	constCollection.set(userID, {
+		cardid: cardObj ? cardObj.cardid : '',
+		cardname: cardObj ? cardObj.cardname : ''
 	});
 
 	showActiveDataOnPage(activeDepart);
@@ -456,6 +420,43 @@ function filterDepart(collection) {
 	const arrayDepart = [...collection.values()].map((item) => item.nameid);
 
 	return [...new Set(arrayDepart)];
+}
+
+function createObjectForBD() {
+	const object = {
+		FIO: '',
+		Department: '',
+		FieldGroup: '',
+		Badge: '',
+		CardName: '',
+		CardID: '',
+		CardValidTo: '',
+		PIN: '',
+		CardStatus: 1,
+		Security: 0,
+		Disalarm: 0,
+		VIP: 0,
+		DayNightCLM: 0,
+		AntipassbackDisabled: 0,
+		PhotoFile: '',
+		EmployeeNumber: '',
+		Post: ''
+	};
+	const fillOutObjectInBD = [...constFillOutCardCollection].map((elem) => {
+		const itemObject = Object.assign({}, object);
+
+		for (const itemField in itemObject) {
+			for (const key in elem) {
+				if (itemField.toLocaleLowerCase() == key) {
+					itemObject[itemField] = elem[key];
+				}
+			}
+		}
+
+		return itemObject;
+	});
+
+	console.log(fillOutObjectInBD);
 }
 
 export default {

@@ -206,7 +206,7 @@
 				echo $mysqli->error;
 			}
 		}
-	} else if (($nameTable === 'timecard') && ($action === 'report')) {
+	} else if (($nameTable === 'time') && ($action === 'report')) {
 		foreach ($array as $item) {
 			foreach ($item as $key => $value) {
 				if ($key === 'fio') $fio = $value;
