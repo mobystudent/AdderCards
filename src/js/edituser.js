@@ -349,11 +349,12 @@ function showDataFromStorage(nameTable = '#tableEdit', page = 'edit') {
 
 	if (storageCollection && !editCollection.size) {
 		const lengthStorage = storageCollection.collection.length;
-		counter = storageCollection.collection[lengthStorage - 1].id; // id последнего элемента в localStorage
+		counter = storageCollection.collection[lengthStorage - 1].id + 1; // id последнего элемента в localStorage
 
-		storageCollection.collection.forEach((item) => {
-			editCollection.set(counter, item);
-			counter++;
+		storageCollection.collection.forEach((item, i) => {
+			const itemID = storageCollection.collection[i].id;
+
+			editCollection.set(itemID, item);
 		});
 
 		dataAdd(nameTable);

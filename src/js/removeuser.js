@@ -326,11 +326,12 @@ function showDataFromStorage(nameTable = '#tableRemove', page = 'remove') {
 
 	if (storageCollection && !removeCollection.size) {
 		const lengthStorage = storageCollection.collection.length;
-		counter = storageCollection.collection[lengthStorage - 1].id; // id последнего элемента в localStorage
+		counter = storageCollection.collection[lengthStorage - 1].id + 1; // id последнего элемента в localStorage
 
 		storageCollection.collection.forEach((item) => {
-			removeCollection.set(counter, item);
-			counter++;
+			const itemID = storageCollection.collection[i].id;
+
+			removeCollection.set(itemID, item);
 		});
 
 		dataAdd(nameTable);

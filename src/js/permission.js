@@ -175,11 +175,12 @@ function showDataFromStorage(nameTable = '#tablePermis', page = 'permis') {
 	if (storageCollection && !permissionCollection.size) {
 		const { statusAllow, statusDisallow } = storageCollection.controls;
 		const lengthStorage = storageCollection.collection.length;
-		counter = storageCollection.collection[lengthStorage - 1].id; // id последнего элемента в localStorage
+		counter = storageCollection.collection[lengthStorage - 1].id + 1; // id последнего элемента в localStorage
 
-		storageCollection.collection.forEach((item) => {
-			permissionCollection.set(counter, item);
-			counter++;
+		storageCollection.collection.forEach((item, i) => {
+			const itemID = storageCollection.collection[i].id;
+
+			permissionCollection.set(itemID, item);
 		});
 
 		permisObject.statusAllow = statusAllow;
@@ -481,6 +482,8 @@ function changeTabs(page = 'permis') {
 		showActiveDataOnPage(activeDepart);
 		resetControlBtns();
 		confirmAllAllowDisallow();
+
+		localStorage.removeItem(page); // в самом конце, т.к. функции выше записывают в localStorage
 	});
 }
 

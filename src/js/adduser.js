@@ -326,11 +326,12 @@ function showDataFromStorage(nameTable = '#tableAdd', page = 'add') {
 
 	if (storageCollection && !addCollection.size) {
 		const lengthStorage = storageCollection.collection.length;
-		counter = storageCollection.collection[lengthStorage - 1].id; // id последнего элемента в localStorage
+		counter = storageCollection.collection[lengthStorage - 1].id + 1; // id последнего элемента в localStorage
 
 		storageCollection.collection.forEach((item) => {
-			addCollection.set(counter, item);
-			counter++;
+			const itemID = storageCollection.collection[i].id;
+
+			addCollection.set(itemID, item);
 		});
 
 		dataAdd(nameTable);

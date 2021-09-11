@@ -140,11 +140,12 @@ function showDataFromStorage(nameTable = '#tableConst', page = 'const') {
 
 	if (storageCollection && !constCollection.size) {
 		const lengthStorage = storageCollection.collection.length;
-		counter = storageCollection.collection[lengthStorage - 1].id; // id последнего элемента в localStorage
+		counter = storageCollection.collection[lengthStorage - 1].id + 1; // id последнего элемента в localStorage
 
-		storageCollection.collection.forEach((item) => {
-			constCollection.set(counter, item);
-			counter++;
+		storageCollection.collection.forEach((item, i) => {
+			const itemID = storageCollection.collection[i].id;
+
+			constCollection.set(itemID, item);
 		});
 
 		dataAdd(nameTable);
@@ -267,11 +268,10 @@ function convertCardIDInCardName(nameTable = '#tableConst') {
 
 function setDataInTable(userID, cardObj, page = 'const') {
 	const activeDepart = $(`.main__depart--${page}`).attr('data-id');
+	const user = constCollection.get(userID);
 
-	constCollection.set(userID, {
-		cardid: cardObj ? cardObj.cardid : '',
-		cardname: cardObj ? cardObj.cardname : ''
-	});
+	user.cardid = cardObj ? cardObj.cardid : '';
+	user.cardname = cardObj ? cardObj.cardname : '';
 
 	showActiveDataOnPage(activeDepart);
 	setDataInStorage();
@@ -413,6 +413,8 @@ function changeTabs(page = 'const') {
 
 		addTabs(activeDepart);
 		showActiveDataOnPage(activeDepart);
+
+		localStorage.removeItem(page); // в самом конце, т.к. функции выше записывают в localStorage
 	});
 }
 

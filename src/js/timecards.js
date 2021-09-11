@@ -180,16 +180,10 @@ function submitIDinBD(page = 'time') {
 function clearNumberCard(nameTable = '#tableTime') {
 	$(`${nameTable} .table__content`).click((e) => {
 		if ($(e.target).parents('.table__btn--clear').length || $(e.target).hasClass('table__btn--clear')) {
-			const idClear = $(e.target).closest('.table__row').data('id');
-			const itemClear = timeCollection.get(idClear);
+			const userID = $(e.target).closest('.table__row').data('id');
+			// const itemClear = timeCollection.get(idClear);
 
-			if (itemClear) {
-				itemClear.cardid = '';
-				itemClear.cardname = '';
-			}
-
-			renderTable();
-			setDataInStorage();
+			setDataInTable(userID);
 		}
 	});
 }
@@ -202,6 +196,10 @@ function convertCardIDInCardName(nameTable = '#tableTime') {
 			const cardIdVal = $(e.target).val().trim();
 			const convertNumCard = convert.convertCardId(cardIdVal);
 			const userID = $(e.target).closest('.table__row').data('id');
+			const cardObj = {
+				cardid: cardIdVal,
+				cardname: convertNumCard
+			};
 
 			if (!convertNumCard) {
 				$(e.target).parents('.main').find('.info__item--error').show();
@@ -209,17 +207,20 @@ function convertCardIDInCardName(nameTable = '#tableTime') {
 				return;
 			}
 
-			timeCollection.set(userID, {
-				id: userID,
-				cardid: cardIdVal,
-				cardname: convertNumCard
-			});
-
-			renderTable();
-			setDataInStorage();
+			setDataInTable(userID, cardObj);
 			checkInvalidValueCardID();
 		});
 	});
+}
+
+function setDataInTable(userID, cardObj) {
+	const user = constCollection.get(userID);
+
+	user.cardid = cardObj ? cardObj.cardid : '';
+	user.cardname = cardObj ? cardObj.cardname : '';
+
+	renderTable();
+	setDataInStorage();
 }
 
 function checkInvalidValueCardID(page = 'time') {
