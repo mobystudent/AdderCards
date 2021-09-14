@@ -185,10 +185,10 @@ function submitIDinBD(nameTable = '#tableConst', page = 'const') {
 			constCollection.forEach((item) => {
 				if (item.nameid == activeDepart) {
 					item.date = getCurrentDate();
-
-					setAddUsersInDB(filterDepatCollection, 'const', 'report', 'card');
 				}
 			});
+
+			setAddUsersInDB(filterDepatCollection, 'const', 'report', 'card');
 
 			filterDepatCollection.splice(0);
 			idFilterUsers.forEach((key) => {
@@ -312,6 +312,7 @@ function setAddUsersInDB(array, nameTable, action, typeTable) {
 		url: "./php/change-user-request.php",
 		method: "post",
 		dataType: "html",
+		async: false,
 		data: {
 			typeTable: typeTable,
 			action: action,
@@ -319,6 +320,7 @@ function setAddUsersInDB(array, nameTable, action, typeTable) {
 			array: array
 		},
 		success: () => {
+			window.print();
 			service.modal('success');
 		},
 		error: () => {

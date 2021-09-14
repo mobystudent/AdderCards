@@ -19,66 +19,12 @@ import service from './service.js';
 $(window).on('load', () => {
 	defaultDataInTables();
 
-	//service functions
 	// service.scrollbar();
 	service.showDataInTable();
 });
 
 function defaultDataInTables() {
 	$(`.main[data-name="const"]`).show();
-}
-
-function createTable() {
-	// if (tabName === 'add') {
-	// 	return {
-	// 		FIO,
-	// 		Post,
-	// 		Department,
-	// 		TitleID,
-	// 		IDUser
-	// 	};
-	// } else if (tabName === 'remove') {
-	// 	return {
-	// 		FIO,
-	// 		Department,
-	// 		TitleID,
-	// 		NewDepart,
-	// 		IDUser
-	// 	};
-	// } else if (tabName === 'edit') {
-	// 	return {
-	// 		FIO,
-	// 		Department,
-	// 		TitleID,
-	// 		NewFIO,
-	// 		NewPost,
-	// 		IDUser
-	// 	};
-	// }
-
-	// switch(item[itemValue]) {
-	// 	case 'newCard':
-	// 		statusValue = 'Новая карта';
-	// 		break;
-	// 	case 'changeCard':
-	// 		statusValue = 'Замена карты';
-	// 		break;
-	// 	case 'newQR':
-	// 		statusValue = 'Новый QR-код';
-	// 		break;
-	// 	case 'changeQR':
-	// 		statusValue = 'Замена QR-кода';
-	// 		break;
-	// 	case 'changeFIO':
-	// 		statusValue = 'Изменение ФИО';
-	// 		break;
-	// 	case 'changePost':
-	// 		statusValue = 'Изменение должности';
-	// 		break;
-	// 	case 'changeDepart':
-	// 		statusValue = 'Перевод в другое подразделение';
-	// 		break;
-	// }
 }
 
 function focusFirstCell(nameTable) {
