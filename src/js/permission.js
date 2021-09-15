@@ -2,9 +2,9 @@
 
 import $ from 'jquery';
 import service from './service.js';
-import { nameDeparts } from './nameDepart.js';
 
 const permissionCollection = new Map(); // БД пользователей при старте
+const departmentCollection = new Map();  // Коллекци подразделений
 const permisObject = {
 	statusAllow: false,
 	statusDisallow: false
@@ -197,7 +197,7 @@ function setDataInStorage(page = 'permis') {
 }
 
 function showActiveDataOnPage(activeDepart) {
-	nameDeparts.forEach((depart) => {
+	departmentCollection.forEach((depart) => {
 		const { idname = '', longname = '' } = depart;
 
 		if (idname === activeDepart) {
@@ -449,7 +449,7 @@ function addTabs(activeTab, page = 'permis') {
 
 	if (filterNameDepart.length > 1) {
 		filterNameDepart.forEach((item) => {
-			nameDeparts.forEach((depart) => {
+			departmentCollection.forEach((depart) => {
 				const { idname = '', shortname = '' } = depart;
 
 				if (item == idname) {

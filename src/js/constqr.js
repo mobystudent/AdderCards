@@ -1,10 +1,10 @@
 'use strict';
 
 import $ from 'jquery';
-import { nameDeparts } from './nameDepart.js';
 import QRCode from 'qrcode';
 
 const qrCollection = new Map(); // БД пользователей которым разрешили выдачу qr-кодов
+const departmentCollection = new Map();  // Коллекци подразделений
 
 $(window).on('load', () => {
 	getDatainDB('const', 'qr');
@@ -124,7 +124,7 @@ function showActiveDataOnPage(collection, nameTable, modDepart, nameDepart) {
 		}
 	});
 
-	nameDeparts.forEach((depart) => {
+	departmentCollection.forEach((depart) => {
 		const { idName = '', longName = '' } = depart;
 
 		if (idName == nameDepart) {
@@ -192,7 +192,7 @@ function addTabs(collection, modDepart) {
 
 	if (filterNameDepart.length > 1) {
 		filterNameDepart.forEach((item) => {
-			nameDeparts.forEach((depart) => {
+			departmentCollection.forEach((depart) => {
 				const { idName = '', shortName = '' } = depart;
 
 				if (item == idName) {

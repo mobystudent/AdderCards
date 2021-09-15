@@ -4,12 +4,12 @@ import $ from 'jquery';
 import datepickerFactory from 'jquery-datepicker';
 import datepickerRUFactory from 'jquery-datepicker/i18n/jquery.ui.datepicker-ru';
 import service from './service.js';
-import { nameDeparts } from './nameDepart.js';
 
 datepickerFactory($);
 datepickerRUFactory($);
 
 const removeCollection = new Map();
+const departmentCollection = new Map();  // Коллекци подразделений
 const removeObject = {
 	fio: '',
 	statusid: '',
@@ -345,7 +345,7 @@ function setDataInStorage(page = 'remove') {
 }
 
 function setDepartInSelect() {
-	nameDeparts.forEach((depart) => {
+	departmentCollection.forEach((depart) => {
 		const { idname = '', longname = '' } = depart;
 		const quoteName = longname.replace(/["']/g , '&quot;');
 
