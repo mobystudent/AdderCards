@@ -3,15 +3,16 @@
 import $ from 'jquery';
 import convert from './convert.js';
 import service from './service.js';
-import { nameDeparts } from './nameDepart.js';
 
 const constCollection = new Map(); // БД пользователей которым разрешили выдачу карт
+const departmentCollection = new Map();  // Коллекци подразделений
 
 $(window).on('load', () => {
 	submitIDinBD();
 	printReport();
 	autoRefresh();
 	showDataFromStorage();
+	getDepartmentinDB('department');
 });
 
 function templateConstTable(data) {
@@ -157,7 +158,7 @@ function setDataInStorage(page = 'const') {
 }
 
 function showActiveDataOnPage(activeDepart) {
-	nameDeparts.forEach((depart) => {
+	departmentCollection.forEach((depart) => {
 		const { idname = '', longname = '' } = depart;
 
 		if (idname === activeDepart) {
@@ -349,6 +350,28 @@ function getDatainDB(nameTable, typeTable) {
 	});
 }
 
+function getDepartmentinDB(nameTable) {
+	$.ajax({
+		url: "./php/output-request.php",
+		method: "post",
+		dataType: "html",
+		async: false,
+		data: {
+			nameTable: nameTable
+		},
+		success: (data) => {
+			const dataFromDB = JSON.parse(data);
+
+			dataFromDB.forEach((item, i) => {
+				departmentCollection.set(i + 1, item);
+			});
+		},
+		error: () => {
+			service.modal('download');
+		}
+	});
+}
+
 function getCurrentDate() {
 	const date = new Date();
 	const month = date.getMonth() + 1;
@@ -385,7 +408,7 @@ function addTabs(activeTab, page = 'const') {
 
 	if (filterNameDepart.length > 1) {
 		filterNameDepart.forEach((item) => {
-			nameDeparts.forEach((depart) => {
+			departmentCollection.forEach((depart) => {
 				const { idname = '', shortname = '' } = depart;
 
 				if (item == idname) {

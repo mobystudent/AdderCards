@@ -291,6 +291,14 @@
 				echo $mysqli->error;
 			}
 
+			// Общая таблица отклоненных
+			// if($mysqli->query("INSERT INTO reject (fio, department, post, nameid, statusid, statustitle, date) VALUES ('$fio', '$department', '$post', '$nameid', '$statusid', '$statustitle', '$date')")) {
+			// 	echo('Success add in BD reject');
+			// } else {
+			// 	echo $mysqli->error;
+			// }
+
+
 			if ($mysqli->query("INSERT INTO `$nameDepart` (fio, department, post, photofile, photourl, nameid, statusid, statustitle, date) VALUES ('$fio', '$department', '$post', '$photofile', '$photourl', '$nameid', '$statusid', '$statustitle', '$date')")) {
 				echo('Success add in BD '.$nameDepart);
 			} else {

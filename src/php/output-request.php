@@ -71,6 +71,14 @@
 				echo $mysqli->error;
 			}
 		}
+	} else if ($nameTable === 'department') {
+		if($resultSet = $mysqli->query("SELECT * FROM departments")) {
+			while ($result = $resultSet->fetch_assoc()) {
+				array_push($array, $result);
+			}
+		} else {
+			echo $mysqli->error;
+		}
 	}
 
 	echo json_encode($array);

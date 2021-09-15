@@ -414,7 +414,7 @@ export const nameDeparts = new Map([
 		[82, {
 			idname: 'ConfInst',
 			shortname: 'Конфинст',
-			longname: 'Институт Конфуци'
+			longname: 'Институт Конфуция'
 		}],
 		[83, {
 			idname: 'IERT',
