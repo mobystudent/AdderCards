@@ -72,8 +72,8 @@ export default (params) => {
 							<table border="0" cellpadding="0" cellspacing="0" style="margin:0; padding:0; width: 100%;">
 								<tbody>
 									<tr>
-										<td align="center" style="padding-bottom: 10px; height: 140px;">
-											<img width="142" height="60" src="https://ita.promo/img/mail/ita_qejNZll7rZGqqSEh.png" alt="logo" style="display: block;">
+										<td align="center" style="padding-bottom: 10px; height: 160px;">
+											<img width="76" height="80" src="https://www.univer.kharkov.ua/images/etalon-big2019.png" alt="logo" style="display: block;">
 										</td>
 									</tr>
 									<tr>
@@ -155,13 +155,13 @@ export default (params) => {
 										<td align="center" style="
 											color: #ffffff;
 											font-family: Roboto, Arial, sans-serif;
-											font-size: 14px;
+											font-size: 12px;
 											font-weight: 400;
 											padding-top: 0;
 											padding-left: 40px;
 											padding-right: 40px;
 											padding-bottom: 60px;
-										">Обратитесь, пожалуйста, к представителю выдачи пропусков Управление службы охраны и безопасности.<br> Северный корпус, 1 этаж, комната слева, напротив 'ключницы'.</td>
+										">Обратитесь, пожалуйста, к представителю выдачи пропусков Управления службы охраны и безопасности.<br> Северный корпус, 1 этаж, комната слева, напротив 'ключницы'.</td>
 									</tr>
 								</tbody>
 							</table>

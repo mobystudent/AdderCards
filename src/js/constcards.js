@@ -13,7 +13,6 @@ $(window).on('load', () => {
 	printReport();
 	autoRefresh();
 	showDataFromStorage();
-	getDepartmentinDB('department');
 });
 
 function templateConstTable(data) {
@@ -131,6 +130,7 @@ function dataAdd(nameTable, page = 'const') {
 		$(`.tab--${page}`).html('');
 	}
 
+	getDepartmentInDB('department');
 	showActiveDataOnPage(filterNameDepart[0]);
 	convertCardIDInCardName();
 	clearNumberCard();
@@ -310,7 +310,7 @@ function autoRefresh(page = 'const') {
 }
 
 function setAddUsersInDB(array, nameTable, action, typeTable, page = 'const') {
-	const nameDepart = $(`.main__depart--${page}`).attr('data-name');
+	const nameDepart = $(`.main__depart--${page}`).attr('data-depart');
 
 	$.ajax({
 		url: "./php/change-user-request.php",
@@ -360,7 +360,7 @@ function getDatainDB(nameTable, typeTable) {
 	});
 }
 
-function getDepartmentinDB(nameTable) {
+function getDepartmentInDB(nameTable) {
 	$.ajax({
 		url: "./php/output-request.php",
 		method: "post",
