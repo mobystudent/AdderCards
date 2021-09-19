@@ -3,6 +3,7 @@
 import $ from 'jquery';
 import convert from './convert.js';
 import service from './service.js';
+import messageMail from './mail.js';
 
 const constCollection = new Map(); // БД пользователей которым разрешили выдачу карт
 const departmentCollection = new Map();  // Коллекци подразделений
@@ -308,7 +309,9 @@ function autoRefresh(page = 'const') {
 	});
 }
 
-function setAddUsersInDB(array, nameTable, action, typeTable) {
+function setAddUsersInDB(array, nameTable, action, typeTable, page = 'const') {
+	const nameDepart = $(`.main__depart--${page}`).attr('data-name');
+
 	$.ajax({
 		url: "./php/change-user-request.php",
 		method: "post",
@@ -323,6 +326,13 @@ function setAddUsersInDB(array, nameTable, action, typeTable) {
 		success: () => {
 			window.print();
 			service.modal('success');
+
+			sendMail({
+				department: nameDepart,
+				count: constCollection.size,
+				title: 'Добавлено',
+				users: [...constCollection.values()]
+			});
 		},
 		error: () => {
 			service.modal('error');
@@ -368,6 +378,32 @@ function getDepartmentinDB(nameTable) {
 		},
 		error: () => {
 			service.modal('download');
+		}
+	});
+}
+
+
+function sendMail(obj) {
+	const sender = 'chepdepart@gmail.com';
+	const recipient = 'xahah55057@secbuf.com';
+	const subject = 'Пользователи успешно добавлены в БД';
+
+	$.ajax({
+		url: "./php/mail.php",
+		method: "post",
+		dataType: "html",
+		async: false,
+		data: {
+			sender: sender,
+			recipient: recipient,
+			subject: subject,
+			message: messageMail(obj)
+		},
+		success: () => {
+			console.log('Email send is success');
+		},
+		error: () => {
+			service.modal('email');
 		}
 	});
 }
