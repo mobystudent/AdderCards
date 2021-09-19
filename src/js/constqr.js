@@ -155,26 +155,13 @@ function createQRCode(arrCodes) {
 	});
 }
 
-function focusNext(item) {
-	const nextRow = $(item).parents('.table__row').next();
-
-	if (nextRow) {
-		$(nextRow).find('.table__input').focus();
-	}
-}
-
-function getCurrentDate() {
-	const date = new Date();
-	const month = date.getMonth() + 1;
-	const currentDay = date.getDate() < 10 ? `0${date.getDate()}` : date.getDate();
-	const currentMonth = month < 10 ? `0${month}` : month;
-	const currentYear = date.getFullYear() < 10 ? `0${date.getFullYear()}` : date.getFullYear();
-
-	const currentHour = date.getHours() < 10 ? `0${date.getHours()}` : date.getHours();
-	const currentMinute = date.getMinutes() < 10 ? `0${date.getMinutes()}` : date.getMinutes();
-
-	return `${currentDay}-${currentMonth}-${currentYear} ${currentHour}:${currentMinute}`;
-}
+// function focusNext(item) {
+// 	const nextRow = $(item).parents('.table__row').next();
+//
+// 	if (nextRow) {
+// 		$(nextRow).find('.table__input').focus();
+// 	}
+// }
 
 // Общие функции с картами и кодами
 function countItems(idDepart, modDepart) {

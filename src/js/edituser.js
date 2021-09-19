@@ -604,7 +604,7 @@ function submitIDinBD(nameTable = '#tableEdit', page = 'edit') {
 		editCollection.forEach((elem) => {
 			elem.nameid = idDepart;
 			elem.department = nameDepart;
-			elem.date = getCurrentDate();
+			elem.date = service.getCurrentDate();
 		});
 
 		const changeCardArray = [...editCollection.values()].filter((elem) => elem.statusid === 'changeCard');
@@ -639,18 +639,6 @@ function submitIDinBD(nameTable = '#tableEdit', page = 'edit') {
 		localStorage.removeItem(page);
 		counter = 0;
 	});
-}
-
-function getCurrentDate() {
-	const date = new Date();
-	const month = date.getMonth() + 1;
-	const currentDay = date.getDate() < 10 ? `0${date.getDate()}` : date.getDate();
-	const currentMonth = month < 10 ? `0${month}` : month;
-	const currentYear = date.getFullYear() < 10 ? `0${date.getFullYear()}` : date.getFullYear();
-	const currentHour = date.getHours() < 10 ? `0${date.getHours()}` : date.getHours();
-	const currentMinute = date.getMinutes() < 10 ? `0${date.getMinutes()}` : date.getMinutes();
-
-	return `${currentDay}-${currentMonth}-${currentYear} ${currentHour}:${currentMinute}`;
 }
 
 function setAddUsersInDB(array, nameTable, action) {

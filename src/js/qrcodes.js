@@ -128,7 +128,7 @@ function addQRCodeUsers() {
 					for (let key in elem) {
 						objectWithDate[key] = elem[key];
 					}
-					objectWithDate.date = getCurrentDate();
+					objectWithDate.date = service.getCurrentDate();
 
 					qrNeedsUsersCollection.add(objectWithDate);
 					downloadCollection.delete(elem);
@@ -155,16 +155,6 @@ function validationCountQRUsers() {
 	$('.info__item--users')[visibleMessage]();
 
 	return !countItemsTableQR ? false : countItemsTableQR;
-}
-
-function getCurrentDate() {
-	const date = new Date();
-	const month = date.getMonth() + 1;
-	const currentDay = date.getDate() < 10 ? `0${date.getDate()}` : date.getDate();
-	const currentMonth = month < 10 ? `0${month}` : month;
-	const currentYear = date.getFullYear() < 10 ? `0${date.getFullYear()}` : date.getFullYear();
-
-	return `${currentDay}-${currentMonth}-${currentYear}`;
 }
 
 function assignQRCodeUsers() {

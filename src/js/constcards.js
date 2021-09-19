@@ -186,7 +186,7 @@ function submitIDinBD(nameTable = '#tableConst', page = 'const') {
 
 			constCollection.forEach((item) => {
 				if (item.nameid == activeDepart) {
-					item.date = getCurrentDate();
+					item.date = service.getCurrentDate();
 				}
 			});
 
@@ -405,18 +405,6 @@ function sendMail(obj) {
 			service.modal('email');
 		}
 	});
-}
-
-function getCurrentDate() {
-	const date = new Date();
-	const month = date.getMonth() + 1;
-	const currentDay = date.getDate() < 10 ? `0${date.getDate()}` : date.getDate();
-	const currentMonth = month < 10 ? `0${month}` : month;
-	const currentYear = date.getFullYear() < 10 ? `0${date.getFullYear()}` : date.getFullYear();
-	const currentHour = date.getHours() < 10 ? `0${date.getHours()}` : date.getHours();
-	const currentMinute = date.getMinutes() < 10 ? `0${date.getMinutes()}` : date.getMinutes();
-
-	return `${currentDay}-${currentMonth}-${currentYear} ${currentHour}:${currentMinute}`;
 }
 
 // Общие функции с картами и кодами
