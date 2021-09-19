@@ -248,6 +248,28 @@ function getDatainDB(nameTable, typeTable) {
 	});
 }
 
+function getDepartmentInDB(nameTable) {
+	$.ajax({
+		url: "./php/output-request.php",
+		method: "post",
+		dataType: "html",
+		async: false,
+		data: {
+			nameTable: nameTable
+		},
+		success: (data) => {
+			const dataFromDB = JSON.parse(data);
+
+			dataFromDB.forEach((item, i) => {
+				departmentCollection.set(i + 1, item);
+			});
+		},
+		error: () => {
+			service.modal('download');
+		}
+	});
+}
+
 export default {
 
 };

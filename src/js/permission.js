@@ -2,6 +2,7 @@
 
 import $ from 'jquery';
 import service from './service.js';
+import messageMail from './mail.js';
 
 const permissionCollection = new Map(); // БД пользователей при старте
 const departmentCollection = new Map();  // Коллекци подразделений
@@ -228,7 +229,9 @@ function submitIDinBD(page = 'permis', nameTable = '#tablePermis') {
 			if (allowItems.length) {
 				delegationID(allowItems);
 				setAddUsersInDB(allowItems, 'permis', 'remove');
-			} else {
+			}
+
+			if (disallowItems.length) {
 				disallowItems.forEach((item) => {
 					item.date = getCurrentDate();
 				});
@@ -381,11 +384,14 @@ function autoRefresh(page = 'permis') {
 	});
 }
 
-function setAddUsersInDB(array, nameTable, action, typeTable) {
+function setAddUsersInDB(array, nameTable, action, typeTable, page = 'permis') {
+	const nameDepart = $(`.main__depart--${page}`).attr('data-depart');
+
 	$.ajax({
 		url: "./php/change-user-request.php",
 		method: "post",
 		dataType: "html",
+		async: false,
 		data: {
 			typeTable: typeTable,
 			action: action,
@@ -393,7 +399,16 @@ function setAddUsersInDB(array, nameTable, action, typeTable) {
 			array: array
 		},
 		success: () => {
+			const title = action === 'add' ? 'Отклонено' : 'Одобрено';
+
 			service.modal('success');
+
+			sendMail({
+				department: nameDepart,
+				count: array.length,
+				title: title,
+				users: array
+			});
 		},
 		error: () => {
 			service.modal('error');
@@ -438,6 +453,31 @@ function getDepartmentInDB(nameTable) {
 		},
 		error: () => {
 			service.modal('download');
+		}
+	});
+}
+
+function sendMail(obj) {
+	const sender = 'chepdepart@gmail.com';
+	const recipient = 'xahah55057@secbuf.com';
+	const subject = 'Пользователи успешно добавлены в БД';
+
+	$.ajax({
+		url: "./php/mail.php",
+		method: "post",
+		dataType: "html",
+		async: false,
+		data: {
+			sender: sender,
+			recipient: recipient,
+			subject: subject,
+			message: messageMail(obj)
+		},
+		success: () => {
+			console.log('Email send is success');
+		},
+		error: () => {
+			service.modal('email');
 		}
 	});
 }
