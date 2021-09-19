@@ -4,6 +4,7 @@ import $ from 'jquery';
 import datepickerFactory from 'jquery-datepicker';
 import datepickerRUFactory from 'jquery-datepicker/i18n/jquery.ui.datepicker-ru';
 import service from './service.js';
+import messageMail from './mail.js';
 
 datepickerFactory($);
 datepickerRUFactory($);
@@ -591,7 +592,9 @@ function submitIDinBD(nameTable = '#tableAdd', page = 'add') {
 	});
 }
 
-function setAddUsersInDB(array, nameTable, action) {
+function setAddUsersInDB(array, nameTable, action, page = 'add') {
+	const nameDepart = $(`.main__depart--${page}`).attr('data-depart');
+
 	$.ajax({
 		url: "./php/change-user-request.php",
 		method: "post",
@@ -604,9 +607,41 @@ function setAddUsersInDB(array, nameTable, action) {
 		},
 		success: () => {
 			service.modal('success');
+
+			sendMail({
+				department: nameDepart,
+				count: addCollection.size,
+				title: 'Добавлено',
+				users: [...addCollection.values()]
+			});
 		},
 		error: () => {
 			service.modal('error');
+		}
+	});
+}
+
+function sendMail(obj) {
+	const sender = 'chepdepart@gmail.com';
+	const recipient = 'xahah55057@secbuf.com';
+	const subject = 'Пользователи успешно добавлены в БД';
+
+	$.ajax({
+		url: "./php/mail.php",
+		method: "post",
+		dataType: "html",
+		async: false,
+		data: {
+			sender: sender,
+			recipient: recipient,
+			subject: subject,
+			message: messageMail(obj)
+		},
+		success: () => {
+			console.log('Email send is success');
+		},
+		error: () => {
+			service.modal('email');
 		}
 	});
 }
