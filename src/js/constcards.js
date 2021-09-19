@@ -382,7 +382,6 @@ function getDepartmentInDB(nameTable) {
 	});
 }
 
-
 function sendMail(obj) {
 	const sender = 'chepdepart@gmail.com';
 	const recipient = 'xahah55057@secbuf.com';

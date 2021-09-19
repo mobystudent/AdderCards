@@ -107,6 +107,8 @@ function dataAdd(nameTable) {
 			$(`${nameTable} .table__content--active`).append(templateQRTable(user));
 		});
 	}
+
+	getDepartmentInDB('department');
 }
 
 function showActiveDataOnPage(collection, nameTable, modDepart, nameDepart) {

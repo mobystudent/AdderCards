@@ -315,6 +315,7 @@ function dataAdd(nameTable, page = 'remove') {
 
 	$(`.main__count--${page}`).text(removeCollection.size);
 
+	getDepartmentInDB('department');
 	showFieldsInHeaderTable();
 	renderTable();
 	deleteUser();
@@ -660,6 +661,28 @@ function getAddUsersInDB(id = '', nameForm = '#removeForm', page = 'remove') {
 			} else {
 				setUsersInSelect(JSON.parse(data));
 			}
+		},
+		error: () => {
+			service.modal('download');
+		}
+	});
+}
+
+function getDepartmentInDB(nameTable) {
+	$.ajax({
+		url: "./php/output-request.php",
+		method: "post",
+		dataType: "html",
+		async: false,
+		data: {
+			nameTable: nameTable
+		},
+		success: (data) => {
+			const dataFromDB = JSON.parse(data);
+
+			dataFromDB.forEach((item, i) => {
+				departmentCollection.set(i + 1, item);
+			});
 		},
 		error: () => {
 			service.modal('download');

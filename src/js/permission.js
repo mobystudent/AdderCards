@@ -163,6 +163,7 @@ function dataAdd(nameTable, page = 'permis') {
 		$(`.tab--${page}`).html('');
 	}
 
+	getDepartmentInDB('department');
 	showActiveDataOnPage(filterNameDepart[0]);
 	clickAllowDisallowPermis();
 }
@@ -412,6 +413,28 @@ function getDatainDB(nameTable) {
 			const dataFromDB = JSON.parse(data);
 
 			userFromDB(dataFromDB);
+		},
+		error: () => {
+			service.modal('download');
+		}
+	});
+}
+
+function getDepartmentInDB(nameTable) {
+	$.ajax({
+		url: "./php/output-request.php",
+		method: "post",
+		dataType: "html",
+		async: false,
+		data: {
+			nameTable: nameTable
+		},
+		success: (data) => {
+			const dataFromDB = JSON.parse(data);
+
+			dataFromDB.forEach((item, i) => {
+				departmentCollection.set(i + 1, item);
+			});
 		},
 		error: () => {
 			service.modal('download');
