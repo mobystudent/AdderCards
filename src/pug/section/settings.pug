@@ -1,0 +1,119 @@
+main.main(data-name="settings")
+	.container
+		h1.main__title
+			| Настройки
+		span.main__depart.main__depart--edit(data-depart="Химический факультет" data-id="ChemDep")
+			| Химический факультет
+			
+		section.settings#settingsSection
+			.settings__content
+				.settings__section
+					.settings__wrap.settings__wrap--static
+						h3.settings__title
+							| Название подразделения
+						span.settings__value
+							| Химический факультет
+					.settings__btn-wrap
+						button.btn.btn--settings(type="button" data-title="Изменить" data-cancel="Отменить")
+							| Изменить
+					.settings__wrap.settings__wrap--change
+						.settings__block
+							label.settings__title(for="longnameDepart")
+								| Введите полное новое название
+							input.settings__input(id="longnameDepart" type="text" placeholder="Введите полное новое название")
+						.settings__block
+							label.settings__title(for="shortnameDepart")
+								| Введите сокращенное название
+							input.settings__input(id="shortnameDepart" type="text" placeholder="Введите сокращенное название")
+							span.settings__example
+								| Например: Химический факультет - Химфак #[br]
+								| Учебный центр социально-воспитательной и внеобразовательной деятельности - УЦСВВОД #[br]
+								| Центр трудоустройства студентов и выпускников - Трудцентр
+						button.btn.btn--changes(type="button")
+							| Сохранить
+
+				.settings__section
+					.settings__wrap.settings__wrap--static
+						h3.settings__title
+							| Добавить подразделение
+					.settings__btn-wrap
+						button.btn.btn--settings(type="button" data-title="Добавить" data-cancel="Отменить")
+							| Добавить
+					.settings__wrap.settings__wrap--change
+						.settings__block
+							label.settings__title(for="longnameDepart")
+								| Введите полное новое название
+							input.settings__input(id="longnameDepart" type="text" placeholder="Введите полное новое название")
+						.settings__block
+							label.settings__title(for="shortnameDepart")
+								| Введите сокращенное название
+							input.settings__input(id="shortnameDepart" type="text" placeholder="Введите сокращенное название")
+						.settings__block
+							label.settings__title(for="idnameDepart")
+								| Введите id подразделения
+							input.settings__input(id="idnameDepart" type="text" placeholder="Введите id подразделения")
+						button.btn.btn--changes(type="button")
+							| Сохранить
+
+				.settings__section
+					.settings__wrap.settings__wrap--static
+						h3.settings__title
+							| Удалить подразделение
+					.settings__btn-wrap
+						button.btn.btn--settings(type="button" data-title="Удалить" data-cancel="Отменить")
+							| Удалить
+					.settings__wrap.settings__wrap--change
+						h3.settings__title
+							| Выбрать подразделение
+						.select.select--settings
+							header.select__header.select__header--settings
+								span.select__value.select__value--settings(data-title="title" data-nameid="nameid" data-placeholder="Выберите подразделение")
+									| Выберите подразделение
+							ul.select__list
+								
+						button.btn.btn--changes(type="button")
+							| Сохранить
+
+				.settings__section
+					.settings__wrap.settings__wrap--static
+						h3.settings__title
+							| Период автообновления данных в таблицах
+						span.settings__value
+							| 15 мин.
+					.settings__btn-wrap
+						button.btn.btn--settings(type="button" data-title="Изменить" data-cancel="Отменить")
+							| Изменить
+					.settings__wrap.settings__wrap--change
+						.select.select--settings
+							header.select__header.select__header--settings
+								span.select__value.select__value--settings(data-title="15 мин." data-value="15" data-placeholder="Выберите период автообновления")
+									| Выберите период автообновления
+							ul.select__list.select__list--settings
+								
+								- const arrValues = ['5', '10', '15', '20', '30', '45', '60', false];
+								- const arrTitles = ['5 мин.', '10 мин.', '15 мин.', '20 мин.', '30 мин.', '45 мин.', '1 час', 'отключить'];
+								
+								each items, i in arrValues
+									li.select__item
+										span.select__name.select__name--settings(data-title=arrTitles[i] data-value=arrValues[i])
+											| #{arrTitles[i]}
+											
+						button.btn.btn--changes(type="button")
+							| Сохранить
+
+				.settings__section
+					.settings__wrap.settings__wrap--static
+						h3.settings__title
+							| Email
+						span.settings__value
+							| chepdepart@gmail.com
+					.settings__btn-wrap
+						button.btn.btn--settings(type="button" data-title="Изменить" data-cancel="Отменить")
+							| Изменить
+					.settings__wrap.settings__wrap--change
+						.settings__block
+							label.settings__title(for="emailUser")
+								| Введите новый email
+							input.settings__input(id="emailUser" type="email" placeholder="Введите новый email")
+						button.btn.btn--changes(type="button")
+							| Сохранить

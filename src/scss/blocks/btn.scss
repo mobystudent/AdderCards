@@ -131,4 +131,19 @@
 			background: $middleGray;
 		}
 	}
+
+	&--settings {
+		justify-content: center;
+		width: 150px;
+		margin: 0 auto;
+
+		&-disabled {
+			background: $disabledGray;
+			color: $gray;
+		}
+
+		&-cancel {
+			background: $middleGray;
+		}
+	}
 }

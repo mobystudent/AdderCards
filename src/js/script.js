@@ -14,6 +14,7 @@ import './report.js';
 import './reject.js';
 import './requestchange.js';
 import './login.js';
+import './settings.js';
 import service from './service.js';
 
 $(window).on('load', () => {

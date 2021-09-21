@@ -13,3 +13,18 @@
 		}
 	}
 }
+
+.settings {
+	.scrollbar {
+		&-track {
+			width: 5px;
+			opacity: 1;
+			background: $darkGray;
+		}
+
+		&-thumb {
+			width: 5px;
+			background: $deepDarkBlue;
+		}
+	}
+}

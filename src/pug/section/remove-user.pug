@@ -11,24 +11,24 @@ main.main(data-name="remove")
 					.form__field
 						span.form__name
 							| Пользователь
-						.form__select.form__item.select(data-field="fio" data-select="fio")
-							header.select__header
-								span.select__value(data-title="title" data-fio="fio" data-placeholder="Выберите пользователя")
+						.form__select.form__item.select.select--form(data-field="fio" data-select="fio")
+							header.select__header.select__header--form
+								span.select__value.select__value--form(data-title="title" data-fio="fio" data-placeholder="Выберите пользователя")
 									| Выберите пользователя
-							ul.select__list
+							ul.select__list.select__list--form
 					.form__field
 						span.form__name
 							| Причина удаления/отчисления
-						.form__select.form__item.select(data-field="titleid" data-type="statusid" data-select="reason")
-							header.select__header
-								span.select__value(data-title="title" data-reason="reason" data-placeholder="Выберите причину удаления")
+						.form__select.form__item.select.select--form(data-field="titleid" data-type="statusid" data-select="reason")
+							header.select__header.select__header--form
+								span.select__value.select__value--form(data-title="title" data-reason="reason" data-placeholder="Выберите причину удаления/отчисления")
 									| Выберите причину удаления/отчисления
-							ul.select__list
+							ul.select__list.select__list--form
 								li.select__item
-									span.select__name(data-title="Перевод в другое подразделение" data-reason="changeDepart")
+									span.select__name.select__name--form(data-title="Перевод в другое подразделение" data-reason="changeDepart")
 										| Перевод в другое подразделение
 								li.select__item
-									span.select__name(data-title="Увольнение/отчисление" data-reason="remove")
+									span.select__name.select__name--form(data-title="Увольнение/отчисление" data-reason="remove")
 										| Увольнение/отчисление
 					//- .form__field(data-name="depart")
 						span.form__name

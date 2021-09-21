@@ -1,19 +1,38 @@
 .select {
 	position: relative;
 
+	&--settings {
+		max-width: 350px;
+		margin-bottom: 20px;
+	}
+
 	&__header {
 		position: relative;
 		padding: 10px 45px 10px 15px;
-		border: 1px solid $gray;
 		border-radius: 5px;
 		cursor: pointer;
+
+		&--form {
+			border: 1px solid $gray;
+
+			&:before {
+				border-top: 8px solid $gray;
+			}
+		}
+
+		&--settings {
+			border: 1px solid $spaceBlack;
+
+			&:before {
+				border-top: 8px solid $spaceBlack;
+			}
+		}
 
 		&:before {
 			content: '';
 			position: absolute;
 			top: 50%;
 			right: 15px;
-			border-top: 8px solid $gray;
 			border-left: 8px solid transparent;
 			border-right: 8px solid transparent;
 			transform: translateY(-50%);
@@ -30,31 +49,58 @@
 
 	&__value {
 		@extend %text--premedium;
-		color: $darkGray;
 
 		&--selected {
 			color: $white;
+		}
+
+		&--form {
+			color: $darkGray;
+		}
+
+		&--settings {
+			color: $spaceBlack;
 		}
 	}
 
 	&__name {
 		@extend %text--premedium;
-		color: $spaceBlack;
+
+		&--form {
+			color: $spaceBlack;
+		}
+
+		&--settings {
+			color: $white;
+		}
 	}
 
 	&__list {
-		display: none;
-		position: absolute;
 		top: 42px;
 		left: 0;
 		width: 100%;
 		padding: 10px 15px;
 		max-height: 120px;
 		overflow: auto;
-		border: 1px solid $gray;
 		border-radius: 5px;
-		background: $gray;
 		z-index: 5;
+
+		&[data-scrollbar] {
+			display: none;
+			position: absolute;
+		}
+
+		&--form {
+			border: 1px solid $gray;
+			background: $gray;
+			display: none;
+			position: absolute;
+		}
+
+		&--settings {
+			border: 1px solid $spaceBlack;
+			background: $spaceBlack;
+		}
 	}
 
 	&__item {

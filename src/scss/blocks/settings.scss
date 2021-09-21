@@ -1,0 +1,79 @@
+.settings {
+	max-width: 900px;
+	padding: 40px 60px;
+	margin: 0 auto;
+	border-radius: 30px;
+	background: $gray;
+
+	&__content {
+		height: 600px;
+		overflow: auto;
+	}
+
+	&__section {
+		display: grid;
+		grid-template: 'header btn' 60px
+						'changes changes' auto
+						/ 1fr 200px;
+		align-items: center;
+		grid-gap: 20px 30px;
+
+		&:not(:last-child) {
+			margin-bottom: 20px;
+		}
+	}
+
+	&__block {
+		&:not(:last-child) {
+			margin-bottom: 20px;
+		}
+	}
+
+	&__wrap {
+		&--static {
+			grid-area: header;
+		}
+
+		&--change {
+			display: none;
+			grid-area: changes;
+		}
+	}
+
+	&__title {
+		display: inline-block;
+		@extend %text--medium;
+		width: 100%;
+		color: $black;
+
+		&:not(:last-child) {
+			margin-bottom: 15px;
+		}
+	}
+
+	&__value {
+		@extend %text--premedium;
+		color: $middleGray;
+	}
+
+	&__btn {
+		grid-area: btn;
+	}
+
+	&__input {
+		@extend %text--premedium;
+		width: 100%;
+		max-width: 350px;
+		border-radius: 10px;
+		border: 1px solid $middleGray;
+		padding: 10px 15px;
+	}
+
+	&__example {
+		display: inline-block;
+		width: 100%;
+		@extend %text--tiny;
+		color: $middleGray;
+		margin: 10px 0;
+	}
+}

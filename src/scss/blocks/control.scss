@@ -31,12 +31,8 @@
 			background: $lightBlue;
 		}
 
-		&:first-child,
-		&:last-child {
+		&:nth-last-child(2) {
 			border-top: 1px solid $disabledGray;
-		}
-
-		&:last-child {
 			margin-top: auto;
 		}
 

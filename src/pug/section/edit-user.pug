@@ -11,26 +11,26 @@ main.main(data-name="edit")
 					.form__field
 						span.form__name
 							| Пользователь
-						.form__select.form__item.select(data-field="fio" data-select="fio")
-							header.select__header
-								span.select__value(data-title="Выберите пользователя" data-placeholder="Выберите пользователя")
+						.form__select.form__item.select.select--form(data-field="fio" data-select="fio")
+							header.select__header.select__header--form
+								span.select__value.select__value--form(data-title="Выберите пользователя" data-placeholder="Выберите пользователя")
 									| Выберите пользователя
-							ul.select__list
+							ul.select__list.select__list--form
 					.form__field
 						span.form__name
 							| Тип изменения
-						.form__select.form__item.select(data-field="statustitle" data-type="statusid" data-select="change")
-							header.select__header
-								span.select__value(data-title="Выберите тип изменения" data-change="type" data-placeholder="Выберите тип изменения")
+						.form__select.form__item.select.select--form(data-field="statustitle" data-type="statusid" data-select="change")
+							header.select__header.select__header--form
+								span.select__value.select__value--form(data-title="Выберите тип изменения" data-change="type" data-placeholder="Выберите тип изменения")
 									| Выберите тип изменения
-							ul.select__list
+							ul.select__list.select__list--form
 								
 								- const arrChanges = ['Замена пластиковой карты', 'Замена QR-кода', 'Изменение ФИО', 'Изменение должности', 'Изменение фото'];
 								- const arrTypeChanges = ['changeCard', 'changeQR', 'changeFIO', 'changePost', 'changeImage'];
 								
 								- for (let i = 0; i < arrChanges.length; i++)
 									li.select__item
-										span.select__name(data-title=arrChanges[i] data-change=arrTypeChanges[i])
+										span.select__name.select__name--form(data-title=arrChanges[i] data-change=arrTypeChanges[i])
 											| #{arrChanges[i]}
 					//- .form__field.form__field--hide(data-name="newpost")
 						label.form__label
