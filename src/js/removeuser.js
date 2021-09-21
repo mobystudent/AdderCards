@@ -349,16 +349,20 @@ function setDataInStorage(page = 'remove') {
 	}));
 }
 
-function setDepartInSelect() {
+function setDepartInSelect(page = 'remove') {
+	const idDepart = $(`.main__depart--${page}`).attr('data-id');
+
 	departmentCollection.forEach((depart) => {
 		const { idname = '', longname = '' } = depart;
 		const quoteName = longname.replace(/["']/g , '&quot;');
 
-		$('.select[data-field="newdepart"] .select__list').append(`
-			<li class="select__item">
-				<span class="select__name" data-title="${quoteName}" data-newnameid="${idname}">${quoteName}</span>
-			</li>
-		`);
+		if (idname !== idDepart) {
+			$('.select[data-field="newdepart"] .select__list').append(`
+				<li class="select__item">
+					<span class="select__name" data-title="${quoteName}" data-newnameid="${idname}">${quoteName}</span>
+				</li>
+			`);
+		}
 	});
 
 	clickSelectItem();
