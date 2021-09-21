@@ -325,11 +325,11 @@ function dataAdd(nameTable, page = 'add') {
 function showDataFromStorage(nameTable = '#tableAdd', page = 'add') {
 	const storageCollection = JSON.parse(localStorage.getItem(page));
 
-	if (storageCollection && !addCollection.size) {
+	if (storageCollection && storageCollection.collection.length && !addCollection.size) {
 		const lengthStorage = storageCollection.collection.length;
-		counter = storageCollection.collection[lengthStorage - 1].id + 1; // id последнего элемента в localStorage
 
-		storageCollection.collection.forEach((item) => {
+		counter = storageCollection.collection[lengthStorage - 1].id + 1; // id последнего элемента в localStorage
+		storageCollection.collection.forEach((item, i) => {
 			const itemID = storageCollection.collection[i].id;
 
 			addCollection.set(itemID, item);

@@ -55,7 +55,7 @@ const dirBuild = 'build',
 		},
 		src: {
 			template: `${dirSrc}/template/index.php`,
-			php: `${dirSrc}/php/*.php`,
+			php: `${dirSrc}/php/**/*`,
 			scss: `${dirSrc}/scss/style.scss`,
 			pug: `${dirSrc}/pug/**/*.pug`,
 			css: `${dirSrc}/css/**/*.css`,

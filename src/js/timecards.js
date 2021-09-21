@@ -88,8 +88,9 @@ function addTimeCard(page = 'time') {
 function showDataFromStorage(page = 'time') {
 	const storageCollection = JSON.parse(localStorage.getItem(page));
 
-	if (storageCollection) {
+	if (storageCollection && storageCollection.collection.length) {
 		const lengthStorage = storageCollection.collection.length;
+
 		counter = storageCollection.collection[lengthStorage - 1].id + 1; // id последнего элемента в localStorage
 
 		timeCollection.clear();

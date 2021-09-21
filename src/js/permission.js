@@ -172,7 +172,7 @@ function dataAdd(nameTable, page = 'permis') {
 function showDataFromStorage(nameTable = '#tablePermis', page = 'permis') {
 	const storageCollection = JSON.parse(localStorage.getItem(page));
 
-	if (storageCollection && !permissionCollection.size) {
+	if (storageCollection && storageCollection.collection.length && !permissionCollection.size) {
 		const { statusAllow, statusDisallow } = storageCollection.controls;
 
 		storageCollection.collection.forEach((item, i) => {
