@@ -7,12 +7,12 @@
 	use PHPMailer\PHPMailer\PHPMailer;
 	use PHPMailer\PHPMailer\Exception;
 
-	require '../phpmailer/src/Exception.php';
-	require '../phpmailer/src/PHPMailer.php';
+	require './phpmailer/src/Exception.php';
+	require './phpmailer/src/PHPMailer.php';
 
 	$mail = new PHPMailer(true);
 	$mail->CharSet = 'UTF-8';
-	$mail->setLanguage('ru', '../phpmailer/language/');
+	$mail->setLanguage('ru', './phpmailer/language/');
 
 	try {
 		//Server settings
@@ -24,7 +24,7 @@
 		// $mail->Password   = 'secret';							   //SMTP password
 		// $mail->SMTPSecure = PHPMailer::ENCRYPTION_SMTPS;			//Enable implicit TLS encryption
 		// $mail->Port	   = 465;									//TCP port to connect to; use 587 if you have set `SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS`
-		
+
 		//Recipients
 		$mail->setFrom($sender, 'Управление охраны и безопасности');
 		$mail->addAddress($recipient, 'Химический факультет');	 //Add a recipient

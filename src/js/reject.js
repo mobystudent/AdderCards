@@ -187,7 +187,7 @@ function dataAdd(nameTable, page = 'reject') {
 function showDataFromStorage(nameTable = '#tableReject', page = 'reject') {
 	const storageCollection = JSON.parse(localStorage.getItem(page));
 
-	if (storageCollection && !rejectCollection.size) {
+	if (storageCollection && storageCollection.collection.length && !rejectCollection.size) {
 		const { statusResend } = storageCollection.controls;
 
 		storageCollection.collection.forEach((item, i) => {

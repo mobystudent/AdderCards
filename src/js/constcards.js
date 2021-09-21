@@ -139,7 +139,7 @@ function dataAdd(nameTable, page = 'const') {
 function showDataFromStorage(nameTable = '#tableConst', page = 'const') {
 	const storageCollection = JSON.parse(localStorage.getItem(page));
 
-	if (storageCollection && !constCollection.size) {
+	if (storageCollection && storageCollection.collection.length && !constCollection.size) {
 		storageCollection.collection.forEach((item, i) => {
 			const itemID = storageCollection.collection[i].id;
 

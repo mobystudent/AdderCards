@@ -21,7 +21,6 @@ let counter = 0;
 $(window).on('load', () => {
 	addUser();
 	toggleSelect();
-	getAddUsersInDB();
 	submitIDinBD();
 	showDataFromStorage();
 });
@@ -348,10 +347,10 @@ function dataAdd(nameTable, page = 'edit') {
 function showDataFromStorage(nameTable = '#tableEdit', page = 'edit') {
 	const storageCollection = JSON.parse(localStorage.getItem(page));
 
-	if (storageCollection && !editCollection.size) {
+	if (storageCollection && storageCollection.collection.length && !editCollection.size) {
 		const lengthStorage = storageCollection.collection.length;
-		counter = storageCollection.collection[lengthStorage - 1].id + 1; // id последнего элемента в localStorage
 
+		counter = storageCollection.collection[lengthStorage - 1].id + 1; // id последнего элемента в localStorage
 		storageCollection.collection.forEach((item, i) => {
 			const itemID = storageCollection.collection[i].id;
 
@@ -359,6 +358,9 @@ function showDataFromStorage(nameTable = '#tableEdit', page = 'edit') {
 		});
 
 		dataAdd(nameTable);
+		getAddUsersInDB('', storageCollection.collection);
+	} else {
+		getAddUsersInDB();
 	}
 }
 
@@ -382,7 +384,15 @@ function showFieldsInHeaderTable(page = 'edit') {
 	renderHeaderTable();
 }
 
-function setUsersInSelect(users, nameForm = '#editForm') {
+function setUsersInSelect(users, collection, nameForm = '#editForm') {
+	$(`${nameForm} .select[data-select="fio"]`).find('.select__list').html('');
+
+	if (collection.length) {
+		[...collection.values()].forEach((elem) => {
+			users = users.filter((item) => elem.id !== +item.id);
+		});
+	}
+
 	users.forEach((item) => {
 		const { id = '', fio = '' } = item;
 
@@ -671,7 +681,7 @@ function setAddUsersInDB(array, nameTable, action, page = 'edit') {
 	});
 }
 
-function getAddUsersInDB(id = '', nameForm = '#editForm', page = 'edit') {
+function getAddUsersInDB(id = '', collection = editCollection.values(), nameForm = '#editForm', page = 'edit') {
 	const idDepart = $(`.main__depart--${page}`).attr('data-id');
 	const nameTable = 'edit';
 
@@ -689,11 +699,12 @@ function getAddUsersInDB(id = '', nameForm = '#editForm', page = 'edit') {
 			if (id) {
 				const { id = '', post  = '', photourl  = '' } = JSON.parse(data);
 
-				showUserAvatar(photourl);
 				$(`${nameForm} .form__item--post`).attr('data-value', post);
 				$(`${nameForm} .form__item--id`).attr('data-value', id);
+
+				showUserAvatar(photourl);
 			} else {
-				setUsersInSelect(JSON.parse(data));
+				setUsersInSelect(JSON.parse(data), collection);
 			}
 		},
 		error: () => {
