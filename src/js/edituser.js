@@ -3,6 +3,7 @@
 import $ from 'jquery';
 import service from './service.js';
 import messageMail from './mail.js';
+import settingsObject from './settings.js';
 
 const editCollection = new Map();
 const editObject = {
@@ -19,10 +20,7 @@ const editObject = {
 let counter = 0;
 
 $(window).on('load', () => {
-	addUser();
-	toggleSelect();
-	submitIDinBD();
-	showDataFromStorage();
+	setNameDepartOnPage();
 });
 
 function templateEditTable(data) {
@@ -283,7 +281,7 @@ function addUser() {
 	});
 }
 
-function userFromForm(object, page = 'edit', nameForm = '#editForm', nameTable = '#tableEdit') {
+function userFromForm(object, nameForm = '#editForm', nameTable = '#tableEdit') {
 	const objToCollection = {
 		id: '',
 		fio: '',
@@ -299,8 +297,8 @@ function userFromForm(object, page = 'edit', nameForm = '#editForm', nameTable =
 		department: ''
 	};
 	const itemObject = Object.assign({}, objToCollection);
-	const departName = $(`.main__depart--${page}`).attr('data-depart');
-	const departID = $(`.main__depart--${page}`).attr('data-id');
+	const departName = settingsObject.longname;
+	const departID = settingsObject.nameid;
 	const postUser = $(`${nameForm} .form__item--post`).data('value');
 	const idUser = $(`${nameForm} .form__item--id`).data('value');
 
@@ -609,12 +607,9 @@ function submitIDinBD(nameTable = '#tableEdit', page = 'edit') {
 	$('#submitEditUser').click(() => {
 		if (!editCollection.size) return;
 
-		const idDepart = $(`.main__depart--${page}`).attr('data-id');
-		const nameDepart = $(`.main__depart--${page}`).attr('data-depart');
-
 		editCollection.forEach((elem) => {
-			elem.nameid = idDepart;
-			elem.department = nameDepart;
+			elem.nameid = settingsObject.nameid;
+			elem.department = settingsObject.longname;
 			elem.date = service.getCurrentDate();
 		});
 
@@ -652,9 +647,18 @@ function submitIDinBD(nameTable = '#tableEdit', page = 'edit') {
 	});
 }
 
-function setAddUsersInDB(array, nameTable, action, page = 'edit') {
-	const nameDepart = $(`.main__depart--${page}`).attr('data-depart');
+function setNameDepartOnPage(page = 'edit') {
+	const { nameid = '', longname = '' } = settingsObject;
 
+	$(`.main__depart--${page}`).attr({ 'data-depart': longname, 'data-id': nameid }).text(longname);
+
+	addUser();
+	toggleSelect();
+	submitIDinBD();
+	showDataFromStorage();
+}
+
+function setAddUsersInDB(array, nameTable, action) {
 	$.ajax({
 		url: "./php/change-user-request.php",
 		method: "post",
@@ -669,7 +673,7 @@ function setAddUsersInDB(array, nameTable, action, page = 'edit') {
 			service.modal('success');
 
 			sendMail({
-				department: nameDepart,
+				department: settingsObject.longname,
 				count: editCollection.size,
 				title: 'Редактировать',
 				users: [...editCollection.values()]
@@ -681,18 +685,15 @@ function setAddUsersInDB(array, nameTable, action, page = 'edit') {
 	});
 }
 
-function getAddUsersInDB(id = '', collection = editCollection.values(), nameForm = '#editForm', page = 'edit') {
-	const idDepart = $(`.main__depart--${page}`).attr('data-id');
-	const nameTable = 'edit';
-
+function getAddUsersInDB(id = '', collection = editCollection.values(), nameForm = '#editForm') {
 	$.ajax({
 		url: "./php/output-request.php",
 		method: "post",
 		dataType: "html",
 		data: {
 			id: id,
-			idDepart: idDepart,
-			nameTable: nameTable
+			idDepart: settingsObject.nameid,
+			nameTable: 'edit'
 		},
 		async: false,
 		success: (data) => {

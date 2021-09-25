@@ -5,6 +5,7 @@ import datepickerFactory from 'jquery-datepicker';
 import datepickerRUFactory from 'jquery-datepicker/i18n/jquery.ui.datepicker-ru';
 import service from './service.js';
 import messageMail from './mail.js';
+import settingsObject from './settings.js';
 
 datepickerFactory($);
 datepickerRUFactory($);
@@ -22,11 +23,7 @@ const addObject = {
 let counter = 0;
 
 $(window).on('load', () => {
-	addUser();
-	toggleSelect();
-	downloadFoto();
-	submitIDinBD();
-	showDataFromStorage();
+	setNameDepartOnPage();
 });
 
 function templateAddTable(data) {
@@ -265,7 +262,7 @@ function addUser() {
 	});
 }
 
-function userFromForm(object, page = 'add', nameTable = '#tableAdd') {
+function userFromForm(object, nameTable = '#tableAdd') {
 	const objToCollection = {
 		id: '',
 		fio: '',
@@ -281,8 +278,8 @@ function userFromForm(object, page = 'add', nameTable = '#tableAdd') {
 		cardvalidtotitle: ''
 	};
 	const itemObject = Object.assign({}, objToCollection);
-	const departName = $(`.main__depart--${page}`).attr('data-depart');
-	const departID = $(`.main__depart--${page}`).attr('data-id');
+	const departName = settingsObject.longname;
+	const departID = settingsObject.nameid;
 
 	for (const itemField in itemObject) {
 		for (const key in object) {
@@ -571,8 +568,8 @@ function submitIDinBD(nameTable = '#tableAdd', page = 'add') {
 	$('#submitAddUser').click(() => {
 		if (!addCollection.size) return;
 
-		const idDepart = $(`.main__depart--${page}`).attr('data-id');
-		const nameDepart = $(`.main__depart--${page}`).attr('data-depart');
+		const idDepart = settingsObject.nameid;
+		const nameDepart = settingsObject.longname;
 
 		addCollection.forEach((elem) => {
 			elem.nameid = idDepart;
@@ -592,9 +589,19 @@ function submitIDinBD(nameTable = '#tableAdd', page = 'add') {
 	});
 }
 
-function setAddUsersInDB(array, nameTable, action, page = 'add') {
-	const nameDepart = $(`.main__depart--${page}`).attr('data-depart');
+function setNameDepartOnPage(page = 'add') {
+	const { nameid = '', longname = '' } = settingsObject;
 
+	$(`.main__depart--${page}`).attr({ 'data-depart': longname, 'data-id': nameid }).text(longname);
+
+	addUser();
+	toggleSelect();
+	downloadFoto();
+	submitIDinBD();
+	showDataFromStorage();
+}
+
+function setAddUsersInDB(array, nameTable, action) {
 	$.ajax({
 		url: "./php/change-user-request.php",
 		method: "post",
@@ -609,7 +616,7 @@ function setAddUsersInDB(array, nameTable, action, page = 'add') {
 			service.modal('success');
 
 			sendMail({
-				department: nameDepart,
+				department: settingsObject.longname,
 				count: addCollection.size,
 				title: 'Добавлено',
 				users: [...addCollection.values()]

@@ -5,6 +5,7 @@ import datepickerFactory from 'jquery-datepicker';
 import datepickerRUFactory from 'jquery-datepicker/i18n/jquery.ui.datepicker-ru';
 import service from './service.js';
 import messageMail from './mail.js';
+import settingsObject from './settings.js';
 
 datepickerFactory($);
 datepickerRUFactory($);
@@ -25,11 +26,7 @@ const removeObject = {
 let counter = 0;
 
 $(window).on('load', () => {
-	addUser();
-	toggleSelect();
-	setDepartInSelect();
-	submitIDinBD();
-	showDataFromStorage();
+	setNameDepartOnPage();
 });
 
 function templateRemoveTable(data) {
@@ -261,7 +258,7 @@ function addUser() {
 	});
 }
 
-function userFromForm(object, page = 'remove', nameForm = '#removeForm', nameTable = '#tableRemove') {
+function userFromForm(object, nameForm = '#removeForm', nameTable = '#tableRemove') {
 	const objToCollection = {
 		id: '',
 		fio: '',
@@ -277,8 +274,8 @@ function userFromForm(object, page = 'remove', nameForm = '#removeForm', nameTab
 		department: ''
 	};
 	const itemObject = Object.assign({}, objToCollection);
-	const departName = $(`.main__depart--${page}`).attr('data-depart');
-	const departID = $(`.main__depart--${page}`).attr('data-id');
+	const departName = settingsObject.longname;
+	const departID = settingsObject.nameid;
 	const postUser = $(`${nameForm} .form__item--post`).data('value');
 	const idUser = $(`${nameForm} .form__item--id`).data('value');
 
@@ -349,14 +346,12 @@ function setDataInStorage(page = 'remove') {
 	}));
 }
 
-function setDepartInSelect(page = 'remove') {
-	const idDepart = $(`.main__depart--${page}`).attr('data-id');
-
+function setDepartInSelect() {
 	departmentCollection.forEach((depart) => {
 		const { idname = '', longname = '' } = depart;
 		const quoteName = longname.replace(/["']/g , '&quot;');
 
-		if (idname !== idDepart) {
+		if (idname !== settingsObject.nameid) {
 			$('.select[data-field="newdepart"] .select__list').append(`
 				<li class="select__item">
 					<span class="select__name" data-title="${quoteName}" data-newnameid="${idname}">${quoteName}</span>
@@ -593,12 +588,9 @@ function submitIDinBD(nameTable = '#tableRemove', page = 'remove') {
 	$('#submitRemoveUser').click(() => {
 		if (!removeCollection.size) return;
 
-		const idDepart = $(`.main__depart--${page}`).attr('data-id');
-		const nameDepart = $(`.main__depart--${page}`).attr('data-depart');
-
 		removeCollection.forEach((elem) => {
-			elem.nameid = idDepart;
-			elem.department = nameDepart;
+			elem.nameid = settingsObject.nameid;
+			elem.department = settingsObject.longname;
 			elem.date = service.getCurrentDate();
 		});
 
@@ -622,9 +614,19 @@ function submitIDinBD(nameTable = '#tableRemove', page = 'remove') {
 	});
 }
 
-function setAddUsersInDB(array, nameTable, action, page = 'remove') {
-	const nameDepart = $(`.main__depart--${page}`).attr('data-depart');
+function setNameDepartOnPage(page = 'remove') {
+	const { nameid = '', longname = '' } = settingsObject;
 
+	$(`.main__depart--${page}`).attr({ 'data-depart': longname, 'data-id': nameid }).text(longname);
+
+	addUser();
+	toggleSelect();
+	setDepartInSelect();
+	submitIDinBD();
+	showDataFromStorage();
+}
+
+function setAddUsersInDB(array, nameTable, action) {
 	$.ajax({
 		url: "./php/change-user-request.php",
 		method: "post",
@@ -639,7 +641,7 @@ function setAddUsersInDB(array, nameTable, action, page = 'remove') {
 			service.modal('success');
 
 			sendMail({
-				department: nameDepart,
+				department: settingsObject.longname,
 				count: removeCollection.size,
 				title: 'Удалить',
 				users: [...removeCollection.values()]
@@ -651,18 +653,15 @@ function setAddUsersInDB(array, nameTable, action, page = 'remove') {
 	});
 }
 
-function getAddUsersInDB(id = '', collection = removeCollection.values(), nameForm = '#removeForm', page = 'remove') {
-	const idDepart = $(`.main__depart--${page}`).attr('data-id');
-	const nameTable = 'remove';
-
+function getAddUsersInDB(id = '', collection = removeCollection.values(), nameForm = '#removeForm') {
 	$.ajax({
 		url: "./php/output-request.php",
 		method: "post",
 		dataType: "html",
 		data: {
 			id: id,
-			idDepart: idDepart,
-			nameTable: nameTable
+			idDepart: settingsObject.nameid,
+			nameTable: 'remove'
 		},
 		async: false,
 		success: (data) => {

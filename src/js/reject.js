@@ -3,6 +3,7 @@
 import $ from 'jquery';
 import service from './service.js';
 import Scrollbar from 'smooth-scrollbar';
+import settingsObject from './settings.js';
 
 const rejectCollection = new Map(); // БД отклоненных пользователей
 const rejectObject = {
@@ -10,9 +11,7 @@ const rejectObject = {
 };
 
 $(window).on('load', () => {
-	viewDataUser();
-	autoRefresh();
-	showDataFromStorage();
+	setNameDepartOnPage();
 });
 
 function templateRejectTable(data) {
@@ -297,15 +296,23 @@ function autoRefresh(page = 'reject') {
 	});
 }
 
-function getDatainDB(nameTable, page = 'reject') {
-	const idDepart = $(`.main__depart--${page}`).attr('data-id');
+function setNameDepartOnPage(page = 'reject') {
+	const { nameid = '', longname = '' } = settingsObject;
 
+	$(`.main__depart--${page}`).attr({ 'data-depart': longname, 'data-id': nameid }).text(longname);
+
+	viewDataUser();
+	autoRefresh();
+	showDataFromStorage();
+}
+
+function getDatainDB(nameTable) {
 	$.ajax({
 		url: "./php/output-request.php",
 		method: "post",
 		dataType: "html",
 		data: {
-			idDepart: idDepart,
+			idDepart: settingsObject.nameid,
 			nameTable: nameTable
 		},
 		async: false,

@@ -207,13 +207,13 @@ function setDataAttrSelectedItem(title, select, elem, nameForm = '#editForm') {
 	toggleSelect();
 }
 
-function setNameDepartOnPage(depart) {
+function setNameDepartOnPage(depart, page = 'settings') {
 	const { nameid = '', shortname = '', longname = '' } = depart;
 	settingsObject.nameid = nameid;
 	settingsObject.shortname = shortname;
 	settingsObject.longname = longname;
 
-	$('.main__depart--settings').attr({ 'data-depart': settingsObject.longname, 'data-id': settingsObject.nameid }).text(settingsObject.longname);
+	$(`.main__depart--${page}`).attr({ 'data-depart': settingsObject.longname, 'data-id': settingsObject.nameid }).text(settingsObject.longname);
 
 	renderSection();
 	showChangesFields();
@@ -285,3 +285,5 @@ function getNameDepartmentFromDB(nameTable, page = 'settings') {
 		}
 	});
 }
+
+export default settingsObject;
