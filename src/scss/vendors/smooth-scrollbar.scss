@@ -20,6 +20,10 @@
 			width: 5px;
 			opacity: 1;
 			background: $darkGray;
+
+			&-x {
+				display: none !important;
+			}
 		}
 
 		&-thumb {

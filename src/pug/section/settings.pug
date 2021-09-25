@@ -2,8 +2,7 @@ main.main(data-name="settings")
 	.container
 		h1.main__title
 			| Настройки
-		span.main__depart.main__depart--settings(data-depart="Химический факультет" data-id="ChemDep")
-			| Химический факультет
+		span.main__depart.main__depart--settings(data-depart="" data-id="ChemDep")
 			
 		section.settings#settingsSection
 			.settings__content
@@ -11,7 +10,7 @@ main.main(data-name="settings")
 					.settings__wrap
 						h3.settings__title
 							| Название подразделения
-						span.settings__value
+						span.settings__department(data-nameid="" data-shortname="" data-longname="")
 							| Химический факультет
 					.settings__btn-wrap
 						button.btn.btn--settings(type="button" data-title="Изменить" data-cancel="Отменить")

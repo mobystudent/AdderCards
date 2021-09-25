@@ -79,6 +79,17 @@
 		} else {
 			echo $mysqli->error;
 		}
+	} else if ($nameTable === 'settings') {
+		$idDepart = strtolower($_POST['idDepart']);
+		$nameDepart = 'settings_depart_'.$idDepart;
+
+		if($resultSet = $mysqli->query("SELECT * FROM `$nameDepart`")) {
+			while ($result = $resultSet->fetch_assoc()) {
+				array_push($array, $result);
+			}
+		} else {
+			echo $mysqli->error;
+		}
 	}
 
 	echo json_encode($array);

@@ -6,17 +6,17 @@ import service from './service.js';
 
 const departmentCollection = new Map();  // Коллекци подразделений
 const settingsObject = {
-	department: '',
+	nameid: '',
+	shortname: '',
+	longname: '',
 	statuschangename: '',
 	changelongname: '',
 	changeshortname: ''
 };
 
 $(window).on('load', () => {
-	showChangesFields();
+	getNameDepartmentFromDB('settings');
 	settingsScrollbar();
-	toggleSelect();
-	setDepartInSelect();
 });
 
 function templateSettingsForm() {
@@ -46,7 +46,7 @@ function templateSettingsForm() {
 		<div class="settings__section" data-block="changename">
 			<div class="settings__wrap">
 				<h3 class="settings__title">Название подразделения</h3>
-				<span class="settings__value">${settingsObject.department}</span>
+				<span class="settings__department" data-nameid="${settingsObject.nameid}" data-shortname="${settingsObject.shortname}" data-longname="${settingsObject.longname}">${settingsObject.longname}</span>
 			</div>
 			<div class="settings__btn-wrap">
 				<button class="btn btn--settings ${changeNameBtnClass}" data-name="changename" type="button">${changeNameBtnValue}</button>
@@ -119,8 +119,9 @@ function applyFieldsChanges(page = 'settings') {
 		console.log(userData);
 
 		if (validationEmptyFields(userData)) {
-			setNameDepartmentInDB([userData], 'department', 'add');
+			setNameDepartmentInDB([userData], 'settings', 'add');
 			clearFieldsForm();
+			getNameDepartmentFromDB('settings');
 		}
 	});
 }
@@ -206,6 +207,20 @@ function setDataAttrSelectedItem(title, select, elem, nameForm = '#editForm') {
 	toggleSelect();
 }
 
+function setNameDepartOnPage(depart) {
+	const { nameid = '', shortname = '', longname = '' } = depart;
+	settingsObject.nameid = nameid;
+	settingsObject.shortname = shortname;
+	settingsObject.longname = longname;
+
+	$('.main__depart--settings').attr({ 'data-depart': settingsObject.longname, 'data-id': settingsObject.nameid }).text(settingsObject.longname);
+
+	renderSection();
+	showChangesFields();
+	toggleSelect();
+	setDepartInSelect();
+}
+
 function getDepartmentInDB(nameTable) {
 	$.ajax({
 		url: "./php/output-request.php",
@@ -241,6 +256,29 @@ function setNameDepartmentInDB(array, nameTable, action) {
 		},
 		success: () => {
 			service.modal('update');
+		},
+		error: () => {
+			service.modal('download');
+		}
+	});
+}
+
+function getNameDepartmentFromDB(nameTable, page = 'settings') {
+	const idDepart = $(`.main__depart--${page}`).attr('data-id');
+
+	$.ajax({
+		url: "./php/output-request.php",
+		method: "post",
+		dataType: "html",
+		async: false,
+		data: {
+			idDepart: idDepart,
+			nameTable: nameTable
+		},
+		success: (data) => {
+			const dataFromDB = JSON.parse(data);
+
+			setNameDepartOnPage(...dataFromDB);
 		},
 		error: () => {
 			service.modal('download');

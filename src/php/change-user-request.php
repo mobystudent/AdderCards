@@ -333,12 +333,21 @@
 				echo $mysqli->error;
 			}
 		}
-	} else if (($nameTable === 'department') && ($action === 'add')) {
+	} else if (($nameTable === 'settings') && ($action === 'add')) {
 		foreach ($array as $item) {
 			foreach ($item as $key => $value) {
 				if ($key === 'nameid') $nameid = $value;
 				if ($key === 'changelongname') $changelongname = $value;
 				if ($key === 'changeshortname') $changeshortname = $value;
+			}
+
+			$idDepart = strtolower($item['nameid']);
+			$nameDepart = 'settings_depart_'.$idDepart;
+
+			if($mysqli->query("UPDATE `$nameDepart` SET longname = '$changelongname', shortname = '$changeshortname' WHERE nameid = '$nameid'")) {
+				echo('Success update in BD '.$nameDepart);
+			} else {
+				echo $mysqli->error;
 			}
 
 			if($mysqli->query("UPDATE department SET longname = '$changelongname', shortname = '$changeshortname' WHERE nameid = '$nameid'")) {
