@@ -73,14 +73,14 @@ function templateAddTable(data) {
 function templateAddForm(data) {
 	const { fio = '', photofile = '', photourl = '', post = '', statusid = '', statustitle = '', cardvalidtotitle = '', cardvalidtoid = '', cardvalidto = '' } = data;
 	const typeValue = statustitle ? statustitle : 'Выберите тип идентификатора';
-	const typeClassView = statustitle ? 'select__value--selected' : '';
+	const typeClassView = statustitle ? 'select__value--selected-form' : '';
 	const cardvalidtoValue = cardvalidtotitle ? cardvalidtotitle : 'Выберите окончание действия пропуска';
-	const cardvalidtoClassView = cardvalidtotitle ? 'select__value--selected' : '';
+	const cardvalidtoClassView = cardvalidtotitle ? 'select__value--selected-form' : '';
 	const photoValue = photourl ? photourl : './images/avatar.svg';
 	const cardvalidtoView = addObject.statuscardvalidto ? `
 		<div class="form__field form__field--cardvalidto">
-			<label class="form__label"><span class="form__name">Дата окончания</span>
-				<input class="form__input form__item form__item--cardvalidto" id="addDatepicker" data-field="date" name="date" type="text" value="${cardvalidto}" placeholder="Введите дату" required="required"/>
+			<label class="form__label"><span class="form__name form__name--form">Дата окончания</span>
+				<input class="form__input form__input--form form__item form__item--cardvalidto" id="addDatepicker" data-field="date" name="date" type="text" value="${cardvalidto}" placeholder="Введите дату" required="required"/>
 			</label>
 		</div>
 	` : '';
@@ -89,44 +89,44 @@ function templateAddForm(data) {
 		<div class="form__fields">
 			<div class="form__field">
 				<label class="form__label">
-				<span class="form__name">ФИО</span>
-					<input class="form__input form__item" data-field="fio" name="name" type="text" value="${fio}" placeholder="Введите ФИО" required="required"/>
+				<span class="form__name form__name--form">ФИО</span>
+					<input class="form__input form__input--form form__item" data-field="fio" name="name" type="text" value="${fio}" placeholder="Введите ФИО" required="required"/>
 				</label>
 			</div>
 			<div class="form__field">
 				<label class="form__label">
-				<span class="form__name">Должность</span>
-					<input class="form__input form__item" data-field="post" name="post" type="text" value="${post}" placeholder="Введите должность" required="required"/>
+				<span class="form__name form__name--form">Должность</span>
+					<input class="form__input form__input--form form__item" data-field="post" name="post" type="text" value="${post}" placeholder="Введите должность" required="required"/>
 				</label>
 			</div>
 			<div class="form__field">
-				<span class="form__name">Тип идентификатора</span>
-				<div class="form__select form__item select" data-field="statustitle" data-type="statusid" data-select="type">
-					<header class="select__header">
-						<span class="select__value ${typeClassView}" data-title="${typeValue}" data-type="${statusid}" data-placeholder="Выберите тип идентификатора">${typeValue}</span>
+				<span class="form__name form__name--form">Тип идентификатора</span>
+				<div class="form__select form__item select select--form" data-field="statustitle" data-type="statusid" data-select="type">
+					<header class="select__header select__header--form">
+						<span class="select__value select__value--form ${typeClassView}" data-title="${typeValue}" data-type="${statusid}" data-placeholder="Выберите тип идентификатора">${typeValue}</span>
 					</header>
-					<ul class="select__list">
+					<ul class="select__list select__list--form">
 						<li class="select__item">
-							<span class="select__name" data-title="Пластиковая карта" data-type="newCard">Пластиковая карта</span>
+							<span class="select__name select__name--form" data-title="Пластиковая карта" data-type="newCard">Пластиковая карта</span>
 						</li>
 						<li class="select__item">
-							<span class="select__name" data-title="QR-код" data-type="newQR">QR-код</span>
+							<span class="select__name select__name--form" data-title="QR-код" data-type="newQR">QR-код</span>
 						</li>
 					</ul>
 				</div>
 			</div>
 			<div class="form__field">
-				<span class="form__name">Окончание действия пропуска</span>
-				<div class="form__select form__item select" data-field="cardvalidtotitle" data-type="statuscardvalidto" data-select="cardvalidto">
-					<header class="select__header">
-						<span class="select__value ${cardvalidtoClassView}" data-title="${cardvalidtoValue}" data-cardvalidto="${cardvalidtoid}" data-placeholder="Выберите окончание действия пропуска">${cardvalidtoValue}</span>
+				<span class="form__name form__name--form">Окончание действия пропуска</span>
+				<div class="form__select form__item select select--form" data-field="cardvalidtotitle" data-type="statuscardvalidto" data-select="cardvalidto">
+					<header class="select__header select__header--form">
+						<span class="select__value select__value--form ${cardvalidtoClassView}" data-title="${cardvalidtoValue}" data-cardvalidto="${cardvalidtoid}" data-placeholder="Выберите окончание действия пропуска">${cardvalidtoValue}</span>
 					</header>
-					<ul class="select__list">
+					<ul class="select__list select__list--form">
 						<li class="select__item">
-							<span class="select__name" data-title="Ввести дату" data-cardvalidto="date">Ввести дату</span>
+							<span class="select__name select__name--form" data-title="Ввести дату" data-cardvalidto="date">Ввести дату</span>
 						</li>
 						<li class="select__item">
-							<span class="select__name" data-title="Безвременно" data-cardvalidto="infinite">Безвременно</span>
+							<span class="select__name select__name--form" data-title="Безвременно" data-cardvalidto="infinite">Безвременно</span>
 						</li>
 					</ul>
 				</div>
@@ -222,9 +222,9 @@ function addUser() {
 
 			if ($(item).hasClass('select')) {
 				const typeSelect = $(item).data('select');
-				const nameId = $(item).find('.select__value--selected').attr(`data-${typeSelect}`);
+				const nameId = $(item).find('.select__value--selected-form').attr(`data-${typeSelect}`);
 				const fieldType = $(item).data('type');
-				const valueItem = $(item).find('.select__value--selected').attr('data-title');
+				const valueItem = $(item).find('.select__value--selected-form').attr('data-title');
 
 				if (typeSelect === 'cardvalidto') {
 					if (nameId === 'date') {

@@ -10,16 +10,16 @@ main.main(data-name="add")
 				.form__fields
 					.form__field
 						label.form__label
-							span.form__name
+							span.form__name.form__name--form
 								| Фамилия Имя Отчество
-							input.form__input.form__item.form__item--fio(data-field="fio" name="name" type="text" placeholder="Введите ФИО" required)
+							input.form__input.form__input--form.form__item.form__item--fio(data-field="fio" name="name" type="text" placeholder="Введите ФИО" required)
 					.form__field
 						label.form__label
-							span.form__name
+							span.form__name.form__name--form
 								| Должность
-							input.form__input.form__item.form__item--post(data-field="post" name="post" type="text" placeholder="Введите должность" required)
+							input.form__input.form__input--form.form__item.form__item--post(data-field="post" name="post" type="text" placeholder="Введите должность" required)
 					.form__field
-						span.form__name
+						span.form__name.form__name--form
 							| Тип идентификатора
 						.form__select.form__item.select.select--form(data-field="statustitle" data-type="statusid" data-select="type")
 							header.select__header.select__header--form
@@ -33,7 +33,7 @@ main.main(data-name="add")
 									span.select__name.select__name--form(data-title="Новый QR-код" data-type="newQR")
 										| Новый QR-код
 					.form__field
-						span.form__name
+						span.form__name.form__name--form
 							| Окончание действия пропуска
 						.form__select.form__item.select.select--form(data-field="cardvalidtotitle" data-type="statusсardvalidto" data-select="сardvalidto")
 							header.select__header.select__header--form
@@ -48,9 +48,9 @@ main.main(data-name="add")
 										| Безвременно
 					//- .form__field.form__field--сardvalidto
 						label.form__label
-							span.form__name
+							span.form__name.form__name--form
 								| Дата окончания
-							input.form__input.form__item.form__item--date#addDatepicker(data-field="date" name="date" type="text" placeholder="Введите дату" required)
+							input.form__input.form__input--form.form__item.form__item--date#addDatepicker(data-field="date" name="date" type="text" placeholder="Введите дату" required)
 				.form__aside
 					.form__img
 						img.img.img--form(src="./images/avatar.svg" alt="user avatar")
@@ -65,7 +65,7 @@ main.main(data-name="add")
 			button.btn.btn--form#addUser(type="button" data-type="add-user")
 				| Добавить
 				
-		.info
+		.info.info--page
 			p.info__item.info__item--warn.info__item--fields
 				| Предупреждение! Не все поля заполненны.
 			p.info__item.info__item--error.info__item--name

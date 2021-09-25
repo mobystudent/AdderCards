@@ -78,23 +78,23 @@ function templateEditTable(data) {
 function templateEditForm(data) {
 	const { id = '', fio = '', statusid = '', newpost = '', newfio = '', statustitle = '', post = '', photourl = '' } = data;
 	const fioValue = fio ? fio : 'Выберите пользователя';
-	const fioClassView = fio ? 'select__value--selected' : '';
+	const fioClassView = fio ? 'select__value--selected-form' : '';
 	const changeValue = statustitle ? statustitle : 'Выберите тип изменения';
-	const changeClassView = statustitle ? 'select__value--selected' : '';
+	const changeClassView = statustitle ? 'select__value--selected-form' : '';
 	const photoUrl = photourl ? photourl : './images/avatar.svg';
 	const fioView = statusid === 'changeFIO' ? `
 		<div class="form__field" data-name="newfio">
 			<label class="form__label">
-				<span class="form__name">Новое ФИО</span>
-				<input class="form__input form__item" data-field="newfio" name="newfio" type="text" value="${newfio}" placeholder="Введите новое ФИО" required/>
+				<span class="form__name form__name--form">Новое ФИО</span>
+				<input class="form__input form__input--form form__item" data-field="newfio" name="newfio" type="text" value="${newfio}" placeholder="Введите новое ФИО" required/>
 			</label>
 		</div>
 	` : '';
 	const postView = statusid === 'changePost' ? `
 		<div class="form__field" data-name="newpost">
 			<label class="form__label">
-				<span class="form__name">Новая должность</span>
-				<input class="form__input form__item" data-field="newpost" name="newpost" type="text" value="${newpost}" placeholder="Введите новую должность" required/>
+				<span class="form__name form__name--form">Новая должность</span>
+				<input class="form__input form__input--form form__item" data-field="newpost" name="newpost" type="text" value="${newpost}" placeholder="Введите новую должность" required/>
 			</label>
 		</div>
 	` : '';
@@ -113,35 +113,35 @@ function templateEditForm(data) {
 	return `
 		<div class="form__fields">
 			<div class="form__field">
-				<span class="form__name">Пользователь</span>
-				<div class="form__select form__item select" data-field="fio" data-select="fio">
-					<header class="select__header">
-						<span class="select__value ${fioClassView}" data-title="${fioValue}" data-fio="fio" data-placeholder="Выберите пользователя">${fioValue}</span>
+				<span class="form__name form__name--form">Пользователь</span>
+				<div class="form__select form__item select select--form" data-field="fio" data-select="fio">
+					<header class="select__header select__header--form">
+						<span class="select__value select__value--form ${fioClassView}" data-title="${fioValue}" data-fio="fio" data-placeholder="Выберите пользователя">${fioValue}</span>
 					</header>
-					<ul class="select__list"></ul>
+					<ul class="select__list select__list--form"></ul>
 				</div>
 			</div>
 			<div class="form__field">
-				<span class="form__name">Тип изменения</span>
-				<div class="form__select form__item select" data-field="statustitle" data-type="statusid" data-select="change">
-					<header class="select__header">
-						<span class="select__value ${changeClassView}" data-title="${changeValue}" data-change="${statusid}" data-placeholder="Выберите тип изменения">${changeValue}</span>
+				<span class="form__name form__name--form">Тип изменения</span>
+				<div class="form__select form__item select select--form" data-field="statustitle" data-type="statusid" data-select="change">
+					<header class="select__header select__header--form">
+						<span class="select__value select__value--form ${changeClassView}" data-title="${changeValue}" data-change="${statusid}" data-placeholder="Выберите тип изменения">${changeValue}</span>
 					</header>
-					<ul class="select__list">
+					<ul class="select__list select__list--form">
 						<li class="select__item">
-							<span class="select__name" data-title="Утеря пластиковой карты" data-change="changeCard">Утеря пластиковой карты</span>
+							<span class="select__name select__name--form" data-title="Утеря пластиковой карты" data-change="changeCard">Утеря пластиковой карты</span>
 						</li>
 						<li class="select__item">
-							<span class="select__name" data-title="Утеря QR-кода" data-change="changeQR">Утеря QR-кода</span>
+							<span class="select__name select__name--form" data-title="Утеря QR-кода" data-change="changeQR">Утеря QR-кода</span>
 						</li>
 						<li class="select__item">
-							<span class="select__name" data-title="Изменение ФИО" data-change="changeFIO">Изменение ФИО</span>
+							<span class="select__name select__name--form" data-title="Изменение ФИО" data-change="changeFIO">Изменение ФИО</span>
 						</li>
 						<li class="select__item">
-							<span class="select__name" data-title="Изменение должности" data-change="changePost">Изменение должности</span>
+							<span class="select__name select__name--form" data-title="Изменение должности" data-change="changePost">Изменение должности</span>
 						</li>
 						<li class="select__item">
-							<span class="select__name" data-title="Изменение фото" data-change="changeImage">Изменение фото</span>
+							<span class="select__name select__name--form" data-title="Изменение фото" data-change="changeImage">Изменение фото</span>
 						</li>
 					</ul>
 				</div>
@@ -246,9 +246,9 @@ function addUser() {
 
 			if ($(item).hasClass('select')) {
 				const typeSelect = $(item).data('select');
-				const nameId = $(item).find('.select__value--selected').attr(`data-${typeSelect}`);
+				const nameId = $(item).find('.select__value--selected-form').attr(`data-${typeSelect}`);
 				const fieldType = $(item).data('type');
-				const valueItem = $(item).find('.select__value--selected').attr('data-title');
+				const valueItem = $(item).find('.select__value--selected-form').attr('data-title');
 
 				if (typeSelect === 'change') {
 					object[fieldType] = nameId;

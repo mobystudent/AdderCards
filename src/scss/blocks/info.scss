@@ -1,5 +1,17 @@
 .info {
-	margin-bottom: 40px;
+	$self: &;
+
+	grid-area: info;
+
+	&--page {
+		margin-bottom: 40px;
+	}
+
+	&--settings {
+		#{$self}__item:first-child {
+			margin-top: 20px;
+		}
+	}
 
 	&__item {
 		display: none;

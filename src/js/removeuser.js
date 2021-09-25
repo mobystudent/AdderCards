@@ -79,28 +79,28 @@ function templateRemoveTable(data) {
 function templateRemoveForm(data) {
 	const { id = '', fio = '', statusid = '', newdepart = '', newnameid = '', statustitle = '', cardvalidto  = '', post = '', photourl = '' } = data;
 	const fioValue = fio ? fio : 'Выберите пользователя';
-	const fioClassView = fio ? 'select__value--selected' : '';
+	const fioClassView = fio ? 'select__value--selected-form' : '';
 	const reasonValue = statustitle ? statustitle : 'Выберите причину удаления';
-	const reasonClassView = statustitle ? 'select__value--selected' : '';
+	const reasonClassView = statustitle ? 'select__value--selected-form' : '';
 	const photoUrl = photourl ? photourl : './images/avatar.svg';
 	const newdepartValue = newdepart ? newdepart : 'Выберите подразделение';
-	const newdepartClassView = newdepart ? 'select__value--selected' : '';
+	const newdepartClassView = newdepart ? 'select__value--selected-form' : '';
 	const departView = statusid === 'changeDepart' ? `
 		<div class="form__field" data-name="depart">
-			<span class="form__name">Новое подразделение</span>
-			<div class="form__select form__item select" data-field="newdepart" data-type="newnameid" data-select="newnameid">
-				<header class="select__header">
-					<span class="select__value ${newdepartClassView}" data-title="${newdepartValue}" data-newnameid="${newnameid}" data-placeholder="Выберите подразделение">${newdepartValue}</span>
+			<span class="form__name form__name--form">Новое подразделение</span>
+			<div class="form__select form__item select select--form" data-field="newdepart" data-type="newnameid" data-select="newnameid">
+				<header class="select__header select__header--form">
+					<span class="select__value select__value--form ${newdepartClassView}" data-title="${newdepartValue}" data-newnameid="${newnameid}" data-placeholder="Выберите подразделение">${newdepartValue}</span>
 				</header>
-				<ul class="select__list"></ul>
+				<ul class="select__list select__list--form"></ul>
 			</div>
 		</div>
 	` : '';
 	const cardvalidtoView = statusid === 'remove' ? `
 		<div class="form__field" data-name="date">
 			<label class="form__label">
-				<span class="form__name">Дата завершения действия пропуска</span>
-				<input class="form__input form__item" id="removeDatepicker" data-field="date" name="date" type="text" value="${cardvalidto}" placeholder="Введите дату завершения действия пропуска" required="required"/>
+				<span class="form__name form__name--form">Дата завершения действия пропуска</span>
+				<input class="form__input form__input--form form__item" id="removeDatepicker" data-field="date" name="date" type="text" value="${cardvalidto}" placeholder="Введите дату завершения действия пропуска" required="required"/>
 			</label>
 		</div>
 	` : '';
@@ -108,26 +108,26 @@ function templateRemoveForm(data) {
 	return `
 		<div class="form__fields">
 			<div class="form__field">
-				<span class="form__name">Пользователь</span>
-				<div class="form__select form__item select" data-field="fio" data-select="fio">
-					<header class="select__header">
-						<span class="select__value ${fioClassView}" data-title="${fioValue}" data-fio="fio" data-placeholder="Выберите пользователя">${fioValue}</span>
+				<span class="form__name form__name--form">Пользователь</span>
+				<div class="form__select form__item select select--form" data-field="fio" data-select="fio">
+					<header class="select__header select__header--form">
+						<span class="select__value select__value--form ${fioClassView}" data-title="${fioValue}" data-fio="fio" data-placeholder="Выберите пользователя">${fioValue}</span>
 					</header>
-					<ul class="select__list"></ul>
+					<ul class="select__list select__list--form"></ul>
 				</div>
 			</div>
 			<div class="form__field">
-				<span class="form__name">Причина удаления/отчисления</span>
-				<div class="form__select form__item select" data-field="statustitle" data-type="statusid" data-select="reason">
-					<header class="select__header">
-						<span class="select__value ${reasonClassView}" data-title="${reasonValue}" data-reason="${statusid}" data-placeholder="Выберите причину удаления/отчисления">${reasonValue}</span>
+				<span class="form__name form__name--form">Причина удаления/отчисления</span>
+				<div class="form__select form__item select select--form" data-field="statustitle" data-type="statusid" data-select="reason">
+					<header class="select__header select__header--form">
+						<span class="select__value select__value--form ${reasonClassView}" data-title="${reasonValue}" data-reason="${statusid}" data-placeholder="Выберите причину удаления/отчисления">${reasonValue}</span>
 					</header>
-					<ul class="select__list">
+					<ul class="select__list select__list--form">
 						<li class="select__item">
-							<span class="select__name" data-title="Перевод в другое подразделение" data-reason="changeDepart">Перевод в другое подразделение</span>
+							<span class="select__name select__name--form" data-title="Перевод в другое подразделение" data-reason="changeDepart">Перевод в другое подразделение</span>
 						</li>
 						<li class="select__item">
-							<span class="select__name" data-title="Увольнение/отчисление" data-reason="remove">Увольнение/отчисление</span>
+							<span class="select__name select__name--form" data-title="Увольнение/отчисление" data-reason="remove">Увольнение/отчисление</span>
 						</li>
 					</ul>
 				</div>
@@ -224,9 +224,9 @@ function addUser() {
 
 			if ($(item).hasClass('select')) {
 				const typeSelect = $(item).data('select');
-				const nameId = $(item).find('.select__value--selected').attr(`data-${typeSelect}`);
+				const nameId = $(item).find('.select__value--selected-form').attr(`data-${typeSelect}`);
 				const fieldType = $(item).data('type');
-				const valueItem = $(item).find('.select__value--selected').attr('data-title');
+				const valueItem = $(item).find('.select__value--selected-form').attr('data-title');
 
 				if (typeSelect == 'reason') {
 					if (nameId == 'remove') {

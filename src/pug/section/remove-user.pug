@@ -9,7 +9,7 @@ main.main(data-name="remove")
 			.form__wrap
 				.form__fields
 					.form__field
-						span.form__name
+						span.form__name.form__name--form
 							| Пользователь
 						.form__select.form__item.select.select--form(data-field="fio" data-select="fio")
 							header.select__header.select__header--form
@@ -17,7 +17,7 @@ main.main(data-name="remove")
 									| Выберите пользователя
 							ul.select__list.select__list--form
 					.form__field
-						span.form__name
+						span.form__name.form__name--form
 							| Причина удаления/отчисления
 						.form__select.form__item.select.select--form(data-field="titleid" data-type="statusid" data-select="reason")
 							header.select__header.select__header--form
@@ -31,7 +31,7 @@ main.main(data-name="remove")
 									span.select__name.select__name--form(data-title="Увольнение/отчисление" data-reason="remove")
 										| Увольнение/отчисление
 					//- .form__field(data-name="depart")
-						span.form__name
+						span.form__name.form__name--form
 							| Новое подразделение
 						.form__select.form__item.select(data-field="newdepart" data-type="newnameid" data-select="newnameid")
 							header.select__header
@@ -40,9 +40,9 @@ main.main(data-name="remove")
 							ul.select__list
 					//- .form__field(data-name="date")
 						label.form__label
-							span.form__name
+							span.form__name.form__name--form
 								| Дата завершения действия пропуска
-							input.form__input.form__item#removeDatepicker(data-field="date" name="date" type="text" placeholder="Введите дату завершения действия пропуска" required)
+							input.form__input.form__input--form.form__item#removeDatepicker(data-field="date" name="date" type="text" placeholder="Введите дату завершения действия пропуска" required)
 					.form__field
 						span.form__item.form__item--hide.form__item--id(data-field="id")
 					.form__field
@@ -55,7 +55,7 @@ main.main(data-name="remove")
 			button.btn.btn--form#removeUser(type="button" data-type="remove-user")
 				| Удалить
 				
-		.info
+		.info.info--page
 			p.info__item.info__item--warn.info__item--fields
 				| Предупреждение! Не все поля заполненны.
 

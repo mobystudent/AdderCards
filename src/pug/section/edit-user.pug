@@ -9,7 +9,7 @@ main.main(data-name="edit")
 			.form__wrap
 				.form__fields
 					.form__field
-						span.form__name
+						span.form__name.form__name--form
 							| Пользователь
 						.form__select.form__item.select.select--form(data-field="fio" data-select="fio")
 							header.select__header.select__header--form
@@ -17,7 +17,7 @@ main.main(data-name="edit")
 									| Выберите пользователя
 							ul.select__list.select__list--form
 					.form__field
-						span.form__name
+						span.form__name.form__name--form
 							| Тип изменения
 						.form__select.form__item.select.select--form(data-field="statustitle" data-type="statusid" data-select="change")
 							header.select__header.select__header--form
@@ -34,14 +34,14 @@ main.main(data-name="edit")
 											| #{arrChanges[i]}
 					//- .form__field.form__field--hide(data-name="newpost")
 						label.form__label
-							span.form__name
+							span.form__name.form__name--form
 								| Новая должность
-							input.form__input.form__item(data-field="newpost" name="newpost" type="text" placeholder="Введите новую должность" required)
+							input.form__input.form__input--form.form__item(data-field="newpost" name="newpost" type="text" placeholder="Введите новую должность" required)
 					//- .form__field.form__field--hide(data-name="newfio")
 						label.form__label
-							span.form__name
+							span.form__name.form__name--form
 								| Новое ФИО
-							input.form__input.form__item(data-field="newfio" name="newfio" type="text" placeholder="Введите новое ФИО" required)
+							input.form__input.form__input--form.form__item(data-field="newfio" name="newfio" type="text" placeholder="Введите новое ФИО" required)
 					.form__field.form__field--hide
 						span.form__item.form__item--hide.form__item--id(data-field="id")
 					.form__field.form__field--hide
@@ -61,7 +61,7 @@ main.main(data-name="edit")
 			button.btn.btn--form#editUser(type="button" data-type="edit-user")
 				| Редактировать
 				
-		.info
+		.info.info--page
 			p.info__item.info__item--warn.info__item--fields
 				| Предупреждение! Не все поля заполненны.
 			p.info__item.info__item--error.info__item--name

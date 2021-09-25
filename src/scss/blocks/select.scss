@@ -50,16 +50,22 @@
 	&__value {
 		@extend %text--premedium;
 
-		&--selected {
-			color: $white;
-		}
-
 		&--form {
 			color: $darkGray;
 		}
 
 		&--settings {
 			color: $spaceBlack;
+		}
+
+		&--selected {
+			&-form {
+				color: $white;
+			}
+
+			&-settings {
+				color: $spaceBlack;
+			}
 		}
 	}
 

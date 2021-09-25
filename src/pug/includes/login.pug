@@ -4,14 +4,14 @@ form.form.form--login#loginForm(method="POST" action="#")
 	.form__fields.form__fields--login
 		.form__field
 			label.form__label
-				span.form__name
+				span.form__name.form__name--form
 					| Логин
-				input.form__input.form__item(name="login" type="text" placeholder="Введите логин"  autocomplete="on" required)
+				input.form__input.form__input--form.form__item(name="login" type="text" placeholder="Введите логин"  autocomplete="on" required)
 		.form__field
 			label.form__label
-				span.form__name
+				span.form__name.form__name--form
 					| Пароль
-				input.form__input.form__item(name="password" type="password" placeholder="Введите пароль" autocomplete="on" required)
+				input.form__input.form__input--form.form__item(name="password" type="password" placeholder="Введите пароль" autocomplete="on" required)
 	button.btn.btn--form.btn--form--login#login(type="button")
 		| Войти
 

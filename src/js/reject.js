@@ -57,19 +57,19 @@ function templateRejectForm(data) {
 	return `
 		<div class="form__fields">
 			<div class="form__field">
-				<span class="form__name">Фамилия Имя Отчество</span>
+				<span class="form__name form__name--form">Фамилия Имя Отчество</span>
 				<span class="form__item form__item--static" data-field="fio">${fio}</span>
 			</div>
 			<div class="form__field">
-				<span class="form__name">Должность</span>
+				<span class="form__name form__name--form">Должность</span>
 				<span class="form__item form__item--static" data-field="post">${post}</span>
 			</div>
 			<div class="form__field">
-				<span class="form__name">Статус</span>
+				<span class="form__name form__name--form">Статус</span>
 				<span class="form__item form__item--static" data-field="statustitle">${statustitle}</span>
 			</div>
 			<div class="form__field">
-				<span class="form__name">Дата</span>
+				<span class="form__name form__name--form">Дата</span>
 				<span class="form__item form__item--static" data-field="date">${date}</span>
 			</div>
 		</div>
@@ -79,7 +79,7 @@ function templateRejectForm(data) {
 			</div>
 		</div>
 		<div class="form__message">
-			<span class="form__name">Причина отклонения</span>
+			<span class="form__name form__name--form">Причина отклонения</span>
 			<p class="form__item form__item--static form__item--message" data-field="reason">Не привлекательная внешность.</p>
 		</div>
 	`;

@@ -2,13 +2,13 @@ main.main(data-name="settings")
 	.container
 		h1.main__title
 			| Настройки
-		span.main__depart.main__depart--edit(data-depart="Химический факультет" data-id="ChemDep")
+		span.main__depart.main__depart--settings(data-depart="Химический факультет" data-id="ChemDep")
 			| Химический факультет
 			
 		section.settings#settingsSection
 			.settings__content
-				.settings__section
-					.settings__wrap.settings__wrap--static
+				.settings__section(data-block="changename")
+					.settings__wrap
 						h3.settings__title
 							| Название подразделения
 						span.settings__value
@@ -16,23 +16,28 @@ main.main(data-name="settings")
 					.settings__btn-wrap
 						button.btn.btn--settings(type="button" data-title="Изменить" data-cancel="Отменить")
 							| Изменить
-					.settings__wrap.settings__wrap--change
-						.settings__block
-							label.settings__title(for="longnameDepart")
+					//- form.form.form--settings(action="#" method="GET")
+						.form__field
+							label.form__name.form__name--settings.form__item(for="changeLongName")
 								| Введите полное новое название
-							input.settings__input(id="longnameDepart" type="text" placeholder="Введите полное новое название")
-						.settings__block
-							label.settings__title(for="shortnameDepart")
+							input.form__input.form__input--settings(data-field="changeLongName" name="changeLongName" id="changeLongName" type="text" placeholder="Введите полное новое название")
+						.form__field
+							label.form__name.form__name--settings(for="changeShortName")
 								| Введите сокращенное название
-							input.settings__input(id="shortnameDepart" type="text" placeholder="Введите сокращенное название")
-							span.settings__example
+							input.form__input.form__input--settings.form__item(data-field="changeShortName" name="changeShortName" id="changeShortName" type="text" placeholder="Введите сокращенное название")
+							span.form__text
 								| Например: Химический факультет - Химфак #[br]
 								| Учебный центр социально-воспитательной и внеобразовательной деятельности - УЦСВВОД #[br]
 								| Центр трудоустройства студентов и выпускников - Трудцентр
-						button.btn.btn--changes(type="button")
+						button.btn.btn--changes(data-name="changename" type="button")
 							| Сохранить
+					.info.info--settings
+						p.info__item.info__item--warn.info__item--fields
+							| Предупреждение! Не все поля заполненны.
+						p.info__item.info__item--error.info__item--name
+							| Ошибка! Имя содержит недопустимые символы. Разрешены: кириллические буквы, дефис, апостроф.
 
-				.settings__section
+				//- .settings__section
 					.settings__wrap.settings__wrap--static
 						h3.settings__title
 							| Добавить подразделение
@@ -41,13 +46,13 @@ main.main(data-name="settings")
 							| Добавить
 					.settings__wrap.settings__wrap--change
 						.settings__block
-							label.settings__title(for="longnameDepart")
+							label.settings__title(for="longAddNameDepart")
 								| Введите полное новое название
-							input.settings__input(id="longnameDepart" type="text" placeholder="Введите полное новое название")
+							input.settings__input(id="longAddNameDepart" type="text" placeholder="Введите полное новое название")
 						.settings__block
-							label.settings__title(for="shortnameDepart")
+							label.settings__title(for="shortAddNameDepart")
 								| Введите сокращенное название
-							input.settings__input(id="shortnameDepart" type="text" placeholder="Введите сокращенное название")
+							input.settings__input(id="shortAddNameDepart" type="text" placeholder="Введите сокращенное название")
 						.settings__block
 							label.settings__title(for="idnameDepart")
 								| Введите id подразделения
@@ -55,7 +60,7 @@ main.main(data-name="settings")
 						button.btn.btn--changes(type="button")
 							| Сохранить
 
-				.settings__section
+				//- .settings__section
 					.settings__wrap.settings__wrap--static
 						h3.settings__title
 							| Удалить подразделение
@@ -65,16 +70,16 @@ main.main(data-name="settings")
 					.settings__wrap.settings__wrap--change
 						h3.settings__title
 							| Выбрать подразделение
-						.select.select--settings
+						.select.select--settings(data-field="removedepart")
 							header.select__header.select__header--settings
 								span.select__value.select__value--settings(data-title="title" data-nameid="nameid" data-placeholder="Выберите подразделение")
 									| Выберите подразделение
-							ul.select__list
+							ul.select__list.select__list--settings
 								
 						button.btn.btn--changes(type="button")
 							| Сохранить
 
-				.settings__section
+				//- .settings__section
 					.settings__wrap.settings__wrap--static
 						h3.settings__title
 							| Период автообновления данных в таблицах
@@ -84,7 +89,7 @@ main.main(data-name="settings")
 						button.btn.btn--settings(type="button" data-title="Изменить" data-cancel="Отменить")
 							| Изменить
 					.settings__wrap.settings__wrap--change
-						.select.select--settings
+						.select.select--settings(data-field="time")
 							header.select__header.select__header--settings
 								span.select__value.select__value--settings(data-title="15 мин." data-value="15" data-placeholder="Выберите период автообновления")
 									| Выберите период автообновления
@@ -101,7 +106,7 @@ main.main(data-name="settings")
 						button.btn.btn--changes(type="button")
 							| Сохранить
 
-				.settings__section
+				//- .settings__section
 					.settings__wrap.settings__wrap--static
 						h3.settings__title
 							| Email
