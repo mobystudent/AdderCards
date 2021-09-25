@@ -72,7 +72,7 @@
 			}
 		}
 	} else if ($nameTable === 'department') {
-		if($resultSet = $mysqli->query("SELECT * FROM departments")) {
+		if($resultSet = $mysqli->query("SELECT * FROM department")) {
 			while ($result = $resultSet->fetch_assoc()) {
 				array_push($array, $result);
 			}

@@ -333,6 +333,20 @@
 				echo $mysqli->error;
 			}
 		}
+	} else if (($nameTable === 'department') && ($action === 'add')) {
+		foreach ($array as $item) {
+			foreach ($item as $key => $value) {
+				if ($key === 'nameid') $nameid = $value;
+				if ($key === 'changelongname') $changelongname = $value;
+				if ($key === 'changeshortname') $changeshortname = $value;
+			}
+
+			if($mysqli->query("UPDATE department SET longname = '$changelongname', shortname = '$changeshortname' WHERE nameid = '$nameid'")) {
+				echo('Success update in BD department');
+			} else {
+				echo $mysqli->error;
+			}
+		}
 	}
 
 	$mysqli->close();

@@ -8,8 +8,8 @@ const departmentCollection = new Map();  // Коллекци подраздел�
 const settingsObject = {
 	department: '',
 	statuschangename: '',
-	changeLongName: '',
-	changeShortName: ''
+	changelongname: '',
+	changeshortname: ''
 };
 
 $(window).on('load', () => {
@@ -22,18 +22,18 @@ $(window).on('load', () => {
 function templateSettingsForm() {
 	console.log(settingsObject);
 	const changeNameBtnValue = settingsObject.statuschangename ? 'Отменить' : 'Изменить';
-	const changeLongNameValue = settingsObject.statuschangename ? '' : settingsObject.changeLongName;
-	const changeShortNameValue = settingsObject.statuschangename ? '' : settingsObject.changeShortName;
+	const changelongnameValue = settingsObject.statuschangename ? '' : settingsObject.changelongname;
+	const changeshortnameValue = settingsObject.statuschangename ? '' : settingsObject.changeshortname;
 	const changeNameBtnClass = settingsObject.statuschangename ? 'btn--settings-disabled' : '';
 	const changeNameView = settingsObject.statuschangename ? `
 		<form class="form form--settings" action="#" method="GET">
 			<div class="form__field">
-				<label class="form__name form__name--settings" for="changeLongName">Введите полное новое название</label>
-				<input class="form__input form__input--settings form__item" data-field="changeLongName" name="changeLongName" id="changeLongName" type="text" value="${changeLongNameValue}" placeholder="Введите полное новое название"/>
+				<label class="form__name form__name--settings" for="changelongname">Введите полное новое название</label>
+				<input class="form__input form__input--settings form__item" data-field="changelongname" name="changelongname" id="changelongname" type="text" value="${changelongnameValue}" placeholder="Введите полное новое название"/>
 			</div>
 			<div class="form__field">
-				<label class="form__name form__name--settings" for="changeShortName">Введите сокращенное название</label>
-				<input class="form__input form__input--settings form__item" data-field="changeShortName" name="changeShortName" id="changeShortName" type="text" value="${changeShortNameValue}" placeholder="Введите сокращенное название"/>
+				<label class="form__name form__name--settings" for="changeshortname">Введите сокращенное название</label>
+				<input class="form__input form__input--settings form__item" data-field="changeshortname" name="changeshortname" id="changeshortname" type="text" value="${changeshortnameValue}" placeholder="Введите сокращенное название"/>
 				<span class="form__text">Например: Химический факультет - Химфак <br/>
 				Учебный центр социально-воспитательной и внеобразовательной деятельности - УЦСВВОД <br/>
 				Центр трудоустройства студентов и выпускников - Трудцентр</span>
@@ -79,8 +79,8 @@ function showChangesFields() {
 
 function clearFieldsForm() {
 	settingsObject.statuschangename = '';
-	settingsObject.changeLongName = '';
-	settingsObject.changeShortName = '';
+	settingsObject.changelongname = '';
+	settingsObject.changeshortname = '';
 
 	renderSection();
 	memberInputField();
@@ -97,7 +97,7 @@ function memberInputField() {
 	});
 }
 
-function applyFieldsChanges() {
+function applyFieldsChanges(page = 'settings') {
 	$('.btn--changes').click((e) => {
 		const nameBlock = $(e.currentTarget).attr('data-name');
 		const fields = $(`.settings__section[data-block=${nameBlock}]`).find('.form__item');
@@ -107,12 +107,19 @@ function applyFieldsChanges() {
 
 			object[fieldName] = inputValue;
 
+			if (nameBlock === 'changename') {
+				const idDepart = $(`.main__depart--${page}`).attr('data-id');
+
+				object.nameid = idDepart;
+			}
+
 			return object;
 		}, {});
 
 		console.log(userData);
 
 		if (validationEmptyFields(userData)) {
+			setNameDepartmentInDB([userData], 'department', 'add');
 			clearFieldsForm();
 		}
 	});
@@ -124,7 +131,7 @@ function validationEmptyFields(fields, page = 'settings') {
 	let correctName = 'hide';
 
 	for (let key in fields) {
-		if ((key == 'changeLongName' || key == 'changeShortName') && fields[key]) {
+		if ((key == 'changelongname' || key == 'changeshortname') && fields[key]) {
 			correctName = fields[key].match(/[^а-яА-ЯiIъїЁё.'-\s]/g) ? 'show' : 'hide';
 		}
 	}
@@ -214,6 +221,26 @@ function getDepartmentInDB(nameTable) {
 			dataFromDB.forEach((item, i) => {
 				departmentCollection.set(i + 1, item);
 			});
+		},
+		error: () => {
+			service.modal('download');
+		}
+	});
+}
+
+function setNameDepartmentInDB(array, nameTable, action) {
+	$.ajax({
+		url: "./php/change-user-request.php",
+		method: "post",
+		dataType: "html",
+		async: false,
+		data: {
+			action: action,
+			nameTable: nameTable,
+			array: array
+		},
+		success: () => {
+			service.modal('update');
 		},
 		error: () => {
 			service.modal('download');
