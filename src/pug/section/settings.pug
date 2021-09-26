@@ -29,7 +29,7 @@ main.main(data-name="settings")
 								| Учебный центр социально-воспитательной и внеобразовательной деятельности - УЦСВВОД #[br]
 								| Центр трудоустройства студентов и выпускников - Трудцентр
 						button.btn.btn--changes(data-name="changename" type="button")
-							| Сохранить
+							| Подтвердить
 					.info.info--settings
 						p.info__item.info__item--warn.info__item--fields
 							| Предупреждение! Не все поля заполненны.
@@ -66,7 +66,7 @@ main.main(data-name="settings")
 								| Учебный центр социально-воспитательной и внеобразовательной деятельности - TCSENEA (УЦСВВОД) #[br]
 								| Центр трудоустройства студентов и выпускников - EmlCen (Трудцентр)
 						button.btn.btn--changes(data-name="adddepart" type="button")
-							| Сохранить
+							| Подтвердить
 					.info.info--settings
 						p.info__item.info__item--warn.info__item--fields
 							| Предупреждение! Не все поля заполненны.
@@ -75,24 +75,28 @@ main.main(data-name="settings")
 						p.info__item.info__item--error.info__item--long
 							| Ошибка! ID подразделения должно быть не более 9 символов.
 
-				//- .settings__section
-					.settings__wrap.settings__wrap--static
+				.settings__section(data-block="removedepart")
+					.settings__wrap
 						h3.settings__title
 							| Удалить подразделение
 					.settings__btn-wrap
-						button.btn.btn--settings(type="button" data-title="Удалить" data-cancel="Отменить")
+						button.btn.btn--settings(type="button" data-name="removedepart")
 							| Удалить
-					.settings__wrap.settings__wrap--change
-						h3.settings__title
-							| Выбрать подразделение
-						.select.select--settings(data-field="removedepart")
-							header.select__header.select__header--settings
-								span.select__value.select__value--settings(data-title="title" data-nameid="nameid" data-placeholder="Выберите подразделение")
-									| Выберите подразделение
-							ul.select__list.select__list--settings
+					//- form.form.form--settings(action="#" method="GET")
+						.form__field
+							h3.form__name.form__name--settings
+								| Выбрать подразделение
+							.form__item.select.select--settings(data-field="removedepart" data-type="removenameid" data-select="removenameid")
+								header.select__header.select__header--settings
+									span.select__value.select__value--settings(data-title="title" data-nameid="nameid")
+										| Выберите подразделение
+								ul.select__list.select__list--settings
 								
-						button.btn.btn--changes(type="button")
-							| Сохранить
+						button.btn.btn--changes(data-name="removedepart" type="button")
+							| Подтвердить
+					.info.info--settings
+						p.info__item.info__item--warn.info__item--fields
+							| Предупреждение! Не выбрано поле с названием подразделения.
 
 				//- .settings__section
 					.settings__wrap.settings__wrap--static
@@ -104,9 +108,9 @@ main.main(data-name="settings")
 						button.btn.btn--settings(type="button" data-title="Изменить" data-cancel="Отменить")
 							| Изменить
 					.settings__wrap.settings__wrap--change
-						.select.select--settings(data-field="time")
+						.form__item.select.select--settings(data-field="time")
 							header.select__header.select__header--settings
-								span.select__value.select__value--settings(data-title="15 мин." data-value="15" data-placeholder="Выберите период автообновления")
+								span.select__value.select__value--settings(data-title="15 мин." data-value="15")
 									| Выберите период автообновления
 							ul.select__list.select__list--settings
 								

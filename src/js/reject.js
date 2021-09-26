@@ -144,7 +144,6 @@ function userFromDB(array, nameTable = '#tableReject') {
 		post: '',
 		statusid: '',
 		statustitle: '',
-		department: '',
 		statususer: '',
 		resend: ''
 	};
@@ -312,7 +311,6 @@ function getDatainDB(nameTable) {
 		method: "post",
 		dataType: "html",
 		data: {
-			idDepart: settingsObject.nameid,
 			nameTable: nameTable
 		},
 		async: false,

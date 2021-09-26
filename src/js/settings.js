@@ -17,21 +17,25 @@ const settingsObject = {
 	addlongname: '',
 	addshortname: '',
 	addnameid: '',
+	statusremovedepart: '',
+	removelongname: '',
+	removenameid: ''
 };
 
 $(window).on('load', () => {
 	getNameDepartmentFromDB('settings');
-	settingsScrollbar();
 });
 
 function templateSettingsForm() {
 	console.log(settingsObject);
 	const changeNameTemplate = templateChangeNameForm();
 	const addDepartTemplate = templateAddDepartForm();
+	const removeDepartTemplate = templateRemoveDepartForm();
 
 	return `
 		${changeNameTemplate}
 		${addDepartTemplate}
+		${removeDepartTemplate}
 	`;
 }
 
@@ -53,7 +57,7 @@ function templateChangeNameForm() {
 					Центр трудоустройства студентов и выпускников - Трудцентр
 				</span>
 			</div>
-			<button class="btn btn--changes" data-name="changename" type="button">Сохранить</button>
+			<button class="btn btn--changes" data-name="changename" type="button">Подтвердить</button>
 		</form>
 	` : '';
 
@@ -103,7 +107,7 @@ function templateAddDepartForm() {
 					Центр трудоустройства студентов и выпускников - EmlCen (Трудцентр)
 				</span>
 			</div>
-			<button class="btn btn--changes" data-name="adddepart" type="button">Сохранить</button>
+			<button class="btn btn--changes" data-name="adddepart" type="button">Подтвердить</button>
 		</form>
 	` : '';
 
@@ -125,6 +129,42 @@ function templateAddDepartForm() {
 	`;
 }
 
+function templateRemoveDepartForm() {
+	const removeDepartBtnValue = settingsObject.statusremovedepart ? 'Отменить' : 'Удалить';
+	const removeDepartBtnClass = settingsObject.statusremovedepart ? 'btn--settings-disabled' : '';
+	const removedepartValue = settingsObject.removelongname ? settingsObject.removelongname : 'Выберите подразделение';
+	const removedepartClassView = settingsObject.removelongname ? 'select__value--selected-settings' : '';
+	const removeDepartView = settingsObject.statusremovedepart ? `
+		<form class="form form--settings" action="#" method="GET">
+			<div class="form__field">
+				<h3 class="form__name form__name--settings">Выбрать подразделение</h3>
+				<div class="form__item select select--settings" data-field="removedepart" data-type="removenameid" data-select="removenameid">
+					<header class="select__header select__header--settings">
+						<span class="select__value select__value--settings ${removedepartClassView}" data-title="${removedepartValue}" data-removenameid="${settingsObject.removenameid}">${removedepartValue}</span>
+					</header>
+					<ul class="select__list select__list--settings"></ul>
+				</div>
+			</div>
+			<button class="btn btn--changes" data-name="removedepart" type="button">Подтвердить</button>
+		</form>
+	` : '';
+
+	return `
+		<div class="settings__section" data-block="removedepart">
+			<div class="settings__wrap">
+				<h3 class="settings__title">Удалить подразделение</h3>
+			</div>
+			<div class="settings__btn-wrap">
+				<button class="btn btn--settings ${removeDepartBtnClass}" data-name="removedepart" type="button">${removeDepartBtnValue}</button>
+			</div>
+			${removeDepartView}
+			<div class="info info--settings">
+				<p class="info__item info__item--warn info__item--fields">Предупреждение! Не выбрано подразделение.</p>
+			</div>
+		</div>
+	`;
+}
+
 function renderSection(nameSection = '#settingsSection') {
 	$(`${nameSection} .settings__content`).html('');
 	$(`${nameSection} .settings__content`).append(templateSettingsForm());
@@ -134,13 +174,128 @@ function showChangesFields() {
 	$('.btn--settings').click((e) => {
 		const typeBtn = $(e.currentTarget).data('name');
 		settingsObject[`status${typeBtn}`] = $(`.btn--settings[data-name=${typeBtn}]`).hasClass('btn--settings-disabled') ? false : true;
-		settingsObject.department = $('.main__depart--settings').attr('data-depart');
 
 		renderSection();
 		memberInputField();
+		toggleSelect();
 		applyFieldsChanges();
 		showChangesFields();
+		// contentScrollbar();
+		getDepartmentInDB('department');
+		setDepartInSelect();
 	});
+}
+
+function applyFieldsChanges() {
+	$('.btn--changes').click((e) => {
+		const nameBlock = $(e.currentTarget).attr('data-name');
+		const fields = $(`.settings__section[data-block=${nameBlock}]`).find('.form__item');
+		const userData = [...fields].reduce((object, item) => {
+			const fieldName = $(item).data('field');
+
+			if ($(item).hasClass('select')) {
+				const typeSelect = $(item).data('select');
+				const nameId = $(item).find('.select__value--selected-settings').attr(`data-${typeSelect}`);
+				const fieldType = $(item).data('type');
+				const valueItem = $(item).find('.select__value--selected-settings').attr('data-title');
+
+				// console.log(typeSelect);
+				// console.log(nameId);
+				// console.log(fieldType);
+				// console.log(valueItem);
+
+				if (typeSelect === 'removenameid') {
+					object[fieldType] = nameId;
+				}
+
+				object[fieldName] = valueItem;
+			} else {
+				if (nameBlock === 'changename') {
+					const idDepart = settingsObject.nameid;
+
+					object.nameid = idDepart;
+				}
+
+				const inputValue = $(item).val();
+
+				object[fieldName] = inputValue;
+			}
+
+			return object;
+		}, {});
+
+		if (validationEmptyFields(userData)) {
+			setNameDepartmentInDB([userData], 'settings', settingsObject.action);
+			clearFieldsForm();
+			getNameDepartmentFromDB('settings');
+		}
+	});
+}
+
+// function contentScrollbar() {
+// 	Scrollbar.init($('.settings__content').get(0), {
+// 		alwaysShowTracks: true
+// 	});
+// }
+
+// function listScrollbar(nameSection = '#settingsSection') {
+// 	Scrollbar.init($(`${nameSection} .select__list`).get(0), {
+// 		alwaysShowTracks: true
+// 	});
+// }
+
+function setDepartInSelect() {
+	departmentCollection.forEach((depart) => {
+		const { nameid = '', longname = '' } = depart;
+		const quoteName = longname.replace(/["']/g , '&quot;');
+
+		$('.select[data-field="removedepart"] .select__list').append(`
+			<li class="select__item">
+				<span class="select__name select__name--settings" data-title="${quoteName}" data-removenameid="${nameid}">${quoteName}</span>
+			</li>
+		`);
+	});
+
+	clickSelectItem();
+}
+
+function toggleSelect(nameSection = '#settingsSection') {
+	$(`${nameSection} .select__header`).click((e) => {
+		$(e.currentTarget).next().slideToggle();
+		$(e.currentTarget).toggleClass('select__header--active');
+	});
+
+	clickSelectItem();
+}
+
+function clickSelectItem(nameSection = '#settingsSection') {
+	$(`${nameSection} .select__item`).click((e) => {
+		const title = $(e.currentTarget).find('.select__name').data('title');
+		const select = $(e.currentTarget).parents('.select').data('select');
+
+		setDataAttrSelectedItem(title, select, e.currentTarget);
+		setDepartInSelect();
+	});
+}
+
+function setDataAttrSelectedItem(title, select, elem) {
+	const statusremovedepart = select === 'removenameid' ? title : '';
+	const removenameid = select === 'removenameid' ? $(elem).find('.select__name').data(select) : '';
+	const removedepart = select === 'removenameid' ? title : '';
+	const quoteRemovedepart = removedepart ? removedepart.replace(/["']/g , '&quot;') : '';
+
+	if (select === 'removenameid') {
+		settingsObject.statusremovedepart = statusremovedepart;
+		settingsObject.removelongname = quoteRemovedepart;
+		settingsObject.removenameid = removenameid;
+	}
+
+	console.warn(settingsObject);
+
+	renderSection();
+	showChangesFields();
+	applyFieldsChanges();
+	toggleSelect();
 }
 
 function clearFieldsForm() {
@@ -152,6 +307,9 @@ function clearFieldsForm() {
 	settingsObject.addlongname = '';
 	settingsObject.addshortname = '';
 	settingsObject.addnameid = '';
+	settingsObject.statusremovedepart = '';
+	settingsObject.removelongname = '';
+	settingsObject.removenameid = '';
 
 	renderSection();
 	memberInputField();
@@ -165,35 +323,6 @@ function memberInputField() {
 		const fieldValue = $(e.currentTarget).val();
 
 		settingsObject[nameField] = fieldValue ? fieldValue : settingsObject[nameField];
-	});
-}
-
-function applyFieldsChanges(page = 'settings') {
-	$('.btn--changes').click((e) => {
-		const nameBlock = $(e.currentTarget).attr('data-name');
-		const fields = $(`.settings__section[data-block=${nameBlock}]`).find('.form__item');
-		const userData = [...fields].reduce((object, item) => {
-			const fieldName = $(item).data('field');
-			const inputValue = $(item).val();
-
-			object[fieldName] = inputValue;
-
-			if (nameBlock === 'changename') {
-				const idDepart = $(`.main__depart--${page}`).attr('data-id');
-
-				object.nameid = idDepart;
-			}
-
-			return object;
-		}, {});
-
-		console.log(userData);
-
-		if (validationEmptyFields(userData)) {
-			setNameDepartmentInDB([userData], 'settings', settingsObject.action);
-			clearFieldsForm();
-			getNameDepartmentFromDB('settings');
-		}
 	});
 }
 
@@ -226,6 +355,9 @@ function validationEmptyFields(fields, page = 'settings') {
 				countNameidLetters = (countLetters.length > 9) ? 'show' : 'hide';
 			}
 		}
+	} else if (settingsObject.statusremovedepart) {
+		nameBlock = 'removedepart';
+		settingsObject.action = 'remove';
 	}
 
 	const valid = [statusMess, correctName].every((mess) => mess === 'hide');
@@ -236,68 +368,6 @@ function validationEmptyFields(fields, page = 'settings') {
 	$(`.main[data-name=${page}] .settings__section[data-block=${nameBlock}]`).find('.info__item--error.info__item--long')[countNameidLetters]();
 
 	return valid;
-}
-
-function settingsScrollbar(nameSection = '#settingsSection') {
-	Scrollbar.init($('.settings__content').get(0), {
-		alwaysShowTracks: true
-	});
-
-	// Scrollbar.init($(`${nameSection} .select__list`).get(0), {
-	// 	alwaysShowTracks: true
-	// });
-}
-
-function setDepartInSelect(nameSection = '#settingsSection') {
-	departmentCollection.forEach((depart) => {
-		const { idname = '', longname = '' } = depart;
-		const quoteName = longname.replace(/["']/g , '&quot;');
-		console.log(quoteName);
-
-		$(`${nameSection} .select[data-field="removedepart"] .select__list`).append(`
-			<li class="select__item">
-				<span class="select__name select__name--settings" data-title="${quoteName}" data-newnameid="${idname}">${quoteName}</span>
-			</li>
-		`);
-	});
-
-	clickSelectItem();
-}
-
-function toggleSelect(nameSection = '#settingsSection') {
-	$(`${nameSection} .select__header`).click((e) => {
-		$(e.currentTarget).next().slideToggle();
-		$(e.currentTarget).toggleClass('select__header--active');
-	});
-
-	clickSelectItem();
-}
-
-function clickSelectItem(nameSection = '#settingsSection') {
-	$(`${nameSection} .select__item`).click((e) => {
-		const title = $(e.currentTarget).find('.select__name').data('title');
-		const value = $(e.currentTarget).find('.select__name').data('value');
-		const select = $(e.currentTarget).parents('.select').data('select');
-
-		if (select === 'department') {
-			getDepartmentInDB('department');
-		}
-
-		setDataAttrSelectedItem(title, select, e.currentTarget);
-	});
-}
-
-function setDataAttrSelectedItem(title, select, elem, nameForm = '#editForm') {
-	// $(e.currentTarget)
-	// .parents('.select')
-	// .find('.select__value--settings')
-	// .attr({ 'data-value': value, 'data-title': title })
-	// .text(title);
-	// $(e.currentTarget).parents('.select__header').slideUp();
-
-	renderSection(settingsObject, 'clear');
-
-	toggleSelect();
 }
 
 function setNameDepartOnPage(depart, page = 'settings') {
