@@ -13,17 +13,17 @@ main.main(data-name="settings")
 						span.settings__department(data-nameid="" data-shortname="" data-longname="")
 							| Химический факультет
 					.settings__btn-wrap
-						button.btn.btn--settings(type="button" data-title="Изменить" data-cancel="Отменить")
+						button.btn.btn--settings(type="button" data-name="changename")
 							| Изменить
 					//- form.form.form--settings(action="#" method="GET")
 						.form__field
-							label.form__name.form__name--settings.form__item(for="changeLongName")
+							label.form__name.form__name--settings.form__item(for="changelongname")
 								| Введите полное новое название
-							input.form__input.form__input--settings(data-field="changeLongName" name="changeLongName" id="changeLongName" type="text" placeholder="Введите полное новое название")
+							input.form__input.form__input--settings(data-field="changelongname" name="changelongname" id="changelongname" type="text" placeholder="Введите полное новое название")
 						.form__field
-							label.form__name.form__name--settings(for="changeShortName")
+							label.form__name.form__name--settings(for="changeshortname")
 								| Введите сокращенное название
-							input.form__input.form__input--settings.form__item(data-field="changeShortName" name="changeShortName" id="changeShortName" type="text" placeholder="Введите сокращенное название")
+							input.form__input.form__input--settings.form__item(data-field="changeshortname" name="changeshortname" id="changeshortname" type="text" placeholder="Введите сокращенное название")
 							span.form__text
 								| Например: Химический факультет - Химфак #[br]
 								| Учебный центр социально-воспитательной и внеобразовательной деятельности - УЦСВВОД #[br]
@@ -36,28 +36,44 @@ main.main(data-name="settings")
 						p.info__item.info__item--error.info__item--name
 							| Ошибка! Имя содержит недопустимые символы. Разрешены: кириллические буквы, дефис, апостроф.
 
-				//- .settings__section
-					.settings__wrap.settings__wrap--static
+				.settings__section(data-block="adddepart")
+					.settings__wrap
 						h3.settings__title
 							| Добавить подразделение
 					.settings__btn-wrap
-						button.btn.btn--settings(type="button" data-title="Добавить" data-cancel="Отменить")
+						button.btn.btn--settings(type="button" data-name="adddepart")
 							| Добавить
-					.settings__wrap.settings__wrap--change
-						.settings__block
-							label.settings__title(for="longAddNameDepart")
+					//- form.form.form--settings(action="#" method="GET")
+						.form__field
+							label.form__name.form__name--settings(for="addlongname")
 								| Введите полное новое название
-							input.settings__input(id="longAddNameDepart" type="text" placeholder="Введите полное новое название")
-						.settings__block
-							label.settings__title(for="shortAddNameDepart")
+							input.form__input.form__input--settings.form__item(data-field="addlongname" name="addlongname" id="addlongname" type="text" placeholder="Введите полное новое название")
+						.form__field
+							label.form__name.form__name--settings(for="addshortname")
 								| Введите сокращенное название
-							input.settings__input(id="shortAddNameDepart" type="text" placeholder="Введите сокращенное название")
-						.settings__block
-							label.settings__title(for="idnameDepart")
+							input.form__input.form__input--settings.form__item(data-field="addshortname" name="addshortname" id="addshortname" type="text" placeholder="Введите сокращенное название")
+							span.form__text
+								| Например: Химический факультет - Химфак #[br]
+								| Учебный центр социально-воспитательной и внеобразовательной деятельности - УЦСВВОД #[br]
+								| Центр трудоустройства студентов и выпускников - Трудцентр
+						.form__field
+							label.form__name.form__name--settings(for="addnameid")
 								| Введите id подразделения
-							input.settings__input(id="idnameDepart" type="text" placeholder="Введите id подразделения")
-						button.btn.btn--changes(type="button")
+							input.form__input.form__input--settings.form__item(data-field="addnameid" name="addnameid" id="addnameid" type="text" placeholder="Введите id подразделения")
+							span.form__text
+								| Переводим сокращенное название на английский (не должно быть большей 9 символов). #[br]
+								| Например: Химический факультет - ChemDep (Химфак) #[br]
+								| Учебный центр социально-воспитательной и внеобразовательной деятельности - TCSENEA (УЦСВВОД) #[br]
+								| Центр трудоустройства студентов и выпускников - EmlCen (Трудцентр)
+						button.btn.btn--changes(data-name="adddepart" type="button")
 							| Сохранить
+					.info.info--settings
+						p.info__item.info__item--warn.info__item--fields
+							| Предупреждение! Не все поля заполненны.
+						p.info__item.info__item--error.info__item--name
+							| Ошибка! Имя содержит недопустимые символы. Разрешены: кириллические буквы, дефис, апостроф.
+						p.info__item.info__item--error.info__item--long
+							| Ошибка! ID подразделения должно быть не более 9 символов.
 
 				//- .settings__section
 					.settings__wrap.settings__wrap--static

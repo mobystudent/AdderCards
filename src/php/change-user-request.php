@@ -333,7 +333,7 @@
 				echo $mysqli->error;
 			}
 		}
-	} else if (($nameTable === 'settings') && ($action === 'add')) {
+	} else if (($nameTable === 'settings') && ($action === 'change')) {
 		foreach ($array as $item) {
 			foreach ($item as $key => $value) {
 				if ($key === 'nameid') $nameid = $value;
@@ -356,7 +356,43 @@
 				echo $mysqli->error;
 			}
 		}
+	} else if (($nameTable === 'settings') && ($action === 'add')) {
+		foreach ($array as $item) {
+			foreach ($item as $key => $value) {
+				if ($key === 'addnameid') $addnameid = $value;
+				if ($key === 'addlongname') $addlongname = $value;
+				if ($key === 'addshortname') $addshortname = $value;
+			}
+
+			$idDepart = strtolower($item['addnameid']);
+			$nameDepart = 'settings_depart_'.$idDepart;
+
+			if($mysqli->query("CREATE TABLE `$nameDepart` (
+				id INT(10) UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+				nameid VARCHAR(20) NOT NULL,
+				shortname VARCHAR(20) NOT NULL,
+				longname VARCHAR(200) NOT NULL
+			)")) {
+				echo('Success add in BD '.$nameDepart);
+
+				if($mysqli->query("INSERT INTO `$nameDepart` (nameid, longname, shortname) VALUES ('$addnameid', '$addlongname', '$addshortname')")) {
+					echo('Success create table '.$nameDepart);
+				} else {
+					echo $mysqli->error;
+				}
+			} else {
+				echo $mysqli->error;
+			}
+
+			if($mysqli->query("INSERT INTO department (nameid, longname, shortname) VALUES ('$addnameid', '$addlongname', '$addshortname')")) {
+				echo('Success update in BD department');
+			} else {
+				echo $mysqli->error;
+			}
+		}
 	}
+
+	// echo json_encode($array);
 
 	$mysqli->close();
 

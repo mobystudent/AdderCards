@@ -8,9 +8,8 @@
 	}
 
 	&--settings {
-		#{$self}__item:first-child {
-			margin-top: 20px;
-		}
+		display: none;
+		margin-top: 20px;
 	}
 
 	&__item {
