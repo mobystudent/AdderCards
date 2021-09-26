@@ -54,11 +54,11 @@ function templatePermissionTable(data) {
 }
 
 function templatePermissionTabs(data) {
-	const { idname = '', shortname = '', status = '' } = data;
+	const { nameid = '', shortname = '', status = '' } = data;
 	const statusView = status ? 'tab__item--active' : '';
 
 	return `
-		<button class="tab__item ${statusView}" type="button" data-depart=${idname}>
+		<button class="tab__item ${statusView}" type="button" data-depart=${nameid}>
 			<span class="tab__name">${shortname}</span>
 		</button>
 	`;
@@ -200,10 +200,10 @@ function setDataInStorage(page = 'permis') {
 
 function showActiveDataOnPage(activeDepart) {
 	departmentCollection.forEach((depart) => {
-		const { idname = '', longname = '' } = depart;
+		const { nameid = '', longname = '' } = depart;
 
-		if (idname === activeDepart) {
-			showTitleDepart(longname, idname);
+		if (nameid === activeDepart) {
+			showTitleDepart(longname, nameid);
 		}
 	});
 
@@ -501,13 +501,13 @@ function addTabs(activeTab, page = 'permis') {
 	if (filterNameDepart.length > 1) {
 		filterNameDepart.forEach((item) => {
 			departmentCollection.forEach((depart) => {
-				const { idname = '', shortname = '' } = depart;
+				const { nameid = '', shortname = '' } = depart;
 
-				if (item == idname) {
+				if (item == nameid) {
 					const objTab = {
-						idname,
+						nameid,
 						shortname,
-						status: activeTab === idname ? true : false
+						status: activeTab === nameid ? true : false
 					};
 
 					$(`.tab--${page}`).append(templatePermissionTabs(objTab));

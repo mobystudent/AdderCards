@@ -87,7 +87,7 @@ function templateRemoveForm(data) {
 			<span class="form__name form__name--form">Новое подразделение</span>
 			<div class="form__select form__item select select--form" data-field="newdepart" data-type="newnameid" data-select="newnameid">
 				<header class="select__header select__header--form">
-					<span class="select__value select__value--form ${newdepartClassView}" data-title="${newdepartValue}" data-newnameid="${newnameid}" data-placeholder="Выберите подразделение">${newdepartValue}</span>
+					<span class="select__value select__value--form ${newdepartClassView}" data-title="${newdepartValue}" data-newnameid="${newnameid}">${newdepartValue}</span>
 				</header>
 				<ul class="select__list select__list--form"></ul>
 			</div>
@@ -108,7 +108,7 @@ function templateRemoveForm(data) {
 				<span class="form__name form__name--form">Пользователь</span>
 				<div class="form__select form__item select select--form" data-field="fio" data-select="fio">
 					<header class="select__header select__header--form">
-						<span class="select__value select__value--form ${fioClassView}" data-title="${fioValue}" data-fio="fio" data-placeholder="Выберите пользователя">${fioValue}</span>
+						<span class="select__value select__value--form ${fioClassView}" data-title="${fioValue}" data-fio="fio">${fioValue}</span>
 					</header>
 					<ul class="select__list select__list--form"></ul>
 				</div>
@@ -117,7 +117,7 @@ function templateRemoveForm(data) {
 				<span class="form__name form__name--form">Причина удаления/отчисления</span>
 				<div class="form__select form__item select select--form" data-field="statustitle" data-type="statusid" data-select="reason">
 					<header class="select__header select__header--form">
-						<span class="select__value select__value--form ${reasonClassView}" data-title="${reasonValue}" data-reason="${statusid}" data-placeholder="Выберите причину удаления/отчисления">${reasonValue}</span>
+						<span class="select__value select__value--form ${reasonClassView}" data-title="${reasonValue}" data-reason="${statusid}">${reasonValue}</span>
 					</header>
 					<ul class="select__list select__list--form">
 						<li class="select__item">
@@ -348,13 +348,13 @@ function setDataInStorage(page = 'remove') {
 
 function setDepartInSelect() {
 	departmentCollection.forEach((depart) => {
-		const { idname = '', longname = '' } = depart;
+		const { nameid = '', longname = '' } = depart;
 		const quoteName = longname.replace(/["']/g , '&quot;');
 
-		if (idname !== settingsObject.nameid) {
+		if (nameid !== settingsObject.nameid) {
 			$('.select[data-field="newdepart"] .select__list').append(`
 				<li class="select__item">
-					<span class="select__name" data-title="${quoteName}" data-newnameid="${idname}">${quoteName}</span>
+					<span class="select__name" data-title="${quoteName}" data-newnameid="${nameid}">${quoteName}</span>
 				</li>
 			`);
 		}
@@ -419,7 +419,7 @@ function clickSelectItem(nameForm = '#removeForm') {
 		}
 
 		setDataAttrSelectedItem(title, select, e.currentTarget);
-		getAddUsersInDB(); // вывести всех польлзователе в селект
+		getAddUsersInDB(); // вывести всех пользователей в селект
 		setDepartInSelect();
 	});
 }

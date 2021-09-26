@@ -127,10 +127,10 @@ function showActiveDataOnPage(collection, nameTable, modDepart, nameDepart) {
 	});
 
 	departmentCollection.forEach((depart) => {
-		const { idName = '', longName = '' } = depart;
+		const { nameid = '', longname = '' } = depart;
 
-		if (idName == nameDepart) {
-			showTitleDepart(longName, idName, modDepart);
+		if (nameid == nameDepart) {
+			showTitleDepart(longname, nameid, modDepart);
 		}
 	});
 
@@ -182,12 +182,12 @@ function addTabs(collection, modDepart) {
 	if (filterNameDepart.length > 1) {
 		filterNameDepart.forEach((item) => {
 			departmentCollection.forEach((depart) => {
-				const { idName = '', shortName = '' } = depart;
+				const { nameid = '', shortname = '' } = depart;
 
-				if (item == idName) {
+				if (item == nameid) {
 					$(`.tab--${modDepart}`).append(`
-						<button class="tab__item" type="button" data-depart=${idName}>
-							<span class="tab__name">${shortName}</span>
+						<button class="tab__item" type="button" data-depart=${nameid}>
+							<span class="tab__name">${shortname}</span>
 						</button>
 					`);
 				}

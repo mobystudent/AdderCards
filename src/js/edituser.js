@@ -114,7 +114,7 @@ function templateEditForm(data) {
 				<span class="form__name form__name--form">Пользователь</span>
 				<div class="form__select form__item select select--form" data-field="fio" data-select="fio">
 					<header class="select__header select__header--form">
-						<span class="select__value select__value--form ${fioClassView}" data-title="${fioValue}" data-fio="fio" data-placeholder="Выберите пользователя">${fioValue}</span>
+						<span class="select__value select__value--form ${fioClassView}" data-title="${fioValue}" data-fio="fio">${fioValue}</span>
 					</header>
 					<ul class="select__list select__list--form"></ul>
 				</div>
@@ -123,7 +123,7 @@ function templateEditForm(data) {
 				<span class="form__name form__name--form">Тип изменения</span>
 				<div class="form__select form__item select select--form" data-field="statustitle" data-type="statusid" data-select="change">
 					<header class="select__header select__header--form">
-						<span class="select__value select__value--form ${changeClassView}" data-title="${changeValue}" data-change="${statusid}" data-placeholder="Выберите тип изменения">${changeValue}</span>
+						<span class="select__value select__value--form ${changeClassView}" data-title="${changeValue}" data-change="${statusid}">${changeValue}</span>
 					</header>
 					<ul class="select__list select__list--form">
 						<li class="select__item">
@@ -426,7 +426,7 @@ function clickSelectItem(nameForm = '#editForm') {
 		}
 
 		setDataAttrSelectedItem(title, select, e.currentTarget);
-		getAddUsersInDB(); // вывести всех польлзователе в селект
+		getAddUsersInDB(); // вывести всех пользователей в селект
 	});
 }
 

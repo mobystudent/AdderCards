@@ -82,6 +82,8 @@
 	}
 
 	&__list {
+		display: none;
+		position: absolute;
 		top: 42px;
 		left: 0;
 		width: 100%;
@@ -99,8 +101,6 @@
 		&--form {
 			border: 1px solid $gray;
 			background: $gray;
-			display: none;
-			position: absolute;
 		}
 
 		&--settings {

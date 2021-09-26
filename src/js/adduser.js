@@ -100,7 +100,7 @@ function templateAddForm(data) {
 				<span class="form__name form__name--form">Тип идентификатора</span>
 				<div class="form__select form__item select select--form" data-field="statustitle" data-type="statusid" data-select="type">
 					<header class="select__header select__header--form">
-						<span class="select__value select__value--form ${typeClassView}" data-title="${typeValue}" data-type="${statusid}" data-placeholder="Выберите тип идентификатора">${typeValue}</span>
+						<span class="select__value select__value--form ${typeClassView}" data-title="${typeValue}" data-type="${statusid}">${typeValue}</span>
 					</header>
 					<ul class="select__list select__list--form">
 						<li class="select__item">
@@ -116,7 +116,7 @@ function templateAddForm(data) {
 				<span class="form__name form__name--form">Окончание действия пропуска</span>
 				<div class="form__select form__item select select--form" data-field="cardvalidtotitle" data-type="statuscardvalidto" data-select="cardvalidto">
 					<header class="select__header select__header--form">
-						<span class="select__value select__value--form ${cardvalidtoClassView}" data-title="${cardvalidtoValue}" data-cardvalidto="${cardvalidtoid}" data-placeholder="Выберите окончание действия пропуска">${cardvalidtoValue}</span>
+						<span class="select__value select__value--form ${cardvalidtoClassView}" data-title="${cardvalidtoValue}" data-cardvalidto="${cardvalidtoid}">${cardvalidtoValue}</span>
 					</header>
 					<ul class="select__list select__list--form">
 						<li class="select__item">

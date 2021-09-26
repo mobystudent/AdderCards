@@ -12,7 +12,7 @@ main.main(data-name="remove")
 							| Пользователь
 						.form__select.form__item.select.select--form(data-field="fio" data-select="fio")
 							header.select__header.select__header--form
-								span.select__value.select__value--form(data-title="title" data-fio="fio" data-placeholder="Выберите пользователя")
+								span.select__value.select__value--form(data-title="title" data-fio="fio")
 									| Выберите пользователя
 							ul.select__list.select__list--form
 					.form__field
@@ -20,7 +20,7 @@ main.main(data-name="remove")
 							| Причина удаления/отчисления
 						.form__select.form__item.select.select--form(data-field="titleid" data-type="statusid" data-select="reason")
 							header.select__header.select__header--form
-								span.select__value.select__value--form(data-title="title" data-reason="reason" data-placeholder="Выберите причину удаления/отчисления")
+								span.select__value.select__value--form(data-title="title" data-reason="reason")
 									| Выберите причину удаления/отчисления
 							ul.select__list.select__list--form
 								li.select__item
@@ -32,11 +32,11 @@ main.main(data-name="remove")
 					//- .form__field(data-name="depart")
 						span.form__name.form__name--form
 							| Новое подразделение
-						.form__select.form__item.select(data-field="newdepart" data-type="newnameid" data-select="newnameid")
-							header.select__header
-								span.select__value(data-title="title" data-newnameid="newnameid" data-placeholder="Выберите подразделение")
+						.form__select.form__item.select.select--form(data-field="newdepart" data-type="newnameid" data-select="newnameid")
+							header.select__header.select__header--form
+								span.select__value.select__value--form(data-title="title" data-newnameid="newnameid")
 									| Выберите подразделение
-							ul.select__list
+							ul.select__list.select__list--form
 					//- .form__field(data-name="date")
 						label.form__label
 							span.form__name.form__name--form
