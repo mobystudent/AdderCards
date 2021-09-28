@@ -46,7 +46,7 @@
 				echo $mysqli->error;
 			}
 
-			if ($mysqli->query("INSERT INTO request (fio, department, nameid, post, statusid, statustitle, date) VALUES ('$fio', '$department', '$nameid', '$post', '$statusid', '$statustitle', '$date')")) {
+			if ($mysqli->query("INSERT INTO request (fio, post, statusid, statustitle, date) VALUES ('$fio', '$post', '$statusid', '$statustitle', '$date')")) {
 				echo('Success add in BD request');
 			} else {
 				echo $mysqli->error;
@@ -137,7 +137,6 @@
 				if ($key === 'photofile') $photofile = $value;
 				if ($key === 'photourl') $photourl = $value;
 				if ($key === 'newnameid') $newnameid = $value;
-				if ($key === 'newdepart') $newdepart = $value;
 			}
 
 			$idDepart = strtolower($item['nameid']);
@@ -152,7 +151,7 @@
 				echo $mysqli->error;
 			}
 
-			if ($mysqli->query("INSERT INTO `$newDepart` (fio, department, nameid, post, photofile, photourl, statusid, statustitle, date) VALUES ('$fio', '$newdepart', '$newnameid', '$post', '$photofile', '$photourl', '$statusid', '$statustitle', '$date')")) {
+			if ($mysqli->query("INSERT INTO `$newDepart` (fio, post, photofile, photourl, statusid, statustitle, date) VALUES ('$fio', '$post', '$photofile', '$photourl', '$statusid', '$statustitle', '$date')")) {
 				echo('Success add in BD '.$newDepart);
 			} else {
 				echo $mysqli->error;
@@ -200,7 +199,7 @@
 				echo $mysqli->error;
 			}
 
-			if ($mysqli->query("INSERT INTO `$nameDepart` (fio, department, post, photofile, photourl, nameid, statusid, statustitle, date) VALUES ('$fio', '$department', '$post', '$photofile', '$photourl', '$nameid', '$statusid', '$statustitle', '$date')")) {
+			if ($mysqli->query("INSERT INTO `$nameDepart` (fio, post, photofile, photourl, statusid, statustitle, date) VALUES ('$fio', '$post', '$photofile', '$photourl', '$statusid', '$statustitle', '$date')")) {
 				echo('Success add in BD '.$nameDepart);
 			} else {
 				echo $mysqli->error;
@@ -363,23 +362,23 @@
 			}
 
 			$idDepart = strtolower($item['addnameid']);
-			$settingsTable = 'settings_depart_'.$idDepart;
-			$reportTable = 'report_depart_'.$idDepart;
-			$rejectTable = 'reject_depart_'.$idDepart;
-			$addTable = 'add_depart_'.$idDepart;
+			$settingsDepart = 'settings_depart_'.$idDepart;
+			$reportDepart = 'report_depart_'.$idDepart;
+			$rejectDepart = 'reject_depart_'.$idDepart;
+			$addDepart = 'add_depart_'.$idDepart;
 
-			if($mysqli->query("CREATE TABLE `$settingsTable` (
+			if($mysqli->query("CREATE TABLE `$settingsDepart` (
 				id INT(10) UNSIGNED AUTO_INCREMENT PRIMARY KEY,
 				nameid VARCHAR(20) NOT NULL,
 				shortname VARCHAR(20) NOT NULL,
 				longname VARCHAR(200) NOT NULL
 			)")) {
-				echo('Success create table '.$settingsTable);
+				echo('Success create table '.$settingsDepart);
 			} else {
 				echo $mysqli->error;
 			}
 
-			if($mysqli->query("CREATE TABLE `$reportTable` (
+			if($mysqli->query("CREATE TABLE `$reportDepart` (
 				id INT(10) UNSIGNED AUTO_INCREMENT PRIMARY KEY,
 				fio VARCHAR(255) NOT NULL,
 				post VARCHAR(255) NOT NULL,
@@ -387,12 +386,12 @@
 				statustitle VARCHAR(255) NOT NULL,
 				date VARCHAR(20) NOT NULL
 			)")) {
-				echo('Success create table '.$reportTable);
+				echo('Success create table '.$reportDepart);
 			} else {
 				echo $mysqli->error;
 			}
 
-			if($mysqli->query("CREATE TABLE `$rejectTable` (
+			if($mysqli->query("CREATE TABLE `$rejectDepart` (
 				id INT(10) UNSIGNED AUTO_INCREMENT PRIMARY KEY,
 				fio VARCHAR(255) NOT NULL,
 				post VARCHAR(255) NOT NULL,
@@ -402,12 +401,12 @@
 				statusid VARCHAR(255) NOT NULL,
 				statustitle VARCHAR(255) NOT NULL
 			)")) {
-				echo('Success create table '.$rejectTable);
+				echo('Success create table '.$rejectDepart);
 			} else {
 				echo $mysqli->error;
 			}
 
-			if($mysqli->query("CREATE TABLE `$addTable` (
+			if($mysqli->query("CREATE TABLE `$addDepart` (
 				id INT(10) UNSIGNED AUTO_INCREMENT PRIMARY KEY,
 				fio VARCHAR(255) NOT NULL,
 				post VARCHAR(255) NOT NULL,
@@ -417,13 +416,13 @@
 				statusid VARCHAR(255) NOT NULL,
 				statustitle VARCHAR(255) NOT NULL
 			)")) {
-				echo('Success create table '.$addTable);
+				echo('Success create table '.$addDepart);
 			} else {
 				echo $mysqli->error;
 			}
 
-			if($mysqli->query("INSERT INTO `$settingsTable` (nameid, longname, shortname) VALUES ('$addnameid', '$addlongname', '$addshortname')")) {
-				echo('Success add in BD '.$settingsTable);
+			if($mysqli->query("INSERT INTO `$settingsDepart` (nameid, longname, shortname) VALUES ('$addnameid', '$addlongname', '$addshortname')")) {
+				echo('Success add in BD '.$settingsDepart);
 			} else {
 				echo $mysqli->error;
 			}
@@ -441,13 +440,13 @@
 			}
 
 			$idDepart = strtolower($item['removenameid']);
-			$settingsTable = 'settings_depart_'.$idDepart;
-			$reportTable = 'report_depart_'.$idDepart;
-			$rejectTable = 'reject_depart_'.$idDepart;
-			$addTable = 'add_depart_'.$idDepart;
+			$settingsDepart = 'settings_depart_'.$idDepart;
+			$reportDepart = 'report_depart_'.$idDepart;
+			$rejectDepart = 'reject_depart_'.$idDepart;
+			$addDepart = 'add_depart_'.$idDepart;
 
-			if($mysqli->query("DROP TABLE `$settingsTable`, `$reportTable`, `$rejectTable`, `$addTable`")) {
-				echo('Success remove in BD '.$settingsTable.', '.$reportTable.', '.$rejectTable.', '.$addTable);
+			if($mysqli->query("DROP TABLE `$settingsDepart`, `$reportDepart`, `$rejectDepart`, `$addDepart`")) {
+				echo('Success remove in BD '.$settingsDepart.', '.$reportDepart.', '.$rejectDepart.', '.$addDepart);
 			} else {
 				echo $mysqli->error;
 			}

@@ -180,7 +180,7 @@ function showChangesFields() {
 		toggleSelect();
 		applyFieldsChanges();
 		showChangesFields();
-		// contentScrollbar();
+		contentScrollbar();
 		getDepartmentInDB('department');
 		setDepartInSelect();
 	});
@@ -224,6 +224,8 @@ function applyFieldsChanges() {
 			return object;
 		}, {});
 
+		console.log(userData);
+
 		if (validationEmptyFields(userData)) {
 			setNameDepartmentInDB([userData], 'settings', settingsObject.action);
 			clearFieldsForm();
@@ -232,11 +234,11 @@ function applyFieldsChanges() {
 	});
 }
 
-// function contentScrollbar() {
-// 	Scrollbar.init($('.settings__content').get(0), {
-// 		alwaysShowTracks: true
-// 	});
-// }
+function contentScrollbar() {
+	Scrollbar.init($('.settings__content-wrap').get(0), {
+		alwaysShowTracks: true
+	});
+}
 
 // function listScrollbar(nameSection = '#settingsSection') {
 // 	Scrollbar.init($(`${nameSection} .select__list`).get(0), {
@@ -274,7 +276,6 @@ function clickSelectItem(nameSection = '#settingsSection') {
 		const select = $(e.currentTarget).parents('.select').data('select');
 
 		setDataAttrSelectedItem(title, select, e.currentTarget);
-		setDepartInSelect();
 	});
 }
 
@@ -296,6 +297,7 @@ function setDataAttrSelectedItem(title, select, elem) {
 	showChangesFields();
 	applyFieldsChanges();
 	toggleSelect();
+	setDepartInSelect();
 }
 
 function clearFieldsForm() {
@@ -312,9 +314,7 @@ function clearFieldsForm() {
 	settingsObject.removenameid = '';
 
 	renderSection();
-	memberInputField();
 	showChangesFields();
-	toggleSelect();
 }
 
 function memberInputField() {
@@ -360,7 +360,7 @@ function validationEmptyFields(fields, page = 'settings') {
 		settingsObject.action = 'remove';
 	}
 
-	const valid = [statusMess, correctName].every((mess) => mess === 'hide');
+	const valid = [statusMess, correctName, countNameidLetters].every((mess) => mess === 'hide');
 
 	$('.info')[!valid ? 'show' : 'hide']();
 	$(`.main[data-name=${page}] .settings__section[data-block=${nameBlock}]`).find('.info__item--warn.info__item--fields')[statusMess]();
@@ -379,6 +379,7 @@ function setNameDepartOnPage(depart, page = 'settings') {
 	$(`.main__depart--${page}`).attr({ 'data-depart': settingsObject.longname, 'data-id': settingsObject.nameid }).text(settingsObject.longname);
 
 	renderSection();
+	contentScrollbar();
 	showChangesFields();
 	toggleSelect();
 	setDepartInSelect();
