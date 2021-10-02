@@ -4,9 +4,38 @@ import $ from 'jquery';
 import Scrollbar from 'smooth-scrollbar';
 
 $(window).on('load', () => {
+	setUrlSection();
 	switchControl();
 	sortItems();
 });
+
+function setUrlSection(section = '') {
+	const nameSection = location.search.indexOf('name=');
+
+	if (!section) {
+		if (nameSection !== -1)  {
+			section = location.search.slice(nameSection + 5);
+		} else {
+			const controls = $('.control__item');
+
+			if (![...controls].length) return;
+
+			section = $([...controls][0]).data('name');
+		}
+	}
+
+	const urlApp = `${location.origin}${location.pathname}?name=${section}`;
+
+	$('.main').hide();
+	$('.control__item').removeClass('control__item--active');
+
+	if (!$(`.control__item[data-name=${section}]`).hasClass('control__item--active')) {
+		$(`.control__item[data-name=${section}]`).addClass('control__item--active');
+	}
+
+	$(`.main[data-name='${section}']`).show();
+	history.replaceState(null, null, urlApp);
+}
 
 function switchControl() {
 	$('.control').click((e) => {
@@ -14,14 +43,7 @@ function switchControl() {
 
 		if (!nameBtn) return;
 
-		$('.main').hide();
-		$('.control__item').removeClass('control__item--active');
-
-		if (!$(e.target).hasClass('control__item--active')) {
-			$(e.target).addClass('control__item--active');
-			$(`.main[data-name='${nameBtn}']`).show();
-		}
-
+		setUrlSection(nameBtn);
 		focusFirstCell(nameBtn);
 	});
 }

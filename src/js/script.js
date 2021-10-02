@@ -18,15 +18,9 @@ import './settings.js';
 import service from './service.js';
 
 $(window).on('load', () => {
-	defaultDataInTables();
-
 	// service.scrollbar();
 	service.showDataInTable();
 });
-
-function defaultDataInTables() {
-	$(`.main[data-name="const"]`).show();
-}
 
 function focusFirstCell(nameTable) {
 	const rows = $(`.table--${nameTable} .table__content--active`).find('.table__row');
