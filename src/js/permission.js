@@ -400,7 +400,7 @@ function setAddUsersInDB(array, nameTable, action, typeTable, page = 'permis') {
 			array: array
 		},
 		success: () => {
-			const title = action === 'add' ? 'Отклонено' : 'Одобрено';
+			const title = action === 'add' ? 'Reject' : 'Approved';
 
 			service.modal('success');
 
@@ -459,9 +459,17 @@ function getDepartmentInDB(nameTable) {
 }
 
 function sendMail(obj) {
+	const { title = '' } = obj;
 	const sender = 'chepdepart@gmail.com';
-	const recipient = 'xahah55057@secbuf.com';
-	const subject = 'Пользователи успешно добавлены в БД';
+	let subject;
+	let recipient;
+
+	if (title === 'Reject') {
+		recipient = settingsObject.email;
+		subject = 'Пользователи отклонены';
+	} else {
+		subject = 'Пользователи добавлены в БД';
+	}
 
 	$.ajax({
 		url: "./php/mail.php",

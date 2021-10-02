@@ -385,7 +385,7 @@ function getDepartmentInDB(nameTable) {
 
 function sendMail(obj) {
 	const sender = 'chepdepart@gmail.com';
-	const recipient = 'xahah55057@secbuf.com';
+	const recipient = settingsObject.email;
 	const subject = 'Пользователи успешно добавлены в БД';
 
 	$.ajax({
