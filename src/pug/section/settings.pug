@@ -23,9 +23,9 @@ main.main(data-name="settings")
 								| Изменить
 						//- form.form.form--settings(action="#" method="GET")
 							.form__field
-								label.form__name.form__name--settings.form__item(for="changelongname")
+								label.form__name.form__name--settings(for="changelongname")
 									| Введите полное новое название
-								input.form__input.form__input--settings(data-field="changelongname" name="changelongname" id="changelongname" type="text" placeholder="Введите полное новое название")
+								input.form__input.form__input--settings.form__item(data-field="changelongname" name="changelongname" id="changelongname" type="text" placeholder="Введите полное новое название")
 							.form__field
 								label.form__name.form__name--settings(for="changeshortname")
 									| Введите сокращенное название
@@ -135,19 +135,25 @@ main.main(data-name="settings")
 							p.info__item.info__item--warn.info__item--fields
 								| Предупреждение! Не выбрано поле с названием время.
 
-					//- .settings__section
-						.settings__wrap.settings__wrap--static
+					.settings__section(data-block="changeemail")
+						.settings__wrap
 							h3.settings__title
 								| Email
 							span.settings__value
 								| chepdepart@gmail.com
 						.settings__btn-wrap
-							button.btn.btn--settings(type="button" data-title="Изменить" data-cancel="Отменить")
+							button.btn.btn--settings(type="button" data-name="changeemail")
 								| Изменить
-						.settings__wrap.settings__wrap--change
-							.settings__block
-								label.settings__title(for="emailUser")
+						//- form.form.form--settings(action="#" method="GET")
+							.form__field
+								label.form__name.form__name--settings(for="emailManager")
 									| Введите новый email
-								input.settings__input(id="emailUser" type="email" placeholder="Введите новый email")
-							button.btn.btn--changes(type="button")
+								input.form__input.form__input--settings.form__item(data-field="changeemail" name="changeemail" id="emailManager" type="email" placeholder="Введите новый email")
+							button.btn.btn--changes(data-name="changeemail" type="button")
 								| Сохранить
+								
+						.info.info--settings
+							p.info__item.info__item--warn.info__item--fields
+								| Предупреждение! Не все поля заполненны.
+							p.info__item.info__item--error.info__item--email
+								| Ошибка! Некорректный email.

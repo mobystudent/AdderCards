@@ -474,6 +474,22 @@
 				echo $mysqli->error;
 			}
 		}
+	} else if (($nameTable === 'settings') && ($action === 'email')) {
+		foreach ($array as $item) {
+			foreach ($item as $key => $value) {
+				if ($key === 'nameid') $nameid = $value;
+				if ($key === 'changeemail') $email = $value;
+			}
+
+			$idDepart = strtolower($item['nameid']);
+			$nameDepart = 'settings_depart_'.$idDepart;
+
+			if($mysqli->query("UPDATE `$nameDepart` SET email = '$email'")) {
+				echo('Success update in BD '.$nameDepart);
+			} else {
+				echo $mysqli->error;
+			}
+		}
 	}
 
 	// echo json_encode($array);

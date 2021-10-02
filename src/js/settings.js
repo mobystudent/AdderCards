@@ -9,6 +9,7 @@ const settingsObject = {
 	nameid: '',
 	shortname: '',
 	longname: '',
+	email: '',
 	action: '',
 	statuschangename: '',
 	changelongname: '',
@@ -22,7 +23,8 @@ const settingsObject = {
 	removenameid: '',
 	statustimeautoupdate: '',
 	autoupdatetitle: '',
-	autoupdatevalue: ''
+	autoupdatevalue: '',
+	statuschangeemail: ''
 };
 
 $(window).on('load', () => {
@@ -35,12 +37,14 @@ function templateSettingsForm() {
 	const addDepartTemplate = templateAddDepartForm();
 	const removeDepartTemplate = templateRemoveDepartForm();
 	const timeAutoUploadTemplate = templateTimeAutoUploadForm();
+	const changeEmailTemplate = templateChangeEmailForm();
 
 	return `
 		${changeNameTemplate}
 		${addDepartTemplate}
 		${removeDepartTemplate}
 		${timeAutoUploadTemplate}
+		${changeEmailTemplate}
 	`;
 }
 
@@ -254,6 +258,38 @@ function templateTimeAutoUploadForm() {
 	`;
 }
 
+function templateChangeEmailForm() {
+	const changeEmailBtnValue = settingsObject.statuschangeemail ? 'Отменить' : 'Изменить';
+	const changeEmailBtnClass = settingsObject.statuschangeemail ? 'btn--settings-disabled' : '';
+	const emailValue = settingsObject.email ? settingsObject.email : 'Введите почту';
+	const changeEmailView = settingsObject.statuschangeemail ? `
+		<form class="form form--settings" action="#" method="GET">
+			<div class="form__field">
+				<label class="form__name form__name--settings" for="emailManager">Введите новый email</label>
+				<input class="form__input form__input--settings form__item" data-field="changeemail" name="changeemail" id="emailManager" type="email" placeholder="Введите новый email"/>
+			</div>
+			<button class="btn btn--changes" data-name="changeemail" type="button">Сохранить</button>
+		</form>
+	` : '';
+
+	return `
+		<div class="settings__section" data-block="changeemail">
+			<div class="settings__wrap">
+				<h3 class="settings__title">Email</h3>
+				<span class="settings__value">${emailValue}</span>
+			</div>
+			<div class="settings__btn-wrap">
+				<button class="btn btn--settings ${changeEmailBtnClass}" type="button" data-name="changeemail">${changeEmailBtnValue}</button>
+			</div>
+			${changeEmailView}
+			<div class="info info--settings">
+				<p class="info__item info__item--warn info__item--fields">Предупреждение! Не все поля заполненны.</p>
+				<p class="info__item info__item--error info__item--email">Ошибка! Некорректный email.</p>
+			</div>
+		</div>
+	`;
+}
+
 function renderSection(nameSection = '#settingsSection') {
 	$(`${nameSection} .settings__content`).html('');
 	$(`${nameSection} .settings__content`).append(templateSettingsForm());
@@ -282,7 +318,7 @@ function applyFieldsChanges() {
 		const userData = [...fields].reduce((object, item) => {
 			const fieldName = $(item).data('field');
 
-			console.log(fieldName);
+			// console.log(fieldName);
 
 			if ($(item).hasClass('select')) {
 				const typeSelect = $(item).data('select');
@@ -298,25 +334,14 @@ function applyFieldsChanges() {
 				object[fieldType] = nameId;
 				object[fieldName] = valueItem;
 
-				// if (typeSelect === 'removenameid') {
-				//
-				//
 				if (typeSelect === 'autoupdate') {
-				// 	const valueItem = $(item).find('.select__value--selected-settings').attr('data-value');
-				//
-				// 	object[fieldType] = nameId;
-				// 	object[fieldName] = valueItem;
 					object.nameid = settingsObject.nameid;
 				}
 			} else {
-				if (nameBlock === 'changename') {
-					const idDepart = settingsObject.nameid;
-
-					object.nameid = idDepart;
-				}
-
+				const idDepart = settingsObject.nameid;
 				const inputValue = $(item).val();
 
+				object.nameid = idDepart;
 				object[fieldName] = inputValue;
 			}
 
@@ -429,6 +454,7 @@ function clearFieldsForm() {
 	settingsObject.statustimeautoupdate = '';
 	settingsObject.autoupdatetitle = '';
 	settingsObject.autoupdatevalue = '';
+	settingsObject.statuschangeemail = '';
 
 	renderSection();
 	showChangesFields();
@@ -450,6 +476,7 @@ function validationEmptyFields(fields, page = 'settings') {
 	let correctName = 'hide';
 	let countNameidLetters = 'hide';
 	let nameBlock = '';
+	let correctEmail = 'hide';
 
 	if (settingsObject.statuschangename) {
 		nameBlock = 'changename';
@@ -479,24 +506,35 @@ function validationEmptyFields(fields, page = 'settings') {
 	} else if (settingsObject.statustimeautoupdate) {
 		nameBlock = 'timeautoupdate';
 		settingsObject.action = 'autoupdate';
+	} else if (settingsObject.statuschangeemail) {
+		nameBlock = 'changeemail';
+		settingsObject.action = 'email';
+
+		for (let key in fields) {
+			if (key == 'changeemail' && fields[key]) {
+				correctEmail = !fields[key].match(/^([a-z0-9_-]+\.)*[a-z0-9_-]+@[a-z0-9_-]+(\.[a-z0-9_-]+)*\.[a-z]{2,6}$/g) ? 'show' : 'hide';
+			}
+		}
 	}
 
-	const valid = [statusMess, correctName, countNameidLetters].every((mess) => mess === 'hide');
+	const valid = [statusMess, correctName, countNameidLetters, correctEmail].every((mess) => mess === 'hide');
 
 	$('.info')[!valid ? 'show' : 'hide']();
 	$(`.main[data-name=${page}] .settings__section[data-block=${nameBlock}]`).find('.info__item--warn.info__item--fields')[statusMess]();
 	$(`.main[data-name=${page}] .settings__section[data-block=${nameBlock}]`).find('.info__item--error.info__item--name')[correctName]();
 	$(`.main[data-name=${page}] .settings__section[data-block=${nameBlock}]`).find('.info__item--error.info__item--long')[countNameidLetters]();
+	$(`.main[data-name=${page}] .settings__section[data-block=${nameBlock}]`).find('.info__item--error.info__item--email')[correctEmail]();
 
 	return valid;
 }
 
 function setNameDepartOnPage(depart, page = 'settings') {
 	console.log(depart);
-	const { nameid = '', shortname = '', longname = '', autoupdatetitle = '', autoupdatevalue = '' } = depart;
+	const { nameid = '', shortname = '', longname = '', autoupdatetitle = '', autoupdatevalue = '', email = '' } = depart;
 	settingsObject.nameid = nameid;
 	settingsObject.shortname = shortname;
 	settingsObject.longname = longname;
+	settingsObject.email = email;
 	settingsObject.autoupdatetitle = autoupdatetitle;
 	settingsObject.autoupdatevalue = autoupdatevalue;
 
@@ -542,8 +580,8 @@ function setNameDepartmentInDB(array, nameTable, action) {
 			nameTable: nameTable,
 			array: array
 		},
-		success: () => {
-			// console.log(data);
+		success: (data) => {
+			console.log(data);
 			service.modal('update');
 		},
 		error: () => {
