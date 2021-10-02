@@ -275,7 +275,7 @@ function resendAllUsers() {
 }
 
 function autoRefresh(page = 'reject') {
-	const timeReload = 15000 * 15;  //  15 минут
+	const timeReload = 60000 * settingsObject.autoupdatevalue;
 	let markInterval;
 
 	$(`.switch--${page}`).click(() => {

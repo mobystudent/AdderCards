@@ -2,6 +2,7 @@
 
 import $ from 'jquery';
 import service from './service.js';
+import settingsObject from './settings.js';
 
 const requestCollection = new Map(); // БД отчета
 
@@ -101,7 +102,7 @@ function emptySign(nameTable, status) {
 }
 
 function autoRefresh(page = 'permis') {
-	const timeReload = 15000 * 15;  //  15 минут
+	const timeReload = 60000 * settingsObject.autoupdatevalue;
 	let markInterval;
 
 	$(`.switch--${page}`).click(() => {

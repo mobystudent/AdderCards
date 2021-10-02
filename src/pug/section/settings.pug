@@ -11,8 +11,13 @@ main.main(data-name="settings")
 						.settings__wrap
 							h3.settings__title
 								| Название подразделения
-							span.settings__department(data-nameid="" data-shortname="" data-longname="")
-								| Химический факультет
+							.settings__department(data-nameid="" data-shortname="" data-longname="")
+								span.settings__longname
+									| Химический факультет
+								small.settings__separ
+									| /
+								span.settings__shortname
+									| Химфак
 						.settings__btn-wrap
 							button.btn.btn--settings(type="button" data-name="changename")
 								| Изменить
@@ -89,7 +94,7 @@ main.main(data-name="settings")
 									| Выбрать подразделение
 								.form__item.select.select--settings(data-field="removedepart" data-type="removenameid" data-select="removenameid")
 									header.select__header.select__header--settings
-										span.select__value.select__value--settings(data-title="title" data-nameid="nameid")
+										span.select__value.select__value--settings(data-title="title" data-removenameid="removenameid")
 											| Выберите подразделение
 									ul.select__list.select__list--settings
 									
@@ -99,32 +104,36 @@ main.main(data-name="settings")
 							p.info__item.info__item--warn.info__item--fields
 								| Предупреждение! Не выбрано поле с названием подразделения.
 
-					//- .settings__section
-						.settings__wrap.settings__wrap--static
+					.settings__section(data-block="timeautoupdate")
+						.settings__wrap
 							h3.settings__title
 								| Период автообновления данных в таблицах
-							span.settings__value
+							span.settings__value.settings__value--autoupdate
 								| 15 мин.
 						.settings__btn-wrap
-							button.btn.btn--settings(type="button" data-title="Изменить" data-cancel="Отменить")
+							button.btn.btn--settings(type="button" data-name="timeautoupdate")
 								| Изменить
-						.settings__wrap.settings__wrap--change
-							.form__item.select.select--settings(data-field="time")
-								header.select__header.select__header--settings
-									span.select__value.select__value--settings(data-title="15 мин." data-value="15")
-										| Выберите период автообновления
-								ul.select__list.select__list--settings
-									
-									- const arrValues = ['5', '10', '15', '20', '30', '45', '60', false];
-									- const arrTitles = ['5 мин.', '10 мин.', '15 мин.', '20 мин.', '30 мин.', '45 мин.', '1 час', 'отключить'];
-									
-									each items, i in arrValues
-										li.select__item
-											span.select__name.select__name--settings(data-title=arrTitles[i] data-value=arrValues[i])
-												| #{arrTitles[i]}
+						//- form.form.form--settings(action="#" method="GET")
+							.form__field
+								.form__item.select.select--settings(data-field="timeautoupdate" data-type="autoupdate" data-select="autoupdate")
+									header.select__header.select__header--settings
+										span.select__value.select__value--settings(data-title="Выберите период автообновления" data-autoupdate="")
+											| Выберите период автообновления
+									ul.select__list.select__list--settings
+										
+										- const arrValues = ['5', '10', '15', '20', '30', '45', '60', false];
+										- const arrTitles = ['5 мин.', '10 мин.', '15 мин.', '20 мин.', '30 мин.', '45 мин.', '1 час', 'отключить'];
+										
+										each items, i in arrValues
+											li.select__item
+												span.select__name.select__name--settings(data-title=arrTitles[i] data-value=arrValues[i])
+													| #{arrTitles[i]}
 												
-							button.btn.btn--changes(type="button")
-								| Сохранить
+							button.btn.btn--changes(data-name="timeautoupdate" type="button")
+								| Подтвердить
+						//- .info.info--settings
+							p.info__item.info__item--warn.info__item--fields
+								| Предупреждение! Не выбрано поле с названием время.
 
 					//- .settings__section
 						.settings__wrap.settings__wrap--static

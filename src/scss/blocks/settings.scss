@@ -43,7 +43,9 @@
 		}
 	}
 
-	&__department {
+	&__department,
+	&__separ,
+	&__value {
 		@extend %text--premedium;
 		color: $middleGray;
 	}

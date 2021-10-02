@@ -4,7 +4,7 @@ import $ from 'jquery';
 import Scrollbar from 'smooth-scrollbar';
 import service from './service.js';
 
-const departmentCollection = new Map();  // Коллекци подразделений
+const departmentCollection = new Map();	// Коллекци подразделений
 const settingsObject = {
 	nameid: '',
 	shortname: '',
@@ -19,7 +19,10 @@ const settingsObject = {
 	addnameid: '',
 	statusremovedepart: '',
 	removelongname: '',
-	removenameid: ''
+	removenameid: '',
+	statustimeautoupdate: '',
+	autoupdatetitle: '',
+	autoupdatevalue: ''
 };
 
 $(window).on('load', () => {
@@ -31,11 +34,13 @@ function templateSettingsForm() {
 	const changeNameTemplate = templateChangeNameForm();
 	const addDepartTemplate = templateAddDepartForm();
 	const removeDepartTemplate = templateRemoveDepartForm();
+	const timeAutoUploadTemplate = templateTimeAutoUploadForm();
 
 	return `
 		${changeNameTemplate}
 		${addDepartTemplate}
 		${removeDepartTemplate}
+		${timeAutoUploadTemplate}
 	`;
 }
 
@@ -65,7 +70,11 @@ function templateChangeNameForm() {
 		<div class="settings__section" data-block="changename">
 			<div class="settings__wrap">
 				<h3 class="settings__title">Название подразделения</h3>
-				<span class="settings__department" data-nameid="${settingsObject.nameid}" data-shortname="${settingsObject.shortname}" data-longname="${settingsObject.longname}">${settingsObject.longname}</span>
+				<div class="settings__department" data-nameid="${settingsObject.nameid}" data-shortname="${settingsObject.shortname}" data-longname="${settingsObject.longname}">
+					<span class="settings__longname">${settingsObject.longname}</span>
+					<small class="settings__separ">/</small>
+					<span class="settings__shortname">${settingsObject.shortname}</span>
+				</div>
 			</div>
 			<div class="settings__btn-wrap">
 				<button class="btn btn--settings ${changeNameBtnClass}" data-name="changename" type="button">${changeNameBtnValue}</button>
@@ -165,6 +174,86 @@ function templateRemoveDepartForm() {
 	`;
 }
 
+function templateTimeAutoUploadForm() {
+	const arrayTimeAutoUploadValues = [
+		{
+			title: '5 мин.',
+			value: 5
+		},
+		{
+			title: '10 мин.',
+			value: 10
+		},
+		{
+			title: '15 мин.',
+			value: 15
+		},
+		{
+			title: '20 мин.',
+			value: 20
+		},
+		{
+			title: '30 мин.',
+			value: 30
+		},
+		{
+			title: '45 мин.',
+			value: 45
+		},
+		{
+			title: '1 час',
+			value: 60
+		}
+	];
+	const timeAutoUploadSelect = arrayTimeAutoUploadValues.reduce((select, { title, value }) => {
+		select += `
+			<li class="select__item">
+				<span class="select__name select__name--settings" data-title="${title}" data-autoupdate="${value}">${title}</span>
+			</li>
+		`;
+
+		return select;
+	}, '');
+	const timeAutoUploadBtnValue = settingsObject.statustimeautoupdate ? 'Отменить' : 'Изменить';
+	const timeAutoUploadBtnClass = settingsObject.statustimeautoupdate ? 'btn--settings-disabled' : '';
+	const timeAutoUploadValue = settingsObject.autoupdatetitle ? settingsObject.autoupdatetitle : 'Выберите период автообновления';
+	const timeAutoUploadClassView = settingsObject.autoupdatetitle ? 'select__value--selected-settings' : '';
+	const timeAutoUploadView = settingsObject.statustimeautoupdate ? `
+		<form class="form form--settings" action="#" method="GET">
+			<div class="form__field">
+				<div class="form__item select select--settings" data-field="timeautoupdate" data-type="autoupdate" data-select="autoupdate">
+					<header class="select__header select__header--settings">
+						<span class="select__value select__value--settings ${timeAutoUploadClassView}" data-title="${timeAutoUploadValue}" data-autoupdate="${settingsObject.autoupdatevalue}">${timeAutoUploadValue}</span>
+					</header>
+					<ul class="select__list select__list--settings">
+						${timeAutoUploadSelect}
+						<li class="select__item">
+							<span class="select__name select__name--settings" data-autoupdate="отключить" data-value="none">отключить</span>
+						</li>
+					</ul>
+				</div>
+			</div>
+			<button class="btn btn--changes" data-name="timeautoupdate" type="button">Подтвердить</button>
+		</form>
+	` : '';
+
+	return `
+		<div class="settings__section" data-block="timeautoupdate">
+			<div class="settings__wrap">
+				<h3 class="settings__title">Период автообновления данных в таблицах</h3>
+				<span class="settings__value settings__value--autoupdate" data-value="${settingsObject.autoupdatevalue}">${settingsObject.autoupdatetitle}</span>
+			</div>
+			<div class="settings__btn-wrap">
+				<button class="btn btn--settings ${timeAutoUploadBtnClass}" type="button" data-name="timeautoupdate">${timeAutoUploadBtnValue}</button>
+			</div>
+			${timeAutoUploadView}
+			<div class="info info--settings">
+				<p class="info__item info__item--warn info__item--fields">Предупреждение! Не выбрано время.</p>
+			</div>
+		</div>
+	`;
+}
+
 function renderSection(nameSection = '#settingsSection') {
 	$(`${nameSection} .settings__content`).html('');
 	$(`${nameSection} .settings__content`).append(templateSettingsForm());
@@ -193,22 +282,32 @@ function applyFieldsChanges() {
 		const userData = [...fields].reduce((object, item) => {
 			const fieldName = $(item).data('field');
 
+			console.log(fieldName);
+
 			if ($(item).hasClass('select')) {
 				const typeSelect = $(item).data('select');
 				const nameId = $(item).find('.select__value--selected-settings').attr(`data-${typeSelect}`);
 				const fieldType = $(item).data('type');
 				const valueItem = $(item).find('.select__value--selected-settings').attr('data-title');
 
-				// console.log(typeSelect);
-				// console.log(nameId);
-				// console.log(fieldType);
-				// console.log(valueItem);
+				console.log(typeSelect);
+				console.log(nameId);
+				console.log(fieldType);
+				console.log(valueItem);
 
-				if (typeSelect === 'removenameid') {
-					object[fieldType] = nameId;
-				}
-
+				object[fieldType] = nameId;
 				object[fieldName] = valueItem;
+
+				// if (typeSelect === 'removenameid') {
+				//
+				//
+				if (typeSelect === 'autoupdate') {
+				// 	const valueItem = $(item).find('.select__value--selected-settings').attr('data-value');
+				//
+				// 	object[fieldType] = nameId;
+				// 	object[fieldName] = valueItem;
+					object.nameid = settingsObject.nameid;
+				}
 			} else {
 				if (nameBlock === 'changename') {
 					const idDepart = settingsObject.nameid;
@@ -284,20 +383,35 @@ function setDataAttrSelectedItem(title, select, elem) {
 	const removenameid = select === 'removenameid' ? $(elem).find('.select__name').data(select) : '';
 	const removedepart = select === 'removenameid' ? title : '';
 	const quoteRemovedepart = removedepart ? removedepart.replace(/["']/g , '&quot;') : '';
+	const statustimeautoupdate = select === 'autoupdate' ? title : '';
+	const autoupdatetitle = select === 'autoupdate' ? title : '';
+	const autoupdatevalue = select === 'autoupdate' ? $(elem).find('.select__name').data(select) : '';
+
+	// console.log(`
+				// %s
+				// %s
+				// %s`, title, select, elem);
 
 	if (select === 'removenameid') {
 		settingsObject.statusremovedepart = statusremovedepart;
 		settingsObject.removelongname = quoteRemovedepart;
 		settingsObject.removenameid = removenameid;
+	} else if (select === 'autoupdate') {
+		settingsObject.statustimeautoupdate = statustimeautoupdate;
+		settingsObject.autoupdatetitle = autoupdatetitle;
+		settingsObject.autoupdatevalue = autoupdatevalue;
 	}
 
-	console.warn(settingsObject);
+	// console.warn(settingsObject);
 
 	renderSection();
 	showChangesFields();
 	applyFieldsChanges();
 	toggleSelect();
-	setDepartInSelect();
+
+	if (select === 'removenameid') {
+		setDepartInSelect();
+	}
 }
 
 function clearFieldsForm() {
@@ -312,6 +426,9 @@ function clearFieldsForm() {
 	settingsObject.statusremovedepart = '';
 	settingsObject.removelongname = '';
 	settingsObject.removenameid = '';
+	settingsObject.statustimeautoupdate = '';
+	settingsObject.autoupdatetitle = '';
+	settingsObject.autoupdatevalue = '';
 
 	renderSection();
 	showChangesFields();
@@ -328,6 +445,7 @@ function memberInputField() {
 
 function validationEmptyFields(fields, page = 'settings') {
 	const validFields = Object.values(fields).every((item) => item);
+	console.log(validFields);
 	const statusMess = !validFields ? 'show' : 'hide';
 	let correctName = 'hide';
 	let countNameidLetters = 'hide';
@@ -358,6 +476,9 @@ function validationEmptyFields(fields, page = 'settings') {
 	} else if (settingsObject.statusremovedepart) {
 		nameBlock = 'removedepart';
 		settingsObject.action = 'remove';
+	} else if (settingsObject.statustimeautoupdate) {
+		nameBlock = 'timeautoupdate';
+		settingsObject.action = 'autoupdate';
 	}
 
 	const valid = [statusMess, correctName, countNameidLetters].every((mess) => mess === 'hide');
@@ -371,12 +492,15 @@ function validationEmptyFields(fields, page = 'settings') {
 }
 
 function setNameDepartOnPage(depart, page = 'settings') {
-	const { nameid = '', shortname = '', longname = '' } = depart;
+	console.log(depart);
+	const { nameid = '', shortname = '', longname = '', autoupdatetitle = '', autoupdatevalue = '' } = depart;
 	settingsObject.nameid = nameid;
 	settingsObject.shortname = shortname;
 	settingsObject.longname = longname;
+	settingsObject.autoupdatetitle = autoupdatetitle;
+	settingsObject.autoupdatevalue = autoupdatevalue;
 
-	$(`.main__depart--${page}`).attr({ 'data-depart': settingsObject.longname, 'data-id': settingsObject.nameid }).text(settingsObject.longname);
+	$(`.main__depart--${page}`).attr({ 'data-depart': longname, 'data-id': nameid }).text(longname);
 
 	renderSection();
 	contentScrollbar();

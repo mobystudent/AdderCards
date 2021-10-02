@@ -457,6 +457,23 @@
 				echo $mysqli->error;
 			}
 		}
+	} else if (($nameTable === 'settings') && ($action === 'autoupdate')) {
+		foreach ($array as $item) {
+			foreach ($item as $key => $value) {
+				if ($key === 'nameid') $nameid = $value;
+				if ($key === 'autoupdate') $autoupdatevalue = $value;
+				if ($key === 'timeautoupdate') $autoupdatetitle = $value;
+			}
+
+			$idDepart = strtolower($item['nameid']);
+			$nameDepart = 'settings_depart_'.$idDepart;
+
+			if($mysqli->query("UPDATE `$nameDepart` SET autoupdatevalue = '$autoupdatevalue', autoupdatetitle = '$autoupdatetitle'")) {
+				echo('Success update in BD '.$nameDepart);
+			} else {
+				echo $mysqli->error;
+			}
+		}
 	}
 
 	// echo json_encode($array);

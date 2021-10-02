@@ -3,6 +3,7 @@
 import $ from 'jquery';
 import service from './service.js';
 import messageMail from './mail.js';
+import settingsObject from './settings.js';
 
 const permissionCollection = new Map(); // БД пользователей при старте
 const departmentCollection = new Map();  // Коллекци подразделений
@@ -362,7 +363,7 @@ function resetControlBtns(nameTable = '#tablePermis', page = 'permis') {
 }
 
 function autoRefresh(page = 'permis') {
-	const timeReload = 15000 * 15;  //  15 минут
+	const timeReload = 60000 * settingsObject.autoupdatevalue;
 	let markInterval;
 
 	$(`.switch--${page}`).click((e) => {

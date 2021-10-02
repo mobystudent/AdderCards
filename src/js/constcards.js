@@ -4,6 +4,7 @@ import $ from 'jquery';
 import convert from './convert.js';
 import service from './service.js';
 import messageMail from './mail.js';
+import settingsObject from './settings.js';
 
 const constCollection = new Map(); // БД пользователей которым разрешили выдачу карт
 const departmentCollection = new Map();  // Коллекци подразделений
@@ -287,7 +288,7 @@ function checkInvalidValueCardID(page = 'const') {
 }
 
 function autoRefresh(page = 'const') {
-	const timeReload = 15000 * 15;  //  15 минут
+	const timeReload = 60000 * settingsObject.autoupdatevalue;
 	let markInterval;
 
 	$(`.switch--${page}`).click((e) => {
