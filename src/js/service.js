@@ -2,12 +2,81 @@
 
 import $ from 'jquery';
 import Scrollbar from 'smooth-scrollbar';
+// const serviceObject = {
+// 	activesection: ''
+// }
 
 $(window).on('load', () => {
 	setUrlSection();
 	switchControl();
 	sortItems();
 });
+
+function templateControls(section) {
+	const arrayControlsValues = [
+		{
+			name: 'const',
+			title: 'Добавить постоянную карту'
+		},
+		{
+			name: 'time',
+			title: 'Добавить временную карту'
+		},
+		{
+			name: 'qr',
+			title: 'Добавить QR-код'
+		},
+		{
+			name: 'download',
+			title: 'Загрузить QR-код'
+		},
+		{
+			name: 'permis',
+			title: 'Разрешение на добавление'
+		},
+		{
+			name: 'add',
+			title: 'Добавить пользователя'
+		},
+		{
+			name: 'remove',
+			title: 'Удалить пользователя'
+		},
+		{
+			name: 'edit',
+			title: 'Редактировать пользователя'
+		},
+		{
+			name: 'reject',
+			title: 'Отклоненные пользователи'
+		},
+		{
+			name: 'request',
+			title: 'Запрос на изменение'
+		},
+		{
+			name: 'settings',
+			title: 'Настройки'
+		},
+		{
+			name: 'report',
+			title: 'Отчёт по изменения'
+		}
+	];
+	const controlsList = arrayControlsValues.reduce((list, { name, title }) => {
+		const controlClass = name === section ? 'control__item--active' : '';
+
+		list += `
+			<button class="control__item ${controlClass}" type="button" data-name="${name}">${title}</button>
+		`;
+
+		return list;
+	}, '');
+
+	return `
+		${controlsList}
+	`;
+}
 
 function setUrlSection(section = '') {
 	const nameSection = location.search.indexOf('name=');
@@ -27,14 +96,15 @@ function setUrlSection(section = '') {
 	const urlApp = `${location.origin}${location.pathname}?name=${section}`;
 
 	$('.main').hide();
-	$('.control__item').removeClass('control__item--active');
-
-	if (!$(`.control__item[data-name=${section}]`).hasClass('control__item--active')) {
-		$(`.control__item[data-name=${section}]`).addClass('control__item--active');
-	}
-
 	$(`.main[data-name='${section}']`).show();
 	history.replaceState(null, null, urlApp);
+
+	renderControls(section);
+}
+
+function renderControls(data) {
+	$('.control__container').html('');
+	$('.control__container').append(templateControls(data));
 }
 
 function switchControl() {
