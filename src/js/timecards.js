@@ -8,6 +8,7 @@ const timeCollection = new Map(); // БД в которую будут доба�
 let counter = 0;
 
 $(window).on('load', () => {
+	renderHeaderPage();
 	addTimeCard();
 	deleteTimeCard();
 	clearNumberCard();
@@ -55,12 +56,23 @@ function templateTimeTable(data) {
 	`;
 }
 
+function templateHeaderPage() {
+	return `
+		<h1 class="main__title">Добавление временных карт</h1>
+	`;
+}
+
 function renderTable(nameTable = '#tableTime') {
 	$(`${nameTable} .table__content`).html('');
 
 	timeCollection.forEach((item) => {
 		$(`${nameTable} .table__content`).append(templateTimeTable(item));
 	});
+}
+
+function renderHeaderPage(page = 'time') {
+	$(`.main[data-name=${page}] .main__title-wrap`).html('');
+	$(`.main[data-name=${page}] .main__title-wrap`).append(templateHeaderPage());
 }
 
 function itemUserInTable(id) {

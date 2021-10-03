@@ -182,6 +182,15 @@ function templateAddHeaderTable() {
 	`;
 }
 
+function templateHeaderPage(page = 'add') {
+	const { nameid = '', longname = '' } = settingsObject;
+
+	return `
+		<h1 class="main__title">Добавить нового пользователя</h1>
+		<span class="main__depart main__depart--${page}" data-depart="${longname}" data-id="${nameid}">${longname}</span>
+	`;
+}
+
 function renderTable(nameTable = '#tableAdd') {
 	$(`${nameTable} .table__content`).html('');
 
@@ -208,6 +217,11 @@ function renderForm(obj, action, nameForm = '#addForm') {
 function renderHeaderTable(page = 'add') {
 	$(`.table--${page} .table__header`).html('');
 	$(`.table--${page} .table__header`).append(templateAddHeaderTable());
+}
+
+function renderHeaderPage(page = 'add') {
+	$(`.main[data-name=${page}] .main__title-wrap`).html('');
+	$(`.main[data-name=${page}] .main__title-wrap`).append(templateHeaderPage());
 }
 
 function addUser() {
@@ -589,11 +603,8 @@ function submitIDinBD(nameTable = '#tableAdd', page = 'add') {
 	});
 }
 
-function setNameDepartOnPage(page = 'add') {
-	const { nameid = '', longname = '' } = settingsObject;
-
-	$(`.main__depart--${page}`).attr({ 'data-depart': longname, 'data-id': nameid }).text(longname);
-
+function setNameDepartOnPage() {
+	renderHeaderPage();
 	addUser();
 	toggleSelect();
 	downloadFoto();

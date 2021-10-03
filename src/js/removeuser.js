@@ -184,6 +184,15 @@ function templateRemoveHeaderTable() {
 	`;
 }
 
+function templateHeaderPage(page = 'remove') {
+	const { nameid = '', longname = '' } = settingsObject;
+
+	return `
+		<h1 class="main__title">Удалить пользователя</h1>
+		<span class="main__depart main__depart--${page}" data-depart="${longname}" data-id="${nameid}">${longname}</span>
+	`;
+}
+
 function renderTable(nameTable = '#tableRemove') {
 	$(`${nameTable} .table__content`).html('');
 
@@ -210,6 +219,11 @@ function renderForm(obj, action, nameForm = '#removeForm') {
 function renderHeaderTable(page = 'remove') {
 	$(`.table--${page} .table__header`).html('');
 	$(`.table--${page} .table__header`).append(templateRemoveHeaderTable());
+}
+
+function renderHeaderPage(page = 'remove') {
+	$(`.main[data-name=${page}] .main__title-wrap`).html('');
+	$(`.main[data-name=${page}] .main__title-wrap`).append(templateHeaderPage());
 }
 
 function addUser() {
@@ -614,11 +628,8 @@ function submitIDinBD(nameTable = '#tableRemove', page = 'remove') {
 	});
 }
 
-function setNameDepartOnPage(page = 'remove') {
-	const { nameid = '', longname = '' } = settingsObject;
-
-	$(`.main__depart--${page}`).attr({ 'data-depart': longname, 'data-id': nameid }).text(longname);
-
+function setNameDepartOnPage() {
+	renderHeaderPage();
 	addUser();
 	toggleSelect();
 	setDepartInSelect();

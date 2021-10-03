@@ -7,6 +7,7 @@ import settingsObject from './settings.js';
 const requestCollection = new Map(); // БД отчета
 
 $(window).on('load', () => {
+	renderHeaderPage();
 	getDatainDB('request');
 	autoRefresh();
 });
@@ -35,12 +36,23 @@ function templateRequestTable(data) {
 	`;
 }
 
+function templateHeaderPage() {
+	return `
+		<h1 class="main__title">Запрос на изменение данных</h1>
+	`;
+}
+
 function renderTable(nameTable = '#tableRequest') {
 	$(`${nameTable} .table__content`).html('');
 
 	requestCollection.forEach((item) => {
 		$(`${nameTable} .table__content`).append(templateRequestTable(item));
 	});
+}
+
+function renderHeaderPage(page = 'request') {
+	$(`.main[data-name=${page}] .main__title-wrap`).html('');
+	$(`.main[data-name=${page}] .main__title-wrap`).append(templateHeaderPage());
 }
 
 function userFromDB(array, nameTable = '#tableRequest') {
@@ -122,15 +134,12 @@ function autoRefresh(page = 'permis') {
 	});
 }
 
-function getDatainDB(nameTable, page = 'request') {
-	const idDepart = $(`.main__depart--${page}`).attr('data-id');
-
+function getDatainDB(nameTable) {
 	$.ajax({
 		url: "./php/output-request.php",
 		method: "post",
 		dataType: "html",
 		data: {
-			idDepart: idDepart,
 			nameTable: nameTable
 		},
 		async: false,

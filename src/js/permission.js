@@ -8,14 +8,16 @@ import settingsObject from './settings.js';
 const permissionCollection = new Map(); // БД пользователей при старте
 const departmentCollection = new Map();  // Коллекци подразделений
 const permisObject = {
-	statusAllow: false,
-	statusDisallow: false
+	statusAllow: '',
+	statusDisallow: '',
+	statustab: '',
+	nameid: '',
+	shortname: ''
 };
 
 $(window).on('load', () => {
 	submitIDinBD();
 	autoRefresh();
-	confirmAllAllowDisallow();
 	showDataFromStorage();
 });
 
@@ -54,13 +56,12 @@ function templatePermissionTable(data) {
 	`;
 }
 
-function templatePermissionTabs(data) {
-	const { nameid = '', shortname = '', status = '' } = data;
-	const statusView = status ? 'tab__item--active' : '';
+function templatePermissionTabs() {
+	const statusView = permisObject.statustab ? 'tab__item--active' : '';
 
 	return `
-		<button class="tab__item ${statusView}" type="button" data-depart=${nameid}>
-			<span class="tab__name">${shortname}</span>
+		<button class="tab__item ${statusView}" type="button" data-depart=${permisObject.nameid}>
+			<span class="tab__name">${permisObject.shortname}</span>
 		</button>
 	`;
 }
@@ -98,6 +99,18 @@ function templatePermissionHeaderTable() {
 	`;
 }
 
+function templateHeaderPage(data, page = 'permis') {
+	const { nameid = '', longname = '' } = data;
+	const departView = data ? `
+		<span class="main__depart main__depart--${page}" data-depart="${longname}" data-id="${nameid}">${longname}</span>
+	` : '';
+
+	return `
+		<h1 class="main__title">Разрешение на добавление <br> идентификаторов пользователям</h1>
+		${departView}
+	`;
+}
+
 function renderTable(activeDepart, nameTable = '#tablePermis') {
 	$(`${nameTable} .table__content`).html('');
 
@@ -111,6 +124,11 @@ function renderTable(activeDepart, nameTable = '#tablePermis') {
 function renderHeaderTable(page = 'permis') {
 	$(`.table--${page} .table__header`).html('');
 	$(`.table--${page} .table__header`).append(templatePermissionHeaderTable());
+}
+
+function renderHeaderPage(data = '', page = 'permis') {
+	$(`.main[data-name=${page}] .main__title-wrap`).html('');
+	$(`.main[data-name=${page}] .main__title-wrap`).append(templateHeaderPage(data));
 }
 
 function userFromDB(array, nameTable = '#tablePermis') {
@@ -149,6 +167,7 @@ function dataAdd(nameTable, page = 'permis') {
 	const filterNameDepart = filterDepart(permissionCollection);
 
 	viewAllCount();
+	getDepartmentInDB('department');
 
 	if (permissionCollection.size) {
 		emptySign(nameTable, 'full');
@@ -165,9 +184,9 @@ function dataAdd(nameTable, page = 'permis') {
 		$(`.tab--${page}`).html('');
 	}
 
-	getDepartmentInDB('department');
 	showActiveDataOnPage(filterNameDepart[0]);
 	clickAllowDisallowPermis();
+	confirmAllAllowDisallow();
 }
 
 function showDataFromStorage(nameTable = '#tablePermis', page = 'permis') {
@@ -201,19 +220,15 @@ function setDataInStorage(page = 'permis') {
 
 function showActiveDataOnPage(activeDepart) {
 	departmentCollection.forEach((depart) => {
-		const { nameid = '', longname = '' } = depart;
+		const { nameid = '' } = depart;
 
 		if (nameid === activeDepart) {
-			showTitleDepart(longname, nameid);
+			renderHeaderPage(depart);
 		}
 	});
 
 	renderTable(activeDepart);
 	countItems(activeDepart);
-}
-
-function showTitleDepart(depart, id, page = 'permis') {
-	$(`.main__depart--${page}`).text(depart).attr({'data-depart': depart, 'data-id': id});
 }
 
 function submitIDinBD(page = 'permis', nameTable = '#tablePermis') {
@@ -251,7 +266,7 @@ function submitIDinBD(page = 'permis', nameTable = '#tablePermis') {
 			confirmAllAllowDisallow();
 
 			if (!permissionCollection.size) {
-				showTitleDepart('', '');
+				renderHeaderPage();
 			}
 
 			$(`.main__count--${page}`).text(permissionCollection.size);
@@ -317,6 +332,9 @@ function confirmAllAllowDisallow(page = 'permis') {
 		const statusTypeBtn = typeBtn === 'allow' ? 'statusAllow' : 'statusDisallow';
 		const activeDepart = $(`.main__depart--${page}`).attr('data-id');
 
+		console.log(activeDepart);
+		console.log(permisObject.nameid);
+
 		permisObject[statusTypeBtn] = permisObject[statusTypeBtn] ? false : true;
 
 		permissionCollection.forEach((item) => {
@@ -346,7 +364,7 @@ function resetControlBtns(nameTable = '#tablePermis', page = 'permis') {
 	$(`${nameTable} .table__content`).html('');
 
 	permissionCollection.forEach((item) => {
-		if (item.nameid == activeDepart) {
+		if (item.nameid === activeDepart) {
 			item.statususer = '';
 			item.statuspermis = '';
 			item.allow = '';
@@ -513,13 +531,11 @@ function addTabs(activeTab, page = 'permis') {
 				const { nameid = '', shortname = '' } = depart;
 
 				if (item == nameid) {
-					const objTab = {
-						nameid,
-						shortname,
-						status: activeTab === nameid ? true : false
-					};
+					permisObject.nameid = nameid;
+					permisObject.shortname = shortname;
+					permisObject.statustab = activeTab === nameid ? true : false;
 
-					$(`.tab--${page}`).append(templatePermissionTabs(objTab));
+					$(`.tab--${page}`).append(templatePermissionTabs());
 				}
 			});
 		});
@@ -531,6 +547,8 @@ function changeTabs(page = 'permis') {
 		if (!$(e.target).parents('.tab__item').length && !$(e.target).hasClass('tab__item')) return;
 
 		const activeDepart = $(e.target).closest('.tab__item').data('depart');
+
+		permisObject.nameid = activeDepart;
 
 		addTabs(activeDepart);
 		showActiveDataOnPage(activeDepart);

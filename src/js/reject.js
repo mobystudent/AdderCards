@@ -114,6 +114,15 @@ function templateRejectHeaderTable() {
 	`;
 }
 
+function templateHeaderPage(page = 'request') {
+	const { nameid = '', longname = '' } = settingsObject;
+
+	return `
+		<h1 class="main__title">Отклоненные пользователи</h1>
+		<span class="main__depart main__depart--${page}" data-depart="${longname}" data-id="${nameid}">${longname}</span>
+	`;
+}
+
 function renderTable(nameTable = '#tableReject') {
 	$(`${nameTable} .table__content`).html('');
 
@@ -135,6 +144,11 @@ function renderForm(id, nameForm = '#rejectForm') {
 function renderHeaderTable(page = 'reject') {
 	$(`.table--${page} .table__header`).html('');
 	$(`.table--${page} .table__header`).append(templateRejectHeaderTable());
+}
+
+function renderHeaderPage(page = 'reject') {
+	$(`.main[data-name=${page}] .main__title-wrap`).html('');
+	$(`.main[data-name=${page}] .main__title-wrap`).append(templateHeaderPage());
 }
 
 function userFromDB(array, nameTable = '#tableReject') {
@@ -295,11 +309,8 @@ function autoRefresh(page = 'reject') {
 	});
 }
 
-function setNameDepartOnPage(page = 'reject') {
-	const { nameid = '', longname = '' } = settingsObject;
-
-	$(`.main__depart--${page}`).attr({ 'data-depart': longname, 'data-id': nameid }).text(longname);
-
+function setNameDepartOnPage() {
+	renderHeaderPage();
 	viewDataUser();
 	autoRefresh();
 	showDataFromStorage();

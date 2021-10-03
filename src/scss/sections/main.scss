@@ -10,11 +10,18 @@
 		padding: 20px 0;
 	}
 
+	&__title-wrap {
+		margin-bottom: 50px;
+	}
+
 	&__title {
 		@extend %text--large;
 		color: $white;
 		text-align: center;
-		margin-bottom: 25px;
+
+		&:not(:last-child) {
+			margin-bottom: 25px;
+		}
 
 		@media print {
 			display: none;
@@ -26,7 +33,6 @@
 		@extend %text--large;
 		color: $white;
 		text-align: center;
-		margin-bottom: 50px;
 
 		@media print {
 			display: none;

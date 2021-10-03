@@ -4,7 +4,7 @@
 import $ from 'jquery';
 import './timecards.js';
 import './constcards.js';
-import './qrcodes.js';
+import './download-qr.js';
 import './permission.js';
 import './constqr.js';
 import './adduser.js';

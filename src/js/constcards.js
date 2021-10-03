@@ -66,6 +66,18 @@ function templateConstTabs(data) {
 	`;
 }
 
+function templateHeaderPage(data, page = 'const') {
+	const { nameid = '', longname = '' } = data;
+	const departView = data ? `
+		<span class="main__depart main__depart--${page}" data-depart="${longname}" data-id="${nameid}">${longname}</span>
+	` : '';
+
+	return `
+		<h1 class="main__title">Добавление карт пользователям</h1>
+		${departView}
+	`;
+}
+
 function renderTable(activeDepart, nameTable = '#tableConst') {
 	$(`${nameTable} .table__content`).html('');
 
@@ -74,6 +86,11 @@ function renderTable(activeDepart, nameTable = '#tableConst') {
 			$(`${nameTable} .table__content`).append(templateConstTable(item));
 		}
 	});
+}
+
+function renderHeaderPage(data = '', page = 'const') {
+	$(`.main[data-name=${page}] .main__title-wrap`).html('');
+	$(`.main[data-name=${page}] .main__title-wrap`).append(templateHeaderPage(data));
 }
 
 function userFromDB(array, nameTable = '#tableConst') {
@@ -115,6 +132,7 @@ function dataAdd(nameTable, page = 'const') {
 	const filterNameDepart = filterDepart(constCollection);
 
 	viewAllCount();
+	getDepartmentInDB('department');
 
 	if (constCollection.size) {
 		emptySign(nameTable, 'full');
@@ -131,7 +149,6 @@ function dataAdd(nameTable, page = 'const') {
 		$(`.tab--${page}`).html('');
 	}
 
-	getDepartmentInDB('department');
 	showActiveDataOnPage(filterNameDepart[0]);
 	convertCardIDInCardName();
 	clearNumberCard();
@@ -161,19 +178,15 @@ function setDataInStorage(page = 'const') {
 
 function showActiveDataOnPage(activeDepart) {
 	departmentCollection.forEach((depart) => {
-		const { nameid = '', longname = '' } = depart;
+		const { nameid = '' } = depart;
 
 		if (nameid === activeDepart) {
-			showTitleDepart(longname, nameid);
+			renderHeaderPage(depart);
 		}
 	});
 
 	renderTable(activeDepart);
 	countItems(activeDepart);
-}
-
-function showTitleDepart(depart, id, page = 'const') {
-	$(`.main__depart--${page}`).text(depart).attr({'data-depart': depart, 'data-id': id});
 }
 
 function submitIDinBD(nameTable = '#tableConst', page = 'const') {
@@ -201,7 +214,7 @@ function submitIDinBD(nameTable = '#tableConst', page = 'const') {
 			dataAdd(nameTable);
 
 			if (!constCollection.size) {
-				showTitleDepart('', '');
+				renderHeaderPage();
 			}
 
 			localStorage.removeItem(page);

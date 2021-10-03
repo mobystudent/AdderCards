@@ -207,6 +207,15 @@ function templateEditHeaderTable() {
 	`;
 }
 
+function templateHeaderPage(page = 'edit') {
+	const { nameid = '', longname = '' } = settingsObject;
+
+	return `
+		<h1 class="main__title">Редактировать пользователя</h1>
+		<span class="main__depart main__depart--${page}" data-depart="${longname}" data-id="${nameid}">${longname}</span>
+	`;
+}
+
 function renderTable(nameTable = '#tableEdit') {
 	$(`${nameTable} .table__content`).html('');
 
@@ -233,6 +242,11 @@ function renderForm(obj, action, nameForm = '#editForm') {
 function renderHeaderTable(page = 'edit') {
 	$(`.table--${page} .table__header`).html('');
 	$(`.table--${page} .table__header`).append(templateEditHeaderTable());
+}
+
+function renderHeaderPage(page = 'edit') {
+	$(`.main[data-name=${page}] .main__title-wrap`).html('');
+	$(`.main[data-name=${page}] .main__title-wrap`).append(templateHeaderPage());
 }
 
 function addUser() {
@@ -647,11 +661,8 @@ function submitIDinBD(nameTable = '#tableEdit', page = 'edit') {
 	});
 }
 
-function setNameDepartOnPage(page = 'edit') {
-	const { nameid = '', longname = '' } = settingsObject;
-
-	$(`.main__depart--${page}`).attr({ 'data-depart': longname, 'data-id': nameid }).text(longname);
-
+function setNameDepartOnPage() {
+	renderHeaderPage();
 	addUser();
 	toggleSelect();
 	submitIDinBD();
