@@ -10,22 +10,17 @@ let counter = 0;
 $(window).on('load', () => {
 	renderHeaderPage();
 	addTimeCard();
-	deleteTimeCard();
-	clearNumberCard();
 	submitIDinBD();
-	convertCardIDInCardName();
 	showDataFromStorage();
 });
 
 function templateTimeTable(data) {
 	const { id = '', cardid = '', cardname = '' } = data;
-	let typeIDField = '';
-
-	if (cardid) {
-		typeIDField = `<span class="table__text table__text--body">${cardid}</span>`;
-	} else {
-		typeIDField = `<input class="table__input" />`;
-	}
+	const typeIDField = cardid ? `
+		<span class="table__text table__text--body">${cardid}</span>
+	` : `
+		<input class="table__input" />
+	`;
 
 	return `
 		<div class="table__row" data-id="${id}">
@@ -84,17 +79,23 @@ function itemUserInTable(id) {
 		cardname: ''
 	});
 
-	renderTable();
+	dataAdd();
 
 	counter++;
 }
 
-function addTimeCard(page = 'time') {
+function addTimeCard() {
 	$('#addTimeCard').click(() => {
 		itemUserInTable(counter);
-
-		$(`.main__count--${page}`).text(timeCollection.size);
 	});
+}
+
+function dataAdd() {
+	viewAllCount();
+	renderTable();
+	deleteTimeCard();
+	convertCardIDInCardName();
+	clearNumberCard();
 }
 
 function showDataFromStorage(page = 'time') {
@@ -102,20 +103,15 @@ function showDataFromStorage(page = 'time') {
 
 	if (storageCollection && storageCollection.collection.length) {
 		const lengthStorage = storageCollection.collection.length;
-
 		counter = storageCollection.collection[lengthStorage - 1].id + 1; // id последнего элемента в localStorage
 
-		timeCollection.clear();
 		storageCollection.collection.forEach((item, i) => {
 			const itemID = storageCollection.collection[i].id;
 
 			timeCollection.set(itemID, item);
 		});
 
-		renderTable();
-		deleteTimeCard();
-		clearNumberCard();
-		convertCardIDInCardName();
+		dataAdd();
 	} else {
 		itemUserInTable();
 	}
@@ -127,50 +123,11 @@ function setDataInStorage(page = 'time') {
 	}));
 }
 
-function deleteTimeCard(page = 'time') {
-	$('.table__content').click((e) => {
-		if ($(e.target).parents('.table__btn--delete').length || $(e.target).hasClass('table__btn--delete')) {
-			const idRemove = $(e.target).closest('.table__row').data('id');
-
-			blockLastCard(idRemove);
-		}
-
-		$(`.main__count--${page}`).text(timeCollection.size);
-	});
-}
-
-function blockLastCard(idRemove, page = 'time') {
-	const countItems = timeCollection.size;
-
-	if (countItems === 1) {
-		$(`.main[data-name="${page}"]`).find('.info__item--last').show();
-
-		setTimeout(() => {
-			$(`.main[data-name="${page}"]`).find('.info__item--last').hide();
-		}, 5000);
-
-		return;
-	} else {
-		timeCollection.delete(idRemove);
-
-		renderTable();
-		setDataInStorage();
-	}
-}
-
 function submitIDinBD(page = 'time') {
 	$('#submitTimeCard').click(() => {
-		const checkedItems = [...timeCollection.values()].every((user) => user.cardid);
+		const checkedItems = [...timeCollection.values()].every(({ cardid }) => cardid);
 
-		console.log('checkedItems 2');
 		if (checkedItems) {
-			// timeReportCollection = deepClone(timeCollection);
-			// timeFillOutCollection = deepClone(timeCollection);
-
-			// createObjectForBD([...timeReportCollection.values()]);
-			// createObjectForBD();
-			// getData();
-
 			timeCollection.forEach((item) => {
 				item.date = service.getCurrentDate();
 			});
@@ -191,14 +148,42 @@ function submitIDinBD(page = 'time') {
 }
 
 function clearNumberCard(nameTable = '#tableTime') {
-	$(`${nameTable} .table__content`).click((e) => {
-		if ($(e.target).parents('.table__btn--clear').length || $(e.target).hasClass('table__btn--clear')) {
-			const userID = $(e.target).closest('.table__row').data('id');
-			// const itemClear = timeCollection.get(idClear);
+	$(`${nameTable} .table__content`).click(({ target }) => {
+		if ($(target).parents('.table__btn--clear').length || $(target).hasClass('table__btn--clear')) {
+			const userID = $(target).closest('.table__row').data('id');
 
 			setDataInTable(userID);
 		}
 	});
+}
+
+function deleteTimeCard(nameTable = '#tableTime') {
+	$(`${nameTable} .table__content`).click(({ target }) => {
+		if ($(target).parents('.table__btn--delete').length || $(target).hasClass('table__btn--delete')) {
+			const userID = $(target).closest('.table__row').data('id');
+
+			blockLastCard(userID);
+		}
+
+		viewAllCount();
+	});
+}
+
+function blockLastCard(idRemove, page = 'time') {
+	if (timeCollection.size === 1) {
+		$(`.main[data-name="${page}"]`).find('.info__item--last').show();
+
+		setTimeout(() => {
+			$(`.main[data-name="${page}"]`).find('.info__item--last').hide();
+		}, 5000);
+
+		return;
+	} else {
+		timeCollection.delete(idRemove);
+
+		renderTable();
+		setDataInStorage();
+	}
 }
 
 function convertCardIDInCardName(nameTable = '#tableTime') {
@@ -208,7 +193,7 @@ function convertCardIDInCardName(nameTable = '#tableTime') {
 		$('.table__input').on('input', (e) => {
 			const cardIdVal = $(e.target).val().trim();
 			const convertNumCard = convert.convertCardId(cardIdVal);
-			const userID = $(e.target).closest('.table__row').data('id');
+			const userID = $(e.target).parents('.table__row').data('id');
 			const cardObj = {
 				cardid: cardIdVal,
 				cardname: convertNumCard
@@ -227,8 +212,7 @@ function convertCardIDInCardName(nameTable = '#tableTime') {
 }
 
 function setDataInTable(userID, cardObj) {
-	const user = constCollection.get(userID);
-
+	const user = timeCollection.get(userID);
 	user.cardid = cardObj ? cardObj.cardid : '';
 	user.cardname = cardObj ? cardObj.cardname : '';
 
@@ -237,53 +221,30 @@ function setDataInTable(userID, cardObj) {
 }
 
 function checkInvalidValueCardID(page = 'time') {
-	// const valuesCardid = timeCollection.get(idItem).cardid;
-	const checkValueCard = [...timeCollection.values()].every((user) => {
-		if (user.cardid) {
-			return convert.convertCardId(user.cardid);
-		}
+	const checkValueCard = [...timeCollection.values()].every(({ cardid }) => {
+		if(cardid) convert.convertCardId(cardid);
 	});
 
 	if (checkValueCard) {
-		$(`.main[data-name="${page}"]`).find('.info__item--error').hide();
+		$(`.main[data-name=${page}]`).find('.info__item--error').hide();
 	}
 }
 
-// function deepClone(map) {
-// 	if(!map || true == map) {//this also handles boolean as true and false
-// 		return map;
-// 	}
-//
-// 	const mapType = typeof(map);
-//
-// 	if ("number" == mapType || "string" == mapType) return map;
-//
-// 	const result = Array.isArray(map) ? [] : !map.constructor ? {} : new map.constructor();
-//
-// 	if(map instanceof Map) {
-// 		for(const key of map.keys()) {
-// 			result.set(key, deepClone(map.get(key)));
-// 		}
-// 	}
-//
-// 	for(const key in map) {
-// 		if(map.hasOwnProperty(key)) {
-// 			result[key] = deepClone(	map[key]);
-// 		}
-// 	}
-//
-// 	return result;
-// }
+// Общие функции с картами и кодами
+function viewAllCount(page = 'time') {
+	$(`.main__count--all-${page}`).text(timeCollection.size);
+}
 
 function setAddUsersInDB(array, nameTable, action) {
 	$.ajax({
 		url: "./php/change-user-request.php",
 		method: "post",
 		dataType: "html",
+		async: false,
 		data: {
-			action: action,
-			nameTable: nameTable,
-			array: array
+			action,
+			nameTable,
+			array
 		},
 		success: () => {
 			service.modal('success');

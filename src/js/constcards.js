@@ -195,10 +195,10 @@ function showActiveDataOnPage() {
 function submitIDinBD(page = 'const') {
 	$('#submitConstCard').click(() => {
 		const filterDepatCollection = [...constCollection.values()].filter(({ nameid }) => nameid == constObject.nameid);
-		const checkedItems = filterDepatCollection.every((user) => user.cardid);
+		const checkedItems = filterDepatCollection.every(({ cardid }) => cardid);
 
 		if (checkedItems) {
-			const idFilterUsers = filterDepatCollection.map((item) => item.id);
+			const idFilterUsers = filterDepatCollection.map(({ id }) => id);
 
 			constCollection.forEach((item) => {
 				if (item.nameid === constObject.nameid) {
@@ -211,6 +211,7 @@ function submitIDinBD(page = 'const') {
 			constObject.nameid = '';
 			constObject.longname = '';
 			constObject.shortname = '';
+
 			filterDepatCollection.splice(0);
 			idFilterUsers.forEach((key) => {
 				constCollection.delete(key);
@@ -249,9 +250,9 @@ function emptySign(status, nameTable = '#tableConst') {
 }
 
 function clearNumberCard(nameTable = '#tableConst') {
-	$(`${nameTable} .table__content`).click((e) => {
-		if ($(e.target).closest('.table__btn--clear').hasClass('table__btn--clear')) {
-			const userID = $(e.target).parents('.table__row').data('id');
+	$(`${nameTable} .table__content`).click(({ target }) => {
+		if ($(target).parents('.table__btn--clear').length || $(target).hasClass('table__btn--clear')) {
+			const userID = $(target).closest('.table__row').data('id');
 
 			setDataInTable(userID);
 		}
@@ -299,7 +300,7 @@ function checkInvalidValueCardID(page = 'const') {
 	});
 
 	if (checkValueCard) {
-		$(`.main[data-name=${page}]`).find('.info__item--error.info__item--fields').hide();
+		$(`.main[data-name=${page}]`).find('.info__item--error').hide();
 	}
 }
 
