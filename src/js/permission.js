@@ -10,7 +10,9 @@ const departmentCollection = new Map();  // Коллекци подраздел�
 const permisObject = {
 	statusallow: '',
 	statusdisallow: '',
-	nameid: ''
+	nameid: '',
+	longname: '',
+	shortname: ''
 };
 
 $(window).on('load', () => {
@@ -109,7 +111,7 @@ function renderTable(nameTable = '#tablePermis') {
 	$(`${nameTable} .table__content`).html('');
 
 	permissionCollection.forEach((item) => {
-		if (item.nameid == permisObject.nameid) {
+		if (item.nameid === permisObject.nameid) {
 			$(`${nameTable} .table__content`).append(templatePermissionTable(item));
 		}
 	});
@@ -251,6 +253,9 @@ function submitIDinBD(page = 'permis') {
 				setAddUsersInDB(disallowItems, 'reject', 'add');
 			}
 
+			permisObject.nameid = '';
+			permisObject.longname = '';
+			permisObject.shortname = '';
 			filterDepatCollection.splice(0);
 			idFilterUsers.forEach((key) => {
 				permissionCollection.delete(key);
