@@ -200,6 +200,8 @@ function submitIDinBD(page = 'const') {
 		if (checkedItems) {
 			const idFilterUsers = filterDepatCollection.map(({ id }) => id);
 
+			$('.info__item--warn').hide();
+
 			constCollection.forEach((item) => {
 				if (item.nameid === constObject.nameid) {
 					item.date = service.getCurrentDate();
@@ -208,15 +210,12 @@ function submitIDinBD(page = 'const') {
 
 			setAddUsersInDB(filterDepatCollection, 'const', 'report', 'card');
 
-			constObject.nameid = '';
-			constObject.longname = '';
-			constObject.shortname = '';
-
 			filterDepatCollection.splice(0);
 			idFilterUsers.forEach((key) => {
 				constCollection.delete(key);
 			});
 
+			clearObject();
 			dataAdd();
 
 			if (!constCollection.size) {
@@ -225,14 +224,18 @@ function submitIDinBD(page = 'const') {
 
 			countItems();
 			localStorage.removeItem(page);
-
-			$('.info__item--warn').hide();
 		} else {
 			$('.info__item--warn').show();
 		}
 
 		// createObjectForBD();
 	});
+}
+
+function clearObject() {
+	constObject.nameid = '';
+	constObject.longname = '';
+	constObject.shortname = '';
 }
 
 function emptySign(status, nameTable = '#tableConst') {

@@ -128,6 +128,8 @@ function submitIDinBD(page = 'time') {
 		const checkedItems = [...timeCollection.values()].every(({ cardid }) => cardid);
 
 		if (checkedItems) {
+			$('.info__item--warn.info__item--fields').hide();
+
 			timeCollection.forEach((item) => {
 				item.date = service.getCurrentDate();
 			});
@@ -139,8 +141,6 @@ function submitIDinBD(page = 'time') {
 
 			localStorage.removeItem(page);
 			counter = 0;
-
-			$('.info__item--warn.info__item--fields').hide();
 		} else {
 			$('.info__item--warn.info__item--fields').show();
 		}

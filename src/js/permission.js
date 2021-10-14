@@ -233,12 +233,14 @@ function showActiveDataOnPage() {
 function submitIDinBD(page = 'permis') {
 	$('#submitPermis').click(() => {
 		const filterDepatCollection = [...permissionCollection.values()].filter(({ nameid }) => nameid === permisObject.nameid);
-		const checkedItems = filterDepatCollection.every((user) => user.statuspermis);
+		const checkedItems = filterDepatCollection.every(({ statuspermis }) => statuspermis);
 
 		if (checkedItems) {
 			const allowItems = filterDepatCollection.filter(({ statuspermis }) => statuspermis === 'allow');
 			const disallowItems = filterDepatCollection.filter(({ statuspermis }) => statuspermis === 'disallow');
-			const idFilterUsers = filterDepatCollection.map((item) => item.id);
+			const idFilterUsers = filterDepatCollection.map(({ id }) => id);
+
+			$('.info__item--warn').hide();
 
 			if (allowItems.length) {
 				delegationID(allowItems);
@@ -253,14 +255,12 @@ function submitIDinBD(page = 'permis') {
 				setAddUsersInDB(disallowItems, 'reject', 'add');
 			}
 
-			permisObject.nameid = '';
-			permisObject.longname = '';
-			permisObject.shortname = '';
 			filterDepatCollection.splice(0);
 			idFilterUsers.forEach((key) => {
 				permissionCollection.delete(key);
 			});
 
+			clearObject();
 			resetControlBtns();
 			dataAdd();
 			renderHeaderTable();
@@ -272,8 +272,6 @@ function submitIDinBD(page = 'permis') {
 
 			countItems();
 			localStorage.removeItem(page);
-
-			$('.info__item--warn').hide();
 		} else {
 			$('.info__item--warn').show();
 		}
@@ -286,6 +284,12 @@ function delegationID(users) {
 
 	setAddUsersInDB(filterArrCards, 'const', 'add', 'card');
 	setAddUsersInDB(filterArrQRs, 'const', 'add', 'qr');
+}
+
+function clearObject() {
+	permisObject.nameid = '';
+	permisObject.longname = '';
+	permisObject.shortname = '';
 }
 
 function emptySign(status, nameTable = '#tablePermis') {
