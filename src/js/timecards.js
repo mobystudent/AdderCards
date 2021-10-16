@@ -8,9 +8,9 @@ const timeCollection = new Map(); // БД в которую будут доба�
 let counter = 0;
 
 $(window).on('load', () => {
+	submitIDinBD();
 	renderHeaderPage();
 	addTimeCard();
-	submitIDinBD();
 	showDataFromStorage();
 });
 
@@ -150,9 +150,16 @@ function submitIDinBD(page = 'time') {
 function clearNumberCard(nameTable = '#tableTime') {
 	$(`${nameTable} .table__content`).click(({ target }) => {
 		if ($(target).parents('.table__btn--clear').length || $(target).hasClass('table__btn--clear')) {
-			const userID = $(target).closest('.table__row').data('id');
+			const userID = $(target).parents('.table__row').data('id');
+			let collectionID;
 
-			setDataInTable(userID);
+			[...timeCollection].forEach(([ key, { id } ]) => {
+				if (userID === +id) {
+					collectionID = key;
+				}
+			});
+
+			setDataInTable(collectionID);
 		}
 	});
 }
@@ -161,8 +168,15 @@ function deleteTimeCard(nameTable = '#tableTime') {
 	$(`${nameTable} .table__content`).click(({ target }) => {
 		if ($(target).parents('.table__btn--delete').length || $(target).hasClass('table__btn--delete')) {
 			const userID = $(target).closest('.table__row').data('id');
+			let collectionID;
 
-			blockLastCard(userID);
+			[...timeCollection].forEach(([ key, { id } ]) => {
+				if (userID === +id) {
+					collectionID = key;
+				}
+			});
+
+			blockLastCard(collectionID);
 		}
 
 		viewAllCount();
@@ -187,37 +201,50 @@ function blockLastCard(idRemove, page = 'time') {
 }
 
 function convertCardIDInCardName(nameTable = '#tableTime') {
-	$(`${nameTable} .table__content`).click((e) => {
-		if (!$(e.target).hasClass('table__input')) return;
+	$(`${nameTable} .table__content`).click(({ target }) => {
+		if (!$(target).hasClass('table__input')) return;
 
-		$('.table__input').on('input', (e) => {
-			const cardIdVal = $(e.target).val().trim();
+		$('.table__input').on('input', ({ target }) => {
+			const cardIdVal = $(target).val().trim();
 			const convertNumCard = convert.convertCardId(cardIdVal);
-			const userID = $(e.target).parents('.table__row').data('id');
+			const userID = $(target).parents('.table__row').data('id');
 			const cardObj = {
 				cardid: cardIdVal,
 				cardname: convertNumCard
 			};
+			let collectionID;
 
 			if (!convertNumCard) {
-				$(e.target).parents('.main').find('.info__item--error').show();
+				$(target).parents('.main').find('.info__item--error').show();
 
 				return;
 			}
 
-			setDataInTable(userID, cardObj);
+			[...timeCollection].forEach(([ key, { id } ]) => {
+				if (userID === +id) {
+					collectionID = key;
+				}
+			});
+
+			setDataInTable(collectionID, cardObj);
 			checkInvalidValueCardID();
 		});
 	});
 }
 
-function setDataInTable(userID, cardObj) {
+function setDataInTable(userID, cardObj, page = 'time') {
 	const user = timeCollection.get(userID);
 	user.cardid = cardObj ? cardObj.cardid : '';
 	user.cardname = cardObj ? cardObj.cardname : '';
+	const allStatusUsers = [...timeCollection.values()].some(({ cardid }) => cardid);
+
+	if (!allStatusUsers) {
+		localStorage.removeItem(page);
+	} else {
+		setDataInStorage();
+	}
 
 	renderTable();
-	setDataInStorage();
 }
 
 function checkInvalidValueCardID(page = 'time') {

@@ -225,22 +225,18 @@
 				if ($key === 'id') $id = $value;
 				if ($key === 'fio') $fio = $value;
 				if ($key === 'post') $post = $value;
+				if ($key === 'nameid') $nameid = $value;
 				if ($key === 'department') $department = $value;
 				if ($key === 'statusid') $statusid = $value;
 				if ($key === 'statustitle') $statustitle = $value;
 				if ($key === 'cardid') $cardid = $value;
 				if ($key === 'cardname') $cardname = $value;
 				if ($key === 'date') $date = $value;
-
-				if ($key === 'nameid') $nameid = $value; // - заменить на id
 			}
 
 			$typeBDTable = 'const_'.$typeTable;
 
-			echo $nameid;
-
-			// if($mysqli->query("DELETE FROM `$typeBDTable` WHERE id = $id")) {
-			if($mysqli->query("DELETE FROM `$typeBDTable` WHERE nameid = '$nameid'")) {
+			if($mysqli->query("DELETE FROM `$typeBDTable` WHERE id = $id")) {
 				echo('Success delete in BD '.$typeBDTable);
 			} else {
 				echo $mysqli->error;
@@ -255,11 +251,10 @@
 	} else if (($nameTable === 'permis') && ($action === 'remove')) {
 		foreach ($array as $item) {
 			foreach ($item as $key => $value) {
-				// if ($key === 'id') $id = $value; - заменить на id
-				if ($key === 'nameid') $nameid = $value;
+				if ($key === 'id') $id = $value;
 			}
 
-			if($mysqli->query("DELETE FROM permission WHERE nameid = '$nameid'")) {
+			if($mysqli->query("DELETE FROM permission WHERE id = '$id'")) {
 				echo('Success remove in BD permission');
 			} else {
 				echo $mysqli->error;
@@ -268,7 +263,6 @@
 	} else if (($nameTable === 'reject') && ($action === 'add')) {
 		foreach ($array as $item) {
 			foreach ($item as $key => $value) {
-				// if ($key === 'id') $id = $value; - заменить на id
 				if ($key === 'id') $id = $value;
 				if ($key === 'fio') $fio = $value;
 				if ($key === 'post') $post = $value;
@@ -282,7 +276,7 @@
 			$idDepart = strtolower($item['nameid']);
 			$nameDepart = 'reject_depart_'.$idDepart;
 
-			if($mysqli->query("DELETE FROM permission WHERE nameid = '$nameid'")) {
+			if($mysqli->query("DELETE FROM permission WHERE id = '$id'")) {
 				echo('Success remove in BD permission');
 			} else {
 				echo $mysqli->error;
@@ -311,14 +305,14 @@
 				if ($key === 'post') $post = $value;
 				if ($key === 'photofile') $photofile = $value;
 				if ($key === 'photourl') $photourl = $value;
-				if ($key === 'nameid') $nameid = $value; // - заменить на id
+				if ($key === 'nameid') $nameid = $value;
 				if ($key === 'statusid') $statusid = $value;
 				if ($key === 'statustitle') $statustitle = $value;
 			}
 
 			$typeBDTable = 'const_'.$typeTable;
 
-			if($mysqli->query("DELETE FROM permission WHERE nameid = '$nameid'")) {
+			if($mysqli->query("DELETE FROM permission WHERE id = '$id'")) {
 				echo('Success remove in BD permission');
 			} else {
 				echo $mysqli->error;

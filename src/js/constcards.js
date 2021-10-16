@@ -99,14 +99,14 @@ function userFromDB(array) {
 		fio: '',
 		post: '',
 		nameid: '',
-		cardid: '',
-		cardname: '',
 		photofile: '',
 		photourl: '',
 		statusid: '',
 		statustitle: '',
 		department: '',
-		сardvalidto: ''
+		сardvalidto: '',
+		cardid: '',
+		cardname: ''
 	};
 
 	array.forEach((elem, i) => {
@@ -116,8 +116,6 @@ function userFromDB(array) {
 			for (const key in elem) {
 				if (itemField === key) {
 					itemObject[itemField] = elem[key];
-				} else if (itemField === 'id') {
-					itemObject[itemField] = i;
 				}
 			}
 		}
@@ -167,7 +165,7 @@ function showDataFromStorage(page = 'const') {
 
 		dataAdd();
 	} else {
-		getDatainDB('const', 'card');
+		getDataFromDB('const', 'card');
 	}
 }
 
@@ -198,8 +196,6 @@ function submitIDinBD(page = 'const') {
 		const checkedItems = filterDepatCollection.every(({ cardid }) => cardid);
 
 		if (checkedItems) {
-			const idFilterUsers = filterDepatCollection.map(({ id }) => id);
-
 			$('.info__item--warn').hide();
 
 			constCollection.forEach((item) => {
@@ -210,10 +206,14 @@ function submitIDinBD(page = 'const') {
 
 			setAddUsersInDB(filterDepatCollection, 'const', 'report', 'card');
 
-			filterDepatCollection.splice(0);
-			idFilterUsers.forEach((key) => {
-				constCollection.delete(key);
+			filterDepatCollection.forEach(({ id: userID }) => {
+				[...constCollection].forEach(([ key, { id } ]) => {
+					if (userID === id) {
+						constCollection.delete(key);
+					}
+				});
 			});
+			filterDepatCollection.splice(0);
 
 			clearObject();
 			dataAdd();
@@ -255,45 +255,65 @@ function emptySign(status, nameTable = '#tableConst') {
 function clearNumberCard(nameTable = '#tableConst') {
 	$(`${nameTable} .table__content`).click(({ target }) => {
 		if ($(target).parents('.table__btn--clear').length || $(target).hasClass('table__btn--clear')) {
-			const userID = $(target).closest('.table__row').data('id');
+			const userID = $(target).parents('.table__row').data('id');
+			let collectionID;
 
-			setDataInTable(userID);
+			[...constCollection].forEach(([ key, { id } ]) => {
+				if (userID === +id) {
+					collectionID = key;
+				}
+			});
+
+			setDataInTable(collectionID);
 		}
 	});
 }
 
 function convertCardIDInCardName(nameTable = '#tableConst') {
-	$(`${nameTable} .table__content`).click((e) => {
-		if (!$(e.target).hasClass('table__input')) return;
+	$(`${nameTable} .table__content`).click(({ target }) => {
+		if (!$(target).hasClass('table__input')) return;
 
-		$('.table__input').on('input', (e) => {
-			const cardIdVal = $(e.target).val().trim();
+		$('.table__input').on('input', ({ target }) => {
+			const cardIdVal = $(target).val().trim();
 			const convertNumCard = convert.convertCardId(cardIdVal);
-			const userID = $(e.target).parents('.table__row').data('id');
+			const userID = $(target).parents('.table__row').data('id');
 			const cardObj = {
 				cardid: cardIdVal,
 				cardname: convertNumCard
 			};
+			let collectionID;
 
 			if (!convertNumCard) {
-				$(e.target).parents('.main').find('.info__item--error').show();
+				$(target).parents('.main').find('.info__item--error').show();
 
 				return;
 			}
 
-			setDataInTable(userID, cardObj);
+			[...constCollection].forEach(([ key, { id } ]) => {
+				if (userID === +id) {
+					collectionID = key;
+				}
+			});
+
+			setDataInTable(collectionID, cardObj);
 			checkInvalidValueCardID();
 		});
 	});
 }
 
-function setDataInTable(userID, cardObj) {
+function setDataInTable(userID, cardObj, page = 'const') {
 	const user = constCollection.get(userID);
 	user.cardid = cardObj ? cardObj.cardid : '';
 	user.cardname = cardObj ? cardObj.cardname : '';
+	const allStatusUsers = [...constCollection.values()].some(({ cardid }) => cardid);
+
+	if (!allStatusUsers) {
+		localStorage.removeItem(page);
+	} else {
+		setDataInStorage();
+	}
 
 	showActiveDataOnPage();
-	setDataInStorage();
 }
 
 function checkInvalidValueCardID(page = 'const') {
@@ -311,22 +331,22 @@ function autoRefresh(page = 'const') {
 	const timeReload = 60000 * settingsObject.autoupdatevalue;
 	let markInterval;
 
-	$(`.switch--${page}`).click((e) => {
-		const statusSwitch = $(e.target).find('.switch__input').prop('checked');
+	$(`.switch--${page}`).click(({ target }) => {
+		const statusSwitch = $(target).find('.switch__input').prop('checked');
 
 		constCollection.clear();
 
 		if (statusSwitch && !markInterval) {
+			getDataFromDB('const', 'card');
+
 			markInterval = setInterval(() => {
-				getDatainDB('const', 'card');
+				getDataFromDB('const', 'card');
 			}, timeReload);
-		} else {
+		} else if (!statusSwitch && markInterval) {
 			clearInterval(markInterval);
 
 			markInterval = false;
 		}
-
-		getDatainDB('const', 'card');
 	});
 }
 
@@ -360,7 +380,7 @@ function setAddUsersInDB(array, nameTable, action, typeTable) {
 	});
 }
 
-function getDatainDB(nameTable, typeTable) {
+function getDataFromDB(nameTable, typeTable) {
 	$.ajax({
 		url: "./php/output-request.php",
 		method: "post",
@@ -469,10 +489,10 @@ function addTabs(page = 'const') {
 }
 
 function changeTabs(page = 'const') {
-	$(`.tab--${page}`).click((e) => {
-		if (!$(e.target).parents('.tab__item').length && !$(e.target).hasClass('tab__item')) return;
+	$(`.tab--${page}`).click(({ target }) => {
+		if (!$(target).parents('.tab__item').length && !$(target).hasClass('tab__item')) return;
 
-		const activeDepart = $(e.target).closest('.tab__item').data('depart');
+		const activeDepart = $(target).closest('.tab__item').data('depart');
 		constObject.nameid = activeDepart;
 
 		addTabs();

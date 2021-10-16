@@ -133,10 +133,13 @@ function userFromDB(array) {
 		fio: '',
 		post: '',
 		nameid: '',
+		photofile: '',
+		photourl: '',
 		statusid: '',
 		statustitle: '',
 		department: '',
 		statususer: '',
+		сardvalidto: '',
 		statuspermis: ''
 	};
 
@@ -147,8 +150,6 @@ function userFromDB(array) {
 			for (const key in elem) {
 				if (itemField === key) {
 					itemObject[itemField] = elem[key];
-				} else if (itemField === 'id') {
-					itemObject[itemField] = i;
 				}
 			}
 		}
@@ -204,7 +205,7 @@ function showDataFromStorage(page = 'permis') {
 		renderHeaderTable();
 		dataAdd();
 	} else {
-		getDatainDB('permis');
+		getDataFromDB('permis');
 	}
 }
 
@@ -238,7 +239,6 @@ function submitIDinBD(page = 'permis') {
 		if (checkedItems) {
 			const allowItems = filterDepatCollection.filter(({ statuspermis }) => statuspermis === 'allow');
 			const disallowItems = filterDepatCollection.filter(({ statuspermis }) => statuspermis === 'disallow');
-			const idFilterUsers = filterDepatCollection.map(({ id }) => id);
 
 			$('.info__item--warn').hide();
 
@@ -255,10 +255,14 @@ function submitIDinBD(page = 'permis') {
 				setAddUsersInDB(disallowItems, 'reject', 'add');
 			}
 
-			filterDepatCollection.splice(0);
-			idFilterUsers.forEach((key) => {
-				permissionCollection.delete(key);
+			filterDepatCollection.forEach(({ id: userID }) => {
+				[...permissionCollection].forEach(([ key, { id } ]) => {
+					if (userID === id) {
+						permissionCollection.delete(key);
+					}
+				});
 			});
+			filterDepatCollection.splice(0);
 
 			clearObject();
 			resetControlBtns();
@@ -306,15 +310,15 @@ function emptySign(status, nameTable = '#tablePermis') {
 	}
 }
 
-function clickAllowDisallowPermis(nameTable = '#tablePermis') {
-	$(`${nameTable} .table__content`).click((e) => {
-		if (!$(e.target).hasClass('btn--allow') && !$(e.target).hasClass('btn--disallow')) return;
+function clickAllowDisallowPermis(nameTable = '#tablePermis', page = 'permis') {
+	$(`${nameTable} .table__content`).click(({ target }) => {
+		if (!$(target).hasClass('btn--allow') && !$(target).hasClass('btn--disallow')) return;
 
-		const userID = $(e.target).parents('.table__row').data('id');
-		const typeBtn = $(e.target).data('type');
+		const userID = $(target).parents('.table__row').data('id');
+		const typeBtn = $(target).data('type');
 
 		permissionCollection.forEach((item) => {
-			if (item.id === userID) {
+			if (+item.id === userID) {
 				const status = item[typeBtn] ? false : true;
 
 				item.statususer = status ? true : false;
@@ -325,14 +329,21 @@ function clickAllowDisallowPermis(nameTable = '#tablePermis') {
 			}
 		});
 
+		const allStatusUsers = [...permissionCollection.values()].some(({ statususer }) => statususer);
+
+		if (!allStatusUsers) {
+			localStorage.removeItem(page);
+		} else {
+			setDataInStorage();
+		}
+
 		renderTable();
-		setDataInStorage();
 	});
 }
 
-function confirmAllAllowDisallow() {
-	$('#allowAll, #disallowAll').click((e) => {
-		const typeBtn = $(e.target).data('type');
+function confirmAllAllowDisallow(page = 'permis') {
+	$('#allowAll, #disallowAll').click(({ target }) => {
+		const typeBtn = $(target).data('type');
 		const statusTypeBtn = typeBtn === 'allow' ? 'statusallow' : 'statusdisallow';
 		permisObject[statusTypeBtn] = permisObject[statusTypeBtn] ? false : true;
 
@@ -347,7 +358,12 @@ function confirmAllAllowDisallow() {
 			}
 		});
 
-		setDataInStorage();
+		if (!permisObject.statusallow && !permisObject.statusdisallow) {
+			localStorage.removeItem(page);
+		} else {
+			setDataInStorage();
+		}
+
 		renderHeaderTable();
 		renderTable();
 		confirmAllAllowDisallow();
@@ -380,16 +396,16 @@ function autoRefresh(page = 'permis') {
 		permissionCollection.clear();
 
 		if (statusSwitch && !markInterval) {
+			getDataFromDB('permis');
+
 			markInterval = setInterval(() => {
-				getDatainDB('permis');
+				getDataFromDB('permis');
 			}, timeReload);
-		} else {
+		} else if (!statusSwitch && markInterval) {
 			clearInterval(markInterval);
 
 			markInterval = false;
 		}
-
-		getDatainDB('permis');
 	});
 }
 
@@ -425,7 +441,7 @@ function setAddUsersInDB(array, nameTable, action, typeTable, page = 'permis') {
 	});
 }
 
-function getDatainDB(nameTable) {
+function getDataFromDB(nameTable) {
 	$.ajax({
 		url: "./php/output-request.php",
 		method: "post",
@@ -535,10 +551,10 @@ function addTabs(page = 'permis') {
 }
 
 function changeTabs(page = 'permis') {
-	$(`.tab--${page}`).click((e) => {
-		if (!$(e.target).parents('.tab__item').length && !$(e.target).hasClass('tab__item')) return;
+	$(`.tab--${page}`).click(({ target }) => {
+		if (!$(target).parents('.tab__item').length && !$(target).hasClass('tab__item')) return;
 
-		const activeDepart = $(e.target).closest('.tab__item').data('depart');
+		const activeDepart = $(target).closest('.tab__item').data('depart');
 		permisObject.nameid = activeDepart;
 
 		resetControlBtns();
