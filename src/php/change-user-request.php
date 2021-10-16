@@ -490,6 +490,36 @@
 				echo $mysqli->error;
 			}
 		}
+	} else if (($nameTable === 'permis') && ($action === 'add')) {
+		foreach ($array as $item) {
+			foreach ($item as $key => $value) {
+				if ($key === 'id') $id = $value;
+				if ($key === 'fio') $fio = $value;
+				if ($key === 'post') $post = $value;
+				if ($key === 'photofile') $photofile = $value;
+				if ($key === 'photourl') $photourl = $value;
+				if ($key === 'statusid') $statusid = $value;
+				if ($key === 'statustitle') $statustitle = $value;
+				if ($key === 'nameid') $nameid = $value;
+				if ($key === 'department') $department = $value;
+				if ($key === 'сardvalidto') $сardvalidto = $value;
+			}
+
+			$idDepart = strtolower($item['nameid']);
+			$nameDepart = 'reject_depart_'.$idDepart;
+
+			if($mysqli->query("INSERT INTO permission (fio, department, post, photofile, photourl, nameid, statusid, statustitle, сardvalidto) VALUES ('$fio', '$department', '$post', '$photofile', '$photourl', '$nameid', '$statusid', '$statustitle', '$сardvalidto')")) {
+				echo('Success add in BD permission');
+			} else {
+				echo $mysqli->error;
+			}
+
+			if($mysqli->query("DELETE FROM `$nameDepart` WHERE id = '$id'")) {
+				echo('Success remove in BD '.$nameDepart);
+			} else {
+				echo $mysqli->error;
+			}
+		}
 	}
 
 	// echo json_encode($array);

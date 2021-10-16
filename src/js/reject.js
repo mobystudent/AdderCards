@@ -11,7 +11,11 @@ const rejectObject = {
 };
 
 $(window).on('load', () => {
-	setNameDepartOnPage();
+	submitIDinBD();
+	renderHeaderPage();
+	viewDataUser();
+	autoRefresh();
+	showDataFromStorage();
 });
 
 function templateRejectTable(data) {
@@ -156,9 +160,12 @@ function userFromDB(array) {
 		id: '',
 		fio: '',
 		post: '',
+		photofile: '',
+		photourl: '',
 		statusid: '',
 		statustitle: '',
 		statususer: '',
+		сardvalidto: '',
 		resend: ''
 	};
 
@@ -169,8 +176,6 @@ function userFromDB(array) {
 			for (const key in elem) {
 				if (itemField === key) {
 					itemObject[itemField] = elem[key];
-				} else if (itemField === 'id') {
-					itemObject[itemField] = i;
 				}
 			}
 		}
@@ -225,6 +230,45 @@ function setDataInStorage(page = 'reject') {
 	}));
 }
 
+function submitIDinBD(page = 'reject') {
+	$('#submitReject').click(() => {
+		const checkedItems = [...rejectCollection.values()].some(({ statususer }) => statususer);
+
+		if (checkedItems) {
+			const resendItems = [...rejectCollection.values()].filter(({ statususer }) => statususer);
+
+			$('.info__item--warn').hide();
+
+			resendItems.forEach((elem) => {
+				elem.nameid = settingsObject.nameid;
+				elem.department = settingsObject.longname;
+			});
+
+			setAddUsersInDB(resendItems, 'permis', 'add');
+
+			resendItems.forEach(({ id: userID }) => {
+				[...rejectCollection].forEach(([ key, { id } ]) => {
+					if (userID === id) {
+						rejectCollection.delete(key);
+					}
+				});
+			});
+			resendItems.splice(0);
+
+			clearObject();
+			dataAdd();
+			resendAllUsers();
+			localStorage.removeItem(page);
+		} else {
+			$('.info__item--warn').show();
+		}
+	});
+}
+
+function clearObject() {
+	rejectObject.statusresend = '';
+}
+
 function emptySign(status, nameTable = '#tableReject') {
 	if (status == 'empty') {
 		$(nameTable)
@@ -239,14 +283,27 @@ function emptySign(status, nameTable = '#tableReject') {
 	}
 }
 
+function getCollectionID(userID) {
+	let collectionID;
+
+	[...rejectCollection].forEach(([ key, { id } ]) => {
+		if (userID === +id) {
+			collectionID = key;
+		}
+	});
+
+	return collectionID;
+}
+
 function viewDataUser(nameTable = '#tableReject') {
 	$(`${nameTable} .table__content`).click(({ target }) => {
 		if (!$(target).parents('.table__btn--view').length || !$(target).hasClass('table__btn--view')) {
 			const userID = $(target).parents('.table__row').data('id');
+			const collectionID = getCollectionID(userID);
 
 			$('.form__wrap').removeClass('form__wrap--hide');
 
-			renderForm(userID);
+			renderForm(collectionID);
 			Scrollbar.init($('.form__item--message').get(0));
 		}
 	});
@@ -257,7 +314,8 @@ function resendUsers(nameTable = '#tableReject', page = 'reject') {
 		if (!$(e.target).hasClass('btn--resend')) return;
 
 		const userID = $(e.target).parents('.table__row').data('id');
-		const user = rejectCollection.get(userID);
+		const collectionID = getCollectionID(userID);
+		const user = rejectCollection.get(collectionID);
 		user.resend = user.resend ? false : true;
 		user.statususer = user.resend;
 		const allStatusUsers = [...rejectCollection.values()].some(({ resend }) => resend);
@@ -317,16 +375,38 @@ function autoRefresh(page = 'reject') {
 	});
 }
 
-function setNameDepartOnPage() {
-	renderHeaderPage();
-	viewDataUser();
-	autoRefresh();
-	showDataFromStorage();
-}
-
 // Общие функции с картами и кодами
 function viewAllCount(page = 'reject') {
 	$(`.main__count--all-${page}`).text(rejectCollection.size);
+}
+
+function setAddUsersInDB(array, nameTable, action, page = 'reject') {
+	$.ajax({
+		url: "./php/change-user-request.php",
+		method: "post",
+		dataType: "html",
+		async: false,
+		data: {
+			action,
+			nameTable,
+			array
+		},
+		success: () => {
+			// const title = action === 'add' ? 'Reject' : 'Approved';
+
+			service.modal('success');
+
+			// sendMail({
+			// 	department: settingsObject.longname,
+			// 	count: array.length,
+			// 	title,
+			// 	users: array
+			// });
+		},
+		error: () => {
+			service.modal('error');
+		}
+	});
 }
 
 function getDataFromDB(nameTable) {
