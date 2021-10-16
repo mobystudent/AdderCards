@@ -14,7 +14,6 @@ const rejectObject = {
 $(window).on('load', () => {
 	submitIDinBD();
 	renderHeaderPage();
-	viewDataUser();
 	autoRefresh();
 	showDataFromStorage();
 });
@@ -140,7 +139,7 @@ function renderForm(id, nameForm = '#rejectForm') {
 	$(`${nameForm} .form__wrap`).html('');
 
 	rejectCollection.forEach((item) => {
-		if (item.id === id) {
+		if (+item.id === id) {
 			$(`${nameForm} .form__wrap`).append(templateRejectForm(item));
 		}
 	});
@@ -198,6 +197,7 @@ function dataAdd() {
 
 	viewAllCount();
 	renderTable();
+	viewDataUser();
 	resendUsers();
 }
 
@@ -284,27 +284,14 @@ function emptySign(status, nameTable = '#tableReject') {
 	}
 }
 
-function getCollectionID(userID) {
-	let collectionID;
-
-	[...rejectCollection].forEach(([ key, { id } ]) => {
-		if (userID === +id) {
-			collectionID = key;
-		}
-	});
-
-	return collectionID;
-}
-
-function viewDataUser(nameTable = '#tableReject') {
+function viewDataUser(nameTable = '#tableReject', nameForm = '#rejectForm') {
 	$(`${nameTable} .table__content`).click(({ target }) => {
-		if (!$(target).parents('.table__btn--view').length || !$(target).hasClass('table__btn--view')) {
+		if ($(target).parents('.table__btn--view').length || $(target).hasClass('table__btn--view')) {
 			const userID = $(target).parents('.table__row').data('id');
-			const collectionID = getCollectionID(userID);
 
-			$('.form__wrap').removeClass('form__wrap--hide');
+			$(`${nameForm} .form__wrap`).removeClass('form__wrap--hide');
 
-			renderForm(collectionID);
+			renderForm(userID);
 			Scrollbar.init($('.form__item--message').get(0));
 		}
 	});
@@ -315,7 +302,14 @@ function resendUsers(nameTable = '#tableReject', page = 'reject') {
 		if (!$(e.target).hasClass('btn--resend')) return;
 
 		const userID = $(e.target).parents('.table__row').data('id');
-		const collectionID = getCollectionID(userID);
+		let collectionID;
+
+		[...rejectCollection].forEach(([ key, { id } ]) => {
+			if (userID === +id) {
+				collectionID = key;
+			}
+		});
+
 		const user = rejectCollection.get(collectionID);
 		user.resend = user.resend ? false : true;
 		user.statususer = user.resend;

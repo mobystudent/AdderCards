@@ -151,11 +151,14 @@
 	}
 
 	&__item {
+		cursor: pointer;
+		
 		&--static {
 			display: inline-block;
 			width: 100%;
 			@extend %text--premedium;
 			color: #fff;
+			min-height: 42px;
 			padding: 10px 15px;
 			border: 1px solid #b9b9b9;
 			border-radius: 5px;
