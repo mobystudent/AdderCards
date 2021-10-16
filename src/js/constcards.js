@@ -366,8 +366,8 @@ function getDatainDB(nameTable, typeTable) {
 		method: "post",
 		dataType: "html",
 		data: {
-			nameTable: nameTable,
-			typeTable: typeTable
+			nameTable,
+			typeTable
 		},
 		success: (data) => {
 			const dataFromDB = JSON.parse(data);
@@ -387,7 +387,7 @@ function getDepartmentInDB(nameTable) {
 		dataType: "html",
 		async: false,
 		data: {
-			nameTable: nameTable
+			nameTable
 		},
 		success: (data) => {
 			const dataFromDB = JSON.parse(data);
@@ -413,9 +413,9 @@ function sendMail(obj) {
 		dataType: "html",
 		async: false,
 		data: {
-			sender: sender,
-			recipient: recipient,
-			subject: subject,
+			sender,
+			recipient,
+			subject,
 			message: messageMail(obj)
 		},
 		success: () => {

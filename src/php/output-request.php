@@ -11,7 +11,10 @@
 	$array = array();
 
 	if ($nameTable === 'reject') {
-		if($resultSet = $mysqli->query("SELECT * FROM request")) {
+		$idDepart = strtolower($_POST['idDepart']);
+		$nameDepart = 'reject_depart_'.$idDepart;
+
+		if($resultSet = $mysqli->query("SELECT * FROM `$nameDepart`")) {
 			while ($result = $resultSet->fetch_assoc()) {
 				array_push($array, $result);
 			}

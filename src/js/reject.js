@@ -7,7 +7,7 @@ import settingsObject from './settings.js';
 
 const rejectCollection = new Map(); // БД отклоненных пользователей
 const rejectObject = {
-	statusResend: false
+	statusresend: ''
 };
 
 $(window).on('load', () => {
@@ -85,8 +85,8 @@ function templateRejectForm(data) {
 }
 
 function templateRejectHeaderTable() {
-	const resendBtnValue = rejectObject.statusResend ? 'Отменить' : 'Выбрать все';
-	const resendBtnClassView = rejectObject.statusResend ? 'btn--resend-cancel' : '';
+	const resendBtnValue = rejectObject.statusresend ? 'Отменить' : 'Выбрать все';
+	const resendBtnClassView = rejectObject.statusresend ? 'btn--resend-cancel' : '';
 
 	return `
 		<div class="table__cell table__cell--header table__cell--fio">
@@ -151,7 +151,7 @@ function renderHeaderPage(page = 'reject') {
 	$(`.main[data-name=${page}] .main__title-wrap`).append(templateHeaderPage());
 }
 
-function userFromDB(array, nameTable = '#tableReject') {
+function userFromDB(array) {
 	const objToCollection = {
 		id: '',
 		fio: '',
@@ -178,29 +178,28 @@ function userFromDB(array, nameTable = '#tableReject') {
 		rejectCollection.set(i, itemObject);
 	});
 
-	dataAdd(nameTable);
+	dataAdd();
 }
 
-function dataAdd(nameTable, page = 'reject') {
+function dataAdd() {
 	if (rejectCollection.size) {
-		emptySign(nameTable, 'full');
+		emptySign('full');
 	} else {
-		emptySign(nameTable, 'empty');
+		emptySign('empty');
 
 		return;
 	}
 
+	viewAllCount();
 	renderTable();
 	resendUsers();
-
-	$(`.main__count--${page}`).text(rejectCollection.size);
 }
 
-function showDataFromStorage(nameTable = '#tableReject', page = 'reject') {
+function showDataFromStorage(page = 'reject') {
 	const storageCollection = JSON.parse(localStorage.getItem(page));
 
 	if (storageCollection && storageCollection.collection.length && !rejectCollection.size) {
-		const { statusResend } = storageCollection.controls;
+		const { statusresend } = storageCollection.controls;
 
 		storageCollection.collection.forEach((item, i) => {
 			const itemID = storageCollection.collection[i].id;
@@ -208,14 +207,14 @@ function showDataFromStorage(nameTable = '#tableReject', page = 'reject') {
 			rejectCollection.set(itemID, item);
 		});
 
-		rejectObject.statusResend = statusResend;
+		rejectObject.statusresend = statusresend;
 
-		dataAdd(nameTable);
+		renderHeaderTable();
+		dataAdd();
 	} else {
-		getDatainDB('reject');
+		getDataFromDB('reject');
 	}
 
-	renderHeaderTable();
 	resendAllUsers();
 }
 
@@ -226,7 +225,7 @@ function setDataInStorage(page = 'reject') {
 	}));
 }
 
-function emptySign(nameTable, status) {
+function emptySign(status, nameTable = '#tableReject') {
 	if (status == 'empty') {
 		$(nameTable)
 			.addClass('table__body--empty')
@@ -241,10 +240,9 @@ function emptySign(nameTable, status) {
 }
 
 function viewDataUser(nameTable = '#tableReject') {
-	$(`${nameTable} .table__content`).click((e) => {
-		if (!$(e.target).parents('.table__btn--view').length || !$(e.target).hasClass('table__btn--view')) {
-
-			const userID = $(e.target).parents('.table__row').data('id');
+	$(`${nameTable} .table__content`).click(({ target }) => {
+		if (!$(target).parents('.table__btn--view').length || !$(target).hasClass('table__btn--view')) {
+			const userID = $(target).parents('.table__row').data('id');
 
 			$('.form__wrap').removeClass('form__wrap--hide');
 
@@ -254,34 +252,42 @@ function viewDataUser(nameTable = '#tableReject') {
 	});
 }
 
-function resendUsers(nameTable = '#tableReject') {
+function resendUsers(nameTable = '#tableReject', page = 'reject') {
 	$(`${nameTable} .table__content`).click((e) => {
 		if (!$(e.target).hasClass('btn--resend')) return;
 
 		const userID = $(e.target).parents('.table__row').data('id');
 		const user = rejectCollection.get(userID);
-
 		user.resend = user.resend ? false : true;
-		user.statususer = user.resend ? true : false;
+		user.statususer = user.resend;
+		const allStatusUsers = [...rejectCollection.values()].some(({ resend }) => resend);
 
-		setDataInStorage();
+		if (!allStatusUsers) {
+			localStorage.removeItem(page);
+		} else {
+			setDataInStorage();
+		}
+
 		renderTable();
 	});
 }
 
-function resendAllUsers() {
+function resendAllUsers(page = 'reject') {
 	$('#resendAll').click(() => {
-		rejectObject.statusResend = rejectObject.statusResend ? false : true;
+		rejectObject.statusresend = rejectObject.statusresend ? false : true;
 
 		rejectCollection.forEach((item) => {
 			item.resend = '';
-			item.statususer = rejectObject.statusResend;
-			item.resendblock = rejectObject.statusResend;
+			item.statususer = rejectObject.statusresend;
+			item.resendblock = rejectObject.statusresend;
 		});
 
-		console.log(rejectCollection);
+		if (!rejectObject.statusresend) {
+			localStorage.removeItem(page);
+		} else {
+			setDataInStorage();
+		}
 
-		setDataInStorage();
 		renderHeaderTable();
 		renderTable();
 		resendAllUsers();
@@ -292,16 +298,18 @@ function autoRefresh(page = 'reject') {
 	const timeReload = 60000 * settingsObject.autoupdatevalue;
 	let markInterval;
 
-	$(`.switch--${page}`).click(() => {
-		const statusSwitch = $('.switch__input').prop('checked');
+	$(`.switch--${page}`).click((e) => {
+		const statusSwitch = $(e.currentTarget).find('.switch__input').prop('checked');
+
+		rejectCollection.clear();
 
 		if (statusSwitch && !markInterval) {
-			getDatainDB('reject');
+			getDataFromDB('reject');
 
 			markInterval = setInterval(() => {
-				getDatainDB('reject');
+				getDataFromDB('reject');
 			}, timeReload);
-		} else {
+		} else if (!statusSwitch && markInterval) {
 			clearInterval(markInterval);
 
 			markInterval = false;
@@ -316,13 +324,19 @@ function setNameDepartOnPage() {
 	showDataFromStorage();
 }
 
-function getDatainDB(nameTable) {
+// Общие функции с картами и кодами
+function viewAllCount(page = 'reject') {
+	$(`.main__count--all-${page}`).text(rejectCollection.size);
+}
+
+function getDataFromDB(nameTable) {
 	$.ajax({
 		url: "./php/output-request.php",
 		method: "post",
 		dataType: "html",
 		data: {
-			nameTable: nameTable
+			idDepart: settingsObject.nameid,
+			nameTable
 		},
 		async: false,
 		success: (data) => {
