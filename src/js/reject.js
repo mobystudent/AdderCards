@@ -3,6 +3,7 @@
 import $ from 'jquery';
 import service from './service.js';
 import Scrollbar from 'smooth-scrollbar';
+import messageMail from './mail.js';
 import settingsObject from './settings.js';
 
 const rejectCollection = new Map(); // БД отклоненных пользователей
@@ -380,7 +381,7 @@ function viewAllCount(page = 'reject') {
 	$(`.main__count--all-${page}`).text(rejectCollection.size);
 }
 
-function setAddUsersInDB(array, nameTable, action, page = 'reject') {
+function setAddUsersInDB(array, nameTable, action) {
 	$.ajax({
 		url: "./php/change-user-request.php",
 		method: "post",
@@ -392,16 +393,13 @@ function setAddUsersInDB(array, nameTable, action, page = 'reject') {
 			array
 		},
 		success: () => {
-			// const title = action === 'add' ? 'Reject' : 'Approved';
-
 			service.modal('success');
 
-			// sendMail({
-			// 	department: settingsObject.longname,
-			// 	count: array.length,
-			// 	title,
-			// 	users: array
-			// });
+			sendMail({
+				department: settingsObject.longname,
+				count: array.length,
+				users: array
+			});
 		},
 		error: () => {
 			service.modal('error');
@@ -426,6 +424,27 @@ function getDataFromDB(nameTable) {
 		},
 		error: ()  => {
 			service.modal('download');
+		}
+	});
+}
+
+function sendMail(obj) {
+	$.ajax({
+		url: "./php/mail.php",
+		method: "post",
+		dataType: "html",
+		async: false,
+		data: {
+			sender: 'karazin.security@ukr.net',
+			recipient: 'yijoric695@otozuz.com',
+			subject: 'Добавлены новые пользователи',
+			message: messageMail(obj)
+		},
+		success: () => {
+			console.log('Email send is success');
+		},
+		error: () => {
+			service.modal('email');
 		}
 	});
 }
