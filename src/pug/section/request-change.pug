@@ -3,6 +3,7 @@ main.main(data-name="request")
 		.main__title-wrap
 			h1.main__title
 				| Запрос на изменение данных
+			span.main__depart.main__depart--request(data-depart="" data-id="")
 
 		.wrap.wrap--content.wrap--content-request
 			.main__wrap-info
@@ -12,7 +13,12 @@ main.main(data-name="request")
 							| Количество карт:&nbsp
 						span.main__count.main__count--request
 							| 0
-				label.switch.switch--permis
+					p.main__count-wrap.main__count-wrap--main
+						span.main__count-text
+							| Общее количество карт:&nbsp
+						span.main__count.main__count--all-request
+							| 0
+				label.switch.switch--request
 					input.switch__input(type='checkbox')
 					span.switch__name
 						| Автообновление
@@ -27,19 +33,26 @@ main.main(data-name="request")
 						.table__cell.table__cell--header.table__cell--post
 							span.table__text.table__text--header
 								| Должность
-						.table__cell.table__cell--header.table__cell--department
-							span.table__text.table__text--header
-								| Подразделение/факультет
+							button.btn.btn--sort(type='button' data-direction='true')
 						.table__cell.table__cell--header.table__cell--statustitle
 							span.table__text.table__text--header
 								| Статус
 						.table__cell.table__cell--header.table__cell--date
 							span.table__text.table__text--header
 								| Дата
+						.table__cell.table__cell--header.table__cell--btn-permis
+							button.btn.btn--allow#allowAll(type='button' data-type="allow")
+								| Разрешить все
+							button.btn.btn--disallow#disallowAll(type='button' data-type="disallow")
+								| Запретить все
 					.table__body#tableRequest
 						p.table__nothing
 							| Новых данных нет
+							
+		.info.info--page
+			p.info__item.info__item--warn.info__item--fields
+				| Предупреждение! Не все пользователи выбраны.
 	
 		.main__btns
-			button.btn.btn--add(type='button')
+			button.btn#submitRequest(type='button')
 				| Применить

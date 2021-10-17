@@ -252,7 +252,7 @@ function submitIDinBD(page = 'permis') {
 					item.date = service.getCurrentDate();
 				});
 
-				setAddUsersInDB(disallowItems, 'reject', 'add');
+				setAddUsersInDB(disallowItems, 'reject', 'add', 'permis');
 			}
 
 			filterDepatCollection.forEach(({ id: userID }) => {
@@ -342,7 +342,7 @@ function clickAllowDisallowPermis(nameTable = '#tablePermis', page = 'permis') {
 }
 
 function confirmAllAllowDisallow(page = 'permis') {
-	$('#allowAll, #disallowAll').click(({ target }) => {
+	$(`.table--${page} #allowAll, .table--${page} #disallowAll`).click(({ target }) => {
 		const typeBtn = $(target).data('type');
 		const statusTypeBtn = typeBtn === 'allow' ? 'statusallow' : 'statusdisallow';
 		permisObject[statusTypeBtn] = permisObject[statusTypeBtn] ? false : true;
@@ -393,10 +393,13 @@ function autoRefresh(page = 'permis') {
 	$(`.switch--${page}`).click((e) => {
 		const statusSwitch = $(e.currentTarget).find('.switch__input').prop('checked');
 
-		permissionCollection.clear();
-
 		if (statusSwitch && !markInterval) {
+			localStorage.removeItem(page);
+			
 			getDataFromDB('permis');
+			resetControlBtns();
+			renderHeaderTable();
+			confirmAllAllowDisallow();
 
 			markInterval = setInterval(() => {
 				getDataFromDB('permis');
@@ -449,6 +452,7 @@ function getDataFromDB(nameTable) {
 		data: {
 			nameTable
 		},
+		async: false,
 		success: (data) => {
 			const dataFromDB = JSON.parse(data);
 

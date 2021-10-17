@@ -334,9 +334,9 @@ function autoRefresh(page = 'const') {
 	$(`.switch--${page}`).click(({ target }) => {
 		const statusSwitch = $(target).find('.switch__input').prop('checked');
 
-		constCollection.clear();
-
 		if (statusSwitch && !markInterval) {
+			localStorage.removeItem(page);
+			
 			getDataFromDB('const', 'card');
 
 			markInterval = setInterval(() => {

@@ -276,19 +276,26 @@
 			$idDepart = strtolower($item['nameid']);
 			$nameDepart = 'reject_depart_'.$idDepart;
 
-			if($mysqli->query("DELETE FROM permission WHERE id = '$id'")) {
-				echo('Success remove in BD permission');
+			if ($typeBDTable === 'permis') {
+				if($mysqli->query("DELETE FROM permission WHERE id = '$id'")) {
+					echo('Success remove in BD permission');
+				} else {
+					echo $mysqli->error;
+				}
+
+				// Общая таблица отклоненных
+				// if($mysqli->query("INSERT INTO reject (fio, post, statusid, statustitle, date) VALUES ('$fio', '$post', '$statusid', '$statustitle', '$date')")) {
+				// 	echo('Success add in BD reject');
+				// } else {
+				// 	echo $mysqli->error;
+				// }
 			} else {
-				echo $mysqli->error;
+				if($mysqli->query("DELETE FROM request WHERE id = '$id'")) {
+					echo('Success remove in BD request');
+				} else {
+					echo $mysqli->error;
+				}
 			}
-
-			// Общая таблица отклоненных
-			// if($mysqli->query("INSERT INTO reject (fio, post, statusid, statustitle, date) VALUES ('$fio', '$post', '$statusid', '$statustitle', '$date')")) {
-			// 	echo('Success add in BD reject');
-			// } else {
-			// 	echo $mysqli->error;
-			// }
-
 
 			if ($mysqli->query("INSERT INTO `$nameDepart` (fio, post, photofile, photourl, statusid, statustitle, date) VALUES ('$fio', '$post', '$photofile', '$photourl', '$statusid', '$statustitle', '$date')")) {
 				echo('Success add in BD '.$nameDepart);

@@ -354,9 +354,9 @@ function autoRefresh(page = 'reject') {
 	$(`.switch--${page}`).click((e) => {
 		const statusSwitch = $(e.currentTarget).find('.switch__input').prop('checked');
 
-		rejectCollection.clear();
-
 		if (statusSwitch && !markInterval) {
+			localStorage.removeItem(page);
+			
 			getDataFromDB('reject');
 
 			markInterval = setInterval(() => {
