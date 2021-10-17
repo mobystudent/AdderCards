@@ -1,15 +1,22 @@
 main.main(data-name="report")
 	.container
-		h1.main__title
-			| Отчёт по изменениям
-		.wrap.wrap--content.wrap--content-report
+		.main__title-wrap
+			h1.main__title
+				| Отчёт по изменениям
+			span.main__depart.main__depart--report(data-depart="" data-id="")
+				
+		.wrap.wrap--content.wrap--content-report-item
 			.main__wrap-info
 				.main__cards.main__cards--main
 					p.main__count-wrap.main__count-wrap--main
 						span.main__count-text
 							| Количество qr-кодов и карт:&nbsp
-						span.main__count.main__count--all-qr
+						span.main__count.main__count--all-report
 							| 0
+				label.switch.switch--report
+					input.switch__input(type='checkbox')
+					span.switch__name
+						| Автообновление
 			.wrap.wrap--table
 				header.tab.tab--report
 				.table.table--report
@@ -22,7 +29,7 @@ main.main(data-name="report")
 							span.table__text.table__text--header
 								| Должность
 							button.btn.btn--sort(type='button' data-direction='true')
-						.table__cell.table__cell--header.table__cell--department
+						//- .table__cell.table__cell--header.table__cell--department
 							span.table__text.table__text--header
 								| Подразделение/факультет
 							button.btn.btn--sort(type='button' data-direction='true')

@@ -40,7 +40,10 @@
 			echo $mysqli->error;
 		}
 	} else if ($nameTable === 'report') {
-		if($resultSet = $mysqli->query("SELECT * FROM report")) {
+		$idDepart = strtolower($_POST['idDepart']);
+		$nameDepart = 'report_depart_'.$idDepart;
+
+		if($resultSet = $mysqli->query("SELECT * FROM `$nameDepart`")) {
 			while ($result = $resultSet->fetch_assoc()) {
 				array_push($array, $result);
 			}

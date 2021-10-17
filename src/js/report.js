@@ -1,15 +1,19 @@
 'use strict';
 
 import $ from 'jquery';
+import service from './service.js';
+import settingsObject from './settings.js';
 
 const reportCollection = new Map(); // БД отчета
 
 $(window).on('load', () => {
-	getDatainDB('report');
+	renderHeaderPage();
+	autoRefresh();
+	getDataFromDB('report');
 });
 
 function templateReportTable(data) {
-	const { id = '', fio = '', post = '', department = '', cardname = '', statustitle = '', date = '' } = data;
+	const { id = '', fio = '', post = '', cardname = '', statustitle = '', date = '' } = data;
 
 	return `
 		<div class="table__row" data-id="${id}">
@@ -18,9 +22,6 @@ function templateReportTable(data) {
 			</div>
 			<div class="table__cell table__cell--body table__cell--post">
 				<span class="table__text table__text--body">${post}</span>
-			</div>
-			<div class="table__cell table__cell--body table__cell--department">
-				<span class="table__text table__text--body">${department}</span>
 			</div>
 			<div class="table__cell table__cell--body table__cell--cardname">
 				<span class="table__text table__text--body">${cardname}</span>
@@ -35,51 +36,106 @@ function templateReportTable(data) {
 	`;
 }
 
-function renderTable() {
-	$('#tableReport .table__content').html('');
+function templateHeaderPage(page = 'report') {
+	const { nameid = '', longname = '' } = settingsObject;
+
+	return `
+		<h1 class="main__title">Отчёт по изменениям</h1>
+		<span class="main__depart main__depart--${page}" data-depart="${longname}" data-id="${nameid}">${longname}</span>
+	`;
+}
+
+function renderTable(nameTable = '#tableReport') {
+	$(`${nameTable} .table__content`).html('');
 
 	reportCollection.forEach((item) => {
-		$('#tableReport .table__content').append(templateReportTable(item));
+		$(`${nameTable} .table__content`).append(templateReportTable(item));
 	});
 }
 
-function dataAdd(nameTable) {
-	if (reportCollection.size) {
-		$(`${nameTable} .table__nothing`).hide();
-		$(nameTable).append(`
-			<div class="table__content table__content--active">
-			</div>
-		`);
+function renderHeaderPage(page = 'report') {
+	$(`.main[data-name=${page}] .main__title-wrap`).html('');
+	$(`.main[data-name=${page}] .main__title-wrap`).append(templateHeaderPage());
+}
 
-		renderTable();
+function userFromDB(array) {
+	array.forEach((item, i) => {
+		reportCollection.set(i, item);
+	});
+
+	dataAdd();
+}
+
+function dataAdd() {
+	if (reportCollection.size) {
+		emptySign('full');
 	} else {
-		$(nameTable).addClass('table__body--empty').html('');
-		$(nameTable).append(`
-			<p class="table__nothing">Новых данных нет</p>
-		`);
+		emptySign('empty');
 
 		return;
 	}
+
+	viewAllCount();
+	renderTable();
 }
 
-function getDatainDB(nameTable) {
+function emptySign(status, nameTable = '#tableReport') {
+	if (status == 'empty') {
+		$(nameTable)
+			.addClass('table__body--empty')
+			.html('')
+			.append('<p class="table__nothing">Новых данных нет</p>');
+	} else {
+		$(nameTable)
+			.removeClass('table__body--empty')
+			.html('')
+			.append('<div class="table__content"></div>');
+	}
+}
+
+function autoRefresh(page = 'report') {
+	const timeReload = 60000 * settingsObject.autoupdatevalue;
+	let markInterval;
+
+	$(`.switch--${page}`).click((e) => {
+		const statusSwitch = $(e.currentTarget).find('.switch__input').prop('checked');
+
+		if (statusSwitch && !markInterval) {
+			getDataFromDB('report');
+
+			markInterval = setInterval(() => {
+				getDataFromDB('report');
+			}, timeReload);
+		} else if (!statusSwitch && markInterval) {
+			clearInterval(markInterval);
+
+			markInterval = false;
+		}
+	});
+}
+
+// Общие функции с картами и кодами
+function viewAllCount(page = 'report') {
+	$(`.main__count--all-${page}`).text(reportCollection.size);
+}
+
+function getDataFromDB(nameTable) {
 	$.ajax({
 		url: "./php/output-request.php",
 		method: "post",
+		dataType: "html",
 		data: {
-			nameTable: nameTable
+			idDepart: settingsObject.nameid,
+			nameTable
 		},
-		success: function(data) {
+		async: false,
+		success: (data) => {
 			const dataFromDB = JSON.parse(data);
 
-			dataFromDB.forEach((item, i) => {
-				reportCollection.set(i, item);
-			});
-
-			dataAdd('#tableReport');
+			userFromDB(dataFromDB);
 		},
-		error: function(data) {
-			console.log(data);
+		error: ()  => {
+			service.modal('download');
 		}
 	});
 }
