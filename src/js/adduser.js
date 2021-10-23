@@ -14,20 +14,30 @@ const addCollection = new Map();
 const addObject = {
 	fio: '',
 	post: '',
+	photofile: {},
+	photourl: '',
+	photoname: '',
 	statusid: '',
 	statustitle: '',
-	statuscardvalidto: '',
 	cardvalidto: '',
-	photourl: ''
+	cardvalidtoid: '',
+	cardvalidtotitle: '',
+	statuscardvalidto: ''
 };
 let counter = 0;
 
 $(window).on('load', () => {
-	setNameDepartOnPage();
+	submitIDinBD(); // 1
+	renderHeaderPage(); // 1
+	toggleSelect(); // 1
+	downloadFoto(); // 1
+	memberInputField(); // 1
+	addUser(); // 2 без загрузки фото и загрузки селектов не пройдет валидация в addUser
+	showDataFromStorage(); // 1
 });
 
 function templateAddTable(data) {
-	const { id = '', fio = '', post = '', photofile = '', statustitle = '', cardvalidto = '' } = data;
+	const { id = '', fio = '', post = '', photoname = '', statustitle = '', cardvalidto = '' } = data;
 	const cardvalidtoView = addObject.statuscardvalidto ? `
 		<div class="table__cell table__cell--body table__cell--cardvalidto">
 			<span class="table__text table__text--body">${cardvalidto}</span>
@@ -42,8 +52,8 @@ function templateAddTable(data) {
 			<div class="table__cell table__cell--body table__cell--post">
 				<span class="table__text table__text--body">${post}</span>
 			</div>
-			<div class="table__cell table__cell--body table__cell--photofile" title=${photofile}>
-				<span class="table__text table__text--body">${photofile}</span>
+			<div class="table__cell table__cell--body table__cell--photoname">
+				<span class="table__text table__text--body">${photoname}</span>
 			</div>
 			<div class="table__cell table__cell--body table__cell--statustitle">
 				<span class="table__text table__text--body">${statustitle}</span>
@@ -67,17 +77,17 @@ function templateAddTable(data) {
 	`;
 }
 
-function templateAddForm(data) {
-	const { fio = '', photofile = '', photourl = '', post = '', statusid = '', statustitle = '', cardvalidtotitle = '', cardvalidtoid = '', cardvalidto = '' } = data;
+function templateAddForm() {
+	const { fio = '', photourl = '', post = '', statusid = '', statustitle = '', cardvalidtotitle = '', cardvalidtoid = '', cardvalidto = '' } = addObject;
 	const typeValue = statustitle ? statustitle : 'Выберите тип идентификатора';
 	const typeClassView = statustitle ? 'select__value--selected-form' : '';
 	const cardvalidtoValue = cardvalidtotitle ? cardvalidtotitle : 'Выберите окончание действия пропуска';
 	const cardvalidtoClassView = cardvalidtotitle ? 'select__value--selected-form' : '';
 	const photoValue = photourl ? photourl : './images/avatar.svg';
-	const cardvalidtoView = addObject.statuscardvalidto ? `
-		<div class="form__field form__field--cardvalidto">
+	const cardvalidtoView = cardvalidtoid === 'date' ? `
+		<div class="form__field">
 			<label class="form__label"><span class="form__name form__name--form">Дата окончания</span>
-				<input class="form__input form__input--form form__item form__item--cardvalidto" id="addDatepicker" data-field="date" name="date" type="text" value="${cardvalidto}" placeholder="Введите дату" required="required"/>
+				<input class="form__input form__input--form form__item" id="addDatepicker" data-field="date" name="date" type="text" value="${cardvalidto}" placeholder="Введите дату" required="required"/>
 			</label>
 		</div>
 	` : '';
@@ -86,14 +96,14 @@ function templateAddForm(data) {
 		<div class="form__fields">
 			<div class="form__field">
 				<label class="form__label">
-				<span class="form__name form__name--form">ФИО</span>
-					<input class="form__input form__input--form form__item" data-field="fio" name="name" type="text" value="${fio}" placeholder="Введите ФИО" required="required"/>
+				<span class="form__name form__name--form">Фамилия Имя Отчество</span>
+					<input class="form__input form__input--form form__item form__item--fio" data-field="fio" name="name" type="text" value="${fio}" placeholder="Введите ФИО" required="required"/>
 				</label>
 			</div>
 			<div class="form__field">
 				<label class="form__label">
 				<span class="form__name form__name--form">Должность</span>
-					<input class="form__input form__input--form form__item" data-field="post" name="post" type="text" value="${post}" placeholder="Введите должность" required="required"/>
+					<input class="form__input form__input--form form__item form__item--post" data-field="post" name="post" type="text" value="${post}" placeholder="Введите должность" required="required"/>
 				</label>
 			</div>
 			<div class="form__field">
@@ -104,10 +114,10 @@ function templateAddForm(data) {
 					</header>
 					<ul class="select__list select__list--form">
 						<li class="select__item">
-							<span class="select__name select__name--form" data-title="Пластиковая карта" data-type="newCard">Пластиковая карта</span>
+							<span class="select__name select__name--form" data-title="Новая карта" data-type="newCard">Новая карта</span>
 						</li>
 						<li class="select__item">
-							<span class="select__name select__name--form" data-title="QR-код" data-type="newQR">QR-код</span>
+							<span class="select__name select__name--form" data-title="Новый QR-код" data-type="newQR">Новый QR-код</span>
 						</li>
 					</ul>
 				</div>
@@ -132,10 +142,10 @@ function templateAddForm(data) {
 		</div>
 		<div class="form__aside">
 			<div class="form__img">
-				<img class="img img--form" src=${photoValue} alt="user avatar"/>
+				<img class="img img--form" src="${photoValue}" alt="user avatar"/>
 			</div>
 			<div class="form__field">
-				<input class="form__input form__input--file form__item" id="addFile" data-field="photofile" data-url="${photoValue}" data-value="${photofile}" name="photofile" type="file" required="required"/>
+				<input class="form__input form__input--file form__item" id="addFile" name="photofile" type="file" required="required"/>
 				<label class="form__download" for="addFile">
 					<svg class="icon icon--download">
 						<use xlink:href=./images/sprite.svg#download></use>
@@ -162,7 +172,7 @@ function templateAddHeaderTable() {
 		<div class="table__cell table__cell--header table__cell--post">
 			<span class="table__text table__text--header">Должность</span>
 		</div>
-		<div class="table__cell table__cell--header table__cell--photofile">
+		<div class="table__cell table__cell--header table__cell--photoname">
 			<span class="table__text table__text--header">Фотография</span>
 		</div>
 		<div class="table__cell table__cell--header table__cell--statustitle">
@@ -199,19 +209,14 @@ function renderTable(nameTable = '#tableAdd') {
 	});
 }
 
-function renderForm(obj, action, nameForm = '#addForm') {
+function renderForm(nameForm = '#addForm') {
 	$(`${nameForm} .form__wrap`).html('');
+	$(`${nameForm} .form__wrap`).append(templateAddForm());
 
-	if (action === 'edit') {
-		addCollection.forEach((user, i) => {
-			if (user.id === obj) {
-				$(`${nameForm} .form__wrap`).append(templateAddForm(user));
-				addCollection.delete(i);
-			}
-		});
-	} else {
-		$(`${nameForm} .form__wrap`).append(templateAddForm(addObject));
-	}
+	toggleSelect();
+	datepicker();
+	downloadFoto();
+	memberInputField();
 }
 
 function renderHeaderTable(page = 'add') {
@@ -224,87 +229,64 @@ function renderHeaderPage(page = 'add') {
 	$(`.main[data-name=${page}] .main__title-wrap`).append(templateHeaderPage());
 }
 
-function addUser() {
-	$('#addUser').click((e) => {
-		const form = $(e.target).parents('.form');
-		const fields = $(form).find('.form__item');
-		const userData = [...fields].reduce((object, item) => {
-			const fieldName = $(item).data('field');
+function addUser(page = 'add') {
+	$('#addUser').click(() => {
+		if (addObject.cardvalidtoid !== 'date') {
+			delete addObject.cardvalidto;
+		}
 
-			if ($(item).hasClass('select')) {
-				const typeSelect = $(item).data('select');
-				const nameId = $(item).find('.select__value--selected-form').attr(`data-${typeSelect}`);
-				const fieldType = $(item).data('type');
-				const valueItem = $(item).find('.select__value--selected-form').attr('data-title');
+		delete addObject.statuscardvalidto;
 
-				if (typeSelect === 'cardvalidto') {
-					if (nameId === 'date') {
-						const inputValue = $(e.target).parents('.form').find('.form__item--cardvalidto').val();
+		const validFields = Object.values(addObject).every((item) => item);
+		const statusMess = !validFields ? 'show' : 'hide';
+		let correctName = 'hide';
+		let countNameWords = 'hide';
 
-						object.cardvalidto = inputValue;
-					}
+		for (let key in addObject) {
+			if (key === 'fio' && addObject[key]) {
+				const countWords = addObject[key].trim().split(' ');
 
-					object.cardvalidtoid = nameId;
-					object.cardvalidtotitle = valueItem;
-				} else {
-					object[fieldType] = nameId;
-					object[fieldName] = valueItem;
-				}
-			} else if ($(item).attr('data-field') === 'photofile') {
-				const fieldUrl = $(item).attr('data-url');
-				const inputValue = $(item).attr('data-value');
-
-				object.photourl = fieldUrl;
-				object[fieldName] = inputValue;
-			} else {
-				if ($(item).attr('data-field') !== 'date' && $(item).attr('data-field') !== 'photofile') {
-					const inputValue = $(item).val();
-
-					object[fieldName] = inputValue;
-				}
+				correctName = addObject[key].match(/[^а-яА-ЯiIъїЁё.'-\s]/g) ? 'show' : 'hide';
+				countNameWords = (countWords.length < 2) ? 'show' : 'hide';
 			}
+		}
 
-			return object;
-		}, {});
+		const valid = [statusMess, correctName, countNameWords].every((mess) => mess === 'hide');
 
-		console.log(userData);
+		$(`.main[data-name=${page}]`).find('.info__item--warn.info__item--fields')[statusMess]();
+		$(`.main[data-name=${page}]`).find('.info__item--error.info__item--name')[correctName]();
+		$(`.main[data-name=${page}]`).find('.info__item--error.info__item--short')[countNameWords]();
 
-		if (validationEmptyFields(userData)) {
-			userFromForm(userData);
+
+		if (valid) {
+			userFromForm();
 			clearFieldsForm();
 		}
 	});
 }
 
-function userFromForm(object, nameTable = '#tableAdd') {
+function userFromForm() {
 	const objToCollection = {
 		id: '',
 		fio: '',
 		post: '',
-		nameid: '',
-		photofile: '',
+		photofile: {},
 		photourl: '',
+		photoname: '',
 		statusid: '',
 		statustitle: '',
-		department: '',
 		cardvalidto: '',
 		cardvalidtoid: '',
 		cardvalidtotitle: ''
 	};
-	const itemObject = Object.assign({}, objToCollection);
-	const departName = settingsObject.longname;
-	const departID = settingsObject.nameid;
+	const itemObject = {...objToCollection};
 
 	for (const itemField in itemObject) {
-		for (const key in object) {
+		for (const key in addObject) {
 			if (itemField === key) {
-				itemObject[itemField] = object[key];
+				itemObject[itemField] = addObject[key];
 			} else if (itemField === 'id') {
 				itemObject[itemField] = counter;
-			} else if (itemField === 'department') {
-				itemObject[itemField] = departName;
-			} else if (itemField === 'nameid') {
-				itemObject[itemField] = departID;
 			}
 		}
 	}
@@ -313,51 +295,75 @@ function userFromForm(object, nameTable = '#tableAdd') {
 	counter++;
 
 	setDataInStorage();
-	dataAdd(nameTable);
+	dataAdd();
 }
 
-function dataAdd(nameTable, page = 'add') {
+function dataAdd() {
 	if (addCollection.size) {
-		emptySign(nameTable, 'full');
+		emptySign('full');
 	} else {
-		emptySign(nameTable, 'empty');
+		emptySign('empty');
 
 		return;
 	}
 
-	$(`.main__count--${page}`).text(addCollection.size);
-
+	viewAllCount();
 	showFieldsInHeaderTable();
 	renderTable();
 	deleteUser();
 	editUser();
 }
 
-function showDataFromStorage(nameTable = '#tableAdd', page = 'add') {
+function showDataFromStorage(page = 'add') {
 	const storageCollection = JSON.parse(localStorage.getItem(page));
 
 	if (storageCollection && storageCollection.collection.length && !addCollection.size) {
 		const lengthStorage = storageCollection.collection.length;
-
 		counter = storageCollection.collection[lengthStorage - 1].id + 1; // id последнего элемента в localStorage
+
 		storageCollection.collection.forEach((item, i) => {
 			const itemID = storageCollection.collection[i].id;
 
 			addCollection.set(itemID, item);
 		});
 
-		dataAdd(nameTable);
+		dataAdd();
 	}
 }
 
 function setDataInStorage(page = 'add') {
-	localStorage.setItem(page, JSON.stringify({
-		collection: [...addCollection.values()]
-	}));
+	new Promise((resolve) => {
+		const encodeArrayPhotoFile = [];
+		const reader = new FileReader();
+
+		addCollection.forEach((user) => {
+			if (typeof user.photofile === 'object') {
+				reader.onload = () => {
+					user.photofile = reader.result;
+
+					encodeArrayPhotoFile.push(user);
+				};
+				reader.readAsDataURL(user.photofile);
+			} else {
+				setTimeout(() => {
+					encodeArrayPhotoFile.push(user);
+				}, 0);
+			}
+		});
+		setTimeout(() => {
+			resolve(encodeArrayPhotoFile);
+		}, 0);
+	}).then((array) => {
+		setTimeout(() => {
+			localStorage.setItem(page, JSON.stringify({
+				collection: array
+			}));
+		}, 0);
+	});
 }
 
 function showFieldsInHeaderTable(page = 'add') {
-	addObject.statuscardvalidto = [...addCollection.values()].some((cell) => cell.cardvalidtoid === 'date') ? true : false;
+	addObject.statuscardvalidto = [...addCollection.values()].some(({ cardvalidtoid }) => cardvalidtoid === 'date') ? true : false;
 	const cardvalidtoMod = addObject.statuscardvalidto ? '-cardvalidto' : '';
 	const className = `wrap wrap--content wrap--content-${page}${cardvalidtoMod}`;
 
@@ -367,20 +373,19 @@ function showFieldsInHeaderTable(page = 'add') {
 }
 
 function toggleSelect(nameForm = '#addForm') {
-	$(`${nameForm} .select__header`).click((e) => {
-		$(e.currentTarget).next().slideToggle();
-		$(e.currentTarget).toggleClass('select__header--active');
+	$(`${nameForm} .select__header`).click(({ currentTarget }) => {
+		$(currentTarget).next().slideToggle().toggleClass('select__header--active');
 	});
 
 	clickSelectItem();
 }
 
 function clickSelectItem(nameForm = '#addForm') {
-	$(`${nameForm} .select__item`).click((e) => {
-		const title = $(e.currentTarget).find('.select__name').data('title');
-		const select = $(e.currentTarget).parents('.select').data('select');
+	$(`${nameForm} .select__item`).click(({ currentTarget }) => {
+		const title = $(currentTarget).find('.select__name').data('title');
+		const select = $(currentTarget).parents('.select').data('select');
 
-		setDataAttrSelectedItem(title, select, e.currentTarget);
+		setDataAttrSelectedItem(title, select, currentTarget);
 	});
 }
 
@@ -388,13 +393,9 @@ function setDataAttrSelectedItem(title, select, elem, nameForm = '#addForm') {
 	const statusid = $(elem).find('.select__name').data(select);
 	const fio = $(`${nameForm} .form__item--fio`).val();
 	const post = $(`${nameForm} .form__item--post`).val();
-	const photofile = $(`${nameForm} .form__input--file`).data('value');
-	const photourl = $(`${nameForm} .form__input--file`).data('url'); // default empty
 
 	addObject.fio = fio ? fio : addObject.fio;
 	addObject.post = post ? post : addObject.post;
-	addObject.photofile = photofile ? photofile : addObject.photofile;
-	addObject.photourl = photourl ? photourl : addObject.photourl;
 
 	if (select === 'type') {
 		addObject.statusid = statusid;
@@ -406,42 +407,27 @@ function setDataAttrSelectedItem(title, select, elem, nameForm = '#addForm') {
 		addObject.statuscardvalidto = statusid === 'date' ? true : false;
 	}
 
-	renderForm(addObject, 'clear');
-	toggleSelect();
-	datepicker();
-	downloadFoto();
-	memberInputField();
+	renderForm();
 }
 
 function clearFieldsForm() {
-	addObject.id = '';
-	addObject.fio = '';
-	addObject.statusid = '';
-	addObject.statustitle = '';
-	addObject.post = '';
-	addObject.photourl = '';
-	addObject.photofile = '';
-	addObject.statuscardvalidto = '';
-	addObject.cardvalidtotitle = '';
-	addObject.cardvalidto = '';
+	for (const key in addObject) {
+		addObject[key] = '';
+	}
 
-	renderForm(addObject, 'clear');
-	toggleSelect();
-	datepicker();
-	downloadFoto();
-	memberInputField();
+	renderForm();
 }
 
 function memberInputField() {
-	$('.form__input').keyup((e) => {
-		const nameField = $(e.currentTarget).data('field');
-		const fieldValue = $(e.currentTarget).val();
+	$('.form__input').keyup(({ currentTarget }) => {
+		const nameField = $(currentTarget).data('field');
+		const fieldValue = $(currentTarget).val();
 
 		addObject[nameField] = fieldValue ? fieldValue : addObject[nameField];
 	});
 }
 
-function emptySign(nameTable, status) {
+function emptySign(status, nameTable = '#tableAdd') {
 	if (status == 'empty') {
 		$(nameTable)
 			.addClass('table__body--empty')
@@ -465,177 +451,170 @@ function datepicker() {
 		maxViewMode: 10
 	});
 
-	$('#addDatepicker').change((e) => {
-		const cardvalidtoValue = $(e.currentTarget).val();
+	$('#addDatepicker').change(({ currentTarget }) => {
+		const cardvalidtoValue = $(currentTarget).val();
 
 		addObject.cardvalidto = cardvalidtoValue;
 	});
 }
 
-function downloadFoto(nameForm = '#addForm') {
-	$(`${nameForm} .form__input--file`).change((e) => {
-		const file = e.target.files[0];
-		const url = URL.createObjectURL(file);
-		const fileNameUrl = $(e.target).val();
+function downloadFoto(nameForm = '#addForm', page = 'add') {
+	$(`${nameForm} .form__input--file`).change(({ target }) => {
+		const fileNameUrl = $(target).val();
 		const indexLastSlash = fileNameUrl.lastIndexOf('\\');
 		const photoName = fileNameUrl.slice(indexLastSlash + 1);
+		const file = target.files[0];
+		const url = URL.createObjectURL(file);
+		const validPhotoName = validPhotoExtention(photoName);
+
+		if (!validPhotoName) {
+			$(`.main[data-name=${page}]`).find('.info__item--error.info__item--image').show();
+
+			return;
+		}
 
 		$('.img--form').attr('src', url);
 
 		addObject.photourl = url;
-		addObject.photofile = photoName;
-		$(e.target).attr({'data-value': photoName, 'data-url': url});
+		addObject.photofile = file;
+		addObject.photoname = photoName;
+
+		renderForm();
 	});
 }
 
-function validationEmptyFields(fields, page = 'add') {
-	const validFields = Object.values(fields).every((item) => item);
-	const statusMess = !validFields ? 'show' : 'hide';
+function validPhotoExtention(photoName) {
+	const extenName = photoName.lastIndexOf('.');
+	const extenImg = photoName.slice(extenName + 1);
 	const extentionArray = ['gif', 'png', 'jpg', 'jpeg'];
-	let correctName = 'hide';
-	let countNameWords = 'hide';
-	let extensionImg = 'hide';
+	const validPhotoName = extentionArray.some((item) => item == extenImg) ? photoName : false;
 
-	for (let key in fields) {
-		if (key == 'fio' && fields[key]) {
-			const countWords = fields[key].trim().split(' ');
-
-			correctName = fields[key].match(/[^а-яА-ЯiIъїЁё.'-\s]/g) ? 'show' : 'hide';
-			countNameWords = (countWords.length < 2) ? 'show' : 'hide';
-		} else if (key == 'photofile' && fields[key]) {
-			const extenName = fields[key].lastIndexOf('.');
-			const extenImg = fields[key].slice(extenName + 1);
-
-			extensionImg = extentionArray.some((item) => item == extenImg) ? 'hide' : 'show';
-		}
-	}
-
-	const valid = [statusMess, correctName, countNameWords, extensionImg].every((mess) => mess === 'hide');
-
-	$(`.main[data-name=${page}]`).find('.info__item--warn.info__item--fields')[statusMess]();
-	$(`.main[data-name=${page}]`).find('.info__item--error.info__item--name')[correctName]();
-	$(`.main[data-name=${page}]`).find('.info__item--error.info__item--short')[countNameWords]();
-	$(`.main[data-name=${page}]`).find('.info__item--error.info__item--image')[extensionImg]();
-
-	return valid;
+	return validPhotoName;
 }
 
 function deleteUser(nameTable = '#tableAdd', page = 'add') {
-	$('.table__content').click((e) => {
-		if ($(e.target).parents('.table__btn--delete').length || $(e.target).hasClass('table__btn--delete')) {
-			const idRemove = $(e.target).closest('.table__row').data('id');
+	$(`${nameTable} .table__content`).click(({ target }) => {
+		if ($(target).parents('.table__btn--delete').length || $(target).hasClass('table__btn--delete')) {
+			const userID = $(target).closest('.table__row').data('id');
 
-			addCollection.forEach((user, i) => {
-				if (user.id === idRemove) {
-					addCollection.delete(i);
+			addCollection.forEach(({ id }) => {
+				if (userID === id) {
+					addCollection.delete(userID);
 				}
 			});
 
 			setDataInStorage();
 			showFieldsInHeaderTable();
 			renderTable();
-		}
+			viewAllCount();
 
-		if (!addCollection.size) {
-			emptySign(nameTable, 'empty');
+			if (!addCollection.size) {
+				emptySign('empty');
+				localStorage.removeItem(page);
+			}
 		}
-
-		$(`.main__count--${page}`).text(addCollection.size);
 	});
 }
 
-function editUser(page = 'add') {
-	$('.table__content').click((e) => {
-		if ($(e.target).parents('.table__btn--edit').length || $(e.target).hasClass('table__btn--edit')) {
-			const idEdit = $(e.target).closest('.table__row').data('id');
-			let fillFields;
+function editUser(nameTable = '#tableAdd') {
+	$(`${nameTable} .table__content`).click(({ target }) => {
+		if ($(target).parents('.table__btn--edit').length || $(target).hasClass('table__btn--edit')) {
+			const userID = $(target).closest('.table__row').data('id');
 
-			for (let key in addObject) {
-				if (key !== 'statuscardvalidto') {
-					fillFields = addObject[key] ? false : true;
-				}
-			}
-
-			if (fillFields) {
-				addCollection.forEach((item) => {
-					if (item.id === idEdit) {
-						for (let key in addObject) {
+			addCollection.forEach((item) => {
+				if (userID === item.id) {
+					for (let key in item) {
+						if (key !== 'id') {
 							addObject[key] = item[key];
 						}
 					}
-				});
 
-				showFieldsInHeaderTable();
-				renderForm(idEdit, 'edit');
-				renderTable();
-				toggleSelect();
-				datepicker();
-				downloadFoto();
+					addCollection.delete(userID);
+				}
+			});
 
-				$(`.main__count--${page}`).text(addCollection.size);
+			renderForm(); // 1
+			showFieldsInHeaderTable(); // 2
+			renderTable();
+			viewAllCount();
+
+			if (!addCollection.size) {
+				emptySign('empty');
 			}
 		}
 	});
 }
 
-function submitIDinBD(nameTable = '#tableAdd', page = 'add') {
+function submitIDinBD(page = 'add') {
 	$('#submitAddUser').click(() => {
 		if (!addCollection.size) return;
 
-		const idDepart = settingsObject.nameid;
-		const nameDepart = settingsObject.longname;
-
-		addCollection.forEach((elem) => {
-			elem.nameid = idDepart;
-			elem.department = nameDepart;
-			elem.date = service.getCurrentDate();
+		addCollection.forEach((user) => {
+			user.nameid = settingsObject.nameid;
+			user.date = service.getCurrentDate();
 		});
+
+		console.log(addCollection);
 
 		setAddUsersInDB([...addCollection.values()], 'add' , 'add');
 
 		addCollection.clear();
-		emptySign(nameTable, 'empty');
+		emptySign('empty');
 		renderTable();
+		viewAllCount();
 
-		$(`.main__count--${page}`).text(addCollection.size);
 		localStorage.removeItem(page);
 		counter = 0;
 	});
 }
 
-function setNameDepartOnPage() {
-	renderHeaderPage();
-	addUser();
-	toggleSelect();
-	downloadFoto();
-	submitIDinBD();
-	showDataFromStorage();
-}
-
 function setAddUsersInDB(array, nameTable, action) {
-	$.ajax({
-		url: "./php/change-user-request.php",
-		method: "post",
-		dataType: "html",
-		async: false,
-		data: {
-			action: action,
-			nameTable: nameTable,
-			array: array
-		},
-		success: () => {
-			service.modal('success');
+	new Promise((resolve) => {
+		const encodeArrayPhotoFile = [];
+		const reader = new FileReader();
 
-			sendMail({
-				department: settingsObject.longname,
-				count: addCollection.size,
-				title: 'Добавлено',
-				users: [...addCollection.values()]
-			});
-		},
-		error: () => {
-			service.modal('error');
-		}
+		array.forEach((user) => {
+			if (typeof user.photofile === 'object') {
+				reader.onload = () => {
+					user.photofile = reader.result;
+
+					encodeArrayPhotoFile.push(user);
+				};
+				reader.readAsDataURL(user.photofile);
+			} else {
+				setTimeout(() => {
+					encodeArrayPhotoFile.push(user);
+				}, 0);
+			}
+		});
+
+		setTimeout(() => {
+			resolve(encodeArrayPhotoFile);
+		}, 0);
+	}).then((array) => {
+		$.ajax({
+			url: "./php/change-user-request.php",
+			method: "post",
+			dataType: "html",
+			data: {
+				action,
+				nameTable,
+				array
+			},
+			success: () => {
+				service.modal('success');
+
+				sendMail({
+					department: settingsObject.longname,
+					count: addCollection.size,
+					title: 'Добавлено',
+					users: [...addCollection.values()]
+				});
+			},
+			error: () => {
+				service.modal('error');
+			}
+		});
 	});
 }
 
@@ -650,9 +629,9 @@ function sendMail(obj) {
 		dataType: "html",
 		async: false,
 		data: {
-			sender: sender,
-			recipient: recipient,
-			subject: subject,
+			sender,
+			recipient,
+			subject,
 			message: messageMail(obj)
 		},
 		success: () => {
@@ -662,6 +641,11 @@ function sendMail(obj) {
 			service.modal('email');
 		}
 	});
+}
+
+// Общие функции с картами и кодами
+function viewAllCount(page = 'add') {
+	$(`.main__count--all-${page}`).text(addCollection.size);
 }
 
 export default {

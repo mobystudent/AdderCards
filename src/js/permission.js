@@ -320,7 +320,6 @@ function clickAllowDisallowPermis(nameTable = '#tablePermis', page = 'permis') {
 		permissionCollection.forEach((item) => {
 			if (+item.id === userID) {
 				const status = item[typeBtn] ? false : true;
-
 				item.statususer = status ? true : false;
 				item.statuspermis = typeBtn;
 				item[typeBtn] = status;
@@ -395,7 +394,7 @@ function autoRefresh(page = 'permis') {
 
 		if (statusSwitch && !markInterval) {
 			localStorage.removeItem(page);
-			
+
 			getDataFromDB('permis');
 			resetControlBtns();
 			renderHeaderTable();

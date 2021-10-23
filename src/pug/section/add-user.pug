@@ -28,7 +28,7 @@ main.main(data-name="add")
 							ul.select__list.select__list--form
 								li.select__item
 									span.select__name.select__name--form(data-title="Новая карта" data-type="newCard")
-										| Новая пластиковая карта
+										| Новая карта
 								li.select__item
 									span.select__name.select__name--form(data-title="Новый QR-код" data-type="newQR")
 										| Новый QR-код
@@ -55,7 +55,7 @@ main.main(data-name="add")
 					.form__img
 						img.img.img--form(src="./images/avatar.svg" alt="user avatar")
 					.form__field
-						input.form__input.form__input--file.form__item#addFile(data-field="photofile" name="photofile" type="file" required)
+						input.form__input.form__input--file.form__item#addFile(name="photoname" type="file" required)
 						label.form__download(for="addFile")
 							svg.icon.icon--download
 								use(xlink:href="./images/sprite.svg#download")
@@ -78,10 +78,10 @@ main.main(data-name="add")
 		.wrap.wrap--content.wrap--content-add
 			.main__wrap-info
 				.main__cards.main__cards--main
-					p.main__count-wrap.main__count-wrap--depart
+					p.main__count-wrap.main__count-wrap--main
 						span.main__count-text
 							| Количество добавленых пользователей:&nbsp
-						span.main__count.main__count--add
+						span.main__count.main__count--all-add
 							| 0
 			.wrap.wrap--table
 				header.tab.tab--add
@@ -94,7 +94,7 @@ main.main(data-name="add")
 						.table__cell.table__cell--header.table__cell--post
 							span.table__text.table__text--header
 								| Должность
-						.table__cell.table__cell--header.table__cell--photofile
+						.table__cell.table__cell--header.table__cell--photoname
 							span.table__text.table__text--header
 								| Фотография
 						.table__cell.table__cell--header.table__cell--statustitle

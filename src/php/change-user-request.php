@@ -182,7 +182,6 @@
 				if ($key === 'department') $department = $value;
 				if ($key === 'post') $post = $value;
 				if ($key === 'photofile') $photofile = $value;
-				if ($key === 'photourl') $photourl = $value;
 				if ($key === 'nameid') $nameid = $value;
 				if ($key === 'statusid') $statusid = $value;
 				if ($key === 'statustitle') $statustitle = $value;
@@ -199,7 +198,7 @@
 				echo $mysqli->error;
 			}
 
-			if ($mysqli->query("INSERT INTO `$nameDepart` (fio, post, photofile, photourl, statusid, statustitle, date) VALUES ('$fio', '$post', '$photofile', '$photourl', '$statusid', '$statustitle', '$date')")) {
+			if ($mysqli->query("INSERT INTO `$nameDepart` (fio, post, photofile, statusid, statustitle, date) VALUES ('$fio', '$post', '$photofile', '$statusid', '$statustitle', '$date')")) {
 				echo('Success add in BD '.$nameDepart);
 			} else {
 				echo $mysqli->error;
