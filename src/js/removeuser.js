@@ -13,20 +13,28 @@ datepickerRUFactory($);
 const removeCollection = new Map();
 const departmentCollection = new Map();  // Коллекци подразделений
 const removeObject = {
+	id: '',
 	fio: '',
+	post: '',
+	photofile: '',
 	statusid: '',
 	statustitle: '',
+	cardvalidto: '',
+	statuscardvalidto: '',
 	newdepart: '',
 	newnameid: '',
-	cardvalidto: '',
-	photourl: '',
-	statusnewdepart: '',
-	statuscardvalidto: ''
+	statusnewdepart: ''
 };
 let counter = 0;
 
 $(window).on('load', () => {
-	setNameDepartOnPage();
+	submitIDinBD();
+	renderHeaderPage();
+	toggleSelect();
+	getDepartmentInDB();
+	getAddUsersInDB();
+	addUser();
+	showDataFromStorage();
 });
 
 function templateRemoveTable(data) {
@@ -73,19 +81,19 @@ function templateRemoveTable(data) {
 	`;
 }
 
-function templateRemoveForm(data) {
-	const { id = '', fio = '', statusid = '', newdepart = '', newnameid = '', statustitle = '', cardvalidto  = '', post = '', photourl = '' } = data;
+function templateRemoveForm() {
+	const { fio = '', statusid = '', newdepart = '', newnameid = '', statustitle = '', cardvalidto  = '', photofile = '' } = removeObject;
 	const fioValue = fio ? fio : 'Выберите пользователя';
 	const fioClassView = fio ? 'select__value--selected-form' : '';
 	const reasonValue = statustitle ? statustitle : 'Выберите причину удаления';
 	const reasonClassView = statustitle ? 'select__value--selected-form' : '';
-	const photoUrl = photourl ? photourl : './images/avatar.svg';
+	const photoUrl = photofile ? photofile : './images/avatar.svg';
 	const newdepartValue = newdepart ? newdepart : 'Выберите подразделение';
 	const newdepartClassView = newdepart ? 'select__value--selected-form' : '';
 	const departView = statusid === 'changeDepart' ? `
 		<div class="form__field" data-name="depart">
 			<span class="form__name form__name--form">Новое подразделение</span>
-			<div class="form__select form__item select select--form" data-field="newdepart" data-type="newnameid" data-select="newnameid">
+			<div class="form__select form__item select select--form" data-type="newnameid" data-select="newnameid">
 				<header class="select__header select__header--form">
 					<span class="select__value select__value--form ${newdepartClassView}" data-title="${newdepartValue}" data-newnameid="${newnameid}">${newdepartValue}</span>
 				</header>
@@ -97,7 +105,7 @@ function templateRemoveForm(data) {
 		<div class="form__field" data-name="date">
 			<label class="form__label">
 				<span class="form__name form__name--form">Дата завершения действия пропуска</span>
-				<input class="form__input form__input--form form__item" id="removeDatepicker" data-field="date" name="date" type="text" value="${cardvalidto}" placeholder="Введите дату завершения действия пропуска" required="required"/>
+				<input class="form__input form__input--form form__item" id="removeDatepicker" name="date" type="text" value="${cardvalidto}" placeholder="Введите дату завершения действия пропуска" required="required"/>
 			</label>
 		</div>
 	` : '';
@@ -106,7 +114,7 @@ function templateRemoveForm(data) {
 		<div class="form__fields">
 			<div class="form__field">
 				<span class="form__name form__name--form">Пользователь</span>
-				<div class="form__select form__item select select--form" data-field="fio" data-select="fio">
+				<div class="form__select form__item select select--form" data-select="fio">
 					<header class="select__header select__header--form">
 						<span class="select__value select__value--form ${fioClassView}" data-title="${fioValue}" data-fio="fio">${fioValue}</span>
 					</header>
@@ -115,7 +123,7 @@ function templateRemoveForm(data) {
 			</div>
 			<div class="form__field">
 				<span class="form__name form__name--form">Причина удаления/отчисления</span>
-				<div class="form__select form__item select select--form" data-field="statustitle" data-type="statusid" data-select="reason">
+				<div class="form__select form__item select select--form" data-type="statusid" data-select="reason">
 					<header class="select__header select__header--form">
 						<span class="select__value select__value--form ${reasonClassView}" data-title="${reasonValue}" data-reason="${statusid}">${reasonValue}</span>
 					</header>
@@ -131,12 +139,6 @@ function templateRemoveForm(data) {
 			</div>
 			${departView}
 			${cardvalidtoView}
-			<div class="form__field form__field--hide">
-				<span class="form__item form__item--hide form__item--id" data-field="id" data-value="${id}"></span>
-			</div>
-			<div class="form__field form__field--hide">
-				<span class="form__item form__item--hide form__item--post" data-field="post" data-value="${post}"></span>
-			</div>
 		</div>
 		<div class="form__aside">
 			<div class="form__img">
@@ -201,19 +203,14 @@ function renderTable(nameTable = '#tableRemove') {
 	});
 }
 
-function renderForm(obj, action, nameForm = '#removeForm') {
+function renderForm(nameForm = '#removeForm') {
 	$(`${nameForm} .form__wrap`).html('');
+	$(`${nameForm} .form__wrap`).append(templateRemoveForm());
 
-	if (action === 'edit') {
-		removeCollection.forEach((user, i) => {
-			if (user.id === obj) {
-				$(`${nameForm} .form__wrap`).append(templateRemoveForm(user));
-				removeCollection.delete(i);
-			}
-		});
-	} else {
-		$(`${nameForm} .form__wrap`).append(templateRemoveForm(removeObject));
-	}
+	toggleSelect();
+	getAddUsersInDB(); // вывести всех пользователей в селект
+	datepicker();
+	setDepartInSelect();
 }
 
 function renderHeaderTable(page = 'remove') {
@@ -226,85 +223,48 @@ function renderHeaderPage(page = 'remove') {
 	$(`.main[data-name=${page}] .main__title-wrap`).append(templateHeaderPage());
 }
 
-function addUser() {
-	$('#removeUser').click((e) => {
-		const form = $(e.target).parents('.form');
-		const fields = $(form).find('.form__item');
-		const userData = [...fields].reduce((object, item) => {
-			const fieldName = $(item).data('field');
+function addUser(page = 'remove') {
+	$('#removeUser').click(() => {
+		if (removeObject.cardvalidto) {
+			delete removeObject.newnameid;
+			delete removeObject.newdepart;
+		} else {
+			delete removeObject.cardvalidto;
+		}
 
-			if ($(item).hasClass('select')) {
-				const typeSelect = $(item).data('select');
-				const nameId = $(item).find('.select__value--selected-form').attr(`data-${typeSelect}`);
-				const fieldType = $(item).data('type');
-				const valueItem = $(item).find('.select__value--selected-form').attr('data-title');
+		delete removeObject.statusnewdepart;
+		delete removeObject.statuscardvalidto;
 
-				if (typeSelect == 'reason') {
-					if (nameId == 'remove') {
-						const inputValue = $(e.target).parents('.form').find('.form__item[data-field="date"]').val();
+		const valid = Object.values(removeObject).every((item) => item);
+		const statusMess = !valid ? 'show' : 'hide';
 
-						object.cardvalidto = inputValue;
-					}
+		$(`.main[data-name=${page}]`).find('.info__item--warn.info__item--fields')[statusMess]();
 
-					object[fieldType] = nameId;
-					object[fieldName] = valueItem;
-				} else if (typeSelect == 'newnameid' && nameId) {
-					object[fieldType] = nameId;
-					object[fieldName] = valueItem;
-				} else if (typeSelect == 'fio') {
-					object[fieldName] = valueItem;
-				}
-			} else if ($(item).hasClass('form__item--hide')) {
-				const valueItem = $(item).data('value');
-
-				object[fieldName] = valueItem;
-			}
-
-			return object;
-		}, {});
-
-		console.log(userData);
-
-		if (validationEmptyFields(userData)) {
-			userFromForm(userData);
+		if (valid) {
+			userFromForm();
 			clearFieldsForm();
 		}
 	});
 }
 
-function userFromForm(object, nameForm = '#removeForm', nameTable = '#tableRemove') {
+function userFromForm() {
 	const objToCollection = {
 		id: '',
 		fio: '',
-		cardvalidto: '',
 		post: '',
-		nameid: '',
 		photofile: '',
-		photourl: '',
-		statustitle: '',
 		statusid: '',
-		newdepart: '',
+		statustitle: '',
 		newnameid: '',
-		department: ''
+		newdepart: '',
+		cardvalidto: ''
 	};
-	const itemObject = Object.assign({}, objToCollection);
-	const departName = settingsObject.longname;
-	const departID = settingsObject.nameid;
-	const postUser = $(`${nameForm} .form__item--post`).data('value');
-	const idUser = $(`${nameForm} .form__item--id`).data('value');
+	const itemObject = {...objToCollection};
 
 	for (const itemField in itemObject) {
-		for (const key in object) {
+		for (const key in removeObject) {
 			if (itemField === key) {
-				itemObject[itemField] = object[key];
-			} else if (itemField === 'id') {
-				itemObject[itemField] = idUser;
-			} else if (itemField === 'department') {
-				itemObject[itemField] = departName;
-			} else if (itemField === 'nameid') {
-				itemObject[itemField] = departID;
-			} else if (itemField === 'post') {
-				itemObject[itemField] = postUser;
+				itemObject[itemField] = removeObject[key];
 			}
 		}
 	}
@@ -313,44 +273,39 @@ function userFromForm(object, nameForm = '#removeForm', nameTable = '#tableRemov
 	counter++;
 
 	setDataInStorage();
-	dataAdd(nameTable);
+	dataAdd();
 }
 
-function dataAdd(nameTable, page = 'remove') {
+function dataAdd() {
 	if (removeCollection.size) {
-		emptySign(nameTable, 'full');
+		emptySign('full');
 	} else {
-		emptySign(nameTable, 'empty');
+		emptySign('empty');
 
 		return;
 	}
 
-	$(`.main__count--${page}`).text(removeCollection.size);
-
-	getDepartmentInDB('department');
+	viewAllCount();
 	showFieldsInHeaderTable();
 	renderTable();
 	deleteUser();
 	editUser();
 }
 
-function showDataFromStorage(nameTable = '#tableRemove', page = 'remove') {
+function showDataFromStorage(page = 'remove') {
 	const storageCollection = JSON.parse(localStorage.getItem(page));
 
 	if (storageCollection && storageCollection.collection.length && !removeCollection.size) {
 		const lengthStorage = storageCollection.collection.length;
-
 		counter = storageCollection.collection[lengthStorage - 1].id + 1; // id последнего элемента в localStorage
+
 		storageCollection.collection.forEach((item, i) => {
 			const itemID = storageCollection.collection[i].id;
 
 			removeCollection.set(itemID, item);
 		});
 
-		dataAdd(nameTable);
-		getAddUsersInDB('', storageCollection.collection);
-	} else {
-		getAddUsersInDB();
+		dataAdd();
 	}
 }
 
@@ -361,25 +316,22 @@ function setDataInStorage(page = 'remove') {
 }
 
 function setDepartInSelect() {
-	departmentCollection.forEach((depart) => {
-		const { nameid = '', longname = '' } = depart;
+	departmentCollection.forEach(({ nameid = '', longname = '' }) => {
 		const quoteName = longname.replace(/["']/g , '&quot;');
 
 		if (nameid !== settingsObject.nameid) {
-			$('.select[data-field="newdepart"] .select__list').append(`
+			$('.select[data-select="newnameid"] .select__list').append(`
 				<li class="select__item">
 					<span class="select__name" data-title="${quoteName}" data-newnameid="${nameid}">${quoteName}</span>
 				</li>
 			`);
 		}
 	});
-
-	clickSelectItem();
 }
 
 function showFieldsInHeaderTable(page = 'remove') {
-	removeObject.statusnewdepart = [...removeCollection.values()].some((cell) => cell.newdepart) ? true : false;
-	removeObject.statuscardvalidto = [...removeCollection.values()].some((cell) => cell.cardvalidto) ? true : false;
+	removeObject.statusnewdepart = [...removeCollection.values()].some(({ newdepart }) => newdepart);
+	removeObject.statuscardvalidto = [...removeCollection.values()].some(({ cardvalidto }) => cardvalidto);
 	const newdepartMod = removeObject.statusnewdepart ? '-newdepart' : '';
 	const cardvalidtoMod = removeObject.statuscardvalidto ? '-cardvalidto' : '';
 	const className = `wrap wrap--content wrap--content-${page}${newdepartMod}${cardvalidtoMod}`;
@@ -389,12 +341,12 @@ function showFieldsInHeaderTable(page = 'remove') {
 	renderHeaderTable();
 }
 
-function setUsersInSelect(users, collection, nameForm = '#removeForm') {
+function setUsersInSelect(users, nameForm = '#removeForm') {
 	$(`${nameForm} .select[data-select="fio"]`).find('.select__list').html('');
 
-	if (collection.length) {
-		[...collection.values()].forEach((elem) => {
-			users = users.filter((item) => elem.id !== +item.id);
+	if (removeCollection.size) {
+		removeCollection.forEach((elem) => {
+			users = users.filter(({ id }) => elem.id !== id);
 		});
 	}
 
@@ -414,86 +366,61 @@ function setUsersInSelect(users, collection, nameForm = '#removeForm') {
 }
 
 function toggleSelect(nameForm = '#removeForm') {
-	$(`${nameForm} .select__header`).click((e) => {
-		$(e.currentTarget).next().slideToggle();
-		$(e.currentTarget).toggleClass('select__header--active');
+	$(`${nameForm} .select__header`).click(({ currentTarget }) => {
+		$(currentTarget).next().slideToggle().toggleClass('select__header--active');
 	});
-
-	clickSelectItem();
 }
 
 function clickSelectItem(nameForm = '#removeForm') {
-	$(`${nameForm} .select__item`).click((e) => {
-		const title = $(e.currentTarget).find('.select__name').data('title');
-		const id = $(e.currentTarget).find('.select__name').data('id');
-		const select = $(e.currentTarget).parents('.select').data('select');
+	$(`${nameForm} .select__item`).click(({ currentTarget }) => {
+		const title = $(currentTarget).find('.select__name').data('title');
+		const id = $(currentTarget).find('.select__name').data('id');
+		const select = $(currentTarget).parents('.select').data('select');
+		const statusid = $(currentTarget).find('.select__name').data(select);
 
 		if (select === 'fio') {
 			getAddUsersInDB(id); // вывести должность в скрытое поле
 		}
 
-		setDataAttrSelectedItem(title, select, e.currentTarget);
-		getAddUsersInDB(); // вывести всех пользователей в селект
-		setDepartInSelect();
+		setDataAttrSelectedItem(title, select, statusid);
 	});
 }
 
-function setDataAttrSelectedItem(title, select, elem, nameForm = '#removeForm') {
-	const fio = select === 'fio' ? title : '';
-	const post = $(`${nameForm} .form__item--post`).data('value');
-	const id = $(`${nameForm} .form__item--id`).data('value');
-	const statusid = select === 'reason' ? $(elem).find('.select__name').data(select) : '';
-	const statustitle = select === 'reason' ? title : '';
-	const newnameid = select === 'newnameid' ? $(elem).find('.select__name').data(select) : '';
-	const newdepart = select === 'newnameid' ? title : '';
-	const quoteNewdepart = newdepart ? newdepart.replace(/["']/g , '&quot;') : '';
-
+function setDataAttrSelectedItem(title, select, statusid) {
 	if (select === 'fio') {
-		removeObject.fio = fio;
+		removeObject.fio = title;
 		removeObject.statustitle = '';
 		removeObject.statusid = '';
 		removeObject.newdepart = '';
 		removeObject.newnameid = '';
-		removeObject.post = post;
-		removeObject.id = id;
+		removeObject.cardvalidto = '';
 	} else if (select === 'reason') {
-		removeObject.statustitle = statustitle;
 		removeObject.statusid = statusid;
-		removeObject.newdepart = '';
-		removeObject.newnameid = '';
-	} else {
-		removeObject.newdepart = quoteNewdepart;
-		removeObject.newnameid = newnameid;
+		removeObject.statustitle = title;
+
+		if (statusid === 'remove') {
+			removeObject.newdepart = '';
+			removeObject.newnameid = '';
+		} else if (statusid === "changeDepart") {
+			removeObject.cardvalidto = '';
+		}
+	} else if (select === 'newnameid') {
+		removeObject.newnameid = statusid;
+		removeObject.newdepart = title.replace(/["']/g , '&quot;');
 	}
 
-	renderForm(removeObject, 'clear'); //  сначала очистка, потом проверка select === 'reason'
-
-	if (select === 'reason') {
-		datepicker();
-		getDepartmentInDB('department');
-	}
-
-	toggleSelect();
+	renderForm();
 }
 
 function clearFieldsForm() {
-	removeObject.id = '';
-	removeObject.fio = '';
-	removeObject.statusid = '';
-	removeObject.statustitle = '';
-	removeObject.post = '';
-	removeObject.newdepart = '';
-	removeObject.newnameid = '';
-	removeObject.photourl = '';
-	removeObject.photofile = '';
-	removeObject.cardvalidto = '';
+	for (const key in removeObject) {
+		removeObject[key] = '';
+	}
 
-	renderForm(removeObject, 'clear');
-	toggleSelect();
-	getAddUsersInDB();
+	renderForm();
 }
 
-function emptySign(nameTable, status) {
+function emptySign(status, nameTable = '#tableRemove') {
 	if (status == 'empty') {
 		$(nameTable)
 			.addClass('table__body--empty')
@@ -516,100 +443,72 @@ function datepicker() {
 		minDate: "+1D",
 		maxViewMode: 10
 	});
-}
 
-function showUserAvatar(photourl) {
-	// console.log(photourl);
-	// const reader = new FileReader();
-	// reader.readAsDataURL(photourl);
-	// reader.onloadend = () => {
-	// 	const base64data = reader.result;
-	// 	console.log(base64data);
-	// }
-	// $('.img--form-remove').attr('src', photourl);
-}
+	$('#removeDatepicker').change(({ currentTarget }) => {
+		const cardvalidtoValue = $(currentTarget).val();
 
-function validationEmptyFields(fields, page = 'remove') {
-	const valid = Object.values(fields).every((item) => item);
-	const statusMess = !valid ? 'show' : 'hide';
-
-	$(`.main[data-name=${page}]`).find('.info__item--warn.info__item--fields')[statusMess]();
-
-	return valid;
+		removeObject.cardvalidto = cardvalidtoValue;
+	});
 }
 
 function deleteUser(nameTable = '#tableRemove', page = 'remove') {
-	$('.table__content').click((e) => {
-		if ($(e.target).parents('.table__btn--delete').length || $(e.target).hasClass('table__btn--delete')) {
-			const idRemove = $(e.target).closest('.table__row').data('id');
+	$(`${nameTable} .table__content`).click(({ target }) => {
+		if ($(target).parents('.table__btn--delete').length || $(target).hasClass('table__btn--delete')) {
+			const userID = $(target).closest('.table__row').data('id');
 
-			removeCollection.forEach((item, i) => {
-				if (item.id === idRemove) {
-					removeCollection.delete(i);
+			[...removeCollection].forEach(([ key, { id } ]) => {
+				if (userID === +id) {
+					removeCollection.delete(key);
 				}
 			});
 
 			setDataInStorage();
 			showFieldsInHeaderTable();
 			renderTable();
-			getAddUsersInDB();
-		}
+			viewAllCount();
 
-		if (!removeCollection.size) {
-			emptySign(nameTable, 'empty');
+			if (!removeCollection.size) {
+				emptySign('empty');
+				localStorage.removeItem(page);
+			}
 		}
-
-		$(`.main__count--${page}`).text(removeCollection.size);
 	});
 }
 
-function editUser(page = 'remove') {
-	$('.table__content').click((e) => {
-		if ($(e.target).parents('.table__btn--edit').length || $(e.target).hasClass('table__btn--edit')) {
-			const idEdit = $(e.target).closest('.table__row').data('id');
-			let fillFields;
+function editUser(nameTable = '#tableRemove') {
+	$(`${nameTable} .table__content`).click(({ target }) => {
+		if ($(target).parents('.table__btn--edit').length || $(target).hasClass('table__btn--edit')) {
+			const userID = $(target).closest('.table__row').data('id');
 
-			for (let key in removeObject) {
-				if (key !== 'statuscardvalidto' && key !== 'statusnewdepart') {
-					fillFields = removeObject[key] ? false : true;
-				}
-			}
-
-			if (fillFields) {
-				removeCollection.forEach((item) => {
-					if (item.id === idEdit) {
-						for (let key in removeObject) {
-							removeObject[key] = item[key];
-						}
+			[...removeCollection].forEach(([ keyCollection, item ]) => {
+				if (userID === +item.id) {
+					for (let key in item) {
+						removeObject[key] = item[key];
 					}
-				});
 
-				showFieldsInHeaderTable();
-				renderForm(idEdit, 'edit');
-				renderTable();
-				toggleSelect();
-				datepicker();
-				getAddUsersInDB();
-				setDepartInSelect();
+					removeCollection.delete(keyCollection);
+				}
+			});
 
-				$(`.main__count--${page}`).text(removeCollection.size);
-			}
+			renderForm();
+			showFieldsInHeaderTable();
+			renderTable();
+			viewAllCount();
 		}
 	});
 }
 
-function submitIDinBD(nameTable = '#tableRemove', page = 'remove') {
+function submitIDinBD(page = 'remove') {
 	$('#submitRemoveUser').click(() => {
 		if (!removeCollection.size) return;
 
-		removeCollection.forEach((elem) => {
-			elem.nameid = settingsObject.nameid;
-			elem.department = settingsObject.longname;
-			elem.date = service.getCurrentDate();
+		removeCollection.forEach((user) => {
+			user.nameid = settingsObject.nameid;
+			user.date = service.getCurrentDate();
 		});
 
-		const removeArray = [...removeCollection.values()].filter((elem) => elem.statusid === 'remove');
-		const changeDepartArray = [...removeCollection.values()].filter((elem) => elem.statusid === 'changeDepart');
+		const removeArray = [...removeCollection.values()].filter(({ statusid }) => statusid === 'remove');
+		const changeDepartArray = [...removeCollection.values()].filter(({ statusid }) => statusid === 'changeDepart');
 
 		if (removeArray) {
 			setAddUsersInDB(removeArray, 'add' , 'remove');
@@ -619,22 +518,13 @@ function submitIDinBD(nameTable = '#tableRemove', page = 'remove') {
 		}
 
 		removeCollection.clear();
-		emptySign(nameTable, 'empty');
+		emptySign('empty');
 		renderTable();
+		viewAllCount();
 
-		$(`.main__count--${page}`).text(removeCollection.size);
 		localStorage.removeItem(page);
 		counter = 0;
 	});
-}
-
-function setNameDepartOnPage() {
-	renderHeaderPage();
-	addUser();
-	toggleSelect();
-	setDepartInSelect();
-	submitIDinBD();
-	showDataFromStorage();
 }
 
 function setAddUsersInDB(array, nameTable, action) {
@@ -644,9 +534,9 @@ function setAddUsersInDB(array, nameTable, action) {
 		dataType: "html",
 		async: false,
 		data: {
-			action: action,
-			nameTable: nameTable,
-			array: array
+			action,
+			nameTable,
+			array
 		},
 		success: () => {
 			service.modal('success');
@@ -664,7 +554,7 @@ function setAddUsersInDB(array, nameTable, action) {
 	});
 }
 
-function getAddUsersInDB(id = '', collection = removeCollection.values(), nameForm = '#removeForm') {
+function getAddUsersInDB(id = '') {
 	$.ajax({
 		url: "./php/output-request.php",
 		method: "post",
@@ -674,17 +564,17 @@ function getAddUsersInDB(id = '', collection = removeCollection.values(), nameFo
 			idDepart: settingsObject.nameid,
 			nameTable: 'remove'
 		},
-		async: false,
 		success: (data) => {
 			if (id) {
-				const { id = '', post  = '', photourl  = '' } = JSON.parse(data);
+				const { id = '', post  = '', photofile = '' } = JSON.parse(data);
 
-				$(`${nameForm} .form__item--post`).attr('data-value', post);
-				$(`${nameForm} .form__item--id`).attr('data-value', id);
+				removeObject.post = post;
+				removeObject.id = id;
+				removeObject.photofile = photofile;
 
-				showUserAvatar(photourl);
+				renderForm();
 			} else {
-				setUsersInSelect(JSON.parse(data), collection);
+				setUsersInSelect(JSON.parse(data));
 			}
 		},
 		error: () => {
@@ -693,14 +583,13 @@ function getAddUsersInDB(id = '', collection = removeCollection.values(), nameFo
 	});
 }
 
-function getDepartmentInDB(nameTable) {
+function getDepartmentInDB() {
 	$.ajax({
 		url: "./php/output-request.php",
 		method: "post",
 		dataType: "html",
-		async: false,
 		data: {
-			nameTable: nameTable
+			nameTable: 'department'
 		},
 		success: (data) => {
 			const dataFromDB = JSON.parse(data);
@@ -726,9 +615,9 @@ function sendMail(obj) {
 		dataType: "html",
 		async: false,
 		data: {
-			sender: sender,
-			recipient: recipient,
-			subject: subject,
+			sender,
+			recipient,
+			subject,
 			message: messageMail(obj)
 		},
 		success: () => {
@@ -738,6 +627,11 @@ function sendMail(obj) {
 			service.modal('email');
 		}
 	});
+}
+
+// Общие функции с картами и кодами
+function viewAllCount(page = 'remove') {
+	$(`.main__count--all-${page}`).text(removeCollection.size);
 }
 
 export default {

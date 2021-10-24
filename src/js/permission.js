@@ -144,7 +144,7 @@ function userFromDB(array) {
 	};
 
 	array.forEach((elem, i) => {
-		const itemObject = Object.assign({}, objToCollection);
+		const itemObject = {...objToCollection};
 
 		for (const itemField in itemObject) {
 			for (const key in elem) {

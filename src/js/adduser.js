@@ -363,7 +363,7 @@ function setDataInStorage(page = 'add') {
 }
 
 function showFieldsInHeaderTable(page = 'add') {
-	addObject.statuscardvalidto = [...addCollection.values()].some(({ cardvalidtoid }) => cardvalidtoid === 'date') ? true : false;
+	addObject.statuscardvalidto = [...addCollection.values()].some(({ cardvalidtoid }) => cardvalidtoid === 'date');
 	const cardvalidtoMod = addObject.statuscardvalidto ? '-cardvalidto' : '';
 	const className = `wrap wrap--content wrap--content-${page}${cardvalidtoMod}`;
 
@@ -473,7 +473,7 @@ function downloadFoto(nameForm = '#addForm', page = 'add') {
 			return;
 		}
 
-		$('.img--form').attr('src', url);
+		$(`${nameForm} .img--form`).attr('src', url);
 
 		addObject.photourl = url;
 		addObject.photofile = file;
