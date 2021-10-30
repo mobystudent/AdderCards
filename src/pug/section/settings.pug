@@ -1,8 +1,9 @@
 main.main(data-name="settings")
 	.container
-		h1.main__title
-			| Настройки
-		span.main__depart.main__depart--settings(data-depart="" data-id="ChemDep")
+		.main__title-wrap
+			h1.main__title
+				| Настройки
+			span.main__depart.main__depart--settings(data-depart="" data-id="")
 			
 		section.settings#settingsSection
 			.settings__content-wrap
@@ -24,12 +25,12 @@ main.main(data-name="settings")
 						//- form.form.form--settings(action="#" method="GET")
 							.form__field
 								label.form__name.form__name--settings(for="changelongname")
-									| Введите полное новое название
-								input.form__input.form__input--settings.form__item(data-field="changelongname" name="changelongname" id="changelongname" type="text" placeholder="Введите полное новое название")
+									| Введите новое полное название
+								input.form__input.form__input--settings.form__item(name="changelongname" id="changelongname" type="text" placeholder="Введите новое полное название")
 							.form__field
 								label.form__name.form__name--settings(for="changeshortname")
 									| Введите сокращенное название
-								input.form__input.form__input--settings.form__item(data-field="changeshortname" name="changeshortname" id="changeshortname" type="text" placeholder="Введите сокращенное название")
+								input.form__input.form__input--settings.form__item(name="changeshortname" id="changeshortname" type="text" placeholder="Введите сокращенное название")
 								span.form__text
 									| Например: Химический факультет - Химфак #[br]
 									| Учебный центр социально-воспитательной и внеобразовательной деятельности - УЦСВВОД #[br]
@@ -52,12 +53,12 @@ main.main(data-name="settings")
 						//- form.form.form--settings(action="#" method="GET")
 							.form__field
 								label.form__name.form__name--settings(for="addlongname")
-									| Введите полное новое название
-								input.form__input.form__input--settings.form__item(data-field="addlongname" name="addlongname" id="addlongname" type="text" placeholder="Введите полное новое название")
+									| Введите новое полное название
+								input.form__input.form__input--settings.form__item(name="addlongname" id="addlongname" type="text" placeholder="Введите новое полное название")
 							.form__field
 								label.form__name.form__name--settings(for="addshortname")
 									| Введите сокращенное название
-								input.form__input.form__input--settings.form__item(data-field="addshortname" name="addshortname" id="addshortname" type="text" placeholder="Введите сокращенное название")
+								input.form__input.form__input--settings.form__item(name="addshortname" id="addshortname" type="text" placeholder="Введите сокращенное название")
 								span.form__text
 									| Например: Химический факультет - Химфак #[br]
 									| Учебный центр социально-воспитательной и внеобразовательной деятельности - УЦСВВОД #[br]
@@ -65,7 +66,7 @@ main.main(data-name="settings")
 							.form__field
 								label.form__name.form__name--settings(for="addnameid")
 									| Введите id подразделения
-								input.form__input.form__input--settings.form__item(data-field="addnameid" name="addnameid" id="addnameid" type="text" placeholder="Введите id подразделения")
+								input.form__input.form__input--settings.form__item(name="addnameid" id="addnameid" type="text" placeholder="Введите id подразделения")
 								span.form__text
 									| Переводим сокращенное название на английский (не должно быть большей 9 символов). #[br]
 									| Например: Химический факультет - ChemDep (Химфак) #[br]
@@ -92,7 +93,7 @@ main.main(data-name="settings")
 							.form__field
 								h3.form__name.form__name--settings
 									| Выбрать подразделение
-								.form__item.select.select--settings(data-field="removedepart" data-type="removenameid" data-select="removenameid")
+								.form__item.select.select--settings(data-type="removenameid" data-select="removenameid")
 									header.select__header.select__header--settings
 										span.select__value.select__value--settings(data-title="title" data-removenameid="removenameid")
 											| Выберите подразделение
@@ -115,7 +116,7 @@ main.main(data-name="settings")
 								| Изменить
 						//- form.form.form--settings(action="#" method="GET")
 							.form__field
-								.form__item.select.select--settings(data-field="timeautoupdate" data-type="autoupdate" data-select="autoupdate")
+								.form__item.select.select--settings(data-type="autoupdate" data-select="autoupdate")
 									header.select__header.select__header--settings
 										span.select__value.select__value--settings(data-title="Выберите период автообновления" data-autoupdate="")
 											| Выберите период автообновления
@@ -148,7 +149,7 @@ main.main(data-name="settings")
 							.form__field
 								label.form__name.form__name--settings(for="emailManager")
 									| Введите новый email
-								input.form__input.form__input--settings.form__item(data-field="changeemail" name="changeemail" id="emailManager" type="email" placeholder="Введите новый email")
+								input.form__input.form__input--settings.form__item(name="changeemail" id="emailManager" type="email" placeholder="Введите новый email")
 							button.btn.btn--changes(data-name="changeemail" type="button")
 								| Сохранить
 								

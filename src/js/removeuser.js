@@ -207,10 +207,10 @@ function renderForm(nameForm = '#removeForm') {
 	$(`${nameForm} .form__wrap`).html('');
 	$(`${nameForm} .form__wrap`).append(templateRemoveForm());
 
-	toggleSelect();
-	getAddUsersInDB(); // вывести всех пользователей в селект
+	toggleSelect(); // 3
+	getAddUsersInDB(); // вывести всех пользователей в селект 1
 	datepicker();
-	setDepartInSelect();
+	setDepartInSelect(); // 2
 }
 
 function renderHeaderTable(page = 'remove') {

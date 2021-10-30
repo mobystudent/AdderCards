@@ -11,28 +11,29 @@ const settingsObject = {
 	longname: '',
 	email: '',
 	action: '',
-	statuschangename: '',
 	changelongname: '',
 	changeshortname: '',
-	statusadddepart: '',
 	addlongname: '',
 	addshortname: '',
 	addnameid: '',
-	statusremovedepart: '',
 	removelongname: '',
 	removenameid: '',
-	statustimeautoupdate: '',
 	autoupdatetitle: '',
 	autoupdatevalue: '',
+	changeemail: '',
+	statuschangename: '',
+	statusadddepart: '',
+	statusremovedepart: '',
+	statustimeautoupdate: '',
 	statuschangeemail: ''
 };
 
 $(window).on('load', () => {
-	getNameDepartmentFromDB('settings');
+	getNameDepartmentFromDB();
+	renderSection();
 });
 
 function templateSettingsForm() {
-	console.log(settingsObject);
 	const changeNameTemplate = templateChangeNameForm();
 	const addDepartTemplate = templateAddDepartForm();
 	const removeDepartTemplate = templateRemoveDepartForm();
@@ -51,15 +52,17 @@ function templateSettingsForm() {
 function templateChangeNameForm() {
 	const changeNameBtnValue = settingsObject.statuschangename ? 'Отменить' : 'Изменить';
 	const changeNameBtnClass = settingsObject.statuschangename ? 'btn--settings-disabled' : '';
+	const changeLongNameValue = settingsObject.changelongname ? settingsObject.changelongname : '';
+	const changeShortNameValue = settingsObject.changeshortname ? settingsObject.changeshortname : '';
 	const changeNameView = settingsObject.statuschangename ? `
 		<form class="form form--settings" action="#" method="GET">
 			<div class="form__field">
-				<label class="form__name form__name--settings" for="changelongname">Введите полное новое название</label>
-				<input class="form__input form__input--settings form__item" data-field="changelongname" name="changelongname" id="changelongname" type="text" value="${settingsObject.changelongname}" placeholder="Введите полное новое название"/>
+				<label class="form__name form__name--settings" for="changelongname">Введите новое полное название</label>
+				<input class="form__input form__input--settings form__item" name="changelongname" id="changelongname" type="text" value="${changeLongNameValue}" placeholder="Введите новое полное название"/>
 			</div>
 			<div class="form__field">
 				<label class="form__name form__name--settings" for="changeshortname">Введите сокращенное название</label>
-				<input class="form__input form__input--settings form__item" data-field="changeshortname" name="changeshortname" id="changeshortname" type="text" value="${settingsObject.changeshortname}" placeholder="Введите сокращенное название"/>
+				<input class="form__input form__input--settings form__item" name="changeshortname" id="changeshortname" type="text" value="${changeShortNameValue}" placeholder="Введите сокращенное название"/>
 				<span class="form__text">
 					Например: Химический факультет - Химфак <br/>
 					Учебный центр социально-воспитательной и внеобразовательной деятельности - УЦСВВОД <br/>
@@ -95,15 +98,18 @@ function templateChangeNameForm() {
 function templateAddDepartForm() {
 	const addDepartBtnValue = settingsObject.statusadddepart ? 'Отменить' : 'Добавить';
 	const addDepartBtnClass = settingsObject.statusadddepart ? 'btn--settings-disabled' : '';
+	const addLongNameValue = settingsObject.addlongname ? settingsObject.addlongname : '';
+	const addShortNameValue = settingsObject.addshortname ? settingsObject.addshortname : '';
+	const addIDNameValue = settingsObject.addnameid ? settingsObject.addnameid : '';
 	const addDepartView = settingsObject.statusadddepart ? `
 		<form class="form form--settings" action="#" method="GET">
 			<div class="form__field">
-				<label class="form__name form__name--settings" for="addlongname">Введите полное новое название</label>
-				<input class="form__input form__input--settings form__item" data-field="addlongname" name="addlongname" id="addlongname" type="text" value="${settingsObject.addlongname}" placeholder="Введите полное новое название"/>
+				<label class="form__name form__name--settings" for="addlongname">Введите новое полное название</label>
+				<input class="form__input form__input--settings form__item" name="addlongname" id="addlongname" type="text" value="${addLongNameValue}" placeholder="Введите новое полное название"/>
 			</div>
 			<div class="form__field">
 				<label class="form__name form__name--settings" for="addshortname">Введите сокращенное название</label>
-				<input class="form__input form__input--settings form__item" data-field="addshortname" name="addshortname" id="addshortname" type="text" value="${settingsObject.addshortname}" placeholder="Введите сокращенное название"/>
+				<input class="form__input form__input--settings form__item" name="addshortname" id="addshortname" type="text" value="${addShortNameValue}" placeholder="Введите сокращенное название"/>
 				<span class="form__text">
 					Например: Химический факультет - Химфак <br/>
 					Учебный центр социально-воспитательной и внеобразовательной деятельности - УЦСВВОД <br/>
@@ -112,7 +118,7 @@ function templateAddDepartForm() {
 			</div>
 			<div class="form__field">
 				<label class="form__name form__name--settings" for="addnameid">Введите id подразделения</label>
-				<input class="form__input form__input--settings form__item" data-field="addnameid" name="addnameid" id="addnameid" type="text" value="${settingsObject.addnameid}" placeholder="Введите id подразделения"/>
+				<input class="form__input form__input--settings form__item" name="addnameid" id="addnameid" type="text" value="${addIDNameValue}" placeholder="Введите id подразделения"/>
 				<span class="form__text">
 					Переводим сокращенное название на английский (не должно быть большей 9 символов). <br/>
 					Например: Химический факультет - ChemDep (Химфак) <br/>
@@ -151,7 +157,7 @@ function templateRemoveDepartForm() {
 		<form class="form form--settings" action="#" method="GET">
 			<div class="form__field">
 				<h3 class="form__name form__name--settings">Выбрать подразделение</h3>
-				<div class="form__item select select--settings" data-field="removedepart" data-type="removenameid" data-select="removenameid">
+				<div class="form__item select select--settings" data-type="removenameid" data-select="removenameid">
 					<header class="select__header select__header--settings">
 						<span class="select__value select__value--settings ${removedepartClassView}" data-title="${removedepartValue}" data-removenameid="${settingsObject.removenameid}">${removedepartValue}</span>
 					</header>
@@ -225,7 +231,7 @@ function templateTimeAutoUploadForm() {
 	const timeAutoUploadView = settingsObject.statustimeautoupdate ? `
 		<form class="form form--settings" action="#" method="GET">
 			<div class="form__field">
-				<div class="form__item select select--settings" data-field="timeautoupdate" data-type="autoupdate" data-select="autoupdate">
+				<div class="form__item select select--settings" data-type="autoupdate" data-select="autoupdate">
 					<header class="select__header select__header--settings">
 						<span class="select__value select__value--settings ${timeAutoUploadClassView}" data-title="${timeAutoUploadValue}" data-autoupdate="${settingsObject.autoupdatevalue}">${timeAutoUploadValue}</span>
 					</header>
@@ -266,7 +272,7 @@ function templateChangeEmailForm() {
 		<form class="form form--settings" action="#" method="GET">
 			<div class="form__field">
 				<label class="form__name form__name--settings" for="emailManager">Введите новый email</label>
-				<input class="form__input form__input--settings form__item" data-field="changeemail" name="changeemail" id="emailManager" type="email" placeholder="Введите новый email"/>
+				<input class="form__input form__input--settings form__item" name="changeemail" id="emailManager" type="email" placeholder="Введите новый email"/>
 			</div>
 			<button class="btn btn--changes" data-name="changeemail" type="button">Сохранить</button>
 		</form>
@@ -290,70 +296,129 @@ function templateChangeEmailForm() {
 	`;
 }
 
+function templateHeaderPage(page = 'settings') {
+	return `
+		<h1 class="main__title">Настройки</h1>
+		<span class="main__depart main__depart--${page}" data-depart="${settingsObject.longname}" data-id="${settingsObject.nameid}">${settingsObject.longname}</span>
+	`;
+}
+
 function renderSection(nameSection = '#settingsSection') {
 	$(`${nameSection} .settings__content`).html('');
 	$(`${nameSection} .settings__content`).append(templateSettingsForm());
+
+	contentScrollbar();
+	memberInputField();
+	getDepartmentInDB(); // 1
+	setDepartInSelect(); // 2
+	toggleSelect(); // 3
+	showChangesFields();
+	applyFieldsChanges();
+}
+
+function renderHeaderPage(page = 'settings') {
+	$(`.main[data-name=${page}] .main__title-wrap`).html('');
+	$(`.main[data-name=${page}] .main__title-wrap`).append(templateHeaderPage());
 }
 
 function showChangesFields() {
-	$('.btn--settings').click((e) => {
-		const typeBtn = $(e.currentTarget).data('name');
-		settingsObject[`status${typeBtn}`] = $(`.btn--settings[data-name=${typeBtn}]`).hasClass('btn--settings-disabled') ? false : true;
+	$('.btn--settings').click(({ currentTarget }) => {
+		const typeBtn = $(currentTarget).data('name');
+
+		settingsObject[`status${typeBtn}`] = !$(`.btn--settings[data-name=${typeBtn}]`).hasClass('btn--settings-disabled');
 
 		renderSection();
-		memberInputField();
-		toggleSelect();
-		applyFieldsChanges();
-		showChangesFields();
-		contentScrollbar();
-		getDepartmentInDB('department');
-		setDepartInSelect();
 	});
 }
 
-function applyFieldsChanges() {
-	$('.btn--changes').click((e) => {
-		const nameBlock = $(e.currentTarget).attr('data-name');
-		const fields = $(`.settings__section[data-block=${nameBlock}]`).find('.form__item');
-		const userData = [...fields].reduce((object, item) => {
-			const fieldName = $(item).data('field');
+function applyFieldsChanges(page = 'settings') {
+	$('.btn--changes').click(() => {
+		if (!settingsObject.statustimeautoupdate) {
+			delete settingsObject.autoupdatetitle;
+			delete settingsObject.autoupdatevalue;
+			delete settingsObject.statustimeautoupdate;
+		}
+		if (!settingsObject.statusadddepart) {
+			delete settingsObject.addlongname;
+			delete settingsObject.addnameid;
+			delete settingsObject.addshortname;
+			delete settingsObject.statusadddepart;
+		}
+		if (!settingsObject.statuschangename) {
+			delete settingsObject.changelongname;
+			delete settingsObject.changeshortname;
+			delete settingsObject.statuschangename;
+		}
+		if (!settingsObject.statusremovedepart) {
+			delete settingsObject.removelongname;
+			delete settingsObject.removenameid;
+			delete settingsObject.statusremovedepart;
+		}
+		if (!settingsObject.statuschangeemail) {
+			delete settingsObject.changeemail;
+			delete settingsObject.statuschangeemail;
+		}
 
-			// console.log(fieldName);
+		delete settingsObject.action;
 
-			if ($(item).hasClass('select')) {
-				const typeSelect = $(item).data('select');
-				const nameId = $(item).find('.select__value--selected-settings').attr(`data-${typeSelect}`);
-				const fieldType = $(item).data('type');
-				const valueItem = $(item).find('.select__value--selected-settings').attr('data-title');
+		const validFields = Object.values(settingsObject).every((item) => item);
+		const statusMess = !validFields ? 'show' : 'hide';
+		let correctName = 'hide';
+		let countNameidLetters = 'hide';
+		let nameBlock = '';
+		let correctEmail = 'hide';
 
-				console.log(typeSelect);
-				console.log(nameId);
-				console.log(fieldType);
-				console.log(valueItem);
+		if (settingsObject.statuschangename) {
+			nameBlock = 'changename';
+			settingsObject.action = 'change';
 
-				object[fieldType] = nameId;
-				object[fieldName] = valueItem;
-
-				if (typeSelect === 'autoupdate') {
-					object.nameid = settingsObject.nameid;
+			for (let key in settingsObject) {
+				if ((key == 'changelongname' || key == 'changeshortname') && settingsObject[key]) {
+					correctName = settingsObject[key].match(/[^а-яА-ЯiIъїЁё.'-\s]/g) ? 'show' : 'hide';
 				}
-			} else {
-				const idDepart = settingsObject.nameid;
-				const inputValue = $(item).val();
-
-				object.nameid = idDepart;
-				object[fieldName] = inputValue;
 			}
+		} else if (settingsObject.statusadddepart) {
+			nameBlock = 'adddepart';
+			settingsObject.action = 'add';
 
-			return object;
-		}, {});
+			for (let key in settingsObject) {
+				if ((key == 'addlongname' || key == 'addshortname') && settingsObject[key]) {
+					correctName = settingsObject[key].match(/[^а-яА-ЯiIъїЁё.'-\s]/g) ? 'show' : 'hide';
+				} else if (key == 'addnameid' && settingsObject[key]) {
+					const countLetters = settingsObject[key].trim().split(' ');
 
-		console.log(userData);
+					countNameidLetters = countLetters.length > 9 ? 'show' : 'hide';
+				}
+			}
+		} else if (settingsObject.statusremovedepart) {
+			nameBlock = 'removedepart';
+			settingsObject.action = 'remove';
+		} else if (settingsObject.statustimeautoupdate) {
+			nameBlock = 'timeautoupdate';
+			settingsObject.action = 'autoupdate';
+		} else if (settingsObject.statuschangeemail) {
+			nameBlock = 'changeemail';
+			settingsObject.action = 'email';
 
-		if (validationEmptyFields(userData)) {
-			setNameDepartmentInDB([userData], 'settings', settingsObject.action);
+			for (let key in settingsObject) {
+				if (key == 'changeemail' && settingsObject[key]) {
+					correctEmail = !settingsObject[key].match(/^([a-z0-9_-]+\.)*[a-z0-9_-]+@[a-z0-9_-]+(\.[a-z0-9_-]+)*\.[a-z]{2,6}$/g) ? 'show' : 'hide';
+				}
+			}
+		}
+
+		const valid = [statusMess, correctName, countNameidLetters, correctEmail].every((mess) => mess === 'hide');
+
+		$('.info')[!valid ? 'show' : 'hide']();
+		$(`.main[data-name=${page}] .settings__section[data-block=${nameBlock}]`).find('.info__item--warn.info__item--fields')[statusMess]();
+		$(`.main[data-name=${page}] .settings__section[data-block=${nameBlock}]`).find('.info__item--error.info__item--name')[correctName]();
+		$(`.main[data-name=${page}] .settings__section[data-block=${nameBlock}]`).find('.info__item--error.info__item--long')[countNameidLetters]();
+		$(`.main[data-name=${page}] .settings__section[data-block=${nameBlock}]`).find('.info__item--error.info__item--email')[correctEmail]();
+
+		if (valid) {
+			setNameDepartmentInDB([settingsObject], 'settings', settingsObject.action);
 			clearFieldsForm();
-			getNameDepartmentFromDB('settings');
+			getNameDepartmentFromDB();
 		}
 	});
 }
@@ -371,11 +436,10 @@ function contentScrollbar() {
 // }
 
 function setDepartInSelect() {
-	departmentCollection.forEach((depart) => {
-		const { nameid = '', longname = '' } = depart;
+	departmentCollection.forEach(({ nameid = '', longname = '' }) => {
 		const quoteName = longname.replace(/["']/g , '&quot;');
 
-		$('.select[data-field="removedepart"] .select__list').append(`
+		$('.select[data-select="removenameid"] .select__list').append(`
 			<li class="select__item">
 				<span class="select__name select__name--settings" data-title="${quoteName}" data-removenameid="${nameid}">${quoteName}</span>
 			</li>
@@ -386,151 +450,54 @@ function setDepartInSelect() {
 }
 
 function toggleSelect(nameSection = '#settingsSection') {
-	$(`${nameSection} .select__header`).click((e) => {
-		$(e.currentTarget).next().slideToggle();
-		$(e.currentTarget).toggleClass('select__header--active');
+	$(`${nameSection} .select__header`).click(({ currentTarget }) => {
+		$(currentTarget).next().slideToggle().toggleClass('select__header--active');
 	});
 
 	clickSelectItem();
 }
 
 function clickSelectItem(nameSection = '#settingsSection') {
-	$(`${nameSection} .select__item`).click((e) => {
-		const title = $(e.currentTarget).find('.select__name').data('title');
-		const select = $(e.currentTarget).parents('.select').data('select');
+	$(`${nameSection} .select__item`).click(({ currentTarget }) => {
+		const title = $(currentTarget).find('.select__name').data('title');
+		const select = $(currentTarget).parents('.select').data('select');
+		const statusid = $(currentTarget).find('.select__name').data(select);
 
-		setDataAttrSelectedItem(title, select, e.currentTarget);
+		setDataAttrSelectedItem(title, select, statusid);
 	});
 }
 
-function setDataAttrSelectedItem(title, select, elem) {
-	const statusremovedepart = select === 'removenameid' ? title : '';
-	const removenameid = select === 'removenameid' ? $(elem).find('.select__name').data(select) : '';
-	const removedepart = select === 'removenameid' ? title : '';
-	const quoteRemovedepart = removedepart ? removedepart.replace(/["']/g , '&quot;') : '';
-	const statustimeautoupdate = select === 'autoupdate' ? title : '';
-	const autoupdatetitle = select === 'autoupdate' ? title : '';
-	const autoupdatevalue = select === 'autoupdate' ? $(elem).find('.select__name').data(select) : '';
-
-	// console.log(`
-				// %s
-				// %s
-				// %s`, title, select, elem);
-
+function setDataAttrSelectedItem(title, select, statusid) {
 	if (select === 'removenameid') {
-		settingsObject.statusremovedepart = statusremovedepart;
-		settingsObject.removelongname = quoteRemovedepart;
-		settingsObject.removenameid = removenameid;
+		settingsObject.removelongname = title.replace(/["']/g , '&quot;');
+		settingsObject.removenameid = statusid;
 	} else if (select === 'autoupdate') {
-		settingsObject.statustimeautoupdate = statustimeautoupdate;
-		settingsObject.autoupdatetitle = autoupdatetitle;
-		settingsObject.autoupdatevalue = autoupdatevalue;
+		settingsObject.autoupdatetitle = title;
+		settingsObject.autoupdatevalue = statusid;
 	}
-
-	// console.warn(settingsObject);
 
 	renderSection();
-	showChangesFields();
-	applyFieldsChanges();
-	toggleSelect();
-
-	if (select === 'removenameid') {
-		setDepartInSelect();
-	}
 }
 
 function clearFieldsForm() {
-	settingsObject.action = '';
-	settingsObject.statuschangename = '';
-	settingsObject.changelongname = '';
-	settingsObject.changeshortname = '';
-	settingsObject.statusadddepart = '';
-	settingsObject.addlongname = '';
-	settingsObject.addshortname = '';
-	settingsObject.addnameid = '';
-	settingsObject.statusremovedepart = '';
-	settingsObject.removelongname = '';
-	settingsObject.removenameid = '';
-	settingsObject.statustimeautoupdate = '';
-	settingsObject.autoupdatetitle = '';
-	settingsObject.autoupdatevalue = '';
-	settingsObject.statuschangeemail = '';
+	for (const key in settingsObject) {
+		settingsObject[key] = '';
+	}
 
 	renderSection();
-	showChangesFields();
 }
 
 function memberInputField() {
-	$('.form__input').keyup((e) => {
-		const nameField = $(e.currentTarget).data('field');
-		const fieldValue = $(e.currentTarget).val();
+	$('.form__input').keyup(({ currentTarget }) => {
+		const nameField = $(currentTarget).attr('name');
+		const fieldValue = $(currentTarget).val();
 
-		settingsObject[nameField] = fieldValue ? fieldValue : settingsObject[nameField];
+		settingsObject[nameField] = fieldValue ? fieldValue : '';
 	});
 }
 
-function validationEmptyFields(fields, page = 'settings') {
-	const validFields = Object.values(fields).every((item) => item);
-	console.log(validFields);
-	const statusMess = !validFields ? 'show' : 'hide';
-	let correctName = 'hide';
-	let countNameidLetters = 'hide';
-	let nameBlock = '';
-	let correctEmail = 'hide';
-
-	if (settingsObject.statuschangename) {
-		nameBlock = 'changename';
-		settingsObject.action = 'change';
-
-		for (let key in fields) {
-			if ((key == 'changelongname' || key == 'changeshortname') && fields[key]) {
-				correctName = fields[key].match(/[^а-яА-ЯiIъїЁё.'-\s]/g) ? 'show' : 'hide';
-			}
-		}
-	} else if (settingsObject.statusadddepart) {
-		nameBlock = 'adddepart';
-		settingsObject.action = 'add';
-
-		for (let key in fields) {
-			if ((key == 'addlongname' || key == 'addshortname') && fields[key]) {
-				correctName = fields[key].match(/[^а-яА-ЯiIъїЁё.'-\s]/g) ? 'show' : 'hide';
-			} else if (key == 'addnameid' && fields[key]) {
-				const countLetters = fields[key].trim().split(' ');
-
-				countNameidLetters = (countLetters.length > 9) ? 'show' : 'hide';
-			}
-		}
-	} else if (settingsObject.statusremovedepart) {
-		nameBlock = 'removedepart';
-		settingsObject.action = 'remove';
-	} else if (settingsObject.statustimeautoupdate) {
-		nameBlock = 'timeautoupdate';
-		settingsObject.action = 'autoupdate';
-	} else if (settingsObject.statuschangeemail) {
-		nameBlock = 'changeemail';
-		settingsObject.action = 'email';
-
-		for (let key in fields) {
-			if (key == 'changeemail' && fields[key]) {
-				correctEmail = !fields[key].match(/^([a-z0-9_-]+\.)*[a-z0-9_-]+@[a-z0-9_-]+(\.[a-z0-9_-]+)*\.[a-z]{2,6}$/g) ? 'show' : 'hide';
-			}
-		}
-	}
-
-	const valid = [statusMess, correctName, countNameidLetters, correctEmail].every((mess) => mess === 'hide');
-
-	$('.info')[!valid ? 'show' : 'hide']();
-	$(`.main[data-name=${page}] .settings__section[data-block=${nameBlock}]`).find('.info__item--warn.info__item--fields')[statusMess]();
-	$(`.main[data-name=${page}] .settings__section[data-block=${nameBlock}]`).find('.info__item--error.info__item--name')[correctName]();
-	$(`.main[data-name=${page}] .settings__section[data-block=${nameBlock}]`).find('.info__item--error.info__item--long')[countNameidLetters]();
-	$(`.main[data-name=${page}] .settings__section[data-block=${nameBlock}]`).find('.info__item--error.info__item--email')[correctEmail]();
-
-	return valid;
-}
-
-function setNameDepartOnPage(depart, page = 'settings') {
-	console.log(depart);
-	const { nameid = '', shortname = '', longname = '', autoupdatetitle = '', autoupdatevalue = '', email = '' } = depart;
+function setNameDepartOnPage(settings) {
+	const { nameid = '', shortname = '', longname = '', autoupdatetitle = '', autoupdatevalue = '', email = '' } = settings;
 	settingsObject.nameid = nameid;
 	settingsObject.shortname = shortname;
 	settingsObject.longname = longname;
@@ -538,23 +505,17 @@ function setNameDepartOnPage(depart, page = 'settings') {
 	settingsObject.autoupdatetitle = autoupdatetitle;
 	settingsObject.autoupdatevalue = autoupdatevalue;
 
-	$(`.main__depart--${page}`).attr({ 'data-depart': longname, 'data-id': nameid }).text(longname);
-
+	renderHeaderPage();
 	renderSection();
-	contentScrollbar();
-	showChangesFields();
-	toggleSelect();
-	setDepartInSelect();
 }
 
-function getDepartmentInDB(nameTable) {
+function getDepartmentInDB() {
 	$.ajax({
 		url: "./php/output-request.php",
 		method: "post",
 		dataType: "html",
-		async: false,
 		data: {
-			nameTable: nameTable
+			nameTable: 'department'
 		},
 		success: (data) => {
 			const dataFromDB = JSON.parse(data);
@@ -576,12 +537,11 @@ function setNameDepartmentInDB(array, nameTable, action) {
 		dataType: "html",
 		async: false,
 		data: {
-			action: action,
-			nameTable: nameTable,
-			array: array
+			action,
+			nameTable,
+			array
 		},
-		success: (data) => {
-			console.log(data);
+		success: () => {
 			service.modal('update');
 		},
 		error: () => {
@@ -590,17 +550,15 @@ function setNameDepartmentInDB(array, nameTable, action) {
 	});
 }
 
-function getNameDepartmentFromDB(nameTable, page = 'settings') {
-	const idDepart = $(`.main__depart--${page}`).attr('data-id');
-
+function getNameDepartmentFromDB() {
 	$.ajax({
 		url: "./php/output-request.php",
 		method: "post",
 		dataType: "html",
 		async: false,
 		data: {
-			idDepart: idDepart,
-			nameTable: nameTable
+			idDepart: 'ChemDep', // пока нет авторизации
+			nameTable: 'settings'
 		},
 		success: (data) => {
 			const dataFromDB = JSON.parse(data);
