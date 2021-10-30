@@ -13,40 +13,35 @@
 	if (($nameTable === 'add') && ($action === 'edit')) {
 		foreach ($array as $item) {
 			foreach ($item as $key => $value) {
+				if ($key === 'id') $id = $value;
 				if ($key === 'fio') $fio = $value;
-				if ($key === 'department') $department = $value;
 				if ($key === 'nameid') $nameid = $value;
 				if ($key === 'post') $post = $value;
 				if ($key === 'statusid') $statusid = $value;
 				if ($key === 'statustitle') $statustitle = $value;
 				if ($key === 'date') $date = $value;
-				if ($key === 'id') $id = $value;
 				if ($key === 'newfio') {
-					$newfio = $item['newfio'] ? $value : $item['fio'];
+					$newfio = $value ? $value : $item['fio'];
 				}
 				if ($key === 'newpost') {
-					$newpost = $item['newpost'] ? $value : $item['post'];
+					$newpost = $value ? $value : $item['post'];
 				}
-				// if ($key === 'newphotofile') {
-				// 	$newpost = $item['newphotofile'] ? $value : $item['photofile'];
-				// }
-				// if ($key === 'newphotourl') {
-				// 	$newpost = $item['newphotourl'] ? $value : $item['photourl'];
-				// }
+				if ($key === 'newphotofile') {
+					$newphotofile = $value ? $value : $item['photofile'];
+				}
 			}
 
 			$idDepart = strtolower($item['nameid']);
 			$addDepart = 'add_depart_'.$idDepart;
 			$reportDepart = 'report_depart_'.$idDepart;
 
-			// if($mysqli->query("UPDATE `$nameDepart` SET fio = '$newfio', post = '$newpost', newphotofile = '$newphotofile', newphotourl = '$newphotourl' WHERE id = $idUser")) {
-			if($mysqli->query("UPDATE `$addDepart` SET fio = '$newfio', post = '$newpost' WHERE id = $id")) {
+			if($mysqli->query("UPDATE `$addDepart` SET fio = '$newfio', post = '$newpost', photofile = '$newphotofile' WHERE id = $id")) {
 				echo('Success update in BD '.$addDepart);
 			} else {
 				echo $mysqli->error;
 			}
 
-			if ($mysqli->query("INSERT INTO request (fio, post, statusid, statustitle, date) VALUES ('$fio', '$post', '$statusid', '$statustitle', '$date')")) {
+			if ($mysqli->query("INSERT INTO request (fio, post, nameid, statusid, statustitle, date) VALUES ('$fio', '$post', '$nameid', '$statusid', '$statustitle', '$date')")) {
 				echo('Success add in BD request');
 			} else {
 				echo $mysqli->error;
@@ -58,7 +53,7 @@
 				echo $mysqli->error;
 			}
 
-			if($mysqli->query("INSERT INTO report (fio, department, post, statusid, statustitle, date) VALUES ('$fio', '$department', '$post', '$statusid', '$statustitle', '$date')")) {
+			if($mysqli->query("INSERT INTO report (fio, post, nameid, statusid, statustitle, date) VALUES ('$fio', '$post', '$nameid', '$statusid', '$statustitle', '$date')")) {
 				echo('Success add in BD report');
 			} else {
 				echo $mysqli->error;
@@ -519,7 +514,7 @@
 		}
 	}
 
-	// echo json_encode($array);
+	// echo $array;
 
 	$mysqli->close();
 

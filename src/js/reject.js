@@ -170,7 +170,7 @@ function userFromDB(array) {
 	};
 
 	array.forEach((elem, i) => {
-		const itemObject = Object.assign({}, objToCollection);
+		const itemObject = {...objToCollection};
 
 		for (const itemField in itemObject) {
 			for (const key in elem) {
@@ -356,7 +356,7 @@ function autoRefresh(page = 'reject') {
 
 		if (statusSwitch && !markInterval) {
 			localStorage.removeItem(page);
-			
+
 			getDataFromDB('reject');
 
 			markInterval = setInterval(() => {

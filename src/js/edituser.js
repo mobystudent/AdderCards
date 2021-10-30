@@ -7,24 +7,34 @@ import settingsObject from './settings.js';
 
 const editCollection = new Map();
 const editObject = {
+	id: '',
 	fio: '',
+	post: '',
+	photofile: '',
 	statusid: '',
 	statustitle: '',
-	newpost: '',
 	newfio: '',
-	photourl: '',
+	newpost: '',
+	newphotofile: '',
+	newphotourl: '',
+	newphotoname: '',
 	statusnewfio: '',
 	statusnewpost: '',
-	statusphotofile: ''
+	statusnewphotofile: ''
 };
 let counter = 0;
 
 $(window).on('load', () => {
-	setNameDepartOnPage();
+	submitIDinBD();
+	renderHeaderPage();
+	toggleSelect();
+	getAddUsersInDB();
+	addUser();
+	showDataFromStorage();
 });
 
 function templateEditTable(data) {
-	const { id = '', fio = '', post = '', statustitle = '', newfio = '', newpost = '', photofile = '' } = data;
+	const { id = '', fio = '', post = '', statustitle = '', newfio = '', newpost = '', newphotoname = '' } = data;
 	const newfioView = editObject.statusnewfio ? `
 		<div class="table__cell table__cell--body table__cell--fio">
 			<span class="table__text table__text--body">${newfio}</span>
@@ -35,9 +45,9 @@ function templateEditTable(data) {
 			<span class="table__text table__text--body">${newpost}</span>
 		</div>
 	` : '';
-	const photofileView = editObject.statusphotofile ? `
-		<div class="table__cell table__cell--body table__cell--photofile">
-			<span class="table__text table__text--body">${photofile}</span>
+	const newphotofileView = editObject.statusnewphotofile ? `
+		<div class="table__cell table__cell--body table__cell--photoname">
+			<span class="table__text table__text--body">${newphotoname}</span>
 		</div>
 	` : '';
 
@@ -54,7 +64,7 @@ function templateEditTable(data) {
 			</div>
 			${newfioView}
 			${newpostView}
-			${photofileView}
+			${newphotofileView}
 			<div class="table__cell table__cell--body table__cell--edit">
 				<button class="table__btn table__btn--edit" type="button">
 					<svg class="icon icon--edit icon--edit-black">
@@ -73,18 +83,17 @@ function templateEditTable(data) {
 	`;
 }
 
-function templateEditForm(data) {
-	const { id = '', fio = '', statusid = '', newpost = '', newfio = '', statustitle = '', post = '', photourl = '' } = data;
+function templateEditForm() {
+	const { fio = '', statusid = '', newpost = '', newfio = '', statustitle = '', photofile = '', newphotourl = '' } = editObject;
 	const fioValue = fio ? fio : 'Выберите пользователя';
 	const fioClassView = fio ? 'select__value--selected-form' : '';
 	const changeValue = statustitle ? statustitle : 'Выберите тип изменения';
 	const changeClassView = statustitle ? 'select__value--selected-form' : '';
-	const photoUrl = photourl ? photourl : './images/avatar.svg';
 	const fioView = statusid === 'changeFIO' ? `
 		<div class="form__field" data-name="newfio">
 			<label class="form__label">
 				<span class="form__name form__name--form">Новое ФИО</span>
-				<input class="form__input form__input--form form__item" data-field="newfio" name="newfio" type="text" value="${newfio}" placeholder="Введите новое ФИО" required/>
+				<input class="form__input form__input--form form__item" name="newfio" type="text" value="${newfio}" placeholder="Введите новое ФИО" required="required"/>
 			</label>
 		</div>
 	` : '';
@@ -92,13 +101,13 @@ function templateEditForm(data) {
 		<div class="form__field" data-name="newpost">
 			<label class="form__label">
 				<span class="form__name form__name--form">Новая должность</span>
-				<input class="form__input form__input--form form__item" data-field="newpost" name="newpost" type="text" value="${newpost}" placeholder="Введите новую должность" required/>
+				<input class="form__input form__input--form form__item" name="newpost" type="text" value="${newpost}" placeholder="Введите новую должность" required/>
 			</label>
 		</div>
 	` : '';
 	const imageView = statusid === 'changeImage' ? `
 		<div class="form__field" data-name="newimage">
-			<input class="form__input form__input--file form__item" id="editFile" data-field="photofile" data-url="${photoUrl}" name="photofile" type="file" required>
+			<input class="form__input form__input--file form__item" id="editFile" name="photofile" type="file" required="required"/>
 			<label class="form__download" for="editFile">
 				<svg class="icon icon--download">
 					<use xlink:href="./images/sprite.svg#download"></use>
@@ -107,12 +116,21 @@ function templateEditForm(data) {
 			</label>
 		</div>
 	` : '';
+	let photoUrl;
+
+	if (photofile && !newphotourl) {
+		photoUrl = photofile;
+	} else if (newphotourl) {
+		photoUrl = newphotourl;
+	} else {
+		photoUrl = './images/avatar.svg';
+	}
 
 	return `
 		<div class="form__fields">
 			<div class="form__field">
 				<span class="form__name form__name--form">Пользователь</span>
-				<div class="form__select form__item select select--form" data-field="fio" data-select="fio">
+				<div class="form__select form__item select select--form" data-select="fio">
 					<header class="select__header select__header--form">
 						<span class="select__value select__value--form ${fioClassView}" data-title="${fioValue}" data-fio="fio">${fioValue}</span>
 					</header>
@@ -121,7 +139,7 @@ function templateEditForm(data) {
 			</div>
 			<div class="form__field">
 				<span class="form__name form__name--form">Тип изменения</span>
-				<div class="form__select form__item select select--form" data-field="statustitle" data-type="statusid" data-select="change">
+				<div class="form__select form__item select select--form" data-type="statusid" data-select="change">
 					<header class="select__header select__header--form">
 						<span class="select__value select__value--form ${changeClassView}" data-title="${changeValue}" data-change="${statusid}">${changeValue}</span>
 					</header>
@@ -146,12 +164,6 @@ function templateEditForm(data) {
 			</div>
 			${postView}
 			${fioView}
-			<div class="form__field form__field--hide">
-				<span class="form__item form__item--hide form__item--id" data-field="id" data-value="${id}"></span>
-			</div>
-			<div class="form__field form__field--hide">
-				<span class="form__item form__item--hide form__item--post" data-field="post" data-value="${post}"></span>
-			</div>
 		</div>
 		<div class="form__aside">
 			<div class="form__img">
@@ -174,8 +186,8 @@ function templateEditHeaderTable() {
 			<span class="table__text table__text--header">Новая должность</span>
 		</div>
 	` : '';
-	const photofileView = editObject.statusphotofile ? `
-		<div class="table__cell table__cell--header table__cell--image">
+	const newphotofileView = editObject.statusnewphotofile ? `
+		<div class="table__cell table__cell--header table__cell--photoname">
 			<span class="table__text table__text--header">Новая фотография</span>
 		</div>
 	` : '';
@@ -193,7 +205,7 @@ function templateEditHeaderTable() {
 		</div>
 		${newfioView}
 		${newpostView}
-		${photofileView}
+		${newphotofileView}
 		<div class="table__cell table__cell--header table__cell--edit">
 			<svg class="icon icon--edit icon--edit-white">
 				<use class="icon__item" xlink:href="./images/sprite.svg#edit"></use>
@@ -224,19 +236,14 @@ function renderTable(nameTable = '#tableEdit') {
 	});
 }
 
-function renderForm(obj, action, nameForm = '#editForm') {
+function renderForm(nameForm = '#editForm') {
 	$(`${nameForm} .form__wrap`).html('');
+	$(`${nameForm} .form__wrap`).append(templateEditForm());
 
-	if (action === 'edit') {
-		editCollection.forEach((user, i) => {
-			if (user.id === obj) {
-				$(`${nameForm} .form__wrap`).append(templateEditForm(user));
-				editCollection.delete(i);
-			}
-		});
-	} else {
-		$(`${nameForm} .form__wrap`).append(templateEditForm(editObject));
-	}
+	toggleSelect();
+	getAddUsersInDB();
+	downloadFoto();
+	memberInputField();
 }
 
 function renderHeaderTable(page = 'edit') {
@@ -249,85 +256,75 @@ function renderHeaderPage(page = 'edit') {
 	$(`.main[data-name=${page}] .main__title-wrap`).append(templateHeaderPage());
 }
 
-function addUser() {
-	$('#editUser').click((e) => {
-		const form = $(e.target).parents('.form');
-		const fields = $(form).find('.form__item');
-		const userData = [...fields].reduce((object, item) => {
-			const fieldName = $(item).data('field');
+function addUser(page = 'edit') {
+	$('#editUser').click(() => {
+		if (editObject.statusid !== 'changeFIO') {
+			delete editObject.newfio;
+		}
+		if (editObject.statusid !== 'changePost') {
+			delete editObject.newpost;
+		}
+		if (editObject.statusid !== 'changeImage') {
+			delete editObject.newphotoname;
+			delete editObject.newphotourl;
+			delete editObject.newphotofile;
+		}
 
-			if ($(item).hasClass('select')) {
-				const typeSelect = $(item).data('select');
-				const nameId = $(item).find('.select__value--selected-form').attr(`data-${typeSelect}`);
-				const fieldType = $(item).data('type');
-				const valueItem = $(item).find('.select__value--selected-form').attr('data-title');
+		delete editObject.statusnewfio;
+		delete editObject.statusnewpost;
+		delete editObject.statusnewphotofile;
 
-				if (typeSelect === 'change') {
-					object[fieldType] = nameId;
-				}
+		const validFields = Object.values(editObject).every((item) => item);
+		const statusMess = !validFields ? 'show' : 'hide';
+		let correctName = 'hide';
+		let correctPost = 'hide';
+		let countNameWords = 'hide';
 
-				object[fieldName] = valueItem;
-			} else if ($(item).hasClass('form__item--hide')) {
-				const valueItem = $(item).data('value');
+		for (let key in editObject) {
+			if (key === 'newfio' && editObject[key]) {
+				const countWords = editObject[key].trim().split(' ');
 
-				object[fieldName] = valueItem;
-			} else if ($(item).attr('data-field') == 'photofile') {
-				const fieldUrl = $(item).data('url');
-				const inputValue = $(item).data('value');
-
-				object.photourl = fieldUrl;
-				object[fieldName] = inputValue;
-			} else {
-				const inputValue = $(item).val();
-
-				object[fieldName] = inputValue;
+				correctName = editObject[key].match(/[^а-яА-ЯiIъїЁё.'-\s]/g) ? 'show' : 'hide';
+				countNameWords = countWords.length < 2 ? 'show' : 'hide';
+			} else if (key === 'newpost' && editObject[key]) {
+				correctPost = editObject[key].match(/[^а-яА-ЯiIъїЁё0-9.'-\s]/g) ? 'show' : 'hide';
 			}
+		}
 
-			return object;
-		}, {});
+		const valid = [statusMess, correctName, countNameWords, correctPost].every((mess) => mess === 'hide');
 
-		console.log(userData);
+		$(`.main[data-name=${page}]`).find('.info__item--warn.info__item--fields')[statusMess]();
+		$(`.main[data-name=${page}]`).find('.info__item--error.info__item--name')[correctName]();
+		$(`.main[data-name=${page}]`).find('.info__item--error.info__item--post')[correctPost]();
+		$(`.main[data-name=${page}]`).find('.info__item--error.info__item--short')[countNameWords]();
 
-		if (validationEmptyFields(userData)) {
-			userFromForm(userData);
+		if (valid) {
+			userFromForm();
 			clearFieldsForm();
 		}
 	});
 }
 
-function userFromForm(object, nameForm = '#editForm', nameTable = '#tableEdit') {
+function userFromForm() {
 	const objToCollection = {
 		id: '',
 		fio: '',
-		date: '',
 		post: '',
-		nameid: '',
 		photofile: '',
-		photourl: '',
 		statustitle: '',
 		statusid: '',
 		newpost: '',
 		newfio: '',
-		department: ''
+		newphotofile: '',
+		newphotourl: '',
+		newphotoname: ''
 	};
-	const itemObject = Object.assign({}, objToCollection);
-	const departName = settingsObject.longname;
-	const departID = settingsObject.nameid;
-	const postUser = $(`${nameForm} .form__item--post`).data('value');
-	const idUser = $(`${nameForm} .form__item--id`).data('value');
+	const itemObject = {...objToCollection};
 
 	for (const itemField in itemObject) {
-		for (const key in object) {
+		for (const key in editObject) {
 			if (itemField === key) {
-				itemObject[itemField] = object[key];
-			} else if (itemField === 'id') {
-				itemObject[itemField] = idUser;
-			} else if (itemField === 'department') {
-				itemObject[itemField] = departName;
-			} else if (itemField === 'nameid') {
-				itemObject[itemField] = departID;
-			} else if (itemField === 'post') {
-				itemObject[itemField] = postUser;
+				itemObject[itemField] = editObject[key];
 			}
 		}
 	}
@@ -336,59 +333,79 @@ function userFromForm(object, nameForm = '#editForm', nameTable = '#tableEdit') 
 	counter++;
 
 	setDataInStorage();
-	dataAdd(nameTable);
+	dataAdd();
 }
 
-function dataAdd(nameTable, page = 'edit') {
+function dataAdd() {
 	if (editCollection.size) {
-		emptySign(nameTable, 'full');
+		emptySign('full');
 	} else {
-		emptySign(nameTable, 'empty');
+		emptySign('empty');
 
 		return;
 	}
 
-	$(`.main__count--${page}`).text(editCollection.size);
-
+	viewAllCount();
 	showFieldsInHeaderTable();
 	renderTable();
 	deleteUser();
 	editUser();
 }
 
-function showDataFromStorage(nameTable = '#tableEdit', page = 'edit') {
+function showDataFromStorage(page = 'edit') {
 	const storageCollection = JSON.parse(localStorage.getItem(page));
 
 	if (storageCollection && storageCollection.collection.length && !editCollection.size) {
 		const lengthStorage = storageCollection.collection.length;
-
 		counter = storageCollection.collection[lengthStorage - 1].id + 1; // id последнего элемента в localStorage
+
 		storageCollection.collection.forEach((item, i) => {
 			const itemID = storageCollection.collection[i].id;
 
 			editCollection.set(itemID, item);
 		});
 
-		dataAdd(nameTable);
-		getAddUsersInDB('', storageCollection.collection);
-	} else {
-		getAddUsersInDB();
+		dataAdd();
 	}
 }
 
 function setDataInStorage(page = 'edit') {
-	localStorage.setItem(page, JSON.stringify({
-		collection: [...editCollection.values()]
-	}));
+	new Promise((resolve) => {
+		const encodeArrayPhotoFile = [];
+		const reader = new FileReader();
+
+		editCollection.forEach((user) => {
+			if (typeof user.newphotofile === 'object' && user.statusid === 'changeImage') {
+				reader.onload = ({ currentTarget }) => {
+					user.newphotofile = currentTarget.result;
+
+					encodeArrayPhotoFile.push(user);
+				};
+				reader.readAsDataURL(user.newphotofile);
+			} else {
+				encodeArrayPhotoFile.push(user);
+			}
+		});
+
+		setTimeout(() => {
+			resolve(encodeArrayPhotoFile);
+		}, 0);
+	}).then((array) => {
+		setTimeout(() => {
+			localStorage.setItem(page, JSON.stringify({
+				collection: array
+			}));
+		}, 0);
+	});
 }
 
 function showFieldsInHeaderTable(page = 'edit') {
-	editObject.statusnewfio = [...editCollection.values()].some((cell) => cell.newfio) ? true : false;
-	editObject.statusnewpost = [...editCollection.values()].some((cell) => cell.newpost) ? true : false;
-	editObject.statusphotofile = [...editCollection.values()].some((cell) => cell.photofile) ? true : false;
+	editObject.statusnewfio = [...editCollection.values()].some(({ newfio }) => newfio);
+	editObject.statusnewpost = [...editCollection.values()].some(({ newpost }) => newpost);
+	editObject.statusnewphotofile = [...editCollection.values()].some(({ newphotofile }) => newphotofile);
 	const newfioMod = editObject.statusnewfio ? '-newfio' : '';
 	const newpostMod = editObject.statusnewpost ? '-newpost' : '';
-	const photofileMod = editObject.statusphotofile ? '-photofile' : '';
+	const photofileMod = editObject.statusnewphotofile ? '-photofile' : '';
 	const className = `wrap wrap--content wrap--content-${page}${newfioMod}${newpostMod}${photofileMod}`;
 
 	$(`.main[data-name="${page}"]`).find('.wrap--content').attr('class', className);
@@ -396,18 +413,16 @@ function showFieldsInHeaderTable(page = 'edit') {
 	renderHeaderTable();
 }
 
-function setUsersInSelect(users, collection, nameForm = '#editForm') {
+function setUsersInSelect(users, nameForm = '#editForm') {
 	$(`${nameForm} .select[data-select="fio"]`).find('.select__list').html('');
 
-	if (collection.length) {
-		[...collection.values()].forEach((elem) => {
-			users = users.filter((item) => elem.id !== +item.id);
+	if (editCollection.size) {
+		editCollection.forEach((elem) => {
+			users = users.filter(({ id }) => elem.id !== id);
 		});
 	}
 
-	users.forEach((item) => {
-		const { id = '', fio = '' } = item;
-
+	users.forEach(({ id = '', fio = '' }) => {
 		$(`${nameForm} .select[data-select="fio"]`).find('.select__list').append(`
 			<li class="select__item">
 				<span class="select__name" data-title="${fio}" data-id="${id}">
@@ -421,72 +436,74 @@ function setUsersInSelect(users, collection, nameForm = '#editForm') {
 }
 
 function toggleSelect(nameForm = '#editForm') {
-	$(`${nameForm} .select__header`).click((e) => {
-		$(e.currentTarget).next().slideToggle();
-		$(e.currentTarget).toggleClass('select__header--active');
+	$(`${nameForm} .select__header`).click(({ currentTarget }) => {
+		$(currentTarget).next().slideToggle().toggleClass('select__header--active');
 	});
-
-	clickSelectItem();
 }
 
 function clickSelectItem(nameForm = '#editForm') {
-	$(`${nameForm} .select__item`).click((e) => {
-		const title = $(e.currentTarget).find('.select__name').data('title');
-		const id = $(e.currentTarget).find('.select__name').data('id');
-		const select = $(e.currentTarget).parents('.select').data('select');
+	$(`${nameForm} .select__item`).click(({ currentTarget }) => {
+		const title = $(currentTarget).find('.select__name').data('title');
+		const id = $(currentTarget).find('.select__name').data('id');
+		const select = $(currentTarget).parents('.select').data('select');
+		const statusid = $(currentTarget).find('.select__name').data(select);
 
 		if (select === 'fio') {
 			getAddUsersInDB(id); // вывести должность в скрытое поле
 		}
 
-		setDataAttrSelectedItem(title, select, e.currentTarget);
-		getAddUsersInDB(); // вывести всех пользователей в селект
+		setDataAttrSelectedItem(title, select, statusid);
 	});
 }
 
-function setDataAttrSelectedItem(title, select, elem, nameForm = '#editForm') {
-	const statusid = $(elem).find('.select__name').data(select);
-	const fio = select === 'fio' ? title : '';
-	const statustitle = select === 'change' ? title : '';
-	const post = $(`${nameForm} .form__item--post`).data('value');
-	const id = $(`${nameForm} .form__item--id`).data('value');
-
+function setDataAttrSelectedItem(title, select, statusid) {
 	if (select === 'fio') {
-		editObject.fio = fio;
+		editObject.fio = title;
 		editObject.statustitle = '';
 		editObject.statusid = '';
-		editObject.post = post;
-		editObject.id = id;
-	} else {
-		editObject.statustitle = statustitle;
+		editObject.newfio = '';
+		editObject.newpost = '';
+		editObject.newphotofile = '';
+		editObject.newphotourl = '';
+		editObject.newphotoname = '';
+	} else if (select === 'change') {
+		editObject.statustitle = title;
 		editObject.statusid = statusid;
+
+		if (statusid !== 'changeFIO') {
+			editObject.newfio = '';
+		}
+		if (statusid !== "changePost") {
+			editObject.newpost = '';
+		}
+		if (statusid !== "changeImage") {
+			editObject.newphotofile = '';
+			editObject.newphotourl = '';
+			editObject.newphotoname = '';
+		}
 	}
 
-	renderForm(editObject, 'clear'); //  сначала очистка, потом проверка statusid === 'changeImage'
-
-	if (statusid === 'changeImage') {
-		downloadFoto();
-	}
-
-	toggleSelect();
+	renderForm();
 }
 
 function clearFieldsForm() {
-	editObject.id = '';
-	editObject.fio = '';
-	editObject.statusid = '';
-	editObject.statustitle = '';
-	editObject.post = '';
-	editObject.newpost = '';
-	editObject.newfio = '';
-	editObject.photourl = '';
+	for (const key in editObject) {
+		editObject[key] = '';
+	}
 
-	renderForm(editObject, 'clear');
-	toggleSelect();
-	getAddUsersInDB();
+	renderForm();
 }
 
-function emptySign(nameTable, status) {
+function memberInputField() {
+	$('.form__input').keyup(({ currentTarget }) => {
+		const nameField = $(currentTarget).attr('name');
+		const fieldValue = $(currentTarget).val();
+
+		editObject[nameField] = fieldValue ? fieldValue : '';
+	});
+}
+
+function emptySign(status, nameTable = '#tableEdit') {
 	if (status == 'empty') {
 		$(nameTable)
 			.addClass('table__body--empty')
@@ -500,223 +517,196 @@ function emptySign(nameTable, status) {
 	}
 }
 
-function downloadFoto(nameForm = '#editForm') {
-	$(`${nameForm} .form__input--file`).change((e) => {
-		const file = e.target.files[0];
+function downloadFoto(nameForm = '#editForm', page = 'edit') {
+	$(`${nameForm} .form__input--file`).change(({ target }) => {
+		const fileNameUrl = $(target).val();
+		const indexLastSlash = fileNameUrl.lastIndexOf('\\');
+		const photoName = fileNameUrl.slice(indexLastSlash + 1);
+		const file = target.files[0];
 		const url = URL.createObjectURL(file);
-		const fileName = $(e.target).val();
+		const validPhotoName = validPhotoExtention(photoName);
 
-		$('.img--form').attr('src', url);
-		editCollection.photourl = url;
-		$(e.target).attr({ 'data-value': fileName, 'data-url': url });
+		if (!validPhotoName) {
+			$(`.main[data-name=${page}]`).find('.info__item--error.info__item--image').show();
+
+			return;
+		}
+
+		editObject.newphotourl = url;
+		editObject.newphotofile = file;
+		editObject.newphotoname = photoName;
+
+		renderForm();
 	});
 }
 
-function showUserAvatar(photourl) {
-	// console.log(photourl);
-	// const reader = new FileReader();
-	// reader.readAsDataURL(photourl);
-	// reader.onloadend = function() {
-	// 	const base64data = reader.result;
-	// 	console.log(base64data);
-	// }
-	// $('.img--form-remove').attr('src', photourl);
-}
-
-function validationEmptyFields(fields, page = 'edit') {
-	const validFields = Object.values(fields).every((item) => item);
-	const statusMess = !validFields ? 'show' : 'hide';
+function validPhotoExtention(photoName) {
+	const extenName = photoName.lastIndexOf('.');
+	const extenImg = photoName.slice(extenName + 1);
 	const extentionArray = ['gif', 'png', 'jpg', 'jpeg'];
-	let correctName = 'hide';
-	let correctPost = 'hide';
-	let countNameWords = 'hide';
-	let extensionImg = 'hide';
+	const validPhotoName = extentionArray.some((item) => item == extenImg) ? photoName : false;
 
-	for (let key in fields) {
-		if (key === 'newfio' && fields[key]) {
-			const countWords = fields[key].trim().split(' ');
-
-			correctName = fields[key].match(/[^а-яА-ЯiIъїЁё.'-\s]/g) ? 'show' : 'hide';
-			countNameWords = (countWords.length < 2) ? 'show' : 'hide';
-		} else if (key === 'newpost' && fields[key]) {
-			correctPost = fields[key].match(/[^а-яА-ЯiIъїё0-9.'-\s]/g) ? 'show' : 'hide';
-		} else if (key === 'photofile' && fields[key]) {
-			const extenName = fields[key].lastIndexOf('.');
-			const extenImg = fields[key].slice(extenName + 1);
-
-			extensionImg = extentionArray.some((item) => item === extenImg) ? 'hide' : 'show';
-		}
-	}
-
-	const valid = [statusMess, correctName, countNameWords, correctPost, extensionImg].every((mess) => mess === 'hide');
-
-	$(`.main[data-name=${page}]`).find('.info__item--warn.info__item--fields')[statusMess]();
-	$(`.main[data-name=${page}]`).find('.info__item--error.info__item--name')[correctName]();
-	$(`.main[data-name=${page}]`).find('.info__item--error.info__item--post')[correctPost]();
-	$(`.main[data-name=${page}]`).find('.info__item--error.info__item--short')[countNameWords]();
-	$(`.main[data-name=${page}]`).find('.info__item--error.info__item--image')[extensionImg]();
-
-	return valid;
+	return validPhotoName;
 }
 
 function deleteUser(nameTable = '#tableEdit', page = 'edit') {
-	$('.table__content').click((e) => {
-		if ($(e.target).parents('.table__btn--delete').length || $(e.target).hasClass('table__btn--delete')) {
-			const idRemove = $(e.target).closest('.table__row').data('id');
+	$(`${nameTable} .table__content`).click(({ target }) => {
+		if ($(target).parents('.table__btn--delete').length || $(target).hasClass('table__btn--delete')) {
+			const userID = $(target).closest('.table__row').data('id');
 
-			editCollection.forEach((user, i) => {
-				if (user.id === idRemove) {
-					editCollection.delete(i);
+			[...editCollection].forEach(([ key, { id } ]) => {
+				if (userID === +id) {
+					editCollection.delete(key);
 				}
 			});
 
 			setDataInStorage();
 			showFieldsInHeaderTable();
 			renderTable();
-			getAddUsersInDB();
-		}
+			viewAllCount();
 
-		if (!editCollection.size) {
-			emptySign(nameTable, 'empty');
+			if (!editCollection.size) {
+				emptySign('empty');
+				localStorage.removeItem(page);
+			}
 		}
-
-		$(`.main__count--${page}`).text(editCollection.size);
 	});
 }
 
-function editUser(page = 'edit') {
-	$('.table__content').click((e) => {
-		if ($(e.target).parents('.table__btn--edit').length || $(e.target).hasClass('table__btn--edit')) {
-			const idEdit = $(e.target).closest('.table__row').data('id');
-			let fillFields;
+function editUser(nameTable = '#tableEdit') {
+	$(`${nameTable} .table__content`).click(({ target }) => {
+		if ($(target).parents('.table__btn--edit').length || $(target).hasClass('table__btn--edit')) {
+			const userID = $(target).closest('.table__row').data('id');
 
-			for (let key in editObject) {
-				if (key !== 'statusnewfio' && key !== 'statusnewpost' && key !== 'statusphotofile') {
-					fillFields = editObject[key] ? false : true;
-				}
-			}
-
-			if (fillFields) {
-				editCollection.forEach((item) => {
-					if (item.id === idEdit) {
-						for (let key in editObject) {
-							editObject[key] = item[key];
-						}
+			[...editCollection].forEach(([ keyCollection, item ]) => {
+				if (userID === +item.id) {
+					for (let key in item) {
+						editObject[key] = item[key];
 					}
-				});
 
-				showFieldsInHeaderTable();
-				renderForm(idEdit, 'edit');
-				renderTable();
-				toggleSelect();
-				getAddUsersInDB();
+					editCollection.delete(keyCollection);
+				}
+			});
 
-				$(`.main__count--${page}`).text(editCollection.size);
-			}
+			renderForm();
+			showFieldsInHeaderTable();
+			renderTable();
+			viewAllCount();
 		}
 	});
 }
 
-function submitIDinBD(nameTable = '#tableEdit', page = 'edit') {
+function submitIDinBD(page = 'edit') {
 	$('#submitEditUser').click(() => {
 		if (!editCollection.size) return;
 
 		editCollection.forEach((elem) => {
 			elem.nameid = settingsObject.nameid;
-			elem.department = settingsObject.longname;
 			elem.date = service.getCurrentDate();
 		});
 
-		const changeCardArray = [...editCollection.values()].filter((elem) => elem.statusid === 'changeCard');
-		const changeQRArray = [...editCollection.values()].filter((elem) => elem.statusid === 'changeQR');
-		const changeFIOArray = [...editCollection.values()].filter((elem) => elem.statusid === 'changeFIO');
-		const changePostArray = [...editCollection.values()].filter((elem) => elem.statusid === 'changePost');
-		// const changeImageArray = [...editCollection.values()].filter((elem) => elem.statusid === 'changeImage');
+		const changeCardArray = [...editCollection.values()].filter(({ statusid }) => statusid === 'changeCard');
+		const changeQRArray = [...editCollection.values()].filter(({ statusid }) => statusid === 'changeQR');
+		const changeFIOArray = [...editCollection.values()].filter(({ statusid }) => statusid === 'changeFIO');
+		const changePostArray = [...editCollection.values()].filter(({ statusid }) => statusid === 'changePost');
+		const changeImageArray = [...editCollection.values()].filter(({ statusid }) => statusid === 'changeImage');
 
-		console.log(changeFIOArray);
-
-		if (changeCardArray) {
+		if (changeCardArray.length) {
 			setAddUsersInDB(changeCardArray, 'permission', page);
 		}
-		if (changeQRArray) {
+		if (changeQRArray.length) {
 			setAddUsersInDB(changeQRArray, 'permission', page);
 		}
-		if (changeFIOArray) {
+		if (changeFIOArray.length) {
 			setAddUsersInDB(changeFIOArray, 'add', page);
 		}
-		if (changePostArray) {
+		if (changePostArray.length) {
 			setAddUsersInDB(changePostArray, 'add', page);
 		}
-		// if (changeImageArray) {
-		// 	setAddUsersInDB(changePostArray, 'add');
-		// }
+		if (changeImageArray.length) {
+			setAddUsersInDB(changeImageArray, 'add', page);
+		}
 
 		editCollection.clear();
-		emptySign(nameTable, 'empty');
+		emptySign('empty');
 		renderTable();
+		viewAllCount();
 
-		$(`.main__count--${page}`).text(editCollection.size);
 		localStorage.removeItem(page);
 		counter = 0;
 	});
 }
 
-function setNameDepartOnPage() {
-	renderHeaderPage();
-	addUser();
-	toggleSelect();
-	submitIDinBD();
-	showDataFromStorage();
-}
-
 function setAddUsersInDB(array, nameTable, action) {
-	$.ajax({
-		url: "./php/change-user-request.php",
-		method: "post",
-		dataType: "html",
-		async: false,
-		data: {
-			action: action,
-			nameTable: nameTable,
-			array: array
-		},
-		success: () => {
-			service.modal('success');
+	new Promise((resolve) => {
+		const encodeArrayPhotoFile = [];
+		const reader = new FileReader();
 
-			sendMail({
-				department: settingsObject.longname,
-				count: editCollection.size,
-				title: 'Редактировать',
-				users: [...editCollection.values()]
-			});
-		},
-		error: () => {
-			service.modal('error');
-		}
+		array.forEach((user) => {
+			if (typeof user.newphotofile === 'object' && user.statusid === 'changeImage') {
+				reader.onload = ({ currentTarget }) => {
+					user.newphotofile = currentTarget.result;
+
+					encodeArrayPhotoFile.push(user);
+					console.log(encodeArrayPhotoFile);
+				};
+				reader.readAsDataURL(user.newphotofile);
+			} else {
+				encodeArrayPhotoFile.push(user);
+			}
+		});
+
+		setTimeout(() => {
+			resolve(encodeArrayPhotoFile);
+		}, 0);
+	}).then((array) => {
+		$.ajax({
+			url: "./php/change-user-request.php",
+			method: "post",
+			dataType: "html",
+			data: {
+				action,
+				nameTable,
+				array
+			},
+			success: () => {
+				service.modal('success');
+
+				sendMail({
+					department: settingsObject.longname,
+					count: editCollection.size,
+					title: 'Редактировать',
+					users: [...editCollection.values()]
+				});
+			},
+			error: () => {
+				service.modal('error');
+			}
+		});
 	});
 }
 
-function getAddUsersInDB(id = '', collection = editCollection.values(), nameForm = '#editForm') {
+function getAddUsersInDB(id = '') {
 	$.ajax({
 		url: "./php/output-request.php",
 		method: "post",
 		dataType: "html",
 		data: {
-			id: id,
+			id,
 			idDepart: settingsObject.nameid,
 			nameTable: 'edit'
 		},
-		async: false,
 		success: (data) => {
 			if (id) {
-				const { id = '', post  = '', photourl  = '' } = JSON.parse(data);
+				const { id = '', post  = '', photofile  = '' } = JSON.parse(data);
 
-				$(`${nameForm} .form__item--post`).attr('data-value', post);
-				$(`${nameForm} .form__item--id`).attr('data-value', id);
+				editObject.post = post;
+				editObject.id = id;
+				editObject.photofile = photofile;
 
-				showUserAvatar(photourl);
+				renderForm();
 			} else {
-				setUsersInSelect(JSON.parse(data), collection);
+				setUsersInSelect(JSON.parse(data));
 			}
 		},
 		error: () => {
@@ -736,9 +726,9 @@ function sendMail(obj) {
 		dataType: "html",
 		async: false,
 		data: {
-			sender: sender,
-			recipient: recipient,
-			subject: subject,
+			sender,
+			recipient,
+			subject,
 			message: messageMail(obj)
 		},
 		success: () => {
@@ -748,6 +738,11 @@ function sendMail(obj) {
 			service.modal('email');
 		}
 	});
+}
+
+// Общие функции с картами и кодами
+function viewAllCount(page = 'edit') {
+	$(`.main__count--all-${page}`).text(editCollection.size);
 }
 
 export default {

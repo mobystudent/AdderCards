@@ -14,7 +14,7 @@ const addCollection = new Map();
 const addObject = {
 	fio: '',
 	post: '',
-	photofile: {},
+	photofile: '',
 	photourl: '',
 	photoname: '',
 	statusid: '',
@@ -247,7 +247,7 @@ function addUser(page = 'add') {
 				const countWords = addObject[key].trim().split(' ');
 
 				correctName = addObject[key].match(/[^а-яА-ЯiIъїЁё.'-\s]/g) ? 'show' : 'hide';
-				countNameWords = (countWords.length < 2) ? 'show' : 'hide';
+				countNameWords = countWords.length < 2 ? 'show' : 'hide';
 			}
 		}
 
@@ -270,7 +270,7 @@ function userFromForm() {
 		id: '',
 		fio: '',
 		post: '',
-		photofile: {},
+		photofile: '',
 		photourl: '',
 		photoname: '',
 		statusid: '',
@@ -338,16 +338,14 @@ function setDataInStorage(page = 'add') {
 
 		addCollection.forEach((user) => {
 			if (typeof user.photofile === 'object') {
-				reader.onload = () => {
-					user.photofile = reader.result;
+				reader.onload = ({ currentTarget }) => {
+					user.photofile = currentTarget.result;
 
 					encodeArrayPhotoFile.push(user);
 				};
 				reader.readAsDataURL(user.photofile);
 			} else {
-				setTimeout(() => {
-					encodeArrayPhotoFile.push(user);
-				}, 0);
+				encodeArrayPhotoFile.push(user);
 			}
 		});
 		setTimeout(() => {
@@ -423,7 +421,7 @@ function memberInputField() {
 		const nameField = $(currentTarget).data('field');
 		const fieldValue = $(currentTarget).val();
 
-		addObject[nameField] = fieldValue ? fieldValue : addObject[nameField];
+		addObject[nameField] = fieldValue ? fieldValue : '';
 	});
 }
 
@@ -472,8 +470,6 @@ function downloadFoto(nameForm = '#addForm', page = 'add') {
 
 			return;
 		}
-
-		$(`${nameForm} .img--form`).attr('src', url);
 
 		addObject.photourl = url;
 		addObject.photofile = file;
@@ -554,9 +550,7 @@ function submitIDinBD(page = 'add') {
 			user.date = service.getCurrentDate();
 		});
 
-		console.log(addCollection);
-
-		setAddUsersInDB([...addCollection.values()], 'add' , 'add');
+		setAddUsersInDB([...addCollection.values()], 'add', page);
 
 		addCollection.clear();
 		emptySign('empty');
@@ -575,16 +569,14 @@ function setAddUsersInDB(array, nameTable, action) {
 
 		array.forEach((user) => {
 			if (typeof user.photofile === 'object') {
-				reader.onload = () => {
-					user.photofile = reader.result;
+				reader.onload = ({ currentTarget }) => {
+					user.photofile = currentTarget.result;
 
 					encodeArrayPhotoFile.push(user);
 				};
 				reader.readAsDataURL(user.photofile);
 			} else {
-				setTimeout(() => {
-					encodeArrayPhotoFile.push(user);
-				}, 0);
+				encodeArrayPhotoFile.push(user);
 			}
 		});
 

@@ -350,9 +350,7 @@ function setUsersInSelect(users, nameForm = '#removeForm') {
 		});
 	}
 
-	users.forEach((item) => {
-		const { id = '', fio = '' } = item;
-
+	users.forEach(({ id = '', fio = '' }) => {
 		$(`${nameForm} .select[data-select="fio"]`).find('.select__list').append(`
 			<li class="select__item">
 				<span class="select__name" data-title="${fio}" data-id="${id}">
@@ -395,8 +393,8 @@ function setDataAttrSelectedItem(title, select, statusid) {
 		removeObject.newnameid = '';
 		removeObject.cardvalidto = '';
 	} else if (select === 'reason') {
-		removeObject.statusid = statusid;
 		removeObject.statustitle = title;
+		removeObject.statusid = statusid;
 
 		if (statusid === 'remove') {
 			removeObject.newdepart = '';
@@ -510,10 +508,10 @@ function submitIDinBD(page = 'remove') {
 		const removeArray = [...removeCollection.values()].filter(({ statusid }) => statusid === 'remove');
 		const changeDepartArray = [...removeCollection.values()].filter(({ statusid }) => statusid === 'changeDepart');
 
-		if (removeArray) {
+		if (removeArray.length) {
 			setAddUsersInDB(removeArray, 'add' , 'remove');
 		}
-		if (changeDepartArray) {
+		if (changeDepartArray.length) {
 			setAddUsersInDB(changeDepartArray, 'add', 'transfer');
 		}
 
@@ -560,7 +558,7 @@ function getAddUsersInDB(id = '') {
 		method: "post",
 		dataType: "html",
 		data: {
-			id: id,
+			id,
 			idDepart: settingsObject.nameid,
 			nameTable: 'remove'
 		},
