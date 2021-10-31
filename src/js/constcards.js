@@ -5,6 +5,7 @@ import convert from './convert.js';
 import service from './service.js';
 import messageMail from './mail.js';
 import settingsObject from './settings.js';
+import renderheader from './parts/renderheader.js';
 
 const constCollection = new Map(); // БД пользователей которым разрешили выдачу карт
 const departmentCollection = new Map();  // Коллекци подразделений
@@ -71,13 +72,6 @@ function templateConstTabs(data) {
 	`;
 }
 
-function templateHeaderPage(page = 'const') {
-	return `
-		<h1 class="main__title">Добавление карт пользователям</h1>
-		<span class="main__depart main__depart--${page}" data-depart="${constObject.longname}" data-id="${constObject.nameid}">${constObject.longname}</span>
-	`;
-}
-
 function renderTable(nameTable = '#tableConst') {
 	$(`${nameTable} .table__content`).html('');
 
@@ -86,11 +80,6 @@ function renderTable(nameTable = '#tableConst') {
 			$(`${nameTable} .table__content`).append(templateConstTable(item));
 		}
 	});
-}
-
-function renderHeaderPage(page = 'const') {
-	$(`.main[data-name=${page}] .main__title-wrap`).html('');
-	$(`.main[data-name=${page}] .main__title-wrap`).append(templateHeaderPage());
 }
 
 function userFromDB(array) {
@@ -185,7 +174,15 @@ function showActiveDataOnPage() {
 		}
 	});
 
-	renderHeaderPage();
+	const options = {
+		page: 'const',
+		header: {
+			longname: constObject.longname,
+			nameid: constObject.nameid
+		}
+	};
+
+	renderheader.renderHeaderPage(options);
 	renderTable();
 	countItems();
 }
@@ -219,7 +216,12 @@ function submitIDinBD(page = 'const') {
 			dataAdd();
 
 			if (!constCollection.size) {
-				renderHeaderPage();
+				const options = {
+					page: 'const',
+					header: {}
+				};
+
+				renderheader.renderHeaderPage(options);
 			}
 
 			countItems();

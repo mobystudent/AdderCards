@@ -6,6 +6,7 @@ import datepickerRUFactory from 'jquery-datepicker/i18n/jquery.ui.datepicker-ru'
 import service from './service.js';
 import messageMail from './mail.js';
 import settingsObject from './settings.js';
+import renderheader from './parts/renderheader.js';
 
 datepickerFactory($);
 datepickerRUFactory($);
@@ -28,8 +29,16 @@ const removeObject = {
 let counter = 0;
 
 $(window).on('load', () => {
+	const options = {
+		page: 'remove',
+		header: {
+			longname: settingsObject.longname,
+			nameid: settingsObject.nameid
+		}
+	};
+
+	renderheader.renderHeaderPage(options);
 	submitIDinBD();
-	renderHeaderPage();
 	toggleSelect();
 	getDepartmentInDB();
 	getAddUsersInDB();
@@ -186,15 +195,6 @@ function templateRemoveHeaderTable() {
 	`;
 }
 
-function templateHeaderPage(page = 'remove') {
-	const { nameid = '', longname = '' } = settingsObject;
-
-	return `
-		<h1 class="main__title">Удалить пользователя</h1>
-		<span class="main__depart main__depart--${page}" data-depart="${longname}" data-id="${nameid}">${longname}</span>
-	`;
-}
-
 function renderTable(nameTable = '#tableRemove') {
 	$(`${nameTable} .table__content`).html('');
 
@@ -216,11 +216,6 @@ function renderForm(nameForm = '#removeForm') {
 function renderHeaderTable(page = 'remove') {
 	$(`.table--${page} .table__header`).html('');
 	$(`.table--${page} .table__header`).append(templateRemoveHeaderTable());
-}
-
-function renderHeaderPage(page = 'remove') {
-	$(`.main[data-name=${page}] .main__title-wrap`).html('');
-	$(`.main[data-name=${page}] .main__title-wrap`).append(templateHeaderPage());
 }
 
 function addUser(page = 'remove') {

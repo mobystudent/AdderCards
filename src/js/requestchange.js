@@ -4,6 +4,7 @@ import $ from 'jquery';
 import service from './service.js';
 import messageMail from './mail.js';
 import settingsObject from './settings.js';
+import renderheader from './parts/renderheader.js';
 
 const requestCollection = new Map(); // БД отчета
 const departmentCollection = new Map();  // Коллекци подразделений
@@ -106,13 +107,6 @@ function templateRequestHeaderTable() {
 	`;
 }
 
-function templateHeaderPage(page = 'request') {
-	return `
-		<h1 class="main__title">Запрос на изменение данных</h1>
-		<span class="main__depart main__depart--${page}" data-depart="${requestObject.longname}" data-id="${requestObject.nameid}">${requestObject.longname}</span>
-	`;
-}
-
 function renderTable(nameTable = '#tableRequest') {
 	$(`${nameTable} .table__content`).html('');
 
@@ -126,11 +120,6 @@ function renderTable(nameTable = '#tableRequest') {
 function renderHeaderTable(page = 'request') {
 	$(`.table--${page} .table__header`).html('');
 	$(`.table--${page} .table__header`).append(templateRequestHeaderTable());
-}
-
-function renderHeaderPage(page = 'request') {
-	$(`.main[data-name=${page}] .main__title-wrap`).html('');
-	$(`.main[data-name=${page}] .main__title-wrap`).append(templateHeaderPage());
 }
 
 function userFromDB(array) {
@@ -228,7 +217,15 @@ function showActiveDataOnPage() {
 		}
 	});
 
-	renderHeaderPage();
+	const options = {
+		page: 'request',
+		header: {
+			longname: requestObject.longname,
+			nameid: requestObject.nameid
+		}
+	};
+
+	renderheader.renderHeaderPage(options);
 	renderTable();
 	countItems();
 }
@@ -274,7 +271,12 @@ function submitIDinBD(page = 'request') {
 			confirmAllAllowDisallow();
 
 			if (!requestCollection.size) {
-				renderHeaderPage();
+				const options = {
+					page: 'reject',
+					header: {}
+				};
+
+				renderheader.renderHeaderPage(options);
 			}
 
 			countItems();

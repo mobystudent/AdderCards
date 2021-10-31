@@ -16,6 +16,7 @@ import './requestchange.js';
 import './login.js';
 import './settings.js';
 import service from './service.js';
+import './parts/renderheader.js';
 
 $(window).on('load', () => {
 	// service.scrollbar();

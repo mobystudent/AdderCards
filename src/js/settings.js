@@ -3,6 +3,7 @@
 import $ from 'jquery';
 import Scrollbar from 'smooth-scrollbar';
 import service from './service.js';
+import renderheader from './parts/renderheader.js';
 
 const departmentCollection = new Map();	// Коллекци подразделений
 const settingsObject = {
@@ -296,13 +297,6 @@ function templateChangeEmailForm() {
 	`;
 }
 
-function templateHeaderPage(page = 'settings') {
-	return `
-		<h1 class="main__title">Настройки</h1>
-		<span class="main__depart main__depart--${page}" data-depart="${settingsObject.longname}" data-id="${settingsObject.nameid}">${settingsObject.longname}</span>
-	`;
-}
-
 function renderSection(nameSection = '#settingsSection') {
 	$(`${nameSection} .settings__content`).html('');
 	$(`${nameSection} .settings__content`).append(templateSettingsForm());
@@ -314,11 +308,6 @@ function renderSection(nameSection = '#settingsSection') {
 	toggleSelect(); // 3
 	showChangesFields();
 	applyFieldsChanges();
-}
-
-function renderHeaderPage(page = 'settings') {
-	$(`.main[data-name=${page}] .main__title-wrap`).html('');
-	$(`.main[data-name=${page}] .main__title-wrap`).append(templateHeaderPage());
 }
 
 function showChangesFields() {
@@ -498,6 +487,13 @@ function memberInputField() {
 
 function setNameDepartOnPage(settings) {
 	const { nameid = '', shortname = '', longname = '', autoupdatetitle = '', autoupdatevalue = '', email = '' } = settings;
+	const options = {
+		page: 'settings',
+		header: {
+			longname,
+			nameid
+		}
+	};
 	settingsObject.nameid = nameid;
 	settingsObject.shortname = shortname;
 	settingsObject.longname = longname;
@@ -505,7 +501,7 @@ function setNameDepartOnPage(settings) {
 	settingsObject.autoupdatetitle = autoupdatetitle;
 	settingsObject.autoupdatevalue = autoupdatevalue;
 
-	renderHeaderPage();
+	renderheader.renderHeaderPage(options);
 	renderSection();
 }
 

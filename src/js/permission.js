@@ -4,6 +4,7 @@ import $ from 'jquery';
 import service from './service.js';
 import messageMail from './mail.js';
 import settingsObject from './settings.js';
+import renderheader from './parts/renderheader.js';
 
 const permissionCollection = new Map(); // БД пользователей при старте
 const departmentCollection = new Map();  // Коллекци подразделений
@@ -100,13 +101,6 @@ function templatePermissionHeaderTable() {
 	`;
 }
 
-function templateHeaderPage(page = 'permis') {
-	return `
-		<h1 class="main__title">Разрешение на добавление <br> идентификаторов пользователям</h1>
-		<span class="main__depart main__depart--${page}" data-depart="${permisObject.longname}" data-id="${permisObject.nameid}">${permisObject.longname}</span>
-	`;
-}
-
 function renderTable(nameTable = '#tablePermis') {
 	$(`${nameTable} .table__content`).html('');
 
@@ -120,11 +114,6 @@ function renderTable(nameTable = '#tablePermis') {
 function renderHeaderTable(page = 'permis') {
 	$(`.table--${page} .table__header`).html('');
 	$(`.table--${page} .table__header`).append(templatePermissionHeaderTable());
-}
-
-function renderHeaderPage(page = 'permis') {
-	$(`.main[data-name=${page}] .main__title-wrap`).html('');
-	$(`.main[data-name=${page}] .main__title-wrap`).append(templateHeaderPage());
 }
 
 function userFromDB(array) {
@@ -226,7 +215,15 @@ function showActiveDataOnPage() {
 		}
 	});
 
-	renderHeaderPage();
+	const options = {
+		page: 'permis',
+		header: {
+			longname: permisObject.longname,
+			nameid: permisObject.nameid
+		}
+	};
+
+	renderheader.renderHeaderPage(options);
 	renderTable();
 	countItems();
 }
@@ -271,7 +268,12 @@ function submitIDinBD(page = 'permis') {
 			confirmAllAllowDisallow();
 
 			if (!permissionCollection.size) {
-				renderHeaderPage();
+				const options = {
+					page: 'permis',
+					header: {}
+				};
+
+				renderheader.renderHeaderPage(options);
 			}
 
 			countItems();

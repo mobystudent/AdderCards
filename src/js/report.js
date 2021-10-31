@@ -3,11 +3,20 @@
 import $ from 'jquery';
 import service from './service.js';
 import settingsObject from './settings.js';
+import renderheader from './parts/renderheader.js';
 
 const reportCollection = new Map(); // БД отчета
 
 $(window).on('load', () => {
-	renderHeaderPage();
+	const options = {
+		page: 'report',
+		header: {
+			longname: settingsObject.longname,
+			nameid: settingsObject.nameid
+		}
+	};
+
+	renderheader.renderHeaderPage(options);
 	autoRefresh();
 	getDataFromDB('report');
 });
@@ -36,26 +45,12 @@ function templateReportTable(data) {
 	`;
 }
 
-function templateHeaderPage(page = 'report') {
-	const { nameid = '', longname = '' } = settingsObject;
-
-	return `
-		<h1 class="main__title">Отчёт по изменениям</h1>
-		<span class="main__depart main__depart--${page}" data-depart="${longname}" data-id="${nameid}">${longname}</span>
-	`;
-}
-
 function renderTable(nameTable = '#tableReport') {
 	$(`${nameTable} .table__content`).html('');
 
 	reportCollection.forEach((item) => {
 		$(`${nameTable} .table__content`).append(templateReportTable(item));
 	});
-}
-
-function renderHeaderPage(page = 'report') {
-	$(`.main[data-name=${page}] .main__title-wrap`).html('');
-	$(`.main[data-name=${page}] .main__title-wrap`).append(templateHeaderPage());
 }
 
 function userFromDB(array) {

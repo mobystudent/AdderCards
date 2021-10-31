@@ -6,6 +6,7 @@ import datepickerRUFactory from 'jquery-datepicker/i18n/jquery.ui.datepicker-ru'
 import service from './service.js';
 import messageMail from './mail.js';
 import settingsObject from './settings.js';
+import renderheader from './parts/renderheader.js';
 
 datepickerFactory($);
 datepickerRUFactory($);
@@ -27,8 +28,16 @@ const addObject = {
 let counter = 0;
 
 $(window).on('load', () => {
+	const options = {
+		page: 'add',
+		header: {
+			longname: settingsObject.longname,
+			nameid: settingsObject.nameid
+		}
+	};
+
+	renderheader.renderHeaderPage(options); // 1
 	submitIDinBD(); // 1
-	renderHeaderPage(); // 1
 	toggleSelect(); // 1
 	downloadFoto(); // 1
 	memberInputField(); // 1
@@ -192,15 +201,6 @@ function templateAddHeaderTable() {
 	`;
 }
 
-function templateHeaderPage(page = 'add') {
-	const { nameid = '', longname = '' } = settingsObject;
-
-	return `
-		<h1 class="main__title">Добавить нового пользователя</h1>
-		<span class="main__depart main__depart--${page}" data-depart="${longname}" data-id="${nameid}">${longname}</span>
-	`;
-}
-
 function renderTable(nameTable = '#tableAdd') {
 	$(`${nameTable} .table__content`).html('');
 
@@ -222,11 +222,6 @@ function renderForm(nameForm = '#addForm') {
 function renderHeaderTable(page = 'add') {
 	$(`.table--${page} .table__header`).html('');
 	$(`.table--${page} .table__header`).append(templateAddHeaderTable());
-}
-
-function renderHeaderPage(page = 'add') {
-	$(`.main[data-name=${page}] .main__title-wrap`).html('');
-	$(`.main[data-name=${page}] .main__title-wrap`).append(templateHeaderPage());
 }
 
 function addUser(page = 'add') {

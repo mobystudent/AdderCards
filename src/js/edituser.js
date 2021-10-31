@@ -4,6 +4,7 @@ import $ from 'jquery';
 import service from './service.js';
 import messageMail from './mail.js';
 import settingsObject from './settings.js';
+import renderheader from './parts/renderheader.js';
 
 const editCollection = new Map();
 const editObject = {
@@ -25,8 +26,16 @@ const editObject = {
 let counter = 0;
 
 $(window).on('load', () => {
+	const options = {
+		page: 'edit',
+		header: {
+			longname: settingsObject.longname,
+			nameid: settingsObject.nameid
+		}
+	};
+
+	renderheader.renderHeaderPage(options);
 	submitIDinBD();
-	renderHeaderPage();
 	toggleSelect();
 	getAddUsersInDB();
 	addUser();
@@ -219,15 +228,6 @@ function templateEditHeaderTable() {
 	`;
 }
 
-function templateHeaderPage(page = 'edit') {
-	const { nameid = '', longname = '' } = settingsObject;
-
-	return `
-		<h1 class="main__title">Редактировать пользователя</h1>
-		<span class="main__depart main__depart--${page}" data-depart="${longname}" data-id="${nameid}">${longname}</span>
-	`;
-}
-
 function renderTable(nameTable = '#tableEdit') {
 	$(`${nameTable} .table__content`).html('');
 
@@ -249,11 +249,6 @@ function renderForm(nameForm = '#editForm') {
 function renderHeaderTable(page = 'edit') {
 	$(`.table--${page} .table__header`).html('');
 	$(`.table--${page} .table__header`).append(templateEditHeaderTable());
-}
-
-function renderHeaderPage(page = 'edit') {
-	$(`.main[data-name=${page}] .main__title-wrap`).html('');
-	$(`.main[data-name=${page}] .main__title-wrap`).append(templateHeaderPage());
 }
 
 function addUser(page = 'edit') {

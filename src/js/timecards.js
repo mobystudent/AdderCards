@@ -3,13 +3,19 @@
 import $ from 'jquery';
 import convert from './convert.js';
 import service from './service.js';
+import renderheader from './parts/renderheader.js';
 
 const timeCollection = new Map(); // БД в которую будут добавляться карты при вводе и из неё будут выводиться данные в таблицу.
 let counter = 0;
 
 $(window).on('load', () => {
+	const options = {
+		page: 'time',
+		header: {}
+	};
+
+	renderheader.renderHeaderPage(options);
 	submitIDinBD();
-	renderHeaderPage();
 	addTimeCard();
 	showDataFromStorage();
 });
@@ -51,23 +57,12 @@ function templateTimeTable(data) {
 	`;
 }
 
-function templateHeaderPage() {
-	return `
-		<h1 class="main__title">Добавление временных карт</h1>
-	`;
-}
-
 function renderTable(nameTable = '#tableTime') {
 	$(`${nameTable} .table__content`).html('');
 
 	timeCollection.forEach((item) => {
 		$(`${nameTable} .table__content`).append(templateTimeTable(item));
 	});
-}
-
-function renderHeaderPage(page = 'time') {
-	$(`.main[data-name=${page}] .main__title-wrap`).html('');
-	$(`.main[data-name=${page}] .main__title-wrap`).append(templateHeaderPage());
 }
 
 function itemUserInTable(id) {

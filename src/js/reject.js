@@ -5,6 +5,7 @@ import service from './service.js';
 import Scrollbar from 'smooth-scrollbar';
 import messageMail from './mail.js';
 import settingsObject from './settings.js';
+import renderheader from './parts/renderheader.js';
 
 const rejectCollection = new Map(); // БД отклоненных пользователей
 const rejectObject = {
@@ -12,8 +13,16 @@ const rejectObject = {
 };
 
 $(window).on('load', () => {
+	const options = {
+		page: 'reject',
+		header: {
+			longname: settingsObject.longname,
+			nameid: settingsObject.nameid
+		}
+	};
+
+	renderheader.renderHeaderPage(options);
 	submitIDinBD();
-	renderHeaderPage();
 	autoRefresh();
 	showDataFromStorage();
 });
@@ -118,15 +127,6 @@ function templateRejectHeaderTable() {
 	`;
 }
 
-function templateHeaderPage(page = 'request') {
-	const { nameid = '', longname = '' } = settingsObject;
-
-	return `
-		<h1 class="main__title">Отклоненные пользователи</h1>
-		<span class="main__depart main__depart--${page}" data-depart="${longname}" data-id="${nameid}">${longname}</span>
-	`;
-}
-
 function renderTable(nameTable = '#tableReject') {
 	$(`${nameTable} .table__content`).html('');
 
@@ -148,11 +148,6 @@ function renderForm(id, nameForm = '#rejectForm') {
 function renderHeaderTable(page = 'reject') {
 	$(`.table--${page} .table__header`).html('');
 	$(`.table--${page} .table__header`).append(templateRejectHeaderTable());
-}
-
-function renderHeaderPage(page = 'reject') {
-	$(`.main[data-name=${page}] .main__title-wrap`).html('');
-	$(`.main[data-name=${page}] .main__title-wrap`).append(templateHeaderPage());
 }
 
 function userFromDB(array) {
