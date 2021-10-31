@@ -89,7 +89,6 @@ function userFromDB(array) {
 		post: '',
 		nameid: '',
 		photofile: '',
-		photourl: '',
 		statusid: '',
 		statustitle: '',
 		department: '',
@@ -116,11 +115,11 @@ function userFromDB(array) {
 }
 
 function dataAdd(page = 'const') {
-	const filterNameDepart = filterDepart(constCollection);
+	const filterNameDepart = filterDepart();
 	constObject.nameid = filterNameDepart[0];
 
 	viewAllCount();
-	getDepartmentInDB('department');
+	getDepartmentFromDB();
 
 	if (constCollection.size) {
 		emptySign('full');
@@ -229,8 +228,6 @@ function submitIDinBD(page = 'const') {
 		} else {
 			$('.info__item--warn').show();
 		}
-
-		// createObjectForBD();
 	});
 }
 
@@ -334,7 +331,9 @@ function autoRefresh(page = 'const') {
 	let markInterval;
 
 	$(`.switch--${page}`).click(({ target }) => {
-		const statusSwitch = $(target).find('.switch__input').prop('checked');
+		if (!$(target).hasClass('switch__input')) return;
+
+		const statusSwitch = $(target).prop('checked');
 
 		if (statusSwitch && !markInterval) {
 			localStorage.removeItem(page);
@@ -402,14 +401,14 @@ function getDataFromDB(nameTable, typeTable) {
 	});
 }
 
-function getDepartmentInDB(nameTable) {
+function getDepartmentFromDB() {
 	$.ajax({
 		url: "./php/output-request.php",
 		method: "post",
 		dataType: "html",
 		async: false,
 		data: {
-			nameTable
+			nameTable: 'department'
 		},
 		success: (data) => {
 			const dataFromDB = JSON.parse(data);
@@ -467,27 +466,23 @@ function printReport(page = 'const') {
 }
 
 function addTabs(page = 'const') {
-	const filterNameDepart = filterDepart(constCollection);
+	const filterNameDepart = filterDepart();
 
 	$(`.tab--${page}`).html('');
 
-	if (filterNameDepart.length > 1) {
-		filterNameDepart.forEach((item) => {
-			departmentCollection.forEach((depart) => {
-				const { nameid = '', shortname = '' } = depart;
+	filterNameDepart.forEach((item) => {
+		departmentCollection.forEach(({ nameid = '', shortname = '' }) => {
+			if (item === nameid) {
+				const tabItem = {
+					nameid,
+					shortname,
+					status: constObject.nameid === nameid
+				};
 
-				if (item == nameid) {
-					const tabItem = {
-						nameid,
-						shortname,
-						status: constObject.nameid === nameid ? true : false
-					};
-
-					$(`.tab--${page}`).append(templateConstTabs(tabItem));
-				}
-			});
+				$(`.tab--${page}`).append(templateConstTabs(tabItem));
+			}
 		});
-	}
+	});
 }
 
 function changeTabs(page = 'const') {
@@ -504,8 +499,8 @@ function changeTabs(page = 'const') {
 	});
 }
 
-function filterDepart(collection) {
-	const arrayDepart = [...collection.values()].map((item) => item.nameid);
+function filterDepart() {
+	const arrayDepart = [...constCollection.values()].map(({ nameid }) => nameid);
 
 	return [...new Set(arrayDepart)];
 }

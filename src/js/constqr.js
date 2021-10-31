@@ -2,45 +2,27 @@
 
 import $ from 'jquery';
 import QRCode from 'qrcode';
+import service from './service.js';
+import messageMail from './mail.js';
+import settingsObject from './settings.js';
+import renderheader from './parts/renderheader.js';
 
 const qrCollection = new Map(); // БД пользователей которым разрешили выдачу qr-кодов
-const departmentCollection = new Map();  // Коллекци подразделений
+const departmentCollection = new Map(); // Коллекция подразделений
+const generateCollection = new Map(); // Коллекция сформированных qr-кодов
+const qrObject = {
+	nameid: '',
+	longname: '',
+	shortname: ''
+};
 
 $(window).on('load', () => {
-	getDatainDB('const', 'qr');
+	getGeneratedQRFromDB();
+	submitIDinBD();
+	printReport();
+	autoRefresh();
+	showDataFromStorage();
 });
-
-function userFromDB(array) {
-	const objToCollection = {
-		id: '',
-		fio: '',
-		post: '',
-		nameid: '',
-		cardid: '',
-		cardname: '',
-		statusid: '',
-		statustitle: '',
-		department: ''
-	};
-
-	array.forEach((elem, i) => {
-		const itemObject = Object.assign({}, objToCollection);
-
-		for (const itemField in itemObject) {
-			for (const key in elem) {
-				if (itemField === key.toLocaleLowerCase()) {
-					itemObject[itemField] = elem[key];
-				} else if (itemField === 'id') {
-					itemObject[itemField] = i;
-				}
-			}
-		}
-
-		qrCollection.set(i, itemObject);
-	});
-
-	dataAdd('#tableQR');
-}
 
 function templateQRTable(data) {
 	const { id = '', fio = '', post  = '', cardid = '', cardname = '', statustitle = '' } = data;
@@ -63,82 +45,212 @@ function templateQRTable(data) {
 				<span class="table__text table__text--body">${statustitle}</span>
 			</div>
 			<div class="table__cell table__cell--body table__cell--signature">
-				<span class="table__text table__text--body">Подпись</span>
+				<span class="table__text table__text--body"></span>
 			</div>
 		</div>
 	`;
 }
 
-function dataAdd(nameTable) {
-	const filterNameDepart = filterDepart(qrCollection);
+function templateQRTabs(data) {
+	const { nameid = '', shortname = '', status = '' } = data;
+	const statusView = status ? 'tab__item--active' : '';
 
-	viewAllCount(qrCollection, 'qr');
+	return `
+		<button class="tab__item ${statusView}" type="button" data-depart=${nameid}>
+			<span class="tab__name">${shortname}</span>
+		</button>
+	`;
+}
+
+function renderTable(nameTable = '#tableQR') {
+	$(`${nameTable} .table__content`).html('');
+
+	qrCollection.forEach((item) => {
+		if (item.nameid === qrObject.nameid) {
+			$(`${nameTable} .table__content`).append(templateQRTable(item));
+		}
+	});
+}
+
+function userFromDB(array) {
+	const objToCollection = {
+		id: '',
+		fio: '',
+		post: '',
+		nameid: '',
+		photofile: '',
+		statusid: '',
+		statustitle: '',
+		department: '',
+		сardvalidto: '',
+		codepicture: '',
+		cardid: '',
+		cardname: ''
+	};
+
+	array.forEach((elem, i) => {
+		const itemObject = {...objToCollection};
+
+		for (const itemField in itemObject) {
+			for (const key in elem) {
+				if (itemField === key) {
+					itemObject[itemField] = elem[key];
+				}
+			}
+		}
+
+		qrCollection.set(i, itemObject);
+	});
+
+	qrCollection.forEach((user, i) => {
+		generateCollection.forEach((code, j) => {
+			if (i === j) {
+				const { codepicture, cardid, cardname } = code;
+
+				user.codepicture = codepicture;
+				user.cardid = cardid;
+				user.cardname = cardname;
+			}
+		});
+	});
+
+	setDataInStorage();
+	dataAdd();
+}
+
+function dataAdd(page = 'qr') {
+	const filterNameDepart = filterDepart();
+	qrObject.nameid = filterNameDepart[0];
+
+	viewAllCount();
+	getDepartmentFromDB();
 
 	if (qrCollection.size) {
-		$(`${nameTable} .table__nothing`).hide();
+		emptySign('full');
 	} else {
-		$(nameTable).addClass('table__body--empty').html('');
-		$(nameTable).append(`
-			<p class="table__nothing">Новых данных нет</p>
-		`);
-
-		countItems(filterNameDepart[0], 'qr');
+		emptySign('empty');
 
 		return;
 	}
 
 	if (filterNameDepart.length > 1) {
-		addTabs(qrCollection, 'qr');
-		showActiveDataOnPage(qrCollection ,nameTable, 'qr', filterNameDepart[0]);
-		changeTabs(nameTable, 'qr');
+		addTabs();
+		changeTabs();
 	} else {
-		$(nameTable).html('');
-		$(nameTable).append(`
-			<div class="table__content table__content--active">
-			</div>
-		`);
-		$(`.tab--qr`).html('');
-
-		qrCollection.forEach((user) => {
-			const { nameid = '', department = '' } = user;
-
-			showTitleDepart(department, nameid, 'qr');
-
-			$(`${nameTable} .table__content--active`).append(templateQRTable(user));
-		});
+		$(`.tab--${page}`).html('');
 	}
 
-	getDepartmentInDB('department');
+	showActiveDataOnPage();
 }
 
-function showActiveDataOnPage(collection, nameTable, modDepart, nameDepart) {
-	$(nameTable).html('');
-	$(`.tab--${modDepart} .tab__item`).removeClass('tab__item--active');
-	$(nameTable).append(`
-		<div class="table__content table__content--active">
-		</div>
-	`);
-	$(`.tab__item[data-depart=${nameDepart}]`).addClass('tab__item--active');
+function showDataFromStorage(page = 'qr') {
+	const storageCollection = JSON.parse(localStorage.getItem(page));
 
-	collection.forEach((user) => {
-		if (user.nameid == nameDepart) {
-			$(`${nameTable} .table__content--active`).append(templateQRTable(user));
-		}
-	});
+	if (storageCollection && storageCollection.collection.length && !qrCollection.size) {
+		storageCollection.collection.forEach((item, i) => {
+			const itemID = storageCollection.collection[i].id;
 
+			qrCollection.set(itemID, item);
+		});
+
+		dataAdd();
+	} else {
+		getDataFromDB('const', 'qr');
+	}
+}
+
+function setDataInStorage(page = 'qr') {
+	localStorage.setItem(page, JSON.stringify({
+		collection: [...qrCollection.values()]
+	}));
+}
+
+function showActiveDataOnPage() {
 	departmentCollection.forEach((depart) => {
-		const { nameid = '', longname = '' } = depart;
+		const { nameid, shortname, longname } = depart;
 
-		if (nameid == nameDepart) {
-			showTitleDepart(longname, nameid, modDepart);
+		if (nameid === qrObject.nameid) {
+			qrObject.shortname = shortname;
+			qrObject.longname = longname;
 		}
 	});
 
-	countItems(nameDepart, modDepart);
+	const options = {
+		page: 'qr',
+		header: {
+			longname: qrObject.longname,
+			nameid: qrObject.nameid
+		}
+	};
+
+	renderheader.renderHeaderPage(options);
+	renderTable();
+	countItems();
 }
 
-function showTitleDepart(depart, id, modDepart) {
-	$(`.main__depart--${modDepart}`).text(depart).attr({'data-depart': depart, 'data-id': id});
+function submitIDinBD(page = 'qr') {
+	$('#submitConstQR').click(() => {
+		const filterDepatCollection = [...qrCollection.values()].filter(({ nameid }) => nameid == qrObject.nameid);
+		const checkedItems = filterDepatCollection.every(({ cardid }) => cardid);
+
+		if (checkedItems) {
+			$('.info__item--warn').hide();
+
+			qrCollection.forEach((item) => {
+				if (item.nameid === qrObject.nameid) {
+					item.date = service.getCurrentDate();
+				}
+			});
+
+			setAddUsersInDB(filterDepatCollection, 'const', 'report', 'qr');
+
+			filterDepatCollection.forEach(({ id: userID }) => {
+				[...qrCollection].forEach(([ key, { id } ]) => {
+					if (userID === id) {
+						qrCollection.delete(key);
+					}
+				});
+			});
+			filterDepatCollection.splice(0);
+
+			clearObject();
+			dataAdd();
+
+			if (!qrCollection.size) {
+				const options = {
+					page: 'qr',
+					header: {}
+				};
+
+				renderheader.renderHeaderPage(options);
+			}
+
+			countItems();
+			localStorage.removeItem(page);
+		} else {
+			$('.info__item--warn').show();
+		}
+	});
+}
+
+function clearObject() {
+	qrObject.nameid = '';
+	qrObject.longname = '';
+	qrObject.shortname = '';
+}
+
+function emptySign(status, nameTable = '#tableQR') {
+	if (status == 'empty') {
+		$(nameTable)
+			.addClass('table__body--empty')
+			.html('')
+			.append('<p class="table__nothing">Новых данных нет</p>');
+	} else {
+		$(nameTable)
+			.removeClass('table__body--empty')
+			.html('')
+			.append('<div class="table__content"></div>');
+	}
 }
 
 function createQRCode(arrCodes) {
@@ -155,94 +267,110 @@ function createQRCode(arrCodes) {
 	});
 }
 
-// function focusNext(item) {
-// 	const nextRow = $(item).parents('.table__row').next();
-//
-// 	if (nextRow) {
-// 		$(nextRow).find('.table__input').focus();
-// 	}
-// }
+function autoRefresh(page = 'qr') {
+	const timeReload = 60000 * settingsObject.autoupdatevalue;
+	let markInterval;
 
-// Общие функции с картами и кодами
-function countItems(idDepart, modDepart) {
-	const countItemfromDep = [...qrCollection.values()].filter((user) => user.nameid === idDepart);
+	$(`.switch--${page}`).click(({ target }) => {
+		if (!$(target).hasClass('switch__input')) return;
 
-	$(`.main__count--${modDepart}`).text(countItemfromDep.length);
-}
+		const statusSwitch = $(target).prop('checked');
 
-function viewAllCount(collection, modDepart) {
-	$(`.main__count--all-${modDepart}`).text(collection.size);
-}
+		if (statusSwitch && !markInterval) {
+			localStorage.removeItem(page);
 
-function addTabs(collection, modDepart) {
-	const filterNameDepart = filterDepart(collection);
+			getDataFromDB('const', 'qr');
 
-	$(`.tab--${modDepart}`).html('');
+			markInterval = setInterval(() => {
+				getDataFromDB('const', 'qr');
+			}, timeReload);
+		} else if (!statusSwitch && markInterval) {
+			clearInterval(markInterval);
 
-	if (filterNameDepart.length > 1) {
-		filterNameDepart.forEach((item) => {
-			departmentCollection.forEach((depart) => {
-				const { nameid = '', shortname = '' } = depart;
-
-				if (item == nameid) {
-					$(`.tab--${modDepart}`).append(`
-						<button class="tab__item" type="button" data-depart=${nameid}>
-							<span class="tab__name">${shortname}</span>
-						</button>
-					`);
-				}
-			});
-		});
-	}
-}
-
-function changeTabs(nameTable, modDepart) {
-	$(`.tab--${modDepart}`).click((e) => {
-		if (!$(e.target).parents('.tab__item').length && !$(e.target).hasClass('tab__item')) return;
-
-		const nameDepart = $(e.target).closest('.tab__item').data('depart');
-
-		showActiveDataOnPage(qrCollection, nameTable, modDepart, nameDepart);
-	});
-}
-
-function filterDepart(collection) {
-	const arrayDepart = [...collection.values()].reduce((acc, item) => {
-		acc.push(item.nameid);
-		return acc;
-	}, []);
-	const filterIdDepart = new Set(arrayDepart);
-
-	return [...filterIdDepart];
-}
-
-function getDatainDB(nameTable, typeTable) {
-	$.ajax({
-		url: "./php/output-request.php",
-		method: "post",
-		data: {
-			nameTable: nameTable,
-			typeTable: typeTable
-		},
-		success: function(data) {
-			const dataFromDB = JSON.parse(data);
-
-			userFromDB(dataFromDB);
-		},
-		error: function(data) {
-			console.log(data);
+			markInterval = false;
 		}
 	});
 }
 
-function getDepartmentInDB(nameTable) {
+function setAddUsersInDB(array, nameTable, action, typeTable) {
+	$.ajax({
+		url: "./php/change-user-request.php",
+		method: "post",
+		dataType: "html",
+		async: false,
+		data: {
+			typeTable,
+			action,
+			nameTable,
+			array
+		},
+		success: (data) => {
+			console.log(data);
+			window.print();
+			service.modal('success');
+
+			sendMail({
+				department: qrObject.longname,
+				count: qrCollection.size,
+				title: 'Добавлено',
+				users: [...qrCollection.values()]
+			});
+		},
+		error: () => {
+			service.modal('error');
+		}
+	});
+}
+
+function getGeneratedQRFromDB() {
+	$.ajax({
+		url: "./php/output-request.php",
+		method: "post",
+		dataType: "html",
+		data: {
+			nameTable: 'download'
+		},
+		success: (data) => {
+			const dataFromDB = JSON.parse(data);
+
+			dataFromDB.forEach((item, i) => {
+				generateCollection.set(i, item);
+			});
+		},
+		error: () => {
+			service.modal('download');
+		}
+	});
+}
+
+function getDataFromDB(nameTable, typeTable) {
+	$.ajax({
+		url: "./php/output-request.php",
+		method: "post",
+		dataType: "html",
+		data: {
+			nameTable,
+			typeTable
+		},
+		success: (data) => {
+			const dataFromDB = JSON.parse(data);
+
+			userFromDB(dataFromDB);
+		},
+		error: () => {
+			service.modal('download');
+		}
+	});
+}
+
+function getDepartmentFromDB() {
 	$.ajax({
 		url: "./php/output-request.php",
 		method: "post",
 		dataType: "html",
 		async: false,
 		data: {
-			nameTable: nameTable
+			nameTable: 'department'
 		},
 		success: (data) => {
 			const dataFromDB = JSON.parse(data);
@@ -255,6 +383,88 @@ function getDepartmentInDB(nameTable) {
 			service.modal('download');
 		}
 	});
+}
+
+function sendMail(obj) {
+	const sender = 'chepdepart@gmail.com';
+	const recipient = settingsObject.email;
+	const subject = 'Пользователи успешно добавлены в БД';
+
+	$.ajax({
+		url: "./php/mail.php",
+		method: "post",
+		dataType: "html",
+		async: false,
+		data: {
+			sender,
+			recipient,
+			subject,
+			message: messageMail(obj)
+		},
+		success: () => {
+			console.log('Email send is success');
+		},
+		error: () => {
+			service.modal('email');
+		}
+	});
+}
+
+// Общие функции с картами и кодами
+function countItems(page = 'qr') {
+	const countItemfromDep = [...qrCollection.values()].filter(({ nameid }) => nameid === qrObject.nameid);
+
+	$(`.main__count--${page}`).text(countItemfromDep.length);
+}
+
+function viewAllCount(page = 'qr') {
+	$(`.main__count--all-${page}`).text(qrCollection.size);
+}
+
+function printReport(page = 'qr') {
+	$(`.main[data-name=${page}] .btn--print`).click(() => {
+		window.print();
+	});
+}
+
+function addTabs(page = 'qr') {
+	const filterNameDepart = filterDepart();
+
+	$(`.tab--${page}`).html('');
+
+	filterNameDepart.forEach((item) => {
+		departmentCollection.forEach(({ nameid = '', shortname = '' }) => {
+			if (item === nameid) {
+				const tabItem = {
+					nameid,
+					shortname,
+					status: qrObject.nameid === nameid
+				};
+
+				$(`.tab--${page}`).append(templateQRTabs(tabItem));
+			}
+		});
+	});
+}
+
+function changeTabs(page = 'qr') {
+	$(`.tab--${page}`).click(({ target }) => {
+		if (!$(target).parents('.tab__item').length && !$(target).hasClass('tab__item')) return;
+
+		const activeDepart = $(target).closest('.tab__item').data('depart');
+		qrObject.nameid = activeDepart;
+
+		addTabs();
+		showActiveDataOnPage();
+
+		localStorage.removeItem(page); // в самом конце, т.к. функции выше записывают в localStorage
+	});
+}
+
+function filterDepart() {
+	const arrayDepart = [...qrCollection.values()].map(({ nameid }) => nameid);
+
+	return [...new Set(arrayDepart)];
 }
 
 export default {

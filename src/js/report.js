@@ -92,10 +92,14 @@ function autoRefresh(page = 'report') {
 	const timeReload = 60000 * settingsObject.autoupdatevalue;
 	let markInterval;
 
-	$(`.switch--${page}`).click((e) => {
-		const statusSwitch = $(e.currentTarget).find('.switch__input').prop('checked');
+	$(`.switch--${page}`).click(({ target }) => {
+		if (!$(target).hasClass('switch__input')) return;
+
+		const statusSwitch = $(target).prop('checked');
 
 		if (statusSwitch && !markInterval) {
+			localStorage.removeItem(page);
+			
 			getDataFromDB('report');
 
 			markInterval = setInterval(() => {

@@ -303,7 +303,7 @@ function renderSection(nameSection = '#settingsSection') {
 
 	contentScrollbar();
 	memberInputField();
-	getDepartmentInDB(); // 1
+	getDepartmentFromDB(); // 1
 	setDepartInSelect(); // 2
 	toggleSelect(); // 3
 	showChangesFields();
@@ -505,7 +505,7 @@ function setNameDepartOnPage(settings) {
 	renderSection();
 }
 
-function getDepartmentInDB() {
+function getDepartmentFromDB() {
 	$.ajax({
 		url: "./php/output-request.php",
 		method: "post",

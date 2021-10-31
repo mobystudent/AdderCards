@@ -150,11 +150,11 @@ function userFromDB(array) {
 }
 
 function dataAdd(page = 'permis') {
-	const filterNameDepart = filterDepart(permissionCollection);
+	const filterNameDepart = filterDepart();
 	permisObject.nameid = filterNameDepart[0];
 
 	viewAllCount();
-	getDepartmentInDB('department');
+	getDepartmentFromDB();
 
 	if (permissionCollection.size) {
 		emptySign('full');
@@ -391,8 +391,10 @@ function autoRefresh(page = 'permis') {
 	const timeReload = 60000 * settingsObject.autoupdatevalue;
 	let markInterval;
 
-	$(`.switch--${page}`).click((e) => {
-		const statusSwitch = $(e.currentTarget).find('.switch__input').prop('checked');
+	$(`.switch--${page}`).click(({ target }) => {
+		if (!$(target).hasClass('switch__input')) return;
+
+		const statusSwitch = $(target).prop('checked');
 
 		if (statusSwitch && !markInterval) {
 			localStorage.removeItem(page);
@@ -465,14 +467,14 @@ function getDataFromDB(nameTable) {
 	});
 }
 
-function getDepartmentInDB(nameTable) {
+function getDepartmentFromDB() {
 	$.ajax({
 		url: "./php/output-request.php",
 		method: "post",
 		dataType: "html",
 		async: false,
 		data: {
-			nameTable
+			nameTable: 'department'
 		},
 		success: (data) => {
 			const dataFromDB = JSON.parse(data);
@@ -532,7 +534,7 @@ function viewAllCount(page = 'permis') {
 }
 
 function addTabs(page = 'permis') {
-	const filterNameDepart = filterDepart(permissionCollection);
+	const filterNameDepart = filterDepart();
 
 	$(`.tab--${page}`).html('');
 
@@ -572,8 +574,8 @@ function changeTabs(page = 'permis') {
 	});
 }
 
-function filterDepart(collection) {
-	const arrayDepart = [...collection.values()].map((item) => item.nameid);
+function filterDepart() {
+	const arrayDepart = [...permissionCollection.values()].map(({ nameid }) => nameid);
 
 	return [...new Set(arrayDepart)];
 }

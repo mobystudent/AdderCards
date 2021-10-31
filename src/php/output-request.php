@@ -96,6 +96,14 @@
 		} else {
 			echo $mysqli->error;
 		}
+	} else if ($nameTable === 'download') {
+		if($resultSet = $mysqli->query("SELECT * FROM download_qr")) {
+			while ($result = $resultSet->fetch_assoc()) {
+				array_push($array, $result);
+			}
+		} else {
+			echo $mysqli->error;
+		}
 	}
 
 	echo json_encode($array);

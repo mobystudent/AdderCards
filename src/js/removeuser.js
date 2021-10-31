@@ -40,7 +40,7 @@ $(window).on('load', () => {
 	renderheader.renderHeaderPage(options);
 	submitIDinBD();
 	toggleSelect();
-	getDepartmentInDB();
+	getDepartmentFromDB();
 	getAddUsersInDB();
 	addUser();
 	showDataFromStorage();
@@ -576,7 +576,7 @@ function getAddUsersInDB(id = '') {
 	});
 }
 
-function getDepartmentInDB() {
+function getDepartmentFromDB() {
 	$.ajax({
 		url: "./php/output-request.php",
 		method: "post",

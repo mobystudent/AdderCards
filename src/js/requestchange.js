@@ -152,11 +152,11 @@ function userFromDB(array) {
 }
 
 function dataAdd(page = 'request') {
-	const filterNameDepart = filterDepart(requestCollection);
+	const filterNameDepart = filterDepart();
 	requestObject.nameid = filterNameDepart[0];
 
 	viewAllCount();
-	getDepartmentInDB('department');
+	getDepartmentFromDB();
 
 	if (requestCollection.size) {
 		emptySign('full');
@@ -387,8 +387,10 @@ function autoRefresh(page = 'request') {
 	const timeReload = 60000 * settingsObject.autoupdatevalue;
 	let markInterval;
 
-	$(`.switch--${page}`).click((e) => {
-		const statusSwitch = $(e.currentTarget).find('.switch__input').prop('checked');
+	$(`.switch--${page}`).click(({ target }) => {
+		if (!$(target).hasClass('switch__input')) return;
+
+		const statusSwitch = $(target).prop('checked');
 
 		if (statusSwitch && !markInterval) {
 			localStorage.removeItem(page);
@@ -461,14 +463,14 @@ function getDataFromDB(nameTable) {
 	});
 }
 
-function getDepartmentInDB(nameTable) {
+function getDepartmentFromDB() {
 	$.ajax({
 		url: "./php/output-request.php",
 		method: "post",
 		dataType: "html",
 		async: false,
 		data: {
-			nameTable
+			nameTable: 'department'
 		},
 		success: (data) => {
 			const dataFromDB = JSON.parse(data);
@@ -528,7 +530,7 @@ function viewAllCount(page = 'request') {
 }
 
 function addTabs(page = 'request') {
-	const filterNameDepart = filterDepart(requestCollection);
+	const filterNameDepart = filterDepart();
 
 	$(`.tab--${page}`).html('');
 
@@ -568,8 +570,8 @@ function changeTabs(page = 'request') {
 	});
 }
 
-function filterDepart(collection) {
-	const arrayDepart = [...collection.values()].map((item) => item.nameid);
+function filterDepart() {
+	const arrayDepart = [...requestCollection.values()].map(({ nameid }) => nameid);
 
 	return [...new Set(arrayDepart)];
 }
