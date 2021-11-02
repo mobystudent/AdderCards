@@ -51,6 +51,45 @@ function templateQRTable(data) {
 	`;
 }
 
+function templateQRItems(users) {
+	const qrBlocks = users.reduce((grid, user) => {
+		const { fio = '', post = '', pictureurl = '' } = user;
+		const fioArr = fio.split(' ');
+		let fullName = '';
+
+		if (fioArr.length <= 3) {
+			fullName = fioArr.reduce((acc, elem) => {
+				const templateName = `<span>${elem}</span>`;
+
+				acc += templateName;
+
+				return acc;
+			}, '');
+		} else {
+			fullName = `<p>${fio}</p>`;
+		}
+
+		grid += `
+			<article class="document__item">
+				<img class="document__code" src="${pictureurl}" alt="qr code" />
+				<h3 class="document__name">${fullName}</h3>
+				<span class="document__post">${post}</span>
+				<p class="document__instruct">Скачайте с Google Play или App Store приложение UProx и отсканируейте через него QR-код.</p>
+			</article>
+		`;
+
+		return grid;
+	}, '');
+
+	return `
+		<h2 class="document__depart">${qrObject.longname}</h2>
+		<span class="document__count">Количество qp-кодов: ${users.length}</span>
+		<div class="document__grid">
+			${qrBlocks}
+		</div>
+	`;
+}
+
 function templateQRTabs(data) {
 	const { nameid = '', shortname = '', status = '' } = data;
 	const statusView = status ? 'tab__item--active' : '';
@@ -70,6 +109,11 @@ function renderTable(nameTable = '#tableQR') {
 			$(`${nameTable} .table__content`).append(templateQRTable(item));
 		}
 	});
+}
+
+function renderQRItems(array) {
+	$('.document').html('');
+	$('.document').append(templateQRItems(array));
 }
 
 function userFromDB(array) {
@@ -114,6 +158,7 @@ function userFromDB(array) {
 		});
 	});
 
+	createQRCode(qrCollection);
 	setDataInStorage();
 	dataAdd();
 }
@@ -202,6 +247,7 @@ function submitIDinBD(page = 'qr') {
 				}
 			});
 
+			renderQRItems(filterDepatCollection);
 			setAddUsersInDB(filterDepatCollection, 'const', 'report', 'qr');
 
 			filterDepatCollection.forEach(({ id: userID }) => {
@@ -253,15 +299,13 @@ function emptySign(status, nameTable = '#tableQR') {
 	}
 }
 
-function createQRCode(arrCodes) {
-	const canvasArray = $('.canvas__code');
-
-	[...canvasArray].forEach((item, i) => {
-		QRCode.toDataURL(arrCodes[i])
-		.then(url => {
-			$(item).attr('src', url);
+function createQRCode(users) {
+	users.forEach((user) => {
+		QRCode.toDataURL(user.codepicture)
+		.then((url) => {
+			user.pictureurl = url;
 		})
-		.catch(err => {
+		.catch((err) => {
 			console.error(err);
 		});
 	});

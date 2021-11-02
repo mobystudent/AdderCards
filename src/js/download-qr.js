@@ -277,72 +277,7 @@ function submitIDinBD() {
 		const countActiveUsers = $('.main__count--qr').text();
 		const countCodeOnList = 16;
 		let countList = 1;
-
-		$('.document').append(`
-			<div class="document__list">
-				<h2 class="document__depart">${nameActiveDepart}</h2>
-				<span class="document__count">Количество qp-кодов: ${countActiveUsers}</span>
-				<div class="document__grid"></div>
-			</div>
-		`);
-
-		[...qrFillOutUsersCollection].forEach((user, i) => {
-			console.log(user);
-			$(`.document__list:nth-child(${countList}) .document__grid`).append(templateQRItem(user));
-			createQRCode(user.codepicture, i);
-
-			if (!((i + 1) % countCodeOnList)) {
-				$('.document').append(`
-					<div class="document__list">
-						<h2 class="document__depart">${nameActiveDepart}</h2>
-						<span class="document__count">Количество qp-кодов: ${countActiveUsers}</span>
-						<div class="document__grid"></div>
-					</div>
-				`);
-
-				countList++;
-			}
-		});
 	});
-}
-
-function createQRCode(code, iter) {
-	QRCode.toDataURL(code)
-	.then(url => {
-		$(`.document__item:nth-child(${iter + 1}) .document__code`).attr('src', url);
-	})
-	.catch(err => {
-		console.error(err);
-
-		return;
-	});
-}
-
-function templateQRItem(user) {
-	const { fio = '', post = '' } = user;
-	const fioArr = fio.split(' ');
-	let fullName = '';
-
-	if (fioArr.length <= 3) {
-		fullName = fioArr.reduce((acc, elem) => {
-			const templateName = `<span>${elem}</span>`;
-
-			acc += templateName;
-
-			return acc;
-		}, '');
-	} else {
-		fullName = `<p>${fio}</p>`;
-	}
-
-	return `
-		<article class="document__item">
-			<img class="document__code" src="" alt="qr code" />
-			<h3 class="document__name">${fullName}</h3>
-			<span class="document__post">${post}</span>
-			<p class="document__instruct">Скачайте с Google Play или App Store приложение UProx и отсканируейте через него QR-код.</p>
-		</article>
-	`;
 }
 
 export default {
