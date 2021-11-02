@@ -6,6 +6,10 @@
 	&--content {
 		margin: 0 auto;
 
+		&-generate {
+			max-width: 440px;
+		}
+
 		&-const {
 			max-width: 1320px;
 		}

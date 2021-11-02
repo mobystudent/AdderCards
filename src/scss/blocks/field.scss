@@ -1,6 +1,6 @@
 .field {
 	margin-bottom: 40px;
-	
+
 	&__textarea {
 		display: block;
 		@extend %text--medium;
@@ -13,5 +13,9 @@
 		overflow: auto;
 		resize: none;
 		border: 1px solid $white;
+
+		&--generate {
+			width: 100%;
+		}
 	}
 }

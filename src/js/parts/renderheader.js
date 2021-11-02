@@ -4,6 +4,11 @@ import $ from 'jquery';
 
 const pageItems = [
 	{
+		name: 'generate',
+		title: 'Переконвертировать карты',
+		titlePage: 'Переконвертировать старые карты'
+	},
+	{
 		name: 'const',
 		title: 'Добавить постоянную карту',
 		titlePage: 'Добавление карт пользователям'
