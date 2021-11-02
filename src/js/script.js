@@ -17,6 +17,7 @@ import './login.js';
 import './settings.js';
 import service from './service.js';
 import './parts/renderheader.js';
+import './old-db/generate-cards.js';
 
 $(window).on('load', () => {
 	// service.scrollbar();

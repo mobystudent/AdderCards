@@ -1,0 +1,44 @@
+main.main(data-name="generate")
+	.container
+		.wrap.wrap--content.wrap--content-generate
+			.main__wrap-info
+				.main__cards
+					p.main__count-wrap
+						span.main__count-text
+							| Количество загруженых карт:&nbsp
+						span.main__count.main__count--generate
+							| 0
+			.field
+				textarea.field__textarea.field__textarea--generate(placeholder="Загрузите текстовые коды для конвертирования")
+					
+			button.btn.btn--generate#addQRCodes(type="button")
+				| Добавить
+				
+			.main__wrap-info
+				.main__cards
+					p.main__count-wrap
+						span.main__count-text
+							| Количество сформированных карт:&nbsp
+						span.main__count.main__count--all-generate
+							| 0
+		
+			.wrap.wrap--table
+				.table.table--generate
+					header.table__header
+						.table__cell.table__cell--header.table__cell--cardid(data-name='cardid')
+							span.table__text.table__text--header
+								| ID карты
+						.table__cell.table__cell--header.table__cell--cardname(data-name='cardname')
+							span.table__text.table__text--header
+								| Номер карты
+					.table__body#tableGenerate
+						p.table__nothing
+							| Новых данных нет
+			
+			.info.info--page
+				p.info__item.info__item--warn.info__item--fields
+					| Предупреждение! Не верно введена строка с кодом.
+		
+			.main__btns
+				button.btn.btn--assign#submitGenerate(type='button')
+					| Присвоить
