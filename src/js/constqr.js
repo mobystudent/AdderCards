@@ -336,6 +336,46 @@ function autoRefresh(page = 'qr') {
 	});
 }
 
+// Получить кол-во нуждающихся пользователей из таблицы QR
+// function validationCountQRUsers() {
+// 	const countItemsTableQR = $('#tableQR .table__content--active .table__row').length;
+// 	const visibleMessage = countItemsTableQR ? 'hide' : 'show';
+//
+// 	$('.info__item--users')[visibleMessage]();
+//
+// 	return !countItemsTableQR ? false : countItemsTableQR;
+// }
+
+// function addQRCodeUsers() {
+// 	$('#submitDownloadQR').click(() => {
+// 		const countItemsTableQR = $('#tableQR .table__content--active .table__row').length;
+//
+// 		if (downloadCollection.size > countItemsTableQR) {
+// 			[...downloadCollection].forEach((elem, i) => {
+// 				const objectWithDate = {};
+//
+// 				if (i < countNeedsQRUsers) {
+// 					for (let key in elem) {
+// 						objectWithDate[key] = elem[key];
+// 					}
+// 					objectWithDate.date = service.getCurrentDate();
+//
+// 					qrNeedsUsersCollection.add(objectWithDate);
+// 					downloadCollection.delete(elem);
+// 				}
+// 			});
+//
+// 			$('.info__item--deficit').hide();
+// 			dataAdd();
+// 			$('.main__count--all-download').text(downloadCollection.size);
+// 		} else {
+// 			$('.info__item--deficit').show();
+//
+// 			return;
+// 		}
+// 	});
+// }
+
 function setAddUsersInDB(array, nameTable, action, typeTable) {
 	$.ajax({
 		url: "./php/change-user-request.php",

@@ -116,7 +116,7 @@ function templateEditForm() {
 	` : '';
 	const imageView = statusid === 'changeImage' ? `
 		<div class="form__field" data-name="newimage">
-			<input class="form__input form__input--file form__item" id="editFile" name="photofile" type="file" required="required"/>
+			<input class="form__input form__item form__item--file" id="editFile" name="photofile" type="file" required="required"/>
 			<label class="form__download" for="editFile">
 				<svg class="icon icon--download">
 					<use xlink:href="./images/sprite.svg#download"></use>
@@ -139,7 +139,7 @@ function templateEditForm() {
 		<div class="form__fields">
 			<div class="form__field">
 				<span class="form__name form__name--form">Пользователь</span>
-				<div class="form__select form__item select select--form" data-select="fio">
+				<div class="form__select select select--form" data-select="fio">
 					<header class="select__header select__header--form">
 						<span class="select__value select__value--form ${fioClassView}" data-title="${fioValue}" data-fio="fio">${fioValue}</span>
 					</header>
@@ -148,7 +148,7 @@ function templateEditForm() {
 			</div>
 			<div class="form__field">
 				<span class="form__name form__name--form">Тип изменения</span>
-				<div class="form__select form__item select select--form" data-type="statusid" data-select="change">
+				<div class="form__select select select--form" data-type="statusid" data-select="change">
 					<header class="select__header select__header--form">
 						<span class="select__value select__value--form ${changeClassView}" data-title="${changeValue}" data-change="${statusid}">${changeValue}</span>
 					</header>
@@ -420,7 +420,7 @@ function setUsersInSelect(users, nameForm = '#editForm') {
 	users.forEach(({ id = '', fio = '' }) => {
 		$(`${nameForm} .select[data-select="fio"]`).find('.select__list').append(`
 			<li class="select__item">
-				<span class="select__name" data-title="${fio}" data-id="${id}">
+				<span class="select__name select__name--form" data-title="${fio}" data-id="${id}">
 					${fio}
 				</span>
 			</li>

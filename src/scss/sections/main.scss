@@ -42,6 +42,10 @@
 	&__btns {
 		display: flex;
 		justify-content: center;
+
+		&:not(:last-child) {
+			margin-bottom: 45px;
+		}
 	}
 
 	&__wrap-info {

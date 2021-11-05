@@ -1,23 +1,31 @@
 'use strict';
 
 import $ from 'jquery';
+import service from './service.js';
+import renderheader from './parts/renderheader.js';
 
-const downloadCollection = new Set(); // БД сформированных qr-кодов
-const qrNeedsUsersCollection = new Set(); // БД qr-кодов которые будут присвоены пользователям в QRconst
-const qrFillOutUsersCollection = new Set(); // БД пользователей с присвоеными qr-кодами
+const downloadCollection = new Map(); // БД сформированных qr-кодов
+const parseQRCollection = new Map(); // БД загруженых qr-кодов
+let counter = 0;
 
 $(window).on('load', () => {
-	addQRCodesInTable('.field__textarea');
+	const options = {
+		page: 'download',
+		header: {}
+	};
+
+	renderheader.renderHeaderPage(options);
+	addQRCodesInTable();
 	countQRCodes();
-	addQRCodeUsers();
 	submitIDinBD();
+	showDataFromStorage();
 });
 
 function templateDownloadTable(data) {
-	const { codepicture = '', cardid = '', cardname = '' } = data;
+	const { id = '', codepicture = '', cardid = '', cardname = '' } = data;
 
 	return `
-		<div class="table__row table__row--time">
+		<div class="table__row" data-id="${id}">
 			<div class="table__cell table__cell--body table__cell--codepicture">
 				<span class="table__text table__text--body">${codepicture}</span>
 			</div>
@@ -29,8 +37,8 @@ function templateDownloadTable(data) {
 			</div>
 			<div class="table__cell table__cell--body table__cell--delete">
 				<button class="table__btn table__btn--delete" type="button">
-					<svg class="icon icon--delete">
-						<use class="icon__item" xlink:href="#delete"></use>
+					<svg class="icon icon--delete icon--delete-black">
+						<use class="icon__item" xlink:href="./images/sprite.svg#delete"></use>
 					</svg>
 				</button>
 			</div>
@@ -38,246 +46,194 @@ function templateDownloadTable(data) {
 	`;
 }
 
-function countQRCodes() {
-	$('.field__textarea').bind('input', (e) => {
-		const filterItems = arrayQRCodes(e.target);
+function renderTable(nameTable = '#tableDownload') {
+	$(`${nameTable} .table__content`).html('');
 
-		$('.main__count--download').text(filterItems.length);
+	downloadCollection.forEach((item) => {
+		$(`${nameTable} .table__content`).append(templateDownloadTable(item));
 	});
 }
 
-function arrayQRCodes(elem) {
-	const itemCodesContext = $(elem).val();
-	const itemCodes = itemCodesContext.split('\n');
-	const filterItems = itemCodes.filter((item) => item ? true : false);
+function countQRCodes(nameForm = '#downloadForm') {
+	$(`${nameForm} .form__item--textarea`).bind('input', ({ target }) => {
+		const itemCodesContext = $(target).val();
+		const itemCodes = itemCodesContext.split('\n');
 
-	return filterItems;
+		itemCodes.filter((item) => item).forEach((item, i) => {
+			parseQRCollection.set(i, item.split(' '));
+		});
+
+		countItems();
+	});
 }
 
-function addQRCodesInTable(elem) {
+function addQRCodesInTable(page = 'download') {
 	$('#addQRCodes').click(() => {
-		const filterItems = arrayQRCodes(elem);
-		const parseQRItem = filterItems.map((item) => item.split(' '));
+		const correctCount = [...parseQRCollection.values()].every((code) => code.length >= 3);
+		const correctCodePicture = [...parseQRCollection.values()].every((code) => code.find((elem) => elem.includes('N-') && elem.length === 42));
+		const correctIDQR = [...parseQRCollection.values()].every((code) => code.find((elem) => elem.length === 10));
+		const correctNameQR = [...parseQRCollection.values()].every((code) => code.find((elem) => elem.length === 16));
+		const statusCount = !correctCount ? 'show' : 'hide';
+		const statusCodePicture = !correctCodePicture ? 'show' : 'hide';
+		const statusIDQR = !correctIDQR ? 'show' : 'hide';
+		const statusNameQR = !correctNameQR ? 'show' : 'hide';
 
-		parseQRItem.forEach((item) => {
-			const codePicture = item.find((obj) => obj.includes('N-'));
-			const idQR = item.find((obj) => obj.length === 10);
-			const nameQR = item.find((obj) => obj.length === 16);
+		const valid = [statusCount, statusCodePicture, statusIDQR, statusNameQR].every((mess) => mess === 'hide');
 
-			downloadCollection.add({
-				codepicture: codePicture,
-				cardid: idQR,
-				cardname: nameQR
-			});
-		});
+		$(`.main[data-name=${page}]`).find('.info__item--error.info__item--missed')[statusCount]();
+		$(`.main[data-name=${page}]`).find('.info__item--error.info__item--codepicture')[statusCodePicture]();
+		$(`.main[data-name=${page}]`).find('.info__item--error.info__item--cardid')[statusIDQR]();
+		$(`.main[data-name=${page}]`).find('.info__item--error.info__item--cardname')[statusNameQR]();
 
-		parseQRItem.splice(0);
-
-		dataAdd('#tableDownload');
-		$('.field__textarea').val('');
-		$('.main__count--download').text(parseQRItem.length);
+		if (valid) {
+			codeFromForm();
+			clearFieldsForm();
+		}
 	});
 }
 
-function dataAdd(nameTable) {
-	$('.main__count--all-download').text(downloadCollection.size);
+function codeFromForm() {
+	parseQRCollection.forEach((elem) => {
+		const codePicture = elem.find((obj) => obj.includes('N-') && obj.length === 42);
+		const idQR = elem.find((obj) => obj.length === 10);
+		const nameQR = elem.find((obj) => obj.length === 16);
 
-	if (downloadCollection.size) {
-		$(`${nameTable} .table__nothing`).hide();
-
-		$(nameTable).html('');
-		$(nameTable).append(`
-			<div class="table__content table__content--active">
-			</div>
-		`);
-
-		downloadCollection.forEach((item) => {
-			$(`${nameTable} .table__content--active`).append(templateDownloadTable(item));
+		downloadCollection.set(counter, {
+			id: counter,
+			codepicture: codePicture,
+			cardid: idQR,
+			cardname: nameQR
 		});
+		counter++;
+	});
+
+	setDataInStorage();
+	dataAdd();
+}
+
+function dataAdd() {
+	if (downloadCollection.size) {
+		emptySign('full');
 	} else {
-		$(nameTable).addClass('table__body--empty').html('');
-		$(nameTable).append(`
-			<p class="table__nothing">Новых данных нет</p>
-		`);
+		emptySign('empty');
 
 		return;
 	}
+
+	viewAllCount();
+	renderTable();
+	deleteUser();
 }
 
-// Удалить пустую заглушку, если таблица не пустая
-// function removeEmptyPlugTable(tableName) {
-// 	$(`.table--${tableName} .table__body`).removeClass('table__body--empty');
-// 	$(`.table--${tableName} .table__nothing`).hide();
-// }
+function showDataFromStorage(page = 'download') {
+	const storageCollection = JSON.parse(localStorage.getItem(page));
 
-function addQRCodeUsers() {
-	$('#submitDownloadQR').click(() => {
-		const countNeedsQRUsers = validationCountQRUsers();
-		const countItemsTableQR = $('#tableQR .table__content--active .table__row').length;
+	if (storageCollection && storageCollection.collection.length && !downloadCollection.size) {
+		const lengthStorage = storageCollection.collection.length;
+		counter = storageCollection.collection[lengthStorage - 1].id + 1; // id последнего элемента в localStorage
 
-		if (!countNeedsQRUsers) return;
+		storageCollection.collection.forEach((item, i) => {
+			const itemID = storageCollection.collection[i].id;
 
-		console.log(downloadCollection.size);
-		console.log(countItemsTableQR);
+			downloadCollection.set(itemID, item);
+		});
 
-		if (downloadCollection.size > countItemsTableQR) {
-			[...downloadCollection].forEach((elem, i) => {
-				const objectWithDate = {};
+		dataAdd();
+	}
+}
 
-				if (i < countNeedsQRUsers) {
-					for (let key in elem) {
-						objectWithDate[key] = elem[key];
-					}
-					objectWithDate.date = service.getCurrentDate();
+function setDataInStorage(page = 'download') {
+	localStorage.setItem(page, JSON.stringify({
+		collection: [...downloadCollection.values()]
+	}));
+}
 
-					qrNeedsUsersCollection.add(objectWithDate);
-					downloadCollection.delete(elem);
+function deleteUser(nameTable = '#tableDownload', page = 'download') {
+	$(`${nameTable} .table__content`).click(({ target }) => {
+		if ($(target).parents('.table__btn--delete').length || $(target).hasClass('table__btn--delete')) {
+			const userID = $(target).closest('.table__row').data('id');
+
+			downloadCollection.forEach(({ id }) => {
+				if (userID === id) {
+					downloadCollection.delete(userID);
 				}
 			});
 
-			$('.info__item--deficit').hide();
-			dataAdd('#tableDownload');
-			assignQRCodeUsers();
-			$('.main__count--all-download').text(downloadCollection.size);
-		} else {
-			$('.info__item--deficit').show();
+			setDataInStorage();
+			renderTable();
+			viewAllCount();
 
-			return;
-		}
-	});
-}
-
-// Получить кол-во нуждающихся пользователей из таблицы QR
-function validationCountQRUsers() {
-	const countItemsTableQR = $('#tableQR .table__content--active .table__row').length;
-	const visibleMessage = countItemsTableQR ? 'hide' : 'show';
-
-	$('.info__item--users')[visibleMessage]();
-
-	return !countItemsTableQR ? false : countItemsTableQR;
-}
-
-function assignQRCodeUsers() {
-	const itemUsers = $('#tableQR .table__content--active').find('.table__row');
-	const valueFields = [...itemUsers].map((row) => {
-		const cells = $(row).find('.table__cell');
-		const cellInfo = [...cells].filter((cell) => $(cell).attr('data-info'));
-		const valueField = cellInfo.reduce((acc, cell) => {
-			const name = $(cell).attr('data-name');
-			const value = $(cell).attr('data-value');
-
-			acc[name] = value;
-
-			return acc;
-		}, {});
-
-		return valueField;
-	});
-	const qrCodesArray = Array.from(qrNeedsUsersCollection);
-
-	console.log(valueFields);
-	console.log(qrCodesArray);
-
-	valueFields.forEach((elem, i) => {
-		for (const keyItem in elem) {
-			for (const key in qrCodesArray[i]) {
-				if (keyItem == key) {
-					elem[keyItem] = qrCodesArray[i][key];
-				} else {
-					elem[key] = qrCodesArray[i][key];
-				}
+			if (!downloadCollection.size) {
+				emptySign('empty');
+				localStorage.removeItem(page);
 			}
 		}
-
-		qrFillOutUsersCollection.add(elem);
 	});
-
-	console.warn(qrFillOutUsersCollection);
-
-	createTableFill();
 }
 
-function createTableFill() {
-	$('#tableQR .table__content--active').html('');
+function clearFieldsForm(nameForm = '#downloadForm') {
+	$(`${nameForm} .form__item--textarea`).val('');
+	parseQRCollection.clear();
+	countItems();
+}
 
-	const dataToFillTable = [...qrFillOutUsersCollection].map((elem) => {
-		return {
-			fio: elem.fio,
-			post: elem.post,
-			cardid: elem.cardid,
-			cardname: elem.cardname,
-			statusid: elem.statusid
-		};
-	});
-
-	dataToFillTable.forEach((item, i) => {
-		$('#tableQR .table__content--active').append(`<div class="table__row" data-id="0"></div>`);
-
-		for (let itemValue in item) {
-			let statusValue;
-			itemValue = itemValue.toLocaleLowerCase();
-
-			if (itemValue == 'StatusID') {
-				switch(item[itemValue]) {
-					case 'newCard':
-						statusValue = 'Новая карта';
-						break;
-					case 'changeCard':
-						statusValue = 'Замена карты';
-						break;
-					case 'newQR':
-						statusValue = 'Новый QR-код';
-						break;
-					case 'changeQR':
-						statusValue = 'Замена QR-кода';
-						break;
-					case 'changeFIO':
-						statusValue = 'Изменение ФИО';
-						break;
-					case 'changePost':
-						statusValue = 'Изменение должности';
-						break;
-					case 'changeDepart':
-						statusValue = 'Перевод в другое подразделение';
-						break;
-				}
-			} else {
-				statusValue = item[itemValue];
-			}
-
-		$('#tableQR').find(`.table__row:nth-child(${i + 1})`).append(`
-			<div class="table__cell table__cell--body table__cell--${itemValue}" data-name="${itemValue}" data-info="true" data-value="${statusValue}">
-				<span class="table__text table__text--body">
-					${statusValue}
-				</span>
-			</div>
-		`);
+function emptySign(status, nameTable = '#tableDownload') {
+	if (status == 'empty') {
+		$(nameTable)
+			.addClass('table__body--empty')
+			.html('')
+			.append('<p class="table__nothing">Новых данных нет</p>');
+	} else {
+		$(nameTable)
+			.removeClass('table__body--empty')
+			.html('')
+			.append('<div class="table__content"></div>');
 	}
+}
 
-		$('#tableQR').find(`.table__row:nth-child(${i + 1})`).append(`
-			<div class="table__cell table__cell--clear">
-				<button class="table__btn table__btn--clear" type="button">
-					<svg class="icon icon--clear">
-						<use class="icon__item" xlink:href="#clear"></use>
-					</svg>
-				</button>
-			</div>
-			<div class="table__cell table__cell--signature">
-				<span class="table__text table__text--body"></span>
-			</div>
-		`);
+function submitIDinBD(page = 'download') {
+	$('#submitDownloadQR').click(() => {
+		if (!downloadCollection.size) return;
+
+		setAddUsersInDB([...downloadCollection.values()], 'download' , 'add');
+
+		downloadCollection.clear();
+		emptySign('empty');
+		renderTable();
+		viewAllCount();
+
+		localStorage.removeItem(page);
+		counter = 0;
 	});
 }
 
-function submitIDinBD() {
-	$('#submitConstQR').click(() => {
-		if ($('.document__list').length) return;
-
-		const nameActiveDepart = $('.main__depart--qr').text();
-		const countActiveUsers = $('.main__count--qr').text();
-		const countCodeOnList = 16;
-		let countList = 1;
+function setAddUsersInDB(array, nameTable, action) {
+	$.ajax({
+		url: "./php/change-user-request.php",
+		method: "post",
+		dataType: "html",
+		async: false,
+		data: {
+			action,
+			nameTable,
+			array
+		},
+		success: () => {
+			service.modal('success');
+		},
+		error: () => {
+			service.modal('error');
+		}
 	});
+}
+
+// Общие функции с картами и кодами
+function countItems(page = 'download') {
+	$(`.main__count--${page}`).text(parseQRCollection.size);
+}
+
+function viewAllCount(page = 'download') {
+	$(`.main__count--all-${page}`).text(downloadCollection.size);
 }
 
 export default {

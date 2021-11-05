@@ -159,7 +159,7 @@ function clearNumberCard(nameTable = '#tableTime') {
 	});
 }
 
-function deleteTimeCard(nameTable = '#tableTime') {
+function deleteTimeCard(nameTable = '#tableTime', page = 'time') {
 	$(`${nameTable} .table__content`).click(({ target }) => {
 		if ($(target).parents('.table__btn--delete').length || $(target).hasClass('table__btn--delete')) {
 			const userID = $(target).closest('.table__row').data('id');
@@ -172,9 +172,12 @@ function deleteTimeCard(nameTable = '#tableTime') {
 			});
 
 			blockLastCard(collectionID);
-		}
+			viewAllCount();
 
-		viewAllCount();
+			if (!timeCollection.size) {
+				localStorage.removeItem(page);
+			}
+		}
 	});
 }
 

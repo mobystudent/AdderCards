@@ -512,6 +512,20 @@
 				echo $mysqli->error;
 			}
 		}
+	} else if (($nameTable === 'download') && ($action === 'add')) {
+		foreach ($array as $item) {
+			foreach ($item as $key => $value) {
+				if ($key === 'codepicture') $codepicture = $value;
+				if ($key === 'cardid') $cardid = $value;
+				if ($key === 'cardname') $cardname = $value;
+			}
+
+			if($mysqli->query("INSERT INTO download_qr (codepicture, cardid, cardname) VALUES ('$codepicture', '$cardid', '$cardname')")) {
+				echo('Success add in BD download_qr');
+			} else {
+				echo $mysqli->error;
+			}
+		}
 	}
 
 	// echo $array;

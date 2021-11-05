@@ -95,7 +95,8 @@ function templateAddForm() {
 	const photoValue = photourl ? photourl : './images/avatar.svg';
 	const cardvalidtoView = cardvalidtoid === 'date' ? `
 		<div class="form__field">
-			<label class="form__label"><span class="form__name form__name--form">Дата окончания</span>
+			<label class="form__label">
+				<span class="form__name form__name--form">Дата окончания</span>
 				<input class="form__input form__input--form form__item" id="addDatepicker" data-field="date" name="date" type="text" value="${cardvalidto}" placeholder="Введите дату" required="required"/>
 			</label>
 		</div>
@@ -105,19 +106,19 @@ function templateAddForm() {
 		<div class="form__fields">
 			<div class="form__field">
 				<label class="form__label">
-				<span class="form__name form__name--form">Фамилия Имя Отчество</span>
-					<input class="form__input form__input--form form__item form__item--fio" data-field="fio" name="name" type="text" value="${fio}" placeholder="Введите ФИО" required="required"/>
+					<span class="form__name form__name--form">Фамилия Имя Отчество</span>
+					<input class="form__input form__input--form form__item" data-field="fio" name="fio" type="text" value="${fio}" placeholder="Введите ФИО" required="required"/>
 				</label>
 			</div>
 			<div class="form__field">
 				<label class="form__label">
-				<span class="form__name form__name--form">Должность</span>
-					<input class="form__input form__input--form form__item form__item--post" data-field="post" name="post" type="text" value="${post}" placeholder="Введите должность" required="required"/>
+					<span class="form__name form__name--form">Должность</span>
+					<input class="form__input form__input--form form__item" data-field="post" name="post" type="text" value="${post}" placeholder="Введите должность" required="required"/>
 				</label>
 			</div>
 			<div class="form__field">
 				<span class="form__name form__name--form">Тип идентификатора</span>
-				<div class="form__select form__item select select--form" data-field="statustitle" data-type="statusid" data-select="type">
+				<div class="form__select select select--form" data-field="statustitle" data-type="statusid" data-select="type">
 					<header class="select__header select__header--form">
 						<span class="select__value select__value--form ${typeClassView}" data-title="${typeValue}" data-type="${statusid}">${typeValue}</span>
 					</header>
@@ -133,7 +134,7 @@ function templateAddForm() {
 			</div>
 			<div class="form__field">
 				<span class="form__name form__name--form">Окончание действия пропуска</span>
-				<div class="form__select form__item select select--form" data-field="cardvalidtotitle" data-type="statuscardvalidto" data-select="cardvalidto">
+				<div class="form__select select select--form" data-field="cardvalidtotitle" data-type="statuscardvalidto" data-select="cardvalidto">
 					<header class="select__header select__header--form">
 						<span class="select__value select__value--form ${cardvalidtoClassView}" data-title="${cardvalidtoValue}" data-cardvalidto="${cardvalidtoid}">${cardvalidtoValue}</span>
 					</header>
@@ -154,7 +155,7 @@ function templateAddForm() {
 				<img class="img img--form" src="${photoValue}" alt="user avatar"/>
 			</div>
 			<div class="form__field">
-				<input class="form__input form__input--file form__item" id="addFile" name="photofile" type="file" required="required"/>
+				<input class="form__input form__item form__item--file" id="addFile" name="photofile" type="file" required="required"/>
 				<label class="form__download" for="addFile">
 					<svg class="icon icon--download">
 						<use xlink:href=./images/sprite.svg#download></use>
@@ -251,7 +252,6 @@ function addUser(page = 'add') {
 		$(`.main[data-name=${page}]`).find('.info__item--warn.info__item--fields')[statusMess]();
 		$(`.main[data-name=${page}]`).find('.info__item--error.info__item--name')[correctName]();
 		$(`.main[data-name=${page}]`).find('.info__item--error.info__item--short')[countNameWords]();
-
 
 		if (valid) {
 			userFromForm();
@@ -382,13 +382,8 @@ function clickSelectItem(nameForm = '#addForm') {
 	});
 }
 
-function setDataAttrSelectedItem(title, select, elem, nameForm = '#addForm') {
+function setDataAttrSelectedItem(title, select, elem) {
 	const statusid = $(elem).find('.select__name').data(select);
-	const fio = $(`${nameForm} .form__item--fio`).val();
-	const post = $(`${nameForm} .form__item--post`).val();
-
-	addObject.fio = fio ? fio : addObject.fio;
-	addObject.post = post ? post : addObject.post;
 
 	if (select === 'type') {
 		addObject.statusid = statusid;

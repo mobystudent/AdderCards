@@ -102,7 +102,7 @@ function templateRemoveForm() {
 	const departView = statusid === 'changeDepart' ? `
 		<div class="form__field" data-name="depart">
 			<span class="form__name form__name--form">Новое подразделение</span>
-			<div class="form__select form__item select select--form" data-type="newnameid" data-select="newnameid">
+			<div class="form__select select select--form" data-type="newnameid" data-select="newnameid">
 				<header class="select__header select__header--form">
 					<span class="select__value select__value--form ${newdepartClassView}" data-title="${newdepartValue}" data-newnameid="${newnameid}">${newdepartValue}</span>
 				</header>
@@ -123,7 +123,7 @@ function templateRemoveForm() {
 		<div class="form__fields">
 			<div class="form__field">
 				<span class="form__name form__name--form">Пользователь</span>
-				<div class="form__select form__item select select--form" data-select="fio">
+				<div class="form__select select select--form" data-select="fio">
 					<header class="select__header select__header--form">
 						<span class="select__value select__value--form ${fioClassView}" data-title="${fioValue}" data-fio="fio">${fioValue}</span>
 					</header>
@@ -132,7 +132,7 @@ function templateRemoveForm() {
 			</div>
 			<div class="form__field">
 				<span class="form__name form__name--form">Причина удаления/отчисления</span>
-				<div class="form__select form__item select select--form" data-type="statusid" data-select="reason">
+				<div class="form__select select select--form" data-type="statusid" data-select="reason">
 					<header class="select__header select__header--form">
 						<span class="select__value select__value--form ${reasonClassView}" data-title="${reasonValue}" data-reason="${statusid}">${reasonValue}</span>
 					</header>
@@ -317,7 +317,7 @@ function setDepartInSelect() {
 		if (nameid !== settingsObject.nameid) {
 			$('.select[data-select="newnameid"] .select__list').append(`
 				<li class="select__item">
-					<span class="select__name" data-title="${quoteName}" data-newnameid="${nameid}">${quoteName}</span>
+					<span class="select__name select__name--form" data-title="${quoteName}" data-newnameid="${nameid}">${quoteName}</span>
 				</li>
 			`);
 		}
@@ -348,7 +348,7 @@ function setUsersInSelect(users, nameForm = '#removeForm') {
 	users.forEach(({ id = '', fio = '' }) => {
 		$(`${nameForm} .select[data-select="fio"]`).find('.select__list').append(`
 			<li class="select__item">
-				<span class="select__name" data-title="${fio}" data-id="${id}">
+				<span class="select__name select__name--form" data-title="${fio}" data-id="${id}">
 					${fio}
 				</span>
 			</li>

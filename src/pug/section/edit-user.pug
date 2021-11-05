@@ -11,7 +11,7 @@ main.main(data-name="edit")
 					.form__field
 						span.form__name.form__name--form
 							| Пользователь
-						.form__select.form__item.select.select--form(data-select="fio")
+						.form__select.select.select--form(data-select="fio")
 							header.select__header.select__header--form
 								span.select__value.select__value--form(data-title="title" data-fio="fio")
 									| Выберите пользователя
@@ -19,7 +19,7 @@ main.main(data-name="edit")
 					.form__field
 						span.form__name.form__name--form
 							| Тип изменения
-						.form__select.form__item.select.select--form(data-type="statusid" data-select="change")
+						.form__select.select.select--form(data-type="statusid" data-select="change")
 							header.select__header.select__header--form
 								span.select__value.select__value--form(data-title="title" data-change="change")
 									| Выберите тип изменения
@@ -47,7 +47,7 @@ main.main(data-name="edit")
 					.form__img
 						img.img.img--form.img--form-edit(src="./images/avatar.svg" alt="user avatar")
 					//- .form__field.form__field--hide(data-name="newimage")
-						input.form__input.form__input--file.form__item#editFile(data-url="newphotourl" name="photofile" type="file" required)
+						input.form__input.form__item.form__item--file#editFile(data-url="newphotourl" name="photofile" type="file" required)
 						label.form__download(for="editFile")
 							svg.icon.icon--download
 								use(xlink:href="./images/sprite.svg#download")

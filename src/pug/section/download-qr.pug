@@ -1,57 +1,66 @@
 main.main(data-name="download")
 	.container
-		//- h1.main__title
-			| Загрузка QR-кодов
+		//- .main__title-wrap
+			h1.main__title
+				| Загрузка QR-кодов
+			
 		.wrap.wrap--content.wrap--content-download
 			.main__wrap-info
-				.main__cards
-					p.main__count-wrap
+				.main__cards.main__cards--main
+					p.main__count-wrap.main__count-wrap--main
 						span.main__count-text
 							| Количество загруженых qr-кодов:&nbsp
 						span.main__count.main__count--download
 							| 0
-			.field
-				textarea.field__textarea(placeholder="Загрузите текстовые коды для конвертирования")
+							
+			form.form.form--download#downloadForm(action="#" method="GET")
+				.form__field
+					textarea.form__item.form__item--textarea(placeholder="Загрузите текстовые коды для конвертирования")
 					
-			button.btn.btn--download#addQRCodes(type="button")
-				| Добавить
+			.main__btns
+				button.btn.btn--download#addQRCodes(type="button")
+					| Добавить
+					
+			.info.info--page
+				p.info__item.info__item--error.info__item--codepicture
+					| Ошибка! Не верно введена строка с кодом для QR изображения. #[br]
+					| Должен быть код для QR изображения. Например: N-9533263293161909169-16909647123891645267
+				p.info__item.info__item--error.info__item--cardid
+					| Ошибка! Не верно введена строка с кодом для QR ID. #[br]
+					| Код из 10 цифр и букв. Например: 31788A8476
+				p.info__item.info__item--error.info__item--cardname
+					| Ошибка! Не верно введена строка с кодом для QR name. #[br]
+					| Код из 16 цифр и букв. Например: E3918631788A8476
+				p.info__item.info__item--error.info__item--missed
+					| Ошибка! Пропущена одна из трех обязательных частей qr-кода, для конвертирования.
 				
 			.main__wrap-info
-				.main__cards
-					p.main__count-wrap
+				.main__cards.main__cards--main
+					p.main__count-wrap.main__count-wrap--main
 						span.main__count-text
 							| Количество сформированных qr-кодов:&nbsp
 						span.main__count.main__count--all-download
 							| 0
-		
 			.wrap.wrap--table
 				header.tab.tab--download
 				.table.table--download
 					header.table__header
-						.table__cell.table__cell--header.table__cell--codepicture(data-name='codepicture')
+						.table__cell.table__cell--header.table__cell--codepicture
 							span.table__text.table__text--header
 								| Код для изображения
-						.table__cell.table__cell--header.table__cell--cardid(data-name='cardid')
+						.table__cell.table__cell--header.table__cell--cardid
 							span.table__text.table__text--header
 								| ID qr-кода
-						.table__cell.table__cell--header.table__cell--cardname(data-name='cardname')
+						.table__cell.table__cell--header.table__cell--cardname
 							span.table__text.table__text--header
 								| Номер qr-кода
 						.table__cell.table__cell--header.table__cell--delete
+							svg.icon.icon--delete.icon--delete-white
+								use.icon__item(xlink:href="./images/sprite.svg#delete")
 					.table__body#tableDownload
 						p.table__nothing
 							| Новых данных нет
-			
-			.info.info--page
-				p.info__item.info__item--warn.info__item--fields
-					| Предупреждение! Не верно введена строка с кодом.
-				p.info__item.info__item--warn.info__item--missed
-					| Предупреждение! Пропущена одна из трех обязательных частей qr-кода, для конвертирования.
-				p.info__item.info__item--warn.info__item--deficit
-					| Предупреждение! Недостаточно кодов для присвоения пользователям.
-				p.info__item.info__item--warn.info__item--users
-					| Предупреждение! Нет новых пользователей для присвоения qr-кода.
-		
-			.main__btns
-				button.btn.btn--assign#submitDownloadQR(type='button')
-					| Присвоить
+
+		.main__btns
+			button.btn.btn--download#submitDownloadQR(type='button')
+				| Присвоить

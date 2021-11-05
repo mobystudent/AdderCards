@@ -12,16 +12,16 @@ main.main(data-name="add")
 						label.form__label
 							span.form__name.form__name--form
 								| Фамилия Имя Отчество
-							input.form__input.form__input--form.form__item.form__item--fio(data-field="fio" name="name" type="text" placeholder="Введите ФИО" required)
+							input.form__input.form__input--form.form__item(data-field="fio" name="fio" type="text" placeholder="Введите ФИО" required)
 					.form__field
 						label.form__label
 							span.form__name.form__name--form
 								| Должность
-							input.form__input.form__input--form.form__item.form__item--post(data-field="post" name="post" type="text" placeholder="Введите должность" required)
+							input.form__input.form__input--form.form__item(data-field="post" name="post" type="text" placeholder="Введите должность" required)
 					.form__field
 						span.form__name.form__name--form
 							| Тип идентификатора
-						.form__select.form__item.select.select--form(data-field="statustitle" data-type="statusid" data-select="type")
+						.form__select.select.select--form(data-field="statustitle" data-type="statusid" data-select="type")
 							header.select__header.select__header--form
 								span.select__value.select__value--form(data-title="title" data-type="type")
 									| Выберите тип идентификатора
@@ -35,7 +35,7 @@ main.main(data-name="add")
 					.form__field
 						span.form__name.form__name--form
 							| Окончание действия пропуска
-						.form__select.form__item.select.select--form(data-field="cardvalidtotitle" data-type="statusсardvalidto" data-select="сardvalidto")
+						.form__select.select.select--form(data-field="cardvalidtotitle" data-type="statusсardvalidto" data-select="сardvalidto")
 							header.select__header.select__header--form
 								span.select__value.select__value--form(data-title="title" data-сardvalidto="сardvalidto")
 									| Выберите окончание действия пропуска
@@ -55,7 +55,7 @@ main.main(data-name="add")
 					.form__img
 						img.img.img--form(src="./images/avatar.svg" alt="user avatar")
 					.form__field
-						input.form__input.form__input--file.form__item#addFile(name="photoname" type="file" required)
+						input.form__input.form__item.form__item--file#addFile(name="photoname" type="file" required)
 						label.form__download(for="addFile")
 							svg.icon.icon--download
 								use(xlink:href="./images/sprite.svg#download")
