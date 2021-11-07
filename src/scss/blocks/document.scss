@@ -32,6 +32,9 @@
 	}
 
 	&__item {
+		display: grid;
+		grid-template-rows: 160px 1fr auto 25px;
+		justify-items: center;
 		padding: 20px 15px;
 		border: 1px dashed $black;
 	}
@@ -40,7 +43,7 @@
 		display: block;
 		width: 150px;
 		height: 150px;
-		margin: 0 auto 10px;
+		margin-bottom: 10px;
 	}
 
 	&__name {

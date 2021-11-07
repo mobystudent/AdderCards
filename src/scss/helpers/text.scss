@@ -1,29 +1,25 @@
 %text {
 	&--large {
-		font: 26px/32px $roboto;
+		font: 24px/30px $roboto;
 	}
 
 	&--prelarge {
-		font: 20px/24px $roboto;
-	}
-
-	&--medium {
 		font: 18px/22px $roboto;
 	}
 
-	&--premedium {
+	&--medium {
 		font: 16px/20px $roboto;
 	}
 
-	&--small {
-		font: 14px/16px $roboto;
+	&--premedium {
+		font: 14px/18px $roboto;
 	}
 
-	&--presmall {
+	&--small {
 		font: 12px/14px $roboto;
 	}
 
-	&--tiny {
+	&--presmall {
 		font: 10px/12px $roboto;
 	}
 }
