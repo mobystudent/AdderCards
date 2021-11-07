@@ -3,7 +3,10 @@
 
 	&--settings {
 		max-width: 350px;
-		margin-bottom: 20px;
+
+		&:not(:last-child) {
+			margin-bottom: 20px;
+		}
 	}
 
 	&__header {

@@ -92,16 +92,6 @@
 				color: $darkGray;
 			}
 		}
-
-		&--settings {
-			max-width: 350px;
-			color: $black;
-			border-color: $middleGray;
-
-			&::placeholder {
-				color: $middleGray;
-			}
-		}
 	}
 
 	&__aside {
@@ -179,6 +169,17 @@
 			height: 370px;
 			overflow: auto;
 			resize: none;
+		}
+
+		&--settings {
+			padding: 10px 15px;
+			max-width: 350px;
+			color: $black;
+			border: 1px solid $middleGray;
+
+			&::placeholder {
+				color: $middleGray;
+			}
 		}
 	}
 

@@ -59,11 +59,11 @@ function templateChangeNameForm() {
 		<form class="form form--settings" action="#" method="GET">
 			<div class="form__field">
 				<label class="form__name form__name--settings" for="changelongname">Введите новое полное название</label>
-				<input class="form__input form__input--settings form__item" name="changelongname" id="changelongname" type="text" value="${changeLongNameValue}" placeholder="Введите новое полное название"/>
+				<input class="form__input form__item form__item--settings" name="changelongname" id="changelongname" type="text" value="${changeLongNameValue}" placeholder="Введите новое полное название"/>
 			</div>
 			<div class="form__field">
 				<label class="form__name form__name--settings" for="changeshortname">Введите сокращенное название</label>
-				<input class="form__input form__input--settings form__item" name="changeshortname" id="changeshortname" type="text" value="${changeShortNameValue}" placeholder="Введите сокращенное название"/>
+				<input class="form__input form__item form__item--settings" name="changeshortname" id="changeshortname" type="text" value="${changeShortNameValue}" placeholder="Введите сокращенное название"/>
 				<span class="form__text">
 					Например: Химический факультет - Химфак <br/>
 					Учебный центр социально-воспитательной и внеобразовательной деятельности - УЦСВВОД <br/>
@@ -106,11 +106,11 @@ function templateAddDepartForm() {
 		<form class="form form--settings" action="#" method="GET">
 			<div class="form__field">
 				<label class="form__name form__name--settings" for="addlongname">Введите новое полное название</label>
-				<input class="form__input form__input--settings form__item" name="addlongname" id="addlongname" type="text" value="${addLongNameValue}" placeholder="Введите новое полное название"/>
+				<input class="form__input form__item form__item--settings" name="addlongname" id="addlongname" type="text" value="${addLongNameValue}" placeholder="Введите новое полное название"/>
 			</div>
 			<div class="form__field">
 				<label class="form__name form__name--settings" for="addshortname">Введите сокращенное название</label>
-				<input class="form__input form__input--settings form__item" name="addshortname" id="addshortname" type="text" value="${addShortNameValue}" placeholder="Введите сокращенное название"/>
+				<input class="form__input form__item form__item--settings" name="addshortname" id="addshortname" type="text" value="${addShortNameValue}" placeholder="Введите сокращенное название"/>
 				<span class="form__text">
 					Например: Химический факультет - Химфак <br/>
 					Учебный центр социально-воспитательной и внеобразовательной деятельности - УЦСВВОД <br/>
@@ -119,7 +119,7 @@ function templateAddDepartForm() {
 			</div>
 			<div class="form__field">
 				<label class="form__name form__name--settings" for="addnameid">Введите id подразделения</label>
-				<input class="form__input form__input--settings form__item" name="addnameid" id="addnameid" type="text" value="${addIDNameValue}" placeholder="Введите id подразделения"/>
+				<input class="form__input form__item form__item--settings" name="addnameid" id="addnameid" type="text" value="${addIDNameValue}" placeholder="Введите id подразделения"/>
 				<span class="form__text">
 					Переводим сокращенное название на английский (не должно быть большей 9 символов). <br/>
 					Например: Химический факультет - ChemDep (Химфак) <br/>
@@ -273,7 +273,7 @@ function templateChangeEmailForm() {
 		<form class="form form--settings" action="#" method="GET">
 			<div class="form__field">
 				<label class="form__name form__name--settings" for="emailManager">Введите новый email</label>
-				<input class="form__input form__input--settings form__item" name="changeemail" id="emailManager" type="email" placeholder="Введите новый email"/>
+				<input class="form__input form__item form__item--settings" name="changeemail" id="emailManager" type="email" placeholder="Введите новый email"/>
 			</div>
 			<button class="btn btn--changes" data-name="changeemail" type="button">Сохранить</button>
 		</form>

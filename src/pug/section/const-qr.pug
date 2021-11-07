@@ -8,17 +8,17 @@ main.main(data-name="qr")
 		.wrap.wrap--content.wrap--content-qr
 			.main__wrap-info
 				.main__cards.main__cards--main
-					p.main__count-wrap.main__count-wrap--depart
+					p.main__count-wrap
 						span.main__count-text
 							| Количество пользователей:&nbsp
 						span.main__count.main__count--qr
 							| 0
-					p.main__count-wrap.main__count-wrap--depart
+					p.main__count-wrap
 						span.main__count-text
 							| Общее количество пользователей:&nbsp
 						span.main__count.main__count--all-qr
 							| 0
-					p.main__count-wrap.main__count-wrap--main
+					p.main__count-wrap
 						span.main__count-text
 							| Осталось сгенерированных QR:&nbsp
 						span.main__count.main__count--generate-qr
@@ -66,7 +66,7 @@ main.main(data-name="qr")
 				| Предупреждение! Нет новых пользователей для присвоения qr-кода.
 	
 		.main__btns
-			button.btn.btn--add#submitConstQR(type='button')
+			button.btn#submitConstQR(type='button')
 				| Добавить
 			button.btn.btn--print(type='button')
 				| Распечатать отчет

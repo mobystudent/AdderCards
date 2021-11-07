@@ -7,7 +7,7 @@ main.main(data-name="download")
 		.wrap.wrap--content.wrap--content-download
 			.main__wrap-info
 				.main__cards.main__cards--main
-					p.main__count-wrap.main__count-wrap--main
+					p.main__count-wrap
 						span.main__count-text
 							| Количество загруженых qr-кодов:&nbsp
 						span.main__count.main__count--download
@@ -18,7 +18,7 @@ main.main(data-name="download")
 					textarea.form__item.form__item--textarea(placeholder="Загрузите текстовые коды для конвертирования")
 					
 			.main__btns
-				button.btn.btn--download#addQRCodes(type="button")
+				button.btn#addQRCodes(type="button")
 					| Добавить
 					
 			.info.info--page
@@ -36,7 +36,7 @@ main.main(data-name="download")
 				
 			.main__wrap-info
 				.main__cards.main__cards--main
-					p.main__count-wrap.main__count-wrap--main
+					p.main__count-wrap
 						span.main__count-text
 							| Количество сгенерированных qr-кодов:&nbsp
 						span.main__count.main__count--all-download
@@ -62,5 +62,5 @@ main.main(data-name="download")
 							| Новых данных нет
 
 		.main__btns
-			button.btn.btn--download#submitDownloadQR(type='button')
+			button.btn#submitDownloadQR(type='button')
 				| Присвоить

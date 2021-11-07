@@ -67,12 +67,12 @@
 	&__count-wrap {
 		text-align: center;
 
-		@media print {
-			display: none;
+		&:not(:last-child) {
+			margin-bottom: 10px;
 		}
 
-		&--depart {
-			margin-bottom: 10px;
+		@media print {
+			display: none;
 		}
 	}
 
