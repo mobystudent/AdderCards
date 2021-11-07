@@ -31,7 +31,7 @@ function templateConstTable(data) {
 	`;
 
 	return `
-		<div class="table__row table__row--time" data-id="${id}">
+		<div class="table__row" data-id="${id}">
 			<div class="table__cell table__cell--body table__cell--fio">
 				<span class="table__text table__text--body">${fio}</span>
 			</div>

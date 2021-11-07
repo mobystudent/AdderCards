@@ -146,21 +146,36 @@ function userFromDB(array) {
 		qrCollection.set(i, itemObject);
 	});
 
-	qrCollection.forEach((user, i) => {
-		generateCollection.forEach((code, j) => {
-			if (i === j) {
-				const { codepicture, cardid, cardname } = code;
-
-				user.codepicture = codepicture;
-				user.cardid = cardid;
-				user.cardname = cardname;
-			}
-		});
-	});
-
-	createQRCode(qrCollection);
+	assignQRToUsers();
 	setDataInStorage();
 	dataAdd();
+}
+
+function assignQRToUsers(page = 'qr') {
+	const statusDificit = qrCollection.size > generateCollection.size ? 'show' : 'hide';
+	const statusUsers = !qrCollection.size ? 'show' : 'hide';
+	const valid = [statusDificit, statusUsers].every((mess) => mess === 'hide');
+
+	$(`.main[data-name=${page}]`).find('.info__item--warn.info__item--deficit')[statusDificit]();
+	$(`.main[data-name=${page}]`).find('.info__item--warn.info__item--users')[statusUsers]();
+
+	if (valid) {
+		qrCollection.forEach((user, i) => {
+			generateCollection.forEach((code, j) => {
+				if (i === j) {
+					const { codepicture, cardid, cardname } = code;
+
+					user.codepicture = codepicture;
+					user.cardid = cardid;
+					user.cardname = cardname;
+
+					generateCollection.delete(j);
+				}
+			});
+		});
+		
+		createQRCode(qrCollection);
+	}
 }
 
 function dataAdd(page = 'qr') {
@@ -169,6 +184,7 @@ function dataAdd(page = 'qr') {
 
 	viewAllCount();
 	getDepartmentFromDB();
+	viewGenerateCount();
 
 	if (qrCollection.size) {
 		emptySign('full');
@@ -239,7 +255,7 @@ function submitIDinBD(page = 'qr') {
 		const checkedItems = filterDepatCollection.every(({ cardid }) => cardid);
 
 		if (checkedItems) {
-			$('.info__item--warn').hide();
+			$(`.main[data-name=${page}]`).find('.info__item--warn.info__item--fields').hide();
 
 			qrCollection.forEach((item) => {
 				if (item.nameid === qrObject.nameid) {
@@ -274,7 +290,7 @@ function submitIDinBD(page = 'qr') {
 			countItems();
 			localStorage.removeItem(page);
 		} else {
-			$('.info__item--warn').show();
+			$(`.main[data-name=${page}]`).find('.info__item--warn.info__item--fields').show();
 		}
 	});
 }
@@ -305,8 +321,9 @@ function createQRCode(users) {
 		.then((url) => {
 			user.pictureurl = url;
 		})
-		.catch((err) => {
-			console.error(err);
+		.catch((error) => {
+			service.modal('qr');
+			console.log(error);
 		});
 	});
 }
@@ -336,45 +353,9 @@ function autoRefresh(page = 'qr') {
 	});
 }
 
-// Получить кол-во нуждающихся пользователей из таблицы QR
-// function validationCountQRUsers() {
-// 	const countItemsTableQR = $('#tableQR .table__content--active .table__row').length;
-// 	const visibleMessage = countItemsTableQR ? 'hide' : 'show';
-//
-// 	$('.info__item--users')[visibleMessage]();
-//
-// 	return !countItemsTableQR ? false : countItemsTableQR;
-// }
-
-// function addQRCodeUsers() {
-// 	$('#submitDownloadQR').click(() => {
-// 		const countItemsTableQR = $('#tableQR .table__content--active .table__row').length;
-//
-// 		if (downloadCollection.size > countItemsTableQR) {
-// 			[...downloadCollection].forEach((elem, i) => {
-// 				const objectWithDate = {};
-//
-// 				if (i < countNeedsQRUsers) {
-// 					for (let key in elem) {
-// 						objectWithDate[key] = elem[key];
-// 					}
-// 					objectWithDate.date = service.getCurrentDate();
-//
-// 					qrNeedsUsersCollection.add(objectWithDate);
-// 					downloadCollection.delete(elem);
-// 				}
-// 			});
-//
-// 			$('.info__item--deficit').hide();
-// 			dataAdd();
-// 			$('.main__count--all-download').text(downloadCollection.size);
-// 		} else {
-// 			$('.info__item--deficit').show();
-//
-// 			return;
-// 		}
-// 	});
-// }
+function viewGenerateCount(page = 'qr') {
+	$(`.main__count--generate-${page}`).text(generateCollection.size);
+}
 
 function setAddUsersInDB(array, nameTable, action, typeTable) {
 	$.ajax({
@@ -411,6 +392,7 @@ function getGeneratedQRFromDB() {
 		url: "./php/output-request.php",
 		method: "post",
 		dataType: "html",
+		async: false,
 		data: {
 			nameTable: 'download'
 		},
