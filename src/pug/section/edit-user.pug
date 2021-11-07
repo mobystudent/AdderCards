@@ -36,26 +36,27 @@ main.main(data-name="edit")
 						label.form__label
 							span.form__name.form__name--form
 								| Новая должность
-							input.form__input.form__input--form.form__item(name="newpost" type="text" placeholder="Введите новую должность" required)
+							input.form__item.form__item--form(name="newpost" type="text" placeholder="Введите новую должность" required)
 					//- .form__field.form__field--hide(data-name="newfio")
 						label.form__label
 							span.form__name.form__name--form
 								| Новое ФИО
-							input.form__input.form__input--form.form__item(name="newfio" type="text" placeholder="Введите новое ФИО" required)
+							input.form__item.form__item--form(name="newfio" type="text" placeholder="Введите новое ФИО" required)
 								
 				.form__aside
 					.form__img
 						img.img.img--form.img--form-edit(src="./images/avatar.svg" alt="user avatar")
 					//- .form__field.form__field--hide(data-name="newimage")
-						input.form__input.form__item.form__item--file#editFile(data-url="newphotourl" name="photofile" type="file" required)
+						input.form__item.form__item--file#editFile(data-url="newphotourl" name="photofile" type="file" required)
 						label.form__download(for="editFile")
 							svg.icon.icon--download
 								use(xlink:href="./images/sprite.svg#download")
 							span.form__title.form__title--page
 								| Загрузить фото
 									
-			button.btn.btn--form#editUser(type="button" data-type="edit-user")
-				| Редактировать
+			.main__btns
+				button.btn#editUser(type="button" data-type="edit-user")
+					| Редактировать
 				
 		.info.info--page
 			p.info__item.info__item--warn.info__item--fields

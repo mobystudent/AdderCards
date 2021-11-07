@@ -12,12 +12,12 @@ main.main(data-name="add")
 						label.form__label
 							span.form__name.form__name--form
 								| Фамилия Имя Отчество
-							input.form__input.form__input--form.form__item(data-field="fio" name="fio" type="text" placeholder="Введите ФИО" required)
+							input.form__item.form__item--form(data-field="fio" name="fio" type="text" placeholder="Введите ФИО" required)
 					.form__field
 						label.form__label
 							span.form__name.form__name--form
 								| Должность
-							input.form__input.form__input--form.form__item(data-field="post" name="post" type="text" placeholder="Введите должность" required)
+							input.form__item.form__item--form(data-field="post" name="post" type="text" placeholder="Введите должность" required)
 					.form__field
 						span.form__name.form__name--form
 							| Тип идентификатора
@@ -50,20 +50,21 @@ main.main(data-name="add")
 						label.form__label
 							span.form__name.form__name--form
 								| Дата окончания
-							input.form__input.form__input--form.form__item.form__item--date#addDatepicker(data-field="date" name="date" type="text" placeholder="Введите дату" required)
+							input.form__item.form__item--form#addDatepicker(data-field="date" name="date" type="text" placeholder="Введите дату" required)
 				.form__aside
 					.form__img
 						img.img.img--form(src="./images/avatar.svg" alt="user avatar")
 					.form__field
-						input.form__input.form__item.form__item--file#addFile(name="photoname" type="file" required)
+						input.form__item.form__item--file#addFile(name="photoname" type="file" required)
 						label.form__download(for="addFile")
 							svg.icon.icon--download
 								use(xlink:href="./images/sprite.svg#download")
 							span.form__title.form__title--page
 								| Загрузить фото
 									
-			button.btn.btn--form#addUser(type="button" data-type="add-user")
-				| Добавить
+			.main__btns
+				button.btn#addUser(type="button" data-type="add-user")
+					| Добавить
 				
 		.info.info--page
 			p.info__item.info__item--warn.info__item--fields

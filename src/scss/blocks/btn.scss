@@ -102,13 +102,8 @@
 		}
 	}
 
-	&--form {
-		margin: 0 auto;
-
-		&-login {
-			width: 150px;
-			justify-content: center;
-		}
+	&--login {
+		width: 150px;
 	}
 
 	&--settings {

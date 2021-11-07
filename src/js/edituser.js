@@ -102,7 +102,7 @@ function templateEditForm() {
 		<div class="form__field" data-name="newfio">
 			<label class="form__label">
 				<span class="form__name form__name--form">Новое ФИО</span>
-				<input class="form__input form__input--form form__item" name="newfio" type="text" value="${newfio}" placeholder="Введите новое ФИО" required="required"/>
+				<input class="form__item form__item--form" name="newfio" type="text" value="${newfio}" placeholder="Введите новое ФИО" required="required"/>
 			</label>
 		</div>
 	` : '';
@@ -110,13 +110,13 @@ function templateEditForm() {
 		<div class="form__field" data-name="newpost">
 			<label class="form__label">
 				<span class="form__name form__name--form">Новая должность</span>
-				<input class="form__input form__input--form form__item" name="newpost" type="text" value="${newpost}" placeholder="Введите новую должность" required/>
+				<input class="form__item form__item--form" name="newpost" type="text" value="${newpost}" placeholder="Введите новую должность" required/>
 			</label>
 		</div>
 	` : '';
 	const imageView = statusid === 'changeImage' ? `
 		<div class="form__field" data-name="newimage">
-			<input class="form__input form__item form__item--file" id="editFile" name="photofile" type="file" required="required"/>
+			<input class="form__item form__item--file" id="editFile" name="photofile" type="file" required="required"/>
 			<label class="form__download" for="editFile">
 				<svg class="icon icon--download">
 					<use xlink:href="./images/sprite.svg#download"></use>
@@ -490,7 +490,7 @@ function clearFieldsForm() {
 }
 
 function memberInputField() {
-	$('.form__input').keyup(({ currentTarget }) => {
+	$('.form__item').keyup(({ currentTarget }) => {
 		const nameField = $(currentTarget).attr('name');
 		const fieldValue = $(currentTarget).val();
 
@@ -513,7 +513,7 @@ function emptySign(status, nameTable = '#tableEdit') {
 }
 
 function downloadFoto(nameForm = '#editForm', page = 'edit') {
-	$(`${nameForm} .form__input--file`).change(({ target }) => {
+	$(`${nameForm} .form__item--file`).change(({ target }) => {
 		const fileNameUrl = $(target).val();
 		const indexLastSlash = fileNameUrl.lastIndexOf('\\');
 		const photoName = fileNameUrl.slice(indexLastSlash + 1);

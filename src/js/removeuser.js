@@ -114,7 +114,7 @@ function templateRemoveForm() {
 		<div class="form__field" data-name="date">
 			<label class="form__label">
 				<span class="form__name form__name--form">Дата завершения действия пропуска</span>
-				<input class="form__input form__input--form form__item" id="removeDatepicker" name="date" type="text" value="${cardvalidto}" placeholder="Введите дату завершения действия пропуска" required="required"/>
+				<input class="form__item form__item--form" id="removeDatepicker" name="date" type="text" value="${cardvalidto}" placeholder="Введите дату завершения действия пропуска" required="required"/>
 			</label>
 		</div>
 	` : '';

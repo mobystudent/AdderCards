@@ -78,22 +78,6 @@
 		}
 	}
 
-	&__input {
-		width: 100%;
-		@extend %text--premedium;
-		padding: 10px 15px;
-		border: 1px solid $gray;
-		border-radius: 5px;
-
-		&--form {
-			color: $white;
-
-			&::placeholder {
-				color: $darkGray;
-			}
-		}
-	}
-
 	&__aside {
 		flex: 0 0 auto;
 		width: 250px;
@@ -179,6 +163,16 @@
 
 			&::placeholder {
 				color: $middleGray;
+			}
+		}
+
+		&--form {
+			padding: 10px 15px;
+			color: $white;
+			border: 1px solid $gray;
+
+			&::placeholder {
+				color: $darkGray;
 			}
 		}
 	}

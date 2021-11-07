@@ -26,11 +26,11 @@ main.main(data-name="settings")
 							.form__field
 								label.form__name.form__name--settings(for="changelongname")
 									| Введите новое полное название
-								input.form__input.form__item.form__item--settings(name="changelongname" id="changelongname" type="text" placeholder="Введите новое полное название")
+								input.form__item.form__item--settings(name="changelongname" id="changelongname" type="text" placeholder="Введите новое полное название")
 							.form__field
 								label.form__name.form__name--settings(for="changeshortname")
 									| Введите сокращенное название
-								input.form__input.form__item.form__item--settings(name="changeshortname" id="changeshortname" type="text" placeholder="Введите сокращенное название")
+								input.form__item.form__item--settings(name="changeshortname" id="changeshortname" type="text" placeholder="Введите сокращенное название")
 								span.form__text
 									| Например: Химический факультет - Химфак #[br]
 									| Учебный центр социально-воспитательной и внеобразовательной деятельности - УЦСВВОД #[br]
@@ -54,11 +54,11 @@ main.main(data-name="settings")
 							.form__field
 								label.form__name.form__name--settings(for="addlongname")
 									| Введите новое полное название
-								input.form__input.form__item.form__item--settings(name="addlongname" id="addlongname" type="text" placeholder="Введите новое полное название")
+								input.form__item.form__item--settings(name="addlongname" id="addlongname" type="text" placeholder="Введите новое полное название")
 							.form__field
 								label.form__name.form__name--settings(for="addshortname")
 									| Введите сокращенное название
-								input.form__input.form__item.form__item--settings(name="addshortname" id="addshortname" type="text" placeholder="Введите сокращенное название")
+								input.form__item.form__item--settings(name="addshortname" id="addshortname" type="text" placeholder="Введите сокращенное название")
 								span.form__text
 									| Например: Химический факультет - Химфак #[br]
 									| Учебный центр социально-воспитательной и внеобразовательной деятельности - УЦСВВОД #[br]
@@ -66,7 +66,7 @@ main.main(data-name="settings")
 							.form__field
 								label.form__name.form__name--settings(for="addnameid")
 									| Введите id подразделения
-								input.form__input.form__item.form__item--settings(name="addnameid" id="addnameid" type="text" placeholder="Введите id подразделения")
+								input.form__item.form__item--settings(name="addnameid" id="addnameid" type="text" placeholder="Введите id подразделения")
 								span.form__text
 									| Переводим сокращенное название на английский (не должно быть большей 9 символов). #[br]
 									| Например: Химический факультет - ChemDep (Химфак) #[br]
@@ -149,7 +149,7 @@ main.main(data-name="settings")
 							.form__field
 								label.form__name.form__name--settings(for="emailManager")
 									| Введите новый email
-								input.form__input.form__item.form__item--settings(name="changeemail" id="emailManager" type="email" placeholder="Введите новый email")
+								input.form__item.form__item--settings(name="changeemail" id="emailManager" type="email" placeholder="Введите новый email")
 							button.btn.btn--changes(data-name="changeemail" type="button")
 								| Сохранить
 								

@@ -42,14 +42,15 @@ main.main(data-name="remove")
 						label.form__label
 							span.form__name.form__name--form
 								| Дата завершения действия пропуска
-							input.form__input.form__input--form.form__item#removeDatepicker(name="date" type="text" placeholder="Введите дату завершения действия пропуска" required)
+							input.form__item.form__item--form#removeDatepicker(name="date" type="text" placeholder="Введите дату завершения действия пропуска" required)
 							
 				.form__aside
 					.form__img
 						img.img.img--form.img--form-remove(src="./images/avatar.svg" alt="user avatar")
 								
-			button.btn.btn--form#removeUser(type="button" data-type="remove-user")
-				| Удалить
+			.main__btns
+				button.btn#removeUser(type="button" data-type="remove-user")
+					| Удалить
 				
 		.info.info--page
 			p.info__item.info__item--warn.info__item--fields

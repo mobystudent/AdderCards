@@ -97,7 +97,7 @@ function templateAddForm() {
 		<div class="form__field">
 			<label class="form__label">
 				<span class="form__name form__name--form">Дата окончания</span>
-				<input class="form__input form__input--form form__item" id="addDatepicker" data-field="date" name="date" type="text" value="${cardvalidto}" placeholder="Введите дату" required="required"/>
+				<input class="form__item form__item--form" id="addDatepicker" data-field="date" name="date" type="text" value="${cardvalidto}" placeholder="Введите дату" required="required"/>
 			</label>
 		</div>
 	` : '';
@@ -107,13 +107,13 @@ function templateAddForm() {
 			<div class="form__field">
 				<label class="form__label">
 					<span class="form__name form__name--form">Фамилия Имя Отчество</span>
-					<input class="form__input form__input--form form__item" data-field="fio" name="fio" type="text" value="${fio}" placeholder="Введите ФИО" required="required"/>
+					<input class="form__item form__item--form" data-field="fio" name="fio" type="text" value="${fio}" placeholder="Введите ФИО" required="required"/>
 				</label>
 			</div>
 			<div class="form__field">
 				<label class="form__label">
 					<span class="form__name form__name--form">Должность</span>
-					<input class="form__input form__input--form form__item" data-field="post" name="post" type="text" value="${post}" placeholder="Введите должность" required="required"/>
+					<input class="form__item form__item--form" data-field="post" name="post" type="text" value="${post}" placeholder="Введите должность" required="required"/>
 				</label>
 			</div>
 			<div class="form__field">
@@ -155,7 +155,7 @@ function templateAddForm() {
 				<img class="img img--form" src="${photoValue}" alt="user avatar"/>
 			</div>
 			<div class="form__field">
-				<input class="form__input form__item form__item--file" id="addFile" name="photofile" type="file" required="required"/>
+				<input class="form__item form__item--file" id="addFile" name="photofile" type="file" required="required"/>
 				<label class="form__download" for="addFile">
 					<svg class="icon icon--download">
 						<use xlink:href=./images/sprite.svg#download></use>
@@ -407,7 +407,7 @@ function clearFieldsForm() {
 }
 
 function memberInputField() {
-	$('.form__input').keyup(({ currentTarget }) => {
+	$('.form__item').keyup(({ currentTarget }) => {
 		const nameField = $(currentTarget).data('field');
 		const fieldValue = $(currentTarget).val();
 
@@ -447,7 +447,7 @@ function datepicker() {
 }
 
 function downloadFoto(nameForm = '#addForm', page = 'add') {
-	$(`${nameForm} .form__input--file`).change(({ target }) => {
+	$(`${nameForm} .form__item--file`).change(({ target }) => {
 		const fileNameUrl = $(target).val();
 		const indexLastSlash = fileNameUrl.lastIndexOf('\\');
 		const photoName = fileNameUrl.slice(indexLastSlash + 1);
