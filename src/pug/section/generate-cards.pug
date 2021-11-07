@@ -24,13 +24,6 @@ main.main(data-name="generate")
 		
 			.wrap.wrap--table
 				.table.table--generate
-					header.table__header
-						.table__cell.table__cell--header.table__cell--cardid(data-name='cardid')
-							span.table__text.table__text--header
-								| ID карты
-						.table__cell.table__cell--header.table__cell--cardname(data-name='cardname')
-							span.table__text.table__text--header
-								| Номер карты
 					.table__body#tableGenerate
 						p.table__nothing
 							| Новых данных нет
@@ -42,3 +35,5 @@ main.main(data-name="generate")
 			.main__btns
 				button.btn.btn--assign#submitGenerate(type='button')
 					| Присвоить
+				a.btn.btn--assign#submitLoad(href="#" download="database.txt")
+					| Скачать

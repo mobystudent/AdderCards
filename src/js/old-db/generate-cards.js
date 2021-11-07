@@ -12,16 +12,7 @@ $(window).on('load', () => {
 function templateDownloadTable(data) {
 	const { cardid = '', cardname = '' } = data;
 
-	return `
-		<div class="table__row table__row--time">
-			<div class="table__cell table__cell--body table__cell--cardid">
-				<span class="table__text table__text--body">${cardid}</span>
-			</div>
-			<div class="table__cell table__cell--body table__cell--cardname">
-				<span class="table__text table__text--body">${cardname}</span>
-			</div>
-		</div>
-	`;
+	return `Старая карта	Общая			${cardname}	${cardid}			1	0	0	0	0	0		1	\n`;
 }
 
 function countQRCodes() {
@@ -86,7 +77,7 @@ function dataAdd(nameTable = '#tableGenerate') {
 		return;
 	}
 
-	$(`${nameTable} .table__content`).html('');
+	$(`${nameTable} .table__content`).html(`FIO	Department	FieldGroup	Badge	CardName	CardID	CardValidTo	PIN	CardStatus	Security	Disalarm	VIP	DayNightCLM	AntipassbackDisabled	PhotoFile	EmployeeNumber	Post\n`);
 	collection.forEach((item) => {
 		$(`${nameTable} .table__content`).append(templateDownloadTable(item));
 	});
@@ -96,7 +87,11 @@ function submitIDinBD() {
 	$('#submitGenerate').click(() => {
 		getData();
 
-
+		const generateText = $('#tableGenerate .table__content').text();
+		const file = new Blob([generateText], { type: 'text/plain' });
+		
+		console.log('Complete');
+		$('#submitLoad').attr('href', URL.createObjectURL(file));
 	});
 }
 
