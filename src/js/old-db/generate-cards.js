@@ -49,11 +49,10 @@ function convertCardId(cardNum) {
 	let partOneHEX = parseInt(partOne).toString(16);
 	let partTwoHEX = parseInt(partTwo).toString(16);
 
-	partTwoHEX = addZeroinNum(partTwoHEX, 4);
-
-	let tenCode = parseInt((partOneHEX + partTwoHEX), 16).toString();
-
-	return addZeroinNum(tenCode, 10);
+	partOneHEX = addZeroinNum(partOneHEX, 6);
+	partTwoHEX = partTwoHEX.toUpperCase();
+	
+	return `${partOneHEX}${partTwoHEX}`;
 }
 
 function addZeroinNum(item, numLength) {
@@ -89,7 +88,7 @@ function submitIDinBD() {
 
 		const generateText = $('#tableGenerate .table__content').text();
 		const file = new Blob([generateText], { type: 'text/plain' });
-		
+
 		console.log('Complete');
 		$('#submitLoad').attr('href', URL.createObjectURL(file));
 	});
