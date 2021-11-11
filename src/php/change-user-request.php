@@ -220,6 +220,7 @@
 				if ($key === 'department') $department = $value;
 				if ($key === 'statusid') $statusid = $value;
 				if ($key === 'statustitle') $statustitle = $value;
+				if ($key === 'codeid') $codeid = $value;
 				if ($key === 'cardid') $cardid = $value;
 				if ($key === 'cardname') $cardname = $value;
 				if ($key === 'date') $date = $value;
@@ -229,6 +230,12 @@
 
 			if($mysqli->query("DELETE FROM `$typeBDTable` WHERE id = $id")) {
 				echo('Success delete in BD '.$typeBDTable);
+			} else {
+				echo $mysqli->error;
+			}
+
+			if($mysqli->query("DELETE FROM download_qr WHERE id = $codeid")) {
+				echo('Success delete in BD download_qr');
 			} else {
 				echo $mysqli->error;
 			}

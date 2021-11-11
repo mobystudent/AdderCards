@@ -163,8 +163,9 @@ function assignQRToUsers(page = 'qr') {
 		qrCollection.forEach((user, i) => {
 			generateCollection.forEach((code, j) => {
 				if (i === j) {
-					const { codepicture, cardid, cardname } = code;
+					const { id, codepicture, cardid, cardname } = code;
 
+					user.codeid = id;
 					user.codepicture = codepicture;
 					user.cardid = cardid;
 					user.cardname = cardname;
@@ -173,7 +174,7 @@ function assignQRToUsers(page = 'qr') {
 				}
 			});
 		});
-		
+
 		createQRCode(qrCollection);
 	}
 }
