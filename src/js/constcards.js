@@ -343,10 +343,12 @@ function autoRefresh(page = 'const') {
 			markInterval = setInterval(() => {
 				getDataFromDB('const', 'card');
 			}, timeReload);
+			$(target).next().removeClass('switch__name--disabled');
 		} else if (!statusSwitch && markInterval) {
 			clearInterval(markInterval);
 
 			markInterval = false;
+			$(target).next().addClass('switch__name--disabled');
 		}
 	});
 }

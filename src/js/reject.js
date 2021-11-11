@@ -359,10 +359,12 @@ function autoRefresh(page = 'reject') {
 			markInterval = setInterval(() => {
 				getDataFromDB('reject');
 			}, timeReload);
+			$(target).next().removeClass('switch__name--disabled');
 		} else if (!statusSwitch && markInterval) {
 			clearInterval(markInterval);
 
 			markInterval = false;
+			$(target).next().addClass('switch__name--disabled');
 		}
 	});
 }

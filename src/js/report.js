@@ -99,16 +99,18 @@ function autoRefresh(page = 'report') {
 
 		if (statusSwitch && !markInterval) {
 			localStorage.removeItem(page);
-			
+
 			getDataFromDB('report');
 
 			markInterval = setInterval(() => {
 				getDataFromDB('report');
 			}, timeReload);
+			$(target).next().removeClass('switch__name--disabled');
 		} else if (!statusSwitch && markInterval) {
 			clearInterval(markInterval);
 
 			markInterval = false;
+			$(target).next().addClass('switch__name--disabled');
 		}
 	});
 }

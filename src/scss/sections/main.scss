@@ -51,6 +51,7 @@
 	&__wrap-info {
 		display: flex;
 		justify-content: space-between;
+		align-items: flex-start;
 		margin-bottom: 20px;
 
 		@media print {
@@ -99,5 +100,10 @@
 	&__btn-text {
 		@extend %text--premedium;
 		color: $deepDarkBlue;
+	}
+
+	&__switch {
+		display: flex;
+		align-items: flex-start;
 	}
 }

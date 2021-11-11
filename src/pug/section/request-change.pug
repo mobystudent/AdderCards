@@ -18,10 +18,17 @@ main.main(data-name="request")
 							| Общее количество пользователей:&nbsp
 						span.main__count.main__count--all-request
 							| 0
-				label.switch.switch--request
-					input.switch__input(type='checkbox')
-					span.switch__name
-						| Автообновление
+				.main__switch
+					.tooltip
+						span.tooltip__item
+							| !
+						.tooltip__info
+							| Если данная опция включена, тогда при поступлении новых данных, они автоматически отобразятся в таблице. Перезагружать страницу не нужно.#[br]
+							| Рекомендуется отключить данную функцию при работе с данными в таблице!
+					label.switch.switch--request
+						input.switch__input(type='checkbox')
+						span.switch__name.switch__name--disabled
+							| Автообновление
 			.wrap.wrap--table
 				header.tab.tab--request
 				.table.table--request

@@ -403,10 +403,12 @@ function autoRefresh(page = 'request') {
 			markInterval = setInterval(() => {
 				getDataFromDB('request');
 			}, timeReload);
+			$(target).next().removeClass('switch__name--disabled');
 		} else if (!statusSwitch && markInterval) {
 			clearInterval(markInterval);
 
 			markInterval = false;
+			$(target).next().addClass('switch__name--disabled');
 		}
 	});
 }

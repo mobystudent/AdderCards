@@ -13,10 +13,17 @@ main.main(data-name="report")
 							| Количество пользователей:&nbsp
 						span.main__count.main__count--all-report
 							| 0
-				label.switch.switch--report
-					input.switch__input(type='checkbox')
-					span.switch__name
-						| Автообновление
+				.main__switch
+					.tooltip
+						span.tooltip__item
+							| !
+						.tooltip__info
+							| Если данная опция включена, тогда при поступлении новых данных, они автоматически отобразятся в таблице. Перезагружать страницу не нужно.#[br]
+							| Рекомендуется отключить данную функцию при работе с данными в таблице!
+					label.switch.switch--report
+						input.switch__input(type='checkbox')
+						span.switch__name.switch__name--disabled
+							| Автообновление
 			.wrap.wrap--table
 				header.tab.tab--report
 				.table.table--report

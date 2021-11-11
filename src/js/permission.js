@@ -407,10 +407,12 @@ function autoRefresh(page = 'permis') {
 			markInterval = setInterval(() => {
 				getDataFromDB('permis');
 			}, timeReload);
+			$(target).next().removeClass('switch__name--disabled');
 		} else if (!statusSwitch && markInterval) {
 			clearInterval(markInterval);
 
 			markInterval = false;
+			$(target).next().addClass('switch__name--disabled');
 		}
 	});
 }
