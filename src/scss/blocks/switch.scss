@@ -1,37 +1,48 @@
 .switch {
 	$self: &;
 
-	cursor: pointer;
+	display: flex;
+	flex-flow: column;
 
 	@media print {
 		display: none;
 	}
 
-	&__name {
-		display: inline-block;
-		position: relative;
-		@extend %text--small;
-		color: $white;
-		margin-top: 25px;
-		transition: color .25s ease;
+	&--item {
+		width: 100%;
+	}
 
-		&:before {
-			content: '';
-			position: absolute;
-			top: -25px;
-			right: 0;
-			width: 40px;
-			height: 16px;
-			border: 1px solid $disabledLightGray;
-			border-radius: 10px;
-			background: $gray;
-			transition: background .25s ease-out;
+	&__wrap {
+		display: flex;
+
+		&:not(:last-child) {
+			margin-bottom: 10px;
 		}
+
+		&--head {
+			justify-content: flex-end;
+		}
+
+		&--item {
+			justify-content: center;
+		}
+	}
+
+	&__btn {
+		position: relative;
+		display: inline-block;
+		width: 40px;
+		height: 16px;
+		border: 1px solid $disabledLightGray;
+		border-radius: 10px;
+		background: $gray;
+		transition: background .25s ease-out;
+		cursor: pointer;
 
 		&:after {
 			content: '';
 			position: absolute;
-			top: -24px;
+			top: 0;
 			right: 1px;
 			width: 14px;
 			height: 14px;
@@ -42,6 +53,20 @@
 		}
 
 		&--disabled {
+			background: $disabledGray;
+
+			&:after {
+				background: $gray;
+			}
+		}
+	}
+
+	&__name {
+		@extend %text--small;
+		color: $white;
+		transition: color .25s ease;
+
+		&--disabled {
 			color: $disabledLightGray;
 		}
 	}
@@ -49,13 +74,15 @@
 	&__input {
 		display: none;
 
-		&:checked + #{$self}__name {
+		&:checked + #{$self}__btn {
+			background: $lightGreen;
+
 			&:after {
-				right: 25px;
+				right: 23px;
 			}
 
-			&:before {
-				background: $lightGreen;
+			&--disabled {
+				background: $disabledGreen;
 			}
 		}
 	}

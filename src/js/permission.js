@@ -230,12 +230,12 @@ function showActiveDataOnPage() {
 
 function submitIDinBD(page = 'permis') {
 	$('#submitPermis').click(() => {
-		const filterDepatCollection = [...permissionCollection.values()].filter(({ nameid }) => nameid === permisObject.nameid);
-		const checkedItems = filterDepatCollection.every(({ statuspermis }) => statuspermis);
+		const filterDepartCollection = [...permissionCollection.values()].filter(({ nameid }) => nameid === permisObject.nameid);
+		const checkedItems = filterDepartCollection.every(({ statuspermis }) => statuspermis);
 
 		if (checkedItems) {
-			const allowItems = filterDepatCollection.filter(({ statuspermis }) => statuspermis === 'allow');
-			const disallowItems = filterDepatCollection.filter(({ statuspermis }) => statuspermis === 'disallow');
+			const allowItems = filterDepartCollection.filter(({ statuspermis }) => statuspermis === 'allow');
+			const disallowItems = filterDepartCollection.filter(({ statuspermis }) => statuspermis === 'disallow');
 
 			$('.info__item--warn').hide();
 
@@ -252,14 +252,14 @@ function submitIDinBD(page = 'permis') {
 				setAddUsersInDB(disallowItems, 'reject', 'add', 'permis');
 			}
 
-			filterDepatCollection.forEach(({ id: userID }) => {
+			filterDepartCollection.forEach(({ id: userID }) => {
 				[...permissionCollection].forEach(([ key, { id } ]) => {
 					if (userID === id) {
 						permissionCollection.delete(key);
 					}
 				});
 			});
-			filterDepatCollection.splice(0);
+			filterDepartCollection.splice(0);
 
 			clearObject();
 			resetControlBtns();
@@ -376,14 +376,12 @@ function resetControlBtns() {
 	permisObject.statusdisallow = '';
 
 	permissionCollection.forEach((item) => {
-		if (item.nameid === permisObject.nameid) {
-			item.statususer = '';
-			item.statuspermis = '';
-			item.allow = '';
-			item.disallow = '';
-			item.allowblock = '';
-			item.disallowblock = '';
-		}
+		item.statususer = '';
+		item.statuspermis = '';
+		item.allow = '';
+		item.disallow = '';
+		item.allowblock = '';
+		item.disallowblock = '';
 	});
 }
 
@@ -391,7 +389,7 @@ function autoRefresh(page = 'permis') {
 	const timeReload = 60000 * settingsObject.autoupdatevalue;
 	let markInterval;
 
-	$(`.switch--${page}`).click(({ target }) => {
+	$(`.switch--refresh-${page}`).click(({ target }) => {
 		if (!$(target).hasClass('switch__input')) return;
 
 		const statusSwitch = $(target).prop('checked');

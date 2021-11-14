@@ -206,6 +206,11 @@
 			}
 		}
 
+		&--switch-assign {
+			flex: 0 0 80px;
+			max-width: 80px;
+		}
+
 		&--hide {
 			display: none;
 		}

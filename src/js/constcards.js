@@ -188,8 +188,8 @@ function showActiveDataOnPage() {
 
 function submitIDinBD(page = 'const') {
 	$('#submitConstCard').click(() => {
-		const filterDepatCollection = [...constCollection.values()].filter(({ nameid }) => nameid == constObject.nameid);
-		const checkedItems = filterDepatCollection.every(({ cardid }) => cardid);
+		const filterDepartCollection = [...constCollection.values()].filter(({ nameid }) => nameid == constObject.nameid);
+		const checkedItems = filterDepartCollection.every(({ cardid }) => cardid);
 
 		if (checkedItems) {
 			$('.info__item--warn').hide();
@@ -200,16 +200,16 @@ function submitIDinBD(page = 'const') {
 				}
 			});
 
-			setAddUsersInDB(filterDepatCollection, 'const', 'report', 'card');
+			setAddUsersInDB(filterDepartCollection, 'const', 'report', 'card');
 
-			filterDepatCollection.forEach(({ id: userID }) => {
+			filterDepartCollection.forEach(({ id: userID }) => {
 				[...constCollection].forEach(([ key, { id } ]) => {
 					if (userID === id) {
 						constCollection.delete(key);
 					}
 				});
 			});
-			filterDepatCollection.splice(0);
+			filterDepartCollection.splice(0);
 
 			clearObject();
 			dataAdd();
@@ -316,8 +316,8 @@ function setDataInTable(userID, cardObj, page = 'const') {
 }
 
 function checkInvalidValueCardID(page = 'const') {
-	const filterDepatCollection = [...constCollection.values()].filter(({ nameid }) => nameid == constObject.nameid);
-	const checkValueCard = filterDepatCollection.every(({ cardid }) => {
+	const filterDepartCollection = [...constCollection.values()].filter(({ nameid }) => nameid == constObject.nameid);
+	const checkValueCard = filterDepartCollection.every(({ cardid }) => {
 		if(cardid) convert.convertCardId(cardid);
 	});
 
@@ -330,7 +330,7 @@ function autoRefresh(page = 'const') {
 	const timeReload = 60000 * settingsObject.autoupdatevalue;
 	let markInterval;
 
-	$(`.switch--${page}`).click(({ target }) => {
+	$(`.switch--refresh-${page}`).click(({ target }) => {
 		if (!$(target).hasClass('switch__input')) return;
 
 		const statusSwitch = $(target).prop('checked');

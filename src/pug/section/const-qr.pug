@@ -23,17 +23,33 @@ main.main(data-name="qr")
 							| Осталось сгенерированных QR:&nbsp
 						span.main__count.main__count--generate-qr
 							| 0
-				.main__switch
-					.tooltip
-						span.tooltip__item
-							| !
-						.tooltip__info
-							| Если данная опция включена, тогда при поступлении новых данных, они автоматически отобразятся в таблице. Перезагружать страницу не нужно.#[br]
-							| Рекомендуется отключить данную функцию при работе с данными в таблице!
-					label.switch.switch--qr
-						input.switch__input(type='checkbox')
-						span.switch__name.switch__name--disabled
-							| Автообновление
+				.main__switchies
+					.main__switch
+						.tooltip
+							span.tooltip__item
+								| !
+							.tooltip__info.tooltip__info--refresh
+								| Если данная опция включена, тогда при поступлении новых данных, они автоматически отобразятся в таблице. Перезагружать страницу не нужно.#[br]
+								| Рекомендуется отключить данную функцию при работе с данными в таблице!
+						.switch.switch--refresh-qr
+							label.switch__wrap.switch__wrap--head
+								input.switch__input(type='checkbox')
+								small.switch__btn
+							span.switch__name.switch__name--disabled
+								| Автообновление
+					.main__switch
+						.tooltip
+							span.tooltip__item
+								| !
+							.tooltip__info.tooltip__info--assign
+								| Если в данной опции выставлено автоприсвоение, тогда коды будут автоматически присвоены пользователям. Важно! При нехватке кодов для всех пользователей данная ф-я будет отключена. #[br]
+								| Если в данной опции выставлено ручное присваивание, тогда код будет присваеватся для каждого пользоватебя в отдельности.
+						.switch.switch--assign-qr
+							label.switch__wrap.switch__wrap--head
+								input.switch__input(type='checkbox')
+								small.switch__btn
+							span.switch__name
+								| Автоприсвоение
 			.wrap.wrap--table
 				header.tab.tab--qr
 				.table.table--qr
@@ -55,6 +71,11 @@ main.main(data-name="qr")
 						.table__cell.table__cell--header.table__cell--statustitle
 							span.table__text.table__text--header
 								| Статус
+						//- .table__cell.table__cell--header.table__cell--switch-assign
+							.switch.switch--item
+								label.switch__wrap.switch__wrap--item#assignAll
+									input.switch__input(type='checkbox')
+									span.switch__btn
 						.table__cell.table__cell--header.table__cell--signature
 							span.table__text.table__text--header
 								| Подпись
@@ -68,9 +89,9 @@ main.main(data-name="qr")
 			p.info__item.info__item--warn.info__item--fields
 				| Предупреждение! Не всем пользователям присвоен идентификатор.
 			p.info__item.info__item--warn.info__item--deficit
-				| Предупреждение! Недостаточно кодов для присвоения пользователям.
-			p.info__item.info__item--warn.info__item--users
-				| Предупреждение! Нет новых пользователей для присвоения qr-кода.
+				| Предупреждение! Недостаточно qr-кодов для присвоения пользователям.
+			//- p.info__item.info__item--warn.info__item--users
+			//- 	| Предупреждение! Нет новых пользователей для присвоения qr-кода.
 	
 		.main__btns
 			button.btn#submitConstQR(type='button')

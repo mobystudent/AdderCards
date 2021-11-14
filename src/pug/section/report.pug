@@ -17,11 +17,13 @@ main.main(data-name="report")
 					.tooltip
 						span.tooltip__item
 							| !
-						.tooltip__info
+						.tooltip__info.tooltip__info--refresh
 							| Если данная опция включена, тогда при поступлении новых данных, они автоматически отобразятся в таблице. Перезагружать страницу не нужно.#[br]
 							| Рекомендуется отключить данную функцию при работе с данными в таблице!
-					label.switch.switch--report
-						input.switch__input(type='checkbox')
+					.switch.switch--refresh-report
+						label.switch__wrap.switch__wrap--head
+							input.switch__input(type='checkbox')
+							small.switch__btn
 						span.switch__name.switch__name--disabled
 							| Автообновление
 			.wrap.wrap--table

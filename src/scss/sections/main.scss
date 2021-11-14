@@ -102,8 +102,17 @@
 		color: $deepDarkBlue;
 	}
 
+	&__switchies {
+		display: flex;
+		flex-flow: column;
+	}
+
 	&__switch {
 		display: flex;
 		align-items: flex-start;
+
+		&:not(:last-child) {
+			margin-bottom: 10px;
+		}
 	}
 }

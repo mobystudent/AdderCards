@@ -232,12 +232,12 @@ function showActiveDataOnPage() {
 
 function submitIDinBD(page = 'request') {
 	$('#submitRequest').click(() => {
-		const filterDepatCollection = [...requestCollection.values()].filter(({ nameid }) => nameid === requestObject.nameid);
-		const checkedItems = filterDepatCollection.every(({ statusrequest }) => statusrequest);
+		const filterDepartCollection = [...requestCollection.values()].filter(({ nameid }) => nameid === requestObject.nameid);
+		const checkedItems = filterDepartCollection.every(({ statusrequest }) => statusrequest);
 
 		if (checkedItems) {
-			const allowItems = filterDepatCollection.filter(({ statusrequest }) => statusrequest === 'allow');
-			const disallowItems = filterDepatCollection.filter(({ statusrequest }) => statusrequest === 'disallow');
+			const allowItems = filterDepartCollection.filter(({ statusrequest }) => statusrequest === 'allow');
+			const disallowItems = filterDepartCollection.filter(({ statusrequest }) => statusrequest === 'disallow');
 
 			$('.info__item--warn').hide();
 
@@ -253,16 +253,16 @@ function submitIDinBD(page = 'request') {
 				setAddUsersInDB(disallowItems, 'reject', 'add', 'reject');
 			}
 
-			console.log(filterDepatCollection);
+			console.log(filterDepartCollection);
 
-			filterDepatCollection.forEach(({ id: userID }) => {
+			filterDepartCollection.forEach(({ id: userID }) => {
 				[...requestCollection].forEach(([ key, { id } ]) => {
 					if (userID === id) {
 						requestCollection.delete(key);
 					}
 				});
 			});
-			filterDepatCollection.splice(0);
+			filterDepartCollection.splice(0);
 
 			clearObject();
 			resetControlBtns();
@@ -387,7 +387,7 @@ function autoRefresh(page = 'request') {
 	const timeReload = 60000 * settingsObject.autoupdatevalue;
 	let markInterval;
 
-	$(`.switch--${page}`).click(({ target }) => {
+	$(`.switch--refresh-${page}`).click(({ target }) => {
 		if (!$(target).hasClass('switch__input')) return;
 
 		const statusSwitch = $(target).prop('checked');
