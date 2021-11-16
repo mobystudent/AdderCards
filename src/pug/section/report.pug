@@ -6,26 +6,27 @@ main.main(data-name="report")
 			span.main__depart.main__depart--report(data-depart="" data-id="")
 				
 		.wrap.wrap--content.wrap--content-report-item
-			.main__wrap-info
+			.main__wrap-info.main__wrap-info--report
 				.main__cards.main__cards--main
 					p.main__count-wrap
 						span.main__count-text
 							| Количество пользователей:&nbsp
 						span.main__count.main__count--all-report
 							| 0
-				.main__switch
-					.tooltip
-						span.tooltip__item
-							| !
-						.tooltip__info.tooltip__info--refresh
-							| Если данная опция включена, тогда при поступлении новых данных, они автоматически отобразятся в таблице. Перезагружать страницу не нужно.#[br]
-							| Рекомендуется отключить данную функцию при работе с данными в таблице!
-					.switch.switch--refresh-report
-						label.switch__wrap.switch__wrap--head
-							input.switch__input(type='checkbox')
-							small.switch__btn
-						span.switch__name.switch__name--disabled
-							| Автообновление
+				.main__switchies
+					.main__switch
+						.tooltip
+							span.tooltip__item
+								| !
+							.tooltip__info.tooltip__info--refresh
+								| Если данная опция включена, тогда при поступлении новых данных, они автоматически отобразятся в таблице. Перезагружать страницу не нужно.#[br]
+								| Рекомендуется отключить данную функцию при работе с данными в таблице!
+						.switch.switch--refresh-report
+							label.switch__wrap.switch__wrap--head
+								input.switch__input(type='checkbox')
+								small.switch__btn
+							span.switch__name.switch__name--disabled
+								| Автообновление
 			.wrap.wrap--table
 				header.tab.tab--report
 				.table.table--report

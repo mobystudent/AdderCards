@@ -11,6 +11,12 @@ const rejectCollection = new Map(); // БД отклоненных пользо�
 const rejectObject = {
 	statusresend: ''
 };
+const rejectSwitch = {
+	refresh: {
+		type: 'refresh',
+		status: false
+	}
+};
 
 $(window).on('load', () => {
 	const options = {
@@ -23,8 +29,8 @@ $(window).on('load', () => {
 
 	renderheader.renderHeaderPage(options);
 	submitIDinBD();
-	autoRefresh();
 	showDataFromStorage();
+	renderSwitch();
 });
 
 function templateRejectTable(data) {
@@ -127,6 +133,35 @@ function templateRejectHeaderTable() {
 	`;
 }
 
+function templateRejectSwitch(data, page = 'reject') {
+	const { type, status } = data;
+	const assingBtnCheck = status ? 'checked="checked"' : '';
+	const assingBtnClass = type === 'refresh' && !status ? 'switch__name--disabled' : '';
+	let switchText;
+	let tooltipInfo;
+
+	if (type === 'refresh') {
+		switchText = 'Автообновление';
+		tooltipInfo = 'Если данная опция включена, тогда при поступлении новых данных, они автоматически отобразятся в таблице. Перезагружать страницу не нужно.<br/> Рекомендуется отключить данную функцию при работе с данными в таблице!';
+	}
+
+	return `
+		<div class="main__switch">
+			<div class="tooltip">
+				<span class="tooltip__item">!</span>
+				<div class="tooltip__info tooltip__info--${type}">${tooltipInfo}</div>
+			</div>
+			<div class="switch switch--${type}-${page}">
+				<label class="switch__wrap switch__wrap--head">
+					<input class="switch__input" type="checkbox" ${assingBtnCheck}/>
+					<small class="switch__btn"></small>
+				</label>
+				<span class="switch__name ${assingBtnClass}">${switchText}</span>
+			</div>
+		</div>
+	`;
+}
+
 function renderTable(nameTable = '#tableReject') {
 	$(`${nameTable} .table__content`).html('');
 
@@ -148,6 +183,15 @@ function renderForm(id, nameForm = '#rejectForm') {
 function renderHeaderTable(page = 'reject') {
 	$(`.table--${page} .table__header`).html('');
 	$(`.table--${page} .table__header`).append(templateRejectHeaderTable());
+}
+
+function renderSwitch(page = 'reject') {
+	$(`.main__wrap-info--${page} .main__switchies`).html('');
+	for (let key in rejectSwitch) {
+		$(`.main__wrap-info--${page} .main__switchies`).append(templateRejectSwitch(rejectSwitch[key]));
+	}
+
+	autoRefresh();
 }
 
 function userFromDB(array) {
@@ -201,6 +245,7 @@ function showDataFromStorage(page = 'reject') {
 
 	if (storageCollection && storageCollection.collection.length && !rejectCollection.size) {
 		const { statusresend } = storageCollection.controls;
+		const { refresh } = storageCollection.settings;
 
 		storageCollection.collection.forEach((item, i) => {
 			const itemID = storageCollection.collection[i].id;
@@ -209,6 +254,7 @@ function showDataFromStorage(page = 'reject') {
 		});
 
 		rejectObject.statusresend = statusresend;
+		rejectSwitch.refresh = refresh;
 
 		renderHeaderTable();
 		dataAdd();
@@ -221,6 +267,7 @@ function showDataFromStorage(page = 'reject') {
 
 function setDataInStorage(page = 'reject') {
 	localStorage.setItem(page, JSON.stringify({
+		settings: rejectSwitch,
 		controls: rejectObject,
 		collection: [...rejectCollection.values()]
 	}));
@@ -350,6 +397,7 @@ function autoRefresh(page = 'reject') {
 		if (!$(target).hasClass('switch__input')) return;
 
 		const statusSwitch = $(target).prop('checked');
+		rejectSwitch.refresh.status = statusSwitch;
 
 		if (statusSwitch && !markInterval) {
 			localStorage.removeItem(page);
@@ -359,13 +407,19 @@ function autoRefresh(page = 'reject') {
 			markInterval = setInterval(() => {
 				getDataFromDB('reject');
 			}, timeReload);
-			$(target).next().removeClass('switch__name--disabled');
 		} else if (!statusSwitch && markInterval) {
 			clearInterval(markInterval);
 
 			markInterval = false;
-			$(target).next().addClass('switch__name--disabled');
 		}
+
+		if (rejectSwitch.refresh.status) {
+			setDataInStorage();
+		} else {
+			localStorage.removeItem(page);
+		}
+
+		renderSwitch();
 	});
 }
 

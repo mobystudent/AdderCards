@@ -9,26 +9,27 @@ main.main(data-name="reject")
 			.form__wrap.form__wrap--hide
 			
 		.wrap.wrap--content.wrap--content-reject
-			.main__wrap-info
+			.main__wrap-info.main__wrap-info--reject
 				.main__cards.main__cards--main
 					p.main__count-wrap
 						span.main__count-text
 							| Количество пользователей:&nbsp
 						span.main__count.main__count--all-reject
 							| 0
-				.main__switch
-					.tooltip
-						span.tooltip__item
-							| !
-						.tooltip__info.tooltip__info--refresh
-							| Если данная опция включена, тогда при поступлении новых данных, они автоматически отобразятся в таблице. Перезагружать страницу не нужно.#[br]
-							| Рекомендуется отключить данную функцию при работе с данными в таблице!
-					.switch.switch--refresh-reject
-						label.switch__wrap.switch__wrap--head
-							input.switch__input(type="checkbox")
-							small.switch__btn
-						span.switch__name.switch__name--disabled
-							| Автообновление
+				.main__switchies
+					.main__switch
+						.tooltip
+							span.tooltip__item
+								| !
+							.tooltip__info.tooltip__info--refresh
+								| Если данная опция включена, тогда при поступлении новых данных, они автоматически отобразятся в таблице. Перезагружать страницу не нужно.#[br]
+								| Рекомендуется отключить данную функцию при работе с данными в таблице!
+						.switch.switch--refresh-reject
+							label.switch__wrap.switch__wrap--head
+								input.switch__input(type="checkbox")
+								small.switch__btn
+							span.switch__name.switch__name--disabled
+								| Автообновление
 			.wrap.wrap--table
 				header.tab.tab--reject
 				.table.table--reject

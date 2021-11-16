@@ -17,14 +17,22 @@ const qrObject = {
 	statusmanual: '',
 	statusassign: ''
 };
+const qrSwitch = {
+	refresh: {
+		type: 'refresh',
+		status: false
+	},
+	assign: {
+		type: 'assign',
+		status: false
+	}
+};
 
 $(window).on('load', () => {
 	getGeneratedQRFromDB();
-	typeAssignCode();
 	submitIDinBD();
-	printReport();
-	autoRefresh();
 	showDataFromStorage();
+	renderSwitch();
 });
 
 function templateQRTable(data) {
@@ -154,6 +162,38 @@ function templateQRTabs(data) {
 	`;
 }
 
+function templateQRSwitch(data, page = 'qr') {
+	const { type, status } = data;
+	const assingBtnCheck = qrSwitch[type].status ? 'checked="checked"' : '';
+	const assingBtnClass = type === 'refresh' && !status ? 'switch__name--disabled' : '';
+	let switchText;
+	let tooltipInfo;
+
+	if (type === 'assign') {
+		switchText = status ? 'Ручное присвоение' : 'Автоприсвоение';
+		tooltipInfo = 'Если в данной опции выставлено автоприсвоение, тогда коды будут автоматически присвоены пользователям. Важно! При нехватке кодов для всех пользователей данная ф-я будет отключена. <br/> Если в данной опции выставлено ручное присваивание, тогда код будет присваеватся для каждого пользоватебя в отдельности.';
+	} else {
+		switchText = 'Автообновление';
+		tooltipInfo = 'Если данная опция включена, тогда при поступлении новых данных, они автоматически отобразятся в таблице. Перезагружать страницу не нужно.<br/> Рекомендуется отключить данную функцию при работе с данными в таблице!';
+	}
+
+	return `
+		<div class="main__switch">
+			<div class="tooltip">
+				<span class="tooltip__item">!</span>
+				<div class="tooltip__info tooltip__info--${type}">${tooltipInfo}</div>
+			</div>
+			<div class="switch switch--${type}-${page}">
+				<label class="switch__wrap switch__wrap--head">
+					<input class="switch__input" type="checkbox" ${assingBtnCheck}/>
+					<small class="switch__btn"></small>
+				</label>
+				<span class="switch__name ${assingBtnClass}">${switchText}</span>
+			</div>
+		</div>
+	`;
+}
+
 function renderTable(nameTable = '#tableQR') {
 	$(`${nameTable} .table__content`).html('');
 
@@ -172,6 +212,16 @@ function renderHeaderTable(page = 'qr') {
 function renderQRItems(array) {
 	$('.document').html('');
 	$('.document').append(templateQRItems(array));
+}
+
+function renderSwitch(page = 'qr') {
+	$(`.main__wrap-info--${page} .main__switchies`).html('');
+	for (let key in qrSwitch) {
+		$(`.main__wrap-info--${page} .main__switchies`).append(templateQRSwitch(qrSwitch[key]));
+	}
+
+	autoRefresh();
+	typeAssignCode();
 }
 
 function userFromDB(array) {
@@ -210,10 +260,17 @@ function userFromDB(array) {
 }
 
 function typeAssignCode(page = 'qr') {
-	$(`.switch--assign-${page} .switch__wrap`).click(({ target }) => {
+	$(`.switch--assign-${page}`).click(({ target }) => {
 		if (!$(target).hasClass('switch__input')) return;
 
 		qrObject.statusmanual = $(target).prop('checked');
+		qrSwitch.assign.status = qrObject.statusmanual;
+
+		if (qrSwitch.refresh.status || qrSwitch.assign.status) {
+			setDataInStorage();
+		} else {
+			localStorage.removeItem(page);
+		}
 
 		resetControlSwitch();
 		assignCodes();
@@ -282,6 +339,7 @@ function showDataFromStorage(page = 'qr') {
 
 	if (storageCollection && storageCollection.collection.length && !qrCollection.size) {
 		const { statusmanual, statusassign } = storageCollection.controls;
+		const { assign, refresh } = storageCollection.settings;
 
 		storageCollection.collection.forEach((item, i) => {
 			const itemID = storageCollection.collection[i].id;
@@ -291,6 +349,8 @@ function showDataFromStorage(page = 'qr') {
 
 		qrObject.statusassign = statusassign;
 		qrObject.statusmanual = statusmanual;
+		qrSwitch.assign = assign;
+		qrSwitch.refresh = refresh;
 
 		renderHeaderTable();
 		dataAdd();
@@ -301,6 +361,7 @@ function showDataFromStorage(page = 'qr') {
 
 function setDataInStorage(page = 'qr') {
 	localStorage.setItem(page, JSON.stringify({
+		settings: qrSwitch,
 		controls: qrObject,
 		collection: [...qrCollection.values()]
 	}));
@@ -451,14 +512,12 @@ function assignAllQR(page = 'qr') {
 					counter++;
 				}
 			});
-
-			setDataInStorage();
 		} else {
 			resetControlSwitch();
-			localStorage.removeItem(page);
 		}
 
 		renderTable();
+		setDataInStorage();
 	});
 }
 
@@ -481,6 +540,7 @@ function autoRefresh(page = 'qr') {
 		if (!$(target).hasClass('switch__input')) return;
 
 		const statusSwitch = $(target).prop('checked');
+		qrSwitch.refresh.status = statusSwitch;
 
 		if (statusSwitch && !markInterval) {
 			localStorage.removeItem(page);
@@ -493,13 +553,19 @@ function autoRefresh(page = 'qr') {
 			markInterval = setInterval(() => {
 				getDataFromDB('const', 'qr');
 			}, timeReload);
-			$(target).next().removeClass('switch__name--disabled');
 		} else if (!statusSwitch && markInterval) {
 			clearInterval(markInterval);
 
 			markInterval = false;
-			$(target).next().addClass('switch__name--disabled');
 		}
+
+		if (qrSwitch.refresh.status || qrSwitch.assign.status) {
+			setDataInStorage();
+		} else {
+			localStorage.removeItem(page);
+		}
+
+		renderSwitch();
 	});
 }
 
@@ -659,12 +725,6 @@ function countItems(page = 'qr') {
 
 function viewAllCount(page = 'qr') {
 	$(`.main__count--all-${page}`).text(qrCollection.size);
-}
-
-function printReport(page = 'qr') {
-	$(`.main[data-name=${page}] .btn--print`).click(() => {
-		window.print();
-	});
 }
 
 function addTabs(page = 'qr') {

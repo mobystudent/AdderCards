@@ -3,6 +3,8 @@
 
 	display: flex;
 	flex-flow: column;
+	align-items: flex-end;
+	flex: 1 0 auto;
 
 	@media print {
 		display: none;
