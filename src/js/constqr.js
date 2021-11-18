@@ -27,6 +27,26 @@ const qrSwitch = {
 		status: false
 	}
 };
+const qrCount = {
+	item: {
+		title: 'Количество пользователей:&nbsp',
+		get count() {
+			return [...qrCollection.values()].filter(({ nameid }) => nameid === qrObject.nameid).length;
+		}
+	},
+	all: {
+		title: 'Общее количество пользователей:&nbsp',
+		get count() {
+			return qrCollection.size;
+		}
+	},
+	generate: {
+		title: 'Осталось сгенерированных QR:&nbsp',
+		get count() {
+			return generateCollection.size;
+		}
+	}
+};
 
 $(window).on('load', () => {
 	getGeneratedQRFromDB();
@@ -194,6 +214,17 @@ function templateQRSwitch(data, page = 'qr') {
 	`;
 }
 
+function templateQRCount(data) {
+	const { title, count } = data;
+
+	return `
+		<p class="main__count-wrap">
+			<span class="main__count-text">${title}</span>
+			<span class="main__count">${count}</span>
+		</p>
+	`;
+}
+
 function renderTable(nameTable = '#tableQR') {
 	$(`${nameTable} .table__content`).html('');
 
@@ -222,6 +253,13 @@ function renderSwitch(page = 'qr') {
 
 	autoRefresh();
 	typeAssignCode();
+}
+
+function renderCount(page = 'qr') {
+	$(`.main__wrap-info--${page} .main__cards`).html('');
+	for (let key in qrCount) {
+		$(`.main__wrap-info--${page} .main__cards`).append(templateQRCount(qrCount[key]));
+	}
 }
 
 function userFromDB(array) {
@@ -327,9 +365,7 @@ function dataAdd(page = 'qr') {
 		$(`.tab--${page}`).html('');
 	}
 
-	viewAllCount();
 	showFieldsInHeaderTable();
-	viewGenerateCount();
 	assignCodes();
 	showActiveDataOnPage();
 }
@@ -397,7 +433,7 @@ function showActiveDataOnPage() {
 
 	renderheader.renderHeaderPage(options);
 	renderTable();
-	countItems();
+	renderCount();
 }
 
 function submitIDinBD(page = 'qr') {
@@ -452,7 +488,6 @@ function submitIDinBD(page = 'qr') {
 				renderheader.renderHeaderPage(options);
 			}
 
-			countItems();
 			localStorage.removeItem(page);
 		} else {
 			$(`.main[data-name=${page}]`).find('.info__item--warn.info__item--fields').show();
@@ -567,10 +602,6 @@ function autoRefresh(page = 'qr') {
 
 		renderSwitch();
 	});
-}
-
-function viewGenerateCount(page = 'qr') {
-	$(`.main__count--generate-${page}`).text(generateCollection.size);
 }
 
 function setAddUsersInDB(array, nameTable, action, typeTable) {
@@ -717,16 +748,6 @@ function sendMail(obj) {
 }
 
 // Общие функции с картами и кодами
-function countItems(page = 'qr') {
-	const countItemfromDep = [...qrCollection.values()].filter(({ nameid }) => nameid === qrObject.nameid);
-
-	$(`.main__count--${page}`).text(countItemfromDep.length);
-}
-
-function viewAllCount(page = 'qr') {
-	$(`.main__count--all-${page}`).text(qrCollection.size);
-}
-
 function addTabs(page = 'qr') {
 	const filterNameDepart = filterDepart();
 

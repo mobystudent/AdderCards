@@ -21,6 +21,20 @@ const requestSwitch = {
 		status: false
 	}
 };
+const requestCount = {
+	item: {
+		title: 'Количество пользователей:&nbsp',
+		get count() {
+			return [...requestCollection.values()].filter(({ nameid }) => nameid === requestObject.nameid).length;
+		}
+	},
+	all: {
+		title: 'Общее количество пользователей:&nbsp',
+		get count() {
+			return requestCollection.size;
+		}
+	},
+};
 
 $(window).on('load', () => {
 	submitIDinBD();
@@ -142,6 +156,17 @@ function templateRequestSwitch(data, page = 'request') {
 	`;
 }
 
+function templateRequestCount(data) {
+	const { title, count } = data;
+
+	return `
+		<p class="main__count-wrap">
+			<span class="main__count-text">${title}</span>
+			<span class="main__count">${count}</span>
+		</p>
+	`;
+}
+
 function renderTable(nameTable = '#tableRequest') {
 	$(`${nameTable} .table__content`).html('');
 
@@ -164,6 +189,13 @@ function renderSwitch(page = 'request') {
 	}
 
 	autoRefresh();
+}
+
+function renderCount(page = 'request') {
+	$(`.main__wrap-info--${page} .main__cards`).html('');
+	for (let key in requestCount) {
+		$(`.main__wrap-info--${page} .main__cards`).append(templateRequestCount(requestCount[key]));
+	}
 }
 
 function userFromDB(array) {
@@ -199,7 +231,6 @@ function dataAdd(page = 'request') {
 	const filterNameDepart = filterDepart();
 	requestObject.nameid = filterNameDepart[0];
 
-	viewAllCount();
 	getDepartmentFromDB();
 
 	if (requestCollection.size) {
@@ -217,9 +248,9 @@ function dataAdd(page = 'request') {
 		$(`.tab--${page}`).html('');
 	}
 
-	showActiveDataOnPage();
 	clickAllowDisallowRequest();
 	confirmAllAllowDisallow();
+	showActiveDataOnPage();
 }
 
 function showDataFromStorage(page = 'request') {
@@ -274,7 +305,7 @@ function showActiveDataOnPage() {
 
 	renderheader.renderHeaderPage(options);
 	renderTable();
-	countItems();
+	renderCount();
 }
 
 function submitIDinBD(page = 'request') {
@@ -326,7 +357,6 @@ function submitIDinBD(page = 'request') {
 				renderheader.renderHeaderPage(options);
 			}
 
-			countItems();
 			localStorage.removeItem(page);
 		} else {
 			$('.info__item--warn').show();
@@ -442,6 +472,7 @@ function autoRefresh(page = 'request') {
 
 		if (statusSwitch && !markInterval) {
 			localStorage.removeItem(page);
+			requestCollection.clear();
 
 			getDataFromDB('request');
 			resetControlBtns();
@@ -575,16 +606,6 @@ function sendMail(obj) {
 }
 
 // Общие функции с картами и кодами
-function countItems(page = 'request') {
-	const countItemfromDep = [...requestCollection.values()].filter(({ nameid }) => nameid === requestObject.nameid);
-
-	$(`.main__count--${page}`).text(countItemfromDep.length);
-}
-
-function viewAllCount(page = 'request') {
-	$(`.main__count--all-${page}`).text(requestCollection.size);
-}
-
 function addTabs(page = 'request') {
 	const filterNameDepart = filterDepart();
 

@@ -26,6 +26,14 @@ const removeObject = {
 	newnameid: '',
 	statusnewdepart: ''
 };
+const removeCount = {
+	item: {
+		title: 'Количество удаляемых пользователей:&nbsp',
+		get count() {
+			return removeCollection.size;
+		}
+	}
+};
 let counter = 0;
 
 $(window).on('load', () => {
@@ -195,12 +203,32 @@ function templateRemoveHeaderTable() {
 	`;
 }
 
+function templateRemoveCount(data) {
+	const { title, count } = data;
+
+	return `
+		<p class="main__count-wrap">
+			<span class="main__count-text">${title}</span>
+			<span class="main__count">${count}</span>
+		</p>
+	`;
+}
+
 function renderTable(nameTable = '#tableRemove') {
 	$(`${nameTable} .table__content`).html('');
 
 	removeCollection.forEach((item) => {
 		$(`${nameTable} .table__content`).append(templateRemoveTable(item));
 	});
+
+	renderCount();
+}
+
+function renderCount(page = 'remove') {
+	$(`.main__wrap-info--${page} .main__cards`).html('');
+	for (let key in removeCount) {
+		$(`.main__wrap-info--${page} .main__cards`).append(templateRemoveCount(removeCount[key]));
+	}
 }
 
 function renderForm(nameForm = '#removeForm') {
@@ -280,7 +308,6 @@ function dataAdd() {
 		return;
 	}
 
-	viewAllCount();
 	showFieldsInHeaderTable();
 	renderTable();
 	deleteUser();
@@ -458,7 +485,6 @@ function deleteUser(nameTable = '#tableRemove', page = 'remove') {
 			setDataInStorage();
 			showFieldsInHeaderTable();
 			renderTable();
-			viewAllCount();
 
 			if (!removeCollection.size) {
 				emptySign('empty');
@@ -486,7 +512,10 @@ function editUser(nameTable = '#tableRemove') {
 			renderForm();
 			showFieldsInHeaderTable();
 			renderTable();
-			viewAllCount();
+
+			if (!removeCollection.size) {
+				emptySign('empty');
+			}
 		}
 	});
 }
@@ -513,7 +542,6 @@ function submitIDinBD(page = 'remove') {
 		removeCollection.clear();
 		emptySign('empty');
 		renderTable();
-		viewAllCount();
 
 		localStorage.removeItem(page);
 		counter = 0;
@@ -620,11 +648,6 @@ function sendMail(obj) {
 			service.modal('email');
 		}
 	});
-}
-
-// Общие функции с картами и кодами
-function viewAllCount(page = 'remove') {
-	$(`.main__count--all-${page}`).text(removeCollection.size);
 }
 
 export default {

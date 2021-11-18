@@ -12,6 +12,14 @@ const reportSwitch = {
 		status: false
 	}
 };
+const reportCount = {
+	item: {
+		title: 'Количество пользователей:&nbsp',
+		get count() {
+			return reportCollection.size;
+		}
+	}
+};
 
 $(window).on('load', () => {
 	const options = {
@@ -80,12 +88,25 @@ function templateReportSwitch(data, page = 'report') {
 	`;
 }
 
+function templateReportCount(data) {
+	const { title, count } = data;
+
+	return `
+		<p class="main__count-wrap">
+			<span class="main__count-text">${title}</span>
+			<span class="main__count">${count}</span>
+		</p>
+	`;
+}
+
 function renderTable(nameTable = '#tableReport') {
 	$(`${nameTable} .table__content`).html('');
 
 	reportCollection.forEach((item) => {
 		$(`${nameTable} .table__content`).append(templateReportTable(item));
 	});
+
+	renderCount();
 }
 
 function renderSwitch(page = 'report') {
@@ -95,6 +116,13 @@ function renderSwitch(page = 'report') {
 	}
 
 	autoRefresh();
+}
+
+function renderCount(page = 'report') {
+	$(`.main__wrap-info--${page} .main__cards`).html('');
+	for (let key in reportCount) {
+		$(`.main__wrap-info--${page} .main__cards`).append(templateReportCount(reportCount[key]));
+	}
 }
 
 function userFromDB(array) {
@@ -114,7 +142,6 @@ function dataAdd() {
 		return;
 	}
 
-	viewAllCount();
 	renderTable();
 }
 
@@ -144,6 +171,7 @@ function autoRefresh(page = 'report') {
 
 		if (statusSwitch && !markInterval) {
 			localStorage.removeItem(page);
+			reportCollection.clear();
 
 			getDataFromDB('report');
 
@@ -161,10 +189,6 @@ function autoRefresh(page = 'report') {
 }
 
 // Общие функции с картами и кодами
-function viewAllCount(page = 'report') {
-	$(`.main__count--all-${page}`).text(reportCollection.size);
-}
-
 function getDataFromDB(nameTable) {
 	$.ajax({
 		url: "./php/output-request.php",

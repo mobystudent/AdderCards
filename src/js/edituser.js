@@ -23,6 +23,14 @@ const editObject = {
 	statusnewpost: '',
 	statusnewphotofile: ''
 };
+const editCount = {
+	item: {
+		title: 'Количество редактируемых пользователей:&nbsp',
+		get count() {
+			return editCollection.size;
+		}
+	}
+};
 let counter = 0;
 
 $(window).on('load', () => {
@@ -228,12 +236,25 @@ function templateEditHeaderTable() {
 	`;
 }
 
+function templateEditCount(data) {
+	const { title, count } = data;
+
+	return `
+		<p class="main__count-wrap">
+			<span class="main__count-text">${title}</span>
+			<span class="main__count">${count}</span>
+		</p>
+	`;
+}
+
 function renderTable(nameTable = '#tableEdit') {
 	$(`${nameTable} .table__content`).html('');
 
 	editCollection.forEach((item) => {
 		$(`${nameTable} .table__content`).append(templateEditTable(item));
 	});
+
+	renderCount();
 }
 
 function renderForm(nameForm = '#editForm') {
@@ -249,6 +270,13 @@ function renderForm(nameForm = '#editForm') {
 function renderHeaderTable(page = 'edit') {
 	$(`.table--${page} .table__header`).html('');
 	$(`.table--${page} .table__header`).append(templateEditHeaderTable());
+}
+
+function renderCount(page = 'edit') {
+	$(`.main__wrap-info--${page} .main__cards`).html('');
+	for (let key in editCount) {
+		$(`.main__wrap-info--${page} .main__cards`).append(templateEditCount(editCount[key]));
+	}
 }
 
 function addUser(page = 'edit') {
@@ -340,7 +368,6 @@ function dataAdd() {
 		return;
 	}
 
-	viewAllCount();
 	showFieldsInHeaderTable();
 	renderTable();
 	deleteUser();
@@ -558,7 +585,6 @@ function deleteUser(nameTable = '#tableEdit', page = 'edit') {
 			setDataInStorage();
 			showFieldsInHeaderTable();
 			renderTable();
-			viewAllCount();
 
 			if (!editCollection.size) {
 				emptySign('empty');
@@ -586,7 +612,6 @@ function editUser(nameTable = '#tableEdit') {
 			renderForm();
 			showFieldsInHeaderTable();
 			renderTable();
-			viewAllCount();
 		}
 	});
 }
@@ -625,7 +650,6 @@ function submitIDinBD(page = 'edit') {
 		editCollection.clear();
 		emptySign('empty');
 		renderTable();
-		viewAllCount();
 
 		localStorage.removeItem(page);
 		counter = 0;
@@ -733,11 +757,6 @@ function sendMail(obj) {
 			service.modal('email');
 		}
 	});
-}
-
-// Общие функции с картами и кодами
-function viewAllCount(page = 'edit') {
-	$(`.main__count--all-${page}`).text(editCollection.size);
 }
 
 export default {

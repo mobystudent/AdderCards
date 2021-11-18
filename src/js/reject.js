@@ -17,6 +17,14 @@ const rejectSwitch = {
 		status: false
 	}
 };
+const rejectCount = {
+	item: {
+		title: 'Количество отклоненных пользователей:&nbsp',
+		get count() {
+			return rejectCollection.size;
+		}
+	}
+};
 
 $(window).on('load', () => {
 	const options = {
@@ -162,6 +170,17 @@ function templateRejectSwitch(data, page = 'reject') {
 	`;
 }
 
+function templateRejectCount(data) {
+	const { title, count } = data;
+
+	return `
+		<p class="main__count-wrap">
+			<span class="main__count-text">${title}</span>
+			<span class="main__count">${count}</span>
+		</p>
+	`;
+}
+
 function renderTable(nameTable = '#tableReject') {
 	$(`${nameTable} .table__content`).html('');
 
@@ -192,6 +211,13 @@ function renderSwitch(page = 'reject') {
 	}
 
 	autoRefresh();
+}
+
+function renderCount(page = 'reject') {
+	$(`.main__wrap-info--${page} .main__cards`).html('');
+	for (let key in rejectCount) {
+		$(`.main__wrap-info--${page} .main__cards`).append(templateRejectCount(rejectCount[key]));
+	}
 }
 
 function userFromDB(array) {
@@ -234,8 +260,8 @@ function dataAdd() {
 		return;
 	}
 
-	viewAllCount();
 	renderTable();
+	renderCount();
 	viewDataUser();
 	resendUsers();
 }
@@ -401,6 +427,7 @@ function autoRefresh(page = 'reject') {
 
 		if (statusSwitch && !markInterval) {
 			localStorage.removeItem(page);
+			rejectCollection.clear();
 
 			getDataFromDB('reject');
 
@@ -424,10 +451,6 @@ function autoRefresh(page = 'reject') {
 }
 
 // Общие функции с картами и кодами
-function viewAllCount(page = 'reject') {
-	$(`.main__count--all-${page}`).text(rejectCollection.size);
-}
-
 function setAddUsersInDB(array, nameTable, action) {
 	$.ajax({
 		url: "./php/change-user-request.php",

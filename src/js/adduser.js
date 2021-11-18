@@ -25,6 +25,14 @@ const addObject = {
 	cardvalidtotitle: '',
 	statuscardvalidto: ''
 };
+const addCount = {
+	item: {
+		title: 'Количество добавляемых пользователей:&nbsp',
+		get count() {
+			return addCollection.size;
+		}
+	}
+};
 let counter = 0;
 
 $(window).on('load', () => {
@@ -202,12 +210,25 @@ function templateAddHeaderTable() {
 	`;
 }
 
+function templateAddCount(data) {
+	const { title, count } = data;
+
+	return `
+		<p class="main__count-wrap">
+			<span class="main__count-text">${title}</span>
+			<span class="main__count">${count}</span>
+		</p>
+	`;
+}
+
 function renderTable(nameTable = '#tableAdd') {
 	$(`${nameTable} .table__content`).html('');
 
 	addCollection.forEach((item) => {
 		$(`${nameTable} .table__content`).append(templateAddTable(item));
 	});
+
+	renderCount();
 }
 
 function renderForm(nameForm = '#addForm') {
@@ -223,6 +244,13 @@ function renderForm(nameForm = '#addForm') {
 function renderHeaderTable(page = 'add') {
 	$(`.table--${page} .table__header`).html('');
 	$(`.table--${page} .table__header`).append(templateAddHeaderTable());
+}
+
+function renderCount(page = 'add') {
+	$(`.main__wrap-info--${page} .main__cards`).html('');
+	for (let key in addCount) {
+		$(`.main__wrap-info--${page} .main__cards`).append(templateAddCount(addCount[key]));
+	}
 }
 
 function addUser(page = 'add') {
@@ -302,7 +330,6 @@ function dataAdd() {
 		return;
 	}
 
-	viewAllCount();
 	showFieldsInHeaderTable();
 	renderTable();
 	deleteUser();
@@ -492,7 +519,6 @@ function deleteUser(nameTable = '#tableAdd', page = 'add') {
 			setDataInStorage();
 			showFieldsInHeaderTable();
 			renderTable();
-			viewAllCount();
 
 			if (!addCollection.size) {
 				emptySign('empty');
@@ -522,7 +548,6 @@ function editUser(nameTable = '#tableAdd') {
 			renderForm(); // 1
 			showFieldsInHeaderTable(); // 2
 			renderTable();
-			viewAllCount();
 
 			if (!addCollection.size) {
 				emptySign('empty');
@@ -545,7 +570,6 @@ function submitIDinBD(page = 'add') {
 		addCollection.clear();
 		emptySign('empty');
 		renderTable();
-		viewAllCount();
 
 		localStorage.removeItem(page);
 		counter = 0;
@@ -623,11 +647,6 @@ function sendMail(obj) {
 			service.modal('email');
 		}
 	});
-}
-
-// Общие функции с картами и кодами
-function viewAllCount(page = 'add') {
-	$(`.main__count--all-${page}`).text(addCollection.size);
 }
 
 export default {

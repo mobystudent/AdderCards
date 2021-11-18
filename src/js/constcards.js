@@ -20,6 +20,20 @@ const constSwitch = {
 		status: false
 	}
 };
+const constCount = {
+	item: {
+		title: 'Количество пользователей:&nbsp',
+		get count() {
+			return [...constCollection.values()].filter(({ nameid }) => nameid === constObject.nameid).length;
+		}
+	},
+	all: {
+		title: 'Общее количество пользователей:&nbsp',
+		get count() {
+			return constCollection.size;
+		}
+	}
+};
 
 $(window).on('load', () => {
 	submitIDinBD();
@@ -107,6 +121,17 @@ function templateConstSwitch(data, page = 'const') {
 	`;
 }
 
+function templateConstCount(data) {
+	const { title, count } = data;
+
+	return `
+		<p class="main__count-wrap">
+			<span class="main__count-text">${title}</span>
+			<span class="main__count">${count}</span>
+		</p>
+	`;
+}
+
 function renderTable(nameTable = '#tableConst') {
 	$(`${nameTable} .table__content`).html('');
 
@@ -124,6 +149,13 @@ function renderSwitch(page = 'const') {
 	}
 
 	autoRefresh();
+}
+
+function renderCount(page = 'const') {
+	$(`.main__wrap-info--${page} .main__cards`).html('');
+	for (let key in constCount) {
+		$(`.main__wrap-info--${page} .main__cards`).append(templateConstCount(constCount[key]));
+	}
 }
 
 function userFromDB(array) {
@@ -162,7 +194,6 @@ function dataAdd(page = 'const') {
 	const filterNameDepart = filterDepart();
 	constObject.nameid = filterNameDepart[0];
 
-	viewAllCount();
 	getDepartmentFromDB();
 
 	if (constCollection.size) {
@@ -180,9 +211,9 @@ function dataAdd(page = 'const') {
 		$(`.tab--${page}`).html('');
 	}
 
-	showActiveDataOnPage();
 	convertCardIDInCardName();
 	clearNumberCard();
+	showActiveDataOnPage();
 }
 
 function showDataFromStorage(page = 'const') {
@@ -232,7 +263,7 @@ function showActiveDataOnPage() {
 
 	renderheader.renderHeaderPage(options);
 	renderTable();
-	countItems();
+	renderCount();
 }
 
 function submitIDinBD(page = 'const') {
@@ -272,7 +303,6 @@ function submitIDinBD(page = 'const') {
 				renderheader.renderHeaderPage(options);
 			}
 
-			countItems();
 			localStorage.removeItem(page);
 		} else {
 			$('.info__item--warn').show();
@@ -507,16 +537,6 @@ function sendMail(obj) {
 }
 
 // Общие функции с картами и кодами
-function countItems(page = 'const') {
-	const countItemfromDep = [...constCollection.values()].filter(({ nameid }) => nameid === constObject.nameid);
-
-	$(`.main__count--${page}`).text(countItemfromDep.length);
-}
-
-function viewAllCount(page = 'const') {
-	$(`.main__count--all-${page}`).text(constCollection.size);
-}
-
 function printReport(page = 'const') {
 	$(`.main[data-name=${page}] .btn--print`).click(() => {
 		window.print();

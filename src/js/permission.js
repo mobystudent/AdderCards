@@ -21,6 +21,20 @@ const permisSwitch = {
 		status: false
 	}
 };
+const permisCount = {
+	item: {
+		title: 'Количество пользователей:&nbsp',
+		get count() {
+			return [...permissionCollection.values()].filter(({ nameid }) => nameid === permisObject.nameid).length;
+		}
+	},
+	all: {
+		title: 'Общее количество пользователей:&nbsp',
+		get count() {
+			return permissionCollection.size;
+		}
+	}
+};
 
 $(window).on('load', () => {
 	submitIDinBD();
@@ -136,6 +150,17 @@ function templatePermissionSwitch(data, page = 'permis') {
 	`;
 }
 
+function templatePermissionCount(data) {
+	const { title, count } = data;
+
+	return `
+		<p class="main__count-wrap">
+			<span class="main__count-text">${title}</span>
+			<span class="main__count">${count}</span>
+		</p>
+	`;
+}
+
 function renderTable(nameTable = '#tablePermis') {
 	$(`${nameTable} .table__content`).html('');
 
@@ -158,6 +183,13 @@ function renderSwitch(page = 'permis') {
 	}
 
 	autoRefresh();
+}
+
+function renderCount(page = 'permis') {
+	$(`.main__wrap-info--${page} .main__cards`).html('');
+	for (let key in permisCount) {
+		$(`.main__wrap-info--${page} .main__cards`).append(templatePermissionCount(permisCount[key]));
+	}
 }
 
 function userFromDB(array) {
@@ -197,7 +229,6 @@ function dataAdd(page = 'permis') {
 	const filterNameDepart = filterDepart();
 	permisObject.nameid = filterNameDepart[0];
 
-	viewAllCount();
 	getDepartmentFromDB();
 
 	if (permissionCollection.size) {
@@ -215,9 +246,9 @@ function dataAdd(page = 'permis') {
 		$(`.tab--${page}`).html('');
 	}
 
-	showActiveDataOnPage();
 	clickAllowDisallowPermis();
 	confirmAllAllowDisallow();
+	showActiveDataOnPage();
 }
 
 function showDataFromStorage(page = 'permis') {
@@ -272,7 +303,7 @@ function showActiveDataOnPage() {
 
 	renderheader.renderHeaderPage(options);
 	renderTable();
-	countItems();
+	renderCount();
 }
 
 function submitIDinBD(page = 'permis') {
@@ -323,7 +354,6 @@ function submitIDinBD(page = 'permis') {
 				renderheader.renderHeaderPage(options);
 			}
 
-			countItems();
 			localStorage.removeItem(page);
 		} else {
 			$('.info__item--warn').show();
@@ -444,6 +474,7 @@ function autoRefresh(page = 'permis') {
 
 		if (statusSwitch && !markInterval) {
 			localStorage.removeItem(page);
+			permissionCollection.clear();
 
 			getDataFromDB('permis');
 			resetControlBtns();
@@ -577,16 +608,6 @@ function sendMail(obj) {
 }
 
 // Общие функции с картами и кодами
-function countItems(page = 'permis') {
-	const countItemfromDep = [...permissionCollection.values()].filter(({ nameid }) => nameid === permisObject.nameid);
-
-	$(`.main__count--${page}`).text(countItemfromDep.length);
-}
-
-function viewAllCount(page = 'permis') {
-	$(`.main__count--all-${page}`).text(permissionCollection.size);
-}
-
 function addTabs(page = 'permis') {
 	const filterNameDepart = filterDepart();
 

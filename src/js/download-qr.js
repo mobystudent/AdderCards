@@ -6,6 +6,22 @@ import renderheader from './parts/renderheader.js';
 
 const downloadCollection = new Map(); // БД сформированных qr-кодов
 const parseQRCollection = new Map(); // БД загруженых qr-кодов
+const parseCount = {
+	item: {
+		title: 'Количество загруженых qr-кодов:&nbsp',
+		get count() {
+			return parseQRCollection.size;
+		}
+	}
+};
+const downloadCount = {
+	item: {
+		title: 'Количество сгенерированных qr-кодов:&nbsp',
+		get count() {
+			return downloadCollection.size;
+		}
+	}
+};
 let counter = 0;
 
 $(window).on('load', () => {
@@ -46,11 +62,44 @@ function templateDownloadTable(data) {
 	`;
 }
 
+function templateDownloadCount(data) {
+	const { title, count } = data;
+
+	return `
+		<p class="main__count-wrap">
+			<span class="main__count-text">${title}</span>
+			<span class="main__count">${count}</span>
+		</p>
+	`;
+}
+
 function renderTable(nameTable = '#tableDownload') {
 	$(`${nameTable} .table__content`).html('');
 
 	downloadCollection.forEach((item) => {
 		$(`${nameTable} .table__content`).append(templateDownloadTable(item));
+	});
+
+	renderCount();
+}
+
+function renderCount() {
+	const pageParts = [
+		{
+			type: 'download',
+			object: downloadCount
+		},
+		{
+			type: 'parse',
+			object: parseCount
+		}
+	];
+
+	pageParts.forEach((page) => {
+		$(`.main__wrap-info--${page.type} .main__cards`).html('');
+		for (let key in page.object) {
+			$(`.main__wrap-info--${page.type} .main__cards`).append(templateDownloadCount(page.object[key]));
+		}
 	});
 }
 
@@ -63,7 +112,7 @@ function countQRCodes(nameForm = '#downloadForm') {
 			parseQRCollection.set(i, item.split(' '));
 		});
 
-		countItems();
+		renderCount();
 	});
 }
 
@@ -120,7 +169,6 @@ function dataAdd() {
 		return;
 	}
 
-	viewAllCount();
 	renderTable();
 	deleteUser();
 }
@@ -161,7 +209,6 @@ function deleteUser(nameTable = '#tableDownload', page = 'download') {
 
 			setDataInStorage();
 			renderTable();
-			viewAllCount();
 
 			if (!downloadCollection.size) {
 				emptySign('empty');
@@ -174,7 +221,8 @@ function deleteUser(nameTable = '#tableDownload', page = 'download') {
 function clearFieldsForm(nameForm = '#downloadForm') {
 	$(`${nameForm} .form__item--textarea`).val('');
 	parseQRCollection.clear();
-	countItems();
+	
+	renderCount();
 }
 
 function emptySign(status, nameTable = '#tableDownload') {
@@ -200,7 +248,6 @@ function submitIDinBD(page = 'download') {
 		downloadCollection.clear();
 		emptySign('empty');
 		renderTable();
-		viewAllCount();
 
 		localStorage.removeItem(page);
 		counter = 0;
@@ -225,15 +272,6 @@ function setAddUsersInDB(array, nameTable, action) {
 			service.modal('error');
 		}
 	});
-}
-
-// Общие функции с картами и кодами
-function countItems(page = 'download') {
-	$(`.main__count--${page}`).text(parseQRCollection.size);
-}
-
-function viewAllCount(page = 'download') {
-	$(`.main__count--all-${page}`).text(downloadCollection.size);
 }
 
 export default {

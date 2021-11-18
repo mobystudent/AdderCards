@@ -6,6 +6,14 @@ import service from './service.js';
 import renderheader from './parts/renderheader.js';
 
 const timeCollection = new Map(); // БД в которую будут добавляться карты при вводе и из неё будут выводиться данные в таблицу.
+const timeCount = {
+	item: {
+		title: 'Количество карт:&nbsp',
+		get count() {
+			return timeCollection.size;
+		}
+	}
+};
 let counter = 0;
 
 $(window).on('load', () => {
@@ -57,12 +65,30 @@ function templateTimeTable(data) {
 	`;
 }
 
+function templateTimeCount(data) {
+	const { title, count } = data;
+
+	return `
+		<p class="main__count-wrap">
+			<span class="main__count-text">${title}</span>
+			<span class="main__count">${count}</span>
+		</p>
+	`;
+}
+
 function renderTable(nameTable = '#tableTime') {
 	$(`${nameTable} .table__content`).html('');
 
 	timeCollection.forEach((item) => {
 		$(`${nameTable} .table__content`).append(templateTimeTable(item));
 	});
+}
+
+function renderCount(page = 'time') {
+	$(`.main__wrap-info--${page} .main__cards`).html('');
+	for (let key in timeCount) {
+		$(`.main__wrap-info--${page} .main__cards`).append(templateTimeCount(timeCount[key]));
+	}
 }
 
 function itemUserInTable(id) {
@@ -86,7 +112,7 @@ function addTimeCard() {
 }
 
 function dataAdd() {
-	viewAllCount();
+	renderCount();
 	renderTable();
 	deleteTimeCard();
 	convertCardIDInCardName();
@@ -172,9 +198,8 @@ function deleteTimeCard(nameTable = '#tableTime', page = 'time') {
 			});
 
 			blockLastCard(collectionID);
-			viewAllCount();
 
-			if (!timeCollection.size) {
+			if (timeCollection.size === 1) {
 				localStorage.removeItem(page);
 			}
 		}
@@ -194,6 +219,7 @@ function blockLastCard(idRemove, page = 'time') {
 		timeCollection.delete(idRemove);
 
 		renderTable();
+		renderCount();
 		setDataInStorage();
 	}
 }
@@ -253,11 +279,6 @@ function checkInvalidValueCardID(page = 'time') {
 	if (checkValueCard) {
 		$(`.main[data-name=${page}]`).find('.info__item--error').hide();
 	}
-}
-
-// Общие функции с картами и кодами
-function viewAllCount(page = 'time') {
-	$(`.main__count--all-${page}`).text(timeCollection.size);
 }
 
 function setAddUsersInDB(array, nameTable, action) {

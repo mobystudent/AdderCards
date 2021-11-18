@@ -5,9 +5,9 @@ main.main(data-name="download")
 				| Загрузка QR-кодов
 			
 		.wrap.wrap--content.wrap--content-download
-			.main__wrap-info
-				.main__cards.main__cards--main
-					p.main__count-wrap
+			.main__wrap-info.main__wrap-info--parse
+				.main__cards
+					//- p.main__count-wrap
 						span.main__count-text
 							| Количество загруженых qr-кодов:&nbsp
 						span.main__count.main__count--download
@@ -34,9 +34,9 @@ main.main(data-name="download")
 				p.info__item.info__item--error.info__item--missed
 					| Ошибка! Пропущена одна из трех обязательных частей qr-кода, для конвертирования.
 				
-			.main__wrap-info
-				.main__cards.main__cards--main
-					p.main__count-wrap
+			.main__wrap-info.main__wrap-info--download
+				.main__cards
+					//- p.main__count-wrap
 						span.main__count-text
 							| Количество сгенерированных qr-кодов:&nbsp
 						span.main__count.main__count--all-download
