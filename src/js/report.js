@@ -9,7 +9,8 @@ const reportCollection = new Map(); // БД отчета
 const reportSwitch = {
 	refresh: {
 		type: 'refresh',
-		status: false
+		status: false,
+		marker: 0
 	}
 };
 const reportCount = {
@@ -161,7 +162,6 @@ function emptySign(status, nameTable = '#tableReport') {
 
 function autoRefresh(page = 'report') {
 	const timeReload = 60000 * settingsObject.autoupdatevalue;
-	let markInterval;
 
 	$(`.switch--refresh-${page}`).click(({ target }) => {
 		if (!$(target).hasClass('switch__input')) return;
@@ -169,19 +169,19 @@ function autoRefresh(page = 'report') {
 		const statusSwitch = $(target).prop('checked');
 		reportSwitch.refresh.status = statusSwitch;
 
-		if (statusSwitch && !markInterval) {
+		if (statusSwitch && !reportSwitch.refresh.marker) {
 			localStorage.removeItem(page);
 			reportCollection.clear();
 
 			getDataFromDB('report');
 
-			markInterval = setInterval(() => {
+			reportSwitch.refresh.marker = setInterval(() => {
 				getDataFromDB('report');
 			}, timeReload);
-		} else if (!statusSwitch && markInterval) {
-			clearInterval(markInterval);
+		} else if (!statusSwitch && reportSwitch.refresh.marker) {
+			clearInterval(reportSwitch.refresh.marker);
 
-			markInterval = false;
+			reportSwitch.refresh.marker = false;
 		}
 
 		renderSwitch();

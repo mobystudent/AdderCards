@@ -18,7 +18,8 @@ const requestObject = {
 const requestSwitch = {
 	refresh: {
 		type: 'refresh',
-		status: false
+		status: false,
+		marker: 0
 	}
 };
 const requestCount = {
@@ -462,7 +463,6 @@ function resetControlBtns() {
 
 function autoRefresh(page = 'request') {
 	const timeReload = 60000 * settingsObject.autoupdatevalue;
-	let markInterval;
 
 	$(`.switch--refresh-${page}`).click(({ target }) => {
 		if (!$(target).hasClass('switch__input')) return;
@@ -470,7 +470,7 @@ function autoRefresh(page = 'request') {
 		const statusSwitch = $(target).prop('checked');
 		requestSwitch.refresh.status = statusSwitch;
 
-		if (statusSwitch && !markInterval) {
+		if (statusSwitch && !requestSwitch.refresh.marker) {
 			localStorage.removeItem(page);
 			requestCollection.clear();
 
@@ -478,19 +478,15 @@ function autoRefresh(page = 'request') {
 			resetControlBtns();
 			renderHeaderTable();
 			confirmAllAllowDisallow();
+			setDataInStorage();
 
-			markInterval = setInterval(() => {
+			requestSwitch.refresh.marker = setInterval(() => {
 				getDataFromDB('request');
 			}, timeReload);
-		} else if (!statusSwitch && markInterval) {
-			clearInterval(markInterval);
+		} else if (!statusSwitch && requestSwitch.refresh.marker) {
+			clearInterval(requestSwitch.refresh.marker);
 
-			markInterval = false;
-		}
-
-		if (requestSwitch.refresh.status) {
-			setDataInStorage();
-		} else {
+			requestSwitch.refresh.marker = false;
 			localStorage.removeItem(page);
 		}
 

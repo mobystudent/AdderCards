@@ -14,7 +14,8 @@ const rejectObject = {
 const rejectSwitch = {
 	refresh: {
 		type: 'refresh',
-		status: false
+		status: false,
+		marker: 0
 	}
 };
 const rejectCount = {
@@ -417,7 +418,6 @@ function resendAllUsers(page = 'reject') {
 
 function autoRefresh(page = 'reject') {
 	const timeReload = 60000 * settingsObject.autoupdatevalue;
-	let markInterval;
 
 	$(`.switch--refresh-${page}`).click(({ target }) => {
 		if (!$(target).hasClass('switch__input')) return;
@@ -425,24 +425,20 @@ function autoRefresh(page = 'reject') {
 		const statusSwitch = $(target).prop('checked');
 		rejectSwitch.refresh.status = statusSwitch;
 
-		if (statusSwitch && !markInterval) {
+		if (statusSwitch && !rejectSwitch.refresh.marker) {
 			localStorage.removeItem(page);
 			rejectCollection.clear();
 
 			getDataFromDB('reject');
+			setDataInStorage();
 
-			markInterval = setInterval(() => {
+			rejectSwitch.refresh.marker = setInterval(() => {
 				getDataFromDB('reject');
 			}, timeReload);
-		} else if (!statusSwitch && markInterval) {
-			clearInterval(markInterval);
+		} else if (!statusSwitch && rejectSwitch.refresh.marker) {
+			clearInterval(rejectSwitch.refresh.marker);
 
-			markInterval = false;
-		}
-
-		if (rejectSwitch.refresh.status) {
-			setDataInStorage();
-		} else {
+			rejectSwitch.refresh.marker = false;
 			localStorage.removeItem(page);
 		}
 

@@ -17,7 +17,8 @@ const constObject = {
 const constSwitch = {
 	refresh: {
 		type: 'refresh',
-		status: false
+		status: false,
+		marker: 0
 	}
 };
 const constCount = {
@@ -407,7 +408,6 @@ function checkInvalidValueCardID(page = 'const') {
 
 function autoRefresh(page = 'const') {
 	const timeReload = 60000 * settingsObject.autoupdatevalue;
-	let markInterval;
 
 	$(`.switch--refresh-${page}`).click(({ target }) => {
 		if (!$(target).hasClass('switch__input')) return;
@@ -415,26 +415,22 @@ function autoRefresh(page = 'const') {
 		const statusSwitch = $(target).prop('checked');
 		constSwitch.refresh.status = statusSwitch;
 
-		if (statusSwitch && !markInterval) {
+		if (statusSwitch && !constSwitch.refresh.marker) {
 			localStorage.removeItem(page);
 
 			getDataFromDB('const', 'card');
+			setDataInStorage();
 
-			markInterval = setInterval(() => {
+			constSwitch.refresh.marker = setInterval(() => {
 				getDataFromDB('const', 'card');
 			}, timeReload);
-		} else if (!statusSwitch && markInterval) {
-			clearInterval(markInterval);
+		} else if (!statusSwitch && constSwitch.refresh.marker) {
+			clearInterval(constSwitch.refresh.marker);
 
-			markInterval = false;
-		}
-
-		if (constSwitch.refresh.status) {
-			setDataInStorage();
-		} else {
+			constSwitch.refresh.marker = false;
 			localStorage.removeItem(page);
 		}
-
+		
 		renderSwitch();
 	});
 }

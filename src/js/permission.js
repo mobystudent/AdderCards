@@ -18,7 +18,8 @@ const permisObject = {
 const permisSwitch = {
 	refresh: {
 		type: 'refresh',
-		status: false
+		status: false,
+		marker: 0
 	}
 };
 const permisCount = {
@@ -464,7 +465,6 @@ function resetControlBtns() {
 
 function autoRefresh(page = 'permis') {
 	const timeReload = 60000 * settingsObject.autoupdatevalue;
-	let markInterval;
 
 	$(`.switch--refresh-${page}`).click(({ target }) => {
 		if (!$(target).hasClass('switch__input')) return;
@@ -472,7 +472,7 @@ function autoRefresh(page = 'permis') {
 		const statusSwitch = $(target).prop('checked');
 		permisSwitch.refresh.status = statusSwitch;
 
-		if (statusSwitch && !markInterval) {
+		if (statusSwitch && !permisSwitch.refresh.marker) {
 			localStorage.removeItem(page);
 			permissionCollection.clear();
 
@@ -480,19 +480,15 @@ function autoRefresh(page = 'permis') {
 			resetControlBtns();
 			renderHeaderTable();
 			confirmAllAllowDisallow();
+			setDataInStorage();
 
-			markInterval = setInterval(() => {
+			permisSwitch.refresh.marker = setInterval(() => {
 				getDataFromDB('permis');
 			}, timeReload);
-		} else if (!statusSwitch && markInterval) {
-			clearInterval(markInterval);
+		} else if (!statusSwitch && permisSwitch.refresh.marker) {
+			clearInterval(permisSwitch.refresh.marker);
 
-			markInterval = false;
-		}
-
-		if (permisSwitch.refresh.status) {
-			setDataInStorage();
-		} else {
+			permisSwitch.refresh.marker = false;
 			localStorage.removeItem(page);
 		}
 

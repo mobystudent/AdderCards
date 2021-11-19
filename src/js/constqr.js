@@ -20,7 +20,8 @@ const qrObject = {
 const qrSwitch = {
 	refresh: {
 		type: 'refresh',
-		status: false
+		status: false,
+		marker: 0
 	},
 	assign: {
 		type: 'assign',
@@ -569,7 +570,6 @@ function resetControlSwitch() {
 
 function autoRefresh(page = 'qr') {
 	const timeReload = 60000 * settingsObject.autoupdatevalue;
-	let markInterval;
 
 	$(`.switch--refresh-${page}`).click(({ target }) => {
 		if (!$(target).hasClass('switch__input')) return;
@@ -577,7 +577,7 @@ function autoRefresh(page = 'qr') {
 		const statusSwitch = $(target).prop('checked');
 		qrSwitch.refresh.status = statusSwitch;
 
-		if (statusSwitch && !markInterval) {
+		if (statusSwitch && qrSwitch.refresh.marker) {
 			localStorage.removeItem(page);
 
 			qrObject.statusassign = '';
@@ -585,13 +585,13 @@ function autoRefresh(page = 'qr') {
 			getDataFromDB('const', 'qr');
 			assignCodes();
 
-			markInterval = setInterval(() => {
+			qrSwitch.refresh.marker = setInterval(() => {
 				getDataFromDB('const', 'qr');
 			}, timeReload);
-		} else if (!statusSwitch && markInterval) {
-			clearInterval(markInterval);
+		} else if (!statusSwitch && qrSwitch.refresh.marker) {
+			clearInterval(qrSwitch.refresh.marker);
 
-			markInterval = false;
+			qrSwitch.refresh.marker = false;
 		}
 
 		if (qrSwitch.refresh.status || qrSwitch.assign.status) {
