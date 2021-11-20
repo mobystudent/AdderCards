@@ -141,11 +141,17 @@ function addQRCodesInTable(page = 'download') {
 	});
 }
 
-function codeFromForm() {
+function codeFromForm(page = 'download') {
 	parseQRCollection.forEach((elem) => {
 		const codePicture = elem.find((obj) => obj.includes('N-') && obj.length === 42);
 		const idQR = elem.find((obj) => obj.length === 10);
 		const nameQR = elem.find((obj) => obj.length === 16);
+		const uniqueCode = [...downloadCollection.values()].some(({ cardid }) => idQR === cardid);
+
+		if (uniqueCode) {
+			$(`.main[data-name=${page}]`).find('.info__item--warn.info__item--have').show();
+			return;
+		}
 
 		downloadCollection.set(counter, {
 			id: counter,
@@ -218,10 +224,14 @@ function deleteUser(nameTable = '#tableDownload', page = 'download') {
 	});
 }
 
-function clearFieldsForm(nameForm = '#downloadForm') {
+function clearFieldsForm(nameForm = '#downloadForm', page = 'download') {
 	$(`${nameForm} .form__item--textarea`).val('');
 	parseQRCollection.clear();
-	
+
+	setTimeout(() => {
+		$(`.main[data-name=${page}]`).find('.info__item--warn.info__item--have').hide();
+	}, 5000);
+
 	renderCount();
 }
 

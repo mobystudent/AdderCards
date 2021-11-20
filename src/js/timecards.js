@@ -224,7 +224,7 @@ function blockLastCard(idRemove, page = 'time') {
 	}
 }
 
-function convertCardIDInCardName(nameTable = '#tableTime') {
+function convertCardIDInCardName(nameTable = '#tableTime', page = 'time') {
 	$(`${nameTable} .table__content`).click(({ target }) => {
 		if (!$(target).hasClass('table__input')) return;
 
@@ -236,21 +236,29 @@ function convertCardIDInCardName(nameTable = '#tableTime') {
 				cardid: cardIdVal,
 				cardname: convertNumCard
 			};
-			let collectionID;
+			const uniqueCardID = [...timeCollection.values()].some(({ cardid }) => cardIdVal === cardid);
+
+			if (uniqueCardID) {
+				$(`.main[data-name=${page}]`).find('.info__item--warn.info__item--have').show();
+
+				renderTable();
+				return;
+			} else {
+				$(`.main[data-name=${page}]`).find('.info__item--warn.info__item--have').hide();
+			}
 
 			if (!convertNumCard) {
-				$(target).parents('.main').find('.info__item--error').show();
+				$(`.main[data-name=${page}]`).find('.info__item--error.info__item--fields').show();
 
 				return;
 			}
 
 			[...timeCollection].forEach(([ key, { id } ]) => {
 				if (userID === +id) {
-					collectionID = key;
+					setDataInTable(key, cardObj);
 				}
 			});
 
-			setDataInTable(collectionID, cardObj);
 			checkInvalidValueCardID();
 		});
 	});
