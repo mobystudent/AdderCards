@@ -6,6 +6,7 @@ import service from './service.js';
 import renderheader from './parts/renderheader.js';
 
 const timeCollection = new Map(); // БД в которую будут добавляться карты при вводе и из неё будут выводиться данные в таблицу.
+const dbTimeCardsCollection = new Map();  // Коллекция всех добавленных карт
 const timeCount = {
 	item: {
 		title: 'Количество карт:&nbsp',
@@ -29,7 +30,7 @@ $(window).on('load', () => {
 });
 
 function templateTimeTable(data) {
-	const { id = '', cardid = '', cardname = '' } = data;
+	const { id = '', fio = '', cardid = '', cardname = '' } = data;
 	const typeIDField = cardid ? `
 		<span class="table__text table__text--body">${cardid}</span>
 	` : `
@@ -39,7 +40,7 @@ function templateTimeTable(data) {
 	return `
 		<div class="table__row" data-id="${id}">
 			<div class="table__cell table__cell--body table__cell--fio">
-				<span class="table__text table__text--body">Временная карта</span>
+				<span class="table__text table__text--body">${fio}</span>
 			</div>
 			<div class="table__cell table__cell--body table__cell--cardid">
 				${typeIDField}
@@ -96,6 +97,9 @@ function itemUserInTable(id) {
 
 	timeCollection.set(idUser, {
 		id: idUser,
+		fio: 'Временная карта',
+		statusid: 'timeCard',
+		statustitle: 'Временная карта',
 		cardid: '',
 		cardname: ''
 	});
@@ -105,13 +109,18 @@ function itemUserInTable(id) {
 	counter++;
 }
 
-function addTimeCard() {
+function addTimeCard(nameTable = '#tableTime') {
 	$('#addTimeCard').click(() => {
+		$(nameTable)
+			.html('')
+			.append('<div class="table__content"></div>');
+
 		itemUserInTable(counter);
 	});
 }
 
 function dataAdd() {
+	getTimeCardsFromDB();
 	renderCount();
 	renderTable();
 	deleteTimeCard();
@@ -189,15 +198,12 @@ function deleteTimeCard(nameTable = '#tableTime', page = 'time') {
 	$(`${nameTable} .table__content`).click(({ target }) => {
 		if ($(target).parents('.table__btn--delete').length || $(target).hasClass('table__btn--delete')) {
 			const userID = $(target).closest('.table__row').data('id');
-			let collectionID;
 
 			[...timeCollection].forEach(([ key, { id } ]) => {
 				if (userID === +id) {
-					collectionID = key;
+					blockLastCard(key);
 				}
 			});
-
-			blockLastCard(collectionID);
 
 			if (timeCollection.size === 1) {
 				localStorage.removeItem(page);
@@ -228,7 +234,7 @@ function convertCardIDInCardName(nameTable = '#tableTime', page = 'time') {
 	$(`${nameTable} .table__content`).click(({ target }) => {
 		if (!$(target).hasClass('table__input')) return;
 
-		$('.table__input').on('input', ({ target }) => {
+		$(target).on('input', () => {
 			const cardIdVal = $(target).val().trim();
 			const convertNumCard = convert.convertCardId(cardIdVal);
 			const userID = $(target).parents('.table__row').data('id');
@@ -237,6 +243,7 @@ function convertCardIDInCardName(nameTable = '#tableTime', page = 'time') {
 				cardname: convertNumCard
 			};
 			const uniqueCardID = [...timeCollection.values()].some(({ cardid }) => cardIdVal === cardid);
+			const containsCardID = [...dbTimeCardsCollection.values()].some(({ cardid }) => cardIdVal === cardid);
 
 			if (uniqueCardID) {
 				$(`.main[data-name=${page}]`).find('.info__item--warn.info__item--have').show();
@@ -245,6 +252,15 @@ function convertCardIDInCardName(nameTable = '#tableTime', page = 'time') {
 				return;
 			} else {
 				$(`.main[data-name=${page}]`).find('.info__item--warn.info__item--have').hide();
+			}
+
+			if (containsCardID) {
+				$(`.main[data-name=${page}]`).find('.info__item--warn.info__item--contains').show();
+
+				renderTable();
+				return;
+			} else {
+				$(`.main[data-name=${page}]`).find('.info__item--warn.info__item--contains').hide();
 			}
 
 			if (!convertNumCard) {
@@ -305,6 +321,28 @@ function setAddUsersInDB(array, nameTable, action) {
 		},
 		error: () => {
 			service.modal('error');
+		}
+	});
+}
+
+function getTimeCardsFromDB() {
+	$.ajax({
+		url: "./php/output-request.php",
+		method: "post",
+		dataType: "html",
+		async: false,
+		data: {
+			nameTable: 'contains-card'
+		},
+		success: (data) => {
+			const dataFromDB = JSON.parse(data);
+
+			dataFromDB.forEach((item, i) => {
+				dbTimeCardsCollection.set(i + 1, item);
+			});
+		},
+		error: () => {
+			service.modal('download');
 		}
 	});
 }

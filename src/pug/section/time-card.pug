@@ -36,7 +36,7 @@ main.main(data-name="time")
 							svg.icon.icon--delete.icon--delete-white
 								use.icon__item(xlink:href="./images/sprite.svg#delete")
 					.table__body#tableTime
-						.table__content.table__content--time.table__content--active
+						.table__content
 						
 		.info.info--page
 			p.info__item.info__item--warn.info__item--fields
@@ -45,6 +45,8 @@ main.main(data-name="time")
 				| Предупреждение! Всегда должна быть одна карта.
 			p.info__item.info__item--warn.info__item--have
 				| Предупреждение! Карта с данным кодом уже присвоена!
+			p.info__item.info__item--warn.info__item--contains
+				| Предупреждение! Карта с данным кодом была присвоена ранее!
 			p.info__item.info__item--error.info__item--fields
 				| Ошибка! Не правильно введен тип ID. Должно быть 10 цифр, без букв и символов!
 						

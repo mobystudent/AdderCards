@@ -201,10 +201,12 @@
 			foreach ($item as $key => $value) {
 				if ($key === 'fio') $fio = $value;
 				if ($key === 'cardname') $cardname = $value;
+				if ($key === 'statusid') $statusid = $value;
+				if ($key === 'statustitle') $statustitle = $value;
 				if ($key === 'date') $date = $value;
 			}
 
-			if($mysqli->query("INSERT INTO report (fio, cardname, statustitle, date) VALUES ('$fio', '$cardname', 'Новая карта', '$date')")) {
+			if($mysqli->query("INSERT INTO report (fio, cardname, statusid, statustitle, date) VALUES ('$fio', '$cardname', '$statusid', '$statustitle', '$date')")) {
 				echo('Success add in BD report');
 			} else {
 				echo $mysqli->error;

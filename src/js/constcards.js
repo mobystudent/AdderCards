@@ -8,7 +8,8 @@ import settingsObject from './settings.js';
 import renderheader from './parts/renderheader.js';
 
 const constCollection = new Map(); // БД пользователей которым разрешили выдачу карт
-const departmentCollection = new Map();  // Коллекци подразделений
+const departmentCollection = new Map();  // Коллекция подразделений
+const dbConstCardsCollection = new Map();  // Коллекция всех добавленных карт
 const constObject = {
 	nameid: '',
 	longname: '',
@@ -196,6 +197,7 @@ function dataAdd(page = 'const') {
 	constObject.nameid = filterNameDepart[0];
 
 	getDepartmentFromDB();
+	getConstCardsFromDB();
 
 	if (constCollection.size) {
 		emptySign('full');
@@ -352,7 +354,7 @@ function convertCardIDInCardName(nameTable = '#tableConst', page = 'const') {
 	$(`${nameTable} .table__content`).click(({ target }) => {
 		if (!$(target).hasClass('table__input')) return;
 
-		$('.table__input').on('input', ({ target }) => {
+		$(target).on('input', () => {
 			const cardIdVal = $(target).val().trim();
 			const convertNumCard = convert.convertCardId(cardIdVal);
 			const userID = $(target).parents('.table__row').data('id');
@@ -361,14 +363,24 @@ function convertCardIDInCardName(nameTable = '#tableConst', page = 'const') {
 				cardname: convertNumCard
 			};
 			const uniqueCardID = [...constCollection.values()].some(({ cardid }) => cardIdVal === cardid);
+			const containsCardID = [...dbConstCardsCollection.values()].some(({ cardid }) => cardIdVal === cardid);
 
 			if (uniqueCardID) {
 				$(`.main[data-name=${page}]`).find('.info__item--warn.info__item--have').show();
 
-				showActiveDataOnPage();
+				renderTable();
 				return;
 			} else {
 				$(`.main[data-name=${page}]`).find('.info__item--warn.info__item--have').hide();
+			}
+
+			if (containsCardID) {
+				$(`.main[data-name=${page}]`).find('.info__item--warn.info__item--contains').show();
+
+				renderTable();
+				return;
+			} else {
+				$(`.main[data-name=${page}]`).find('.info__item--warn.info__item--contains').hide();
 			}
 
 			if (!convertNumCard) {
@@ -507,6 +519,28 @@ function getDepartmentFromDB() {
 
 			dataFromDB.forEach((item, i) => {
 				departmentCollection.set(i + 1, item);
+			});
+		},
+		error: () => {
+			service.modal('download');
+		}
+	});
+}
+
+function getConstCardsFromDB() {
+	$.ajax({
+		url: "./php/output-request.php",
+		method: "post",
+		dataType: "html",
+		async: false,
+		data: {
+			nameTable: 'contains-card'
+		},
+		success: (data) => {
+			const dataFromDB = JSON.parse(data);
+
+			dataFromDB.forEach((item, i) => {
+				dbConstCardsCollection.set(i + 1, item);
 			});
 		},
 		error: () => {

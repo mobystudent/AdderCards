@@ -104,6 +104,22 @@
 		} else {
 			echo $mysqli->error;
 		}
+	} else if ($nameTable === 'contains-card') {
+		if($resultSet = $mysqli->query("SELECT * FROM report WHERE statusid = 'newCard' OR statusid = 'changeCard' OR statusid = 'timeCard'")) {
+			while ($result = $resultSet->fetch_assoc()) {
+				array_push($array, $result);
+			}
+		} else {
+			echo $mysqli->error;
+		}
+	} else if ($nameTable === 'contains-qr') {
+		if($resultSet = $mysqli->query("SELECT * FROM report WHERE statusid = 'newQR' OR statusid = 'changeQR'")) {
+			while ($result = $resultSet->fetch_assoc()) {
+				array_push($array, $result);
+			}
+		} else {
+			echo $mysqli->error;
+		}
 	}
 
 	echo json_encode($array);

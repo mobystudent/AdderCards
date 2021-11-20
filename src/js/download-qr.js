@@ -6,6 +6,7 @@ import renderheader from './parts/renderheader.js';
 
 const downloadCollection = new Map(); // БД сформированных qr-кодов
 const parseQRCollection = new Map(); // БД загруженых qr-кодов
+const dbQRCodesCollection = new Map();  // Коллекция всех добавленных qr-кодов
 const parseCount = {
 	item: {
 		title: 'Количество загруженых qr-кодов:&nbsp',
@@ -135,6 +136,7 @@ function addQRCodesInTable(page = 'download') {
 		$(`.main[data-name=${page}]`).find('.info__item--error.info__item--cardname')[statusNameQR]();
 
 		if (valid) {
+			getQRCodesFromDB();
 			codeFromForm();
 			clearFieldsForm();
 		}
@@ -147,9 +149,15 @@ function codeFromForm(page = 'download') {
 		const idQR = elem.find((obj) => obj.length === 10);
 		const nameQR = elem.find((obj) => obj.length === 16);
 		const uniqueCode = [...downloadCollection.values()].some(({ cardid }) => idQR === cardid);
+		const containsCode = [...dbQRCodesCollection.values()].some(({ cardid }) => idQR === cardid);
 
 		if (uniqueCode) {
 			$(`.main[data-name=${page}]`).find('.info__item--warn.info__item--have').show();
+			return;
+		}
+
+		if (containsCode) {
+			$(`.main[data-name=${page}]`).find('.info__item--warn.info__item--contains').show();
 			return;
 		}
 
@@ -230,6 +238,7 @@ function clearFieldsForm(nameForm = '#downloadForm', page = 'download') {
 
 	setTimeout(() => {
 		$(`.main[data-name=${page}]`).find('.info__item--warn.info__item--have').hide();
+		$(`.main[data-name=${page}]`).find('.info__item--warn.info__item--contains').hide();
 	}, 5000);
 
 	renderCount();
@@ -280,6 +289,28 @@ function setAddUsersInDB(array, nameTable, action) {
 		},
 		error: () => {
 			service.modal('error');
+		}
+	});
+}
+
+function getQRCodesFromDB() {
+	$.ajax({
+		url: "./php/output-request.php",
+		method: "post",
+		dataType: "html",
+		async: false,
+		data: {
+			nameTable: 'contains-qr'
+		},
+		success: (data) => {
+			const dataFromDB = JSON.parse(data);
+
+			dataFromDB.forEach((item, i) => {
+				dbQRCodesCollection.set(i + 1, item);
+			});
+		},
+		error: () => {
+			service.modal('download');
 		}
 	});
 }
