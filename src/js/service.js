@@ -68,7 +68,7 @@ function showDataInTable() {
 
 function modal(action) {
 	$('.modal').addClass('modal--active');
-	$('.modal__item').addClass('modal__item--active');
+	$('.modal__item--info').addClass('modal__item--active');
 	$('.modal__message').hide();
 	$(`.modal__message--${action}`).show();
 

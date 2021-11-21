@@ -5,7 +5,7 @@
 	width: 100%;
 	height: 100%;
 	opacity: 0;
-	background: rgba($black, .4);
+	background: rgba($black, .6);
 	transition: opacity .25s ease-out .5s, z-index .25s ease-out .5s;
 	z-index: -5;
 
@@ -17,19 +17,29 @@
 
 	&__item {
 		display: flex;
-		align-items: center;
 		justify-content: center;
 		position: fixed;
 		top: 50%;
 		left: calc(50% + 160px);
-		width: 400px;
-		height: 250px;
-		padding: 20px 30px;
 		border-radius: 20px;
-		background: $gray;
 		transform: translate(-50%, -50%) scale(0);
 		transition: transform .25s ease-out .25s;
 		z-index: 10;
+
+		&--info {
+			align-items: center;
+			width: 400px;
+			height: 250px;
+			padding: 20px 30px;
+			background: $gray;
+		}
+
+		&--user {
+			flex-flow: column;
+			width: 650px;
+			padding: 40px 30px;
+			background: $deepDarkGray;
+		}
 
 		&--active {
 			transform: translate(-50%, -50%) scale(1);
@@ -62,6 +72,100 @@
 			.icon {
 				fill: $middleGray;
 			}
+		}
+	}
+
+	&__wrap {
+		display: flex;
+		justify-content: space-between;
+		margin-bottom: 25px;
+	}
+
+	&__field {
+		&:not(:last-child) {
+			margin-bottom: 20px;
+		}
+	}
+
+	&__name,
+	&__value,
+	&__btn {
+		display: inline-block;
+		@extend %text--medium;
+		color: $white;
+	}
+
+	&__name {
+		font-weight: 700;
+
+		&:not(:last-child) {
+			margin-bottom: 10px;
+		}
+	}
+
+	&__value {
+		width: 100%;
+	}
+
+	&__aside {
+		flex: 0 0 auto;
+		width: 250px;
+	}
+
+	&__img {
+		width: 100%;
+		height: 250px;
+		padding: 20px;
+		border-radius: 3px;
+		border: 1px solid $white;
+		background: $deepDarkGray;
+		overflow: hidden;
+	}
+
+	&__btns {
+		display: flex;
+		justify-content: center;
+	}
+
+	&__btn {
+		width: 130px;
+		padding: 10px;
+		border-radius: 3px;
+
+		&:not(:last-child) {
+			margin-right: 35px;
+		}
+
+		&--add {
+			background: $green;
+		}
+
+		&--cancel {
+			background: $darkRed;
+		}
+	}
+
+	&__title {
+		@extend %text--large;
+		color: $white;
+		text-align: center;
+		margin-bottom: 40px;
+	}
+
+	&__propose {
+		@extend %text--premedium;
+		color: $orange;
+		text-align: center;
+		margin-bottom: 15px;
+	}
+
+	&__mark {
+		&--add {
+			color: $green;
+		}
+
+		&--cancel {
+			color: $darkRed;
 		}
 	}
 }

@@ -120,6 +120,17 @@
 		} else {
 			echo $mysqli->error;
 		}
+	} else if ($nameTable === 'names') {
+		$nameDepart = strtolower($_POST['nameDepart']);
+		$addDepart = 'add_depart_'.$nameDepart;
+
+		if($resultSet = $mysqli->query("SELECT * FROM `$addDepart`")) {
+			while ($result = $resultSet->fetch_assoc()) {
+				array_push($array, $result);
+			}
+		} else {
+			echo $mysqli->error;
+		}
 	}
 
 	echo json_encode($array);

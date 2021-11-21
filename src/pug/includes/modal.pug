@@ -1,5 +1,5 @@
 .modal
-	.modal__item
+	.modal__item.modal__item--info
 		p.modal__message.modal__message--success
 			| Данные успешно отправлены.
 		p.modal__message.modal__message--update
@@ -15,3 +15,5 @@
 		button.modal__close(type='modal')
 			svg.icon.icon--delete.icon--delete-black
 				use.icon__item(xlink:href="./images/sprite.svg#delete")
+					
+	.modal__item.modal__item--user

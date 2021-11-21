@@ -12,6 +12,7 @@ datepickerFactory($);
 datepickerRUFactory($);
 
 const addCollection = new Map();
+const dbUserNamesCollection = new Map();
 const addObject = {
 	fio: '',
 	post: '',
@@ -51,6 +52,7 @@ $(window).on('load', () => {
 	memberInputField(); // 1
 	addUser(); // 2 без загрузки фото и загрузки селектов не пройдет валидация в addUser
 	showDataFromStorage(); // 1
+	getUserNamesFromDB();
 });
 
 function templateAddTable(data) {
@@ -210,6 +212,40 @@ function templateAddHeaderTable() {
 	`;
 }
 
+function templateModalContainsUser(data) {
+	const { fio = '', post = '', date = '', photofile = '' } = data;
+
+	return `
+		<h2 class="modal__title">Пользователь с данным именем уже был добавлен!</h2>
+		<div class="modal__wrap">
+			<div class="modal__fields">
+				<div class="modal__field">
+					<span class="modal__name">Фамилия Имя Отчество</span>
+					<span class="modal__value">${fio}</span>
+				</div>
+				<div class="modal__field">
+					<span class="modal__name">Должность</span>
+					<span class="modal__value">${post}</span>
+				</div>
+				<div class="modal__field">
+					<span class="modal__name">Дата добавления</span>
+					<span class="modal__value">${date}</span>
+				</div>
+			</div>
+			<div class="modal__aside">
+				<div class="modal__img">
+					<img class="img img--form" src="${photofile}" alt="user avatar"/>
+				</div>
+			</div>
+		</div>
+		<p class="modal__propose">Выберите действие с добавляемым пользователем.<br/><span class="modal__mark modal__mark--add">всё равно добавить</span> или <span class="modal__mark modal__mark--cancel">отменить добавление</span>:</p>
+		<div class="modal__btns">
+			<button class="modal__btn modal__btn--add" type="button" data-name="add">Добавить</button>
+			<button class="modal__btn modal__btn--cancel" type="button" data-name="cancel">Отмена</button>
+		</div>
+	`;
+}
+
 function templateAddCount(data) {
 	const { title, count } = data;
 
@@ -246,11 +282,41 @@ function renderHeaderTable(page = 'add') {
 	$(`.table--${page} .table__header`).append(templateAddHeaderTable());
 }
 
+function renderModalContainsUser() {
+	$('.modal').addClass('modal--active');
+	$('.modal__item--user')
+		.html('')
+		.addClass('modal__item--active');
+
+	dbUserNamesCollection.forEach((item) => {
+		if (addObject.fio === item.fio) {
+			$('.modal__item--user').append(templateModalContainsUser(item));
+		}
+	});
+
+	modalActions();
+}
+
 function renderCount(page = 'add') {
 	$(`.main__wrap-info--${page} .main__cards`).html('');
 	for (let key in addCount) {
 		$(`.main__wrap-info--${page} .main__cards`).append(templateAddCount(addCount[key]));
 	}
+}
+
+function modalActions(){
+	$('.modal__btn').click(({ currentTarget }) => {
+		const btnName = $(currentTarget).data('name');
+
+		$('.modal').removeClass('modal--active');
+		$('.modal__item').removeClass('modal__item--active');
+
+		if (btnName === 'add') {
+			userFromForm();
+		}
+
+		clearFieldsForm();
+	});
 }
 
 function addUser(page = 'add') {
@@ -282,10 +348,31 @@ function addUser(page = 'add') {
 		$(`.main[data-name=${page}]`).find('.info__item--error.info__item--short')[countNameWords]();
 
 		if (valid) {
-			userFromForm();
-			clearFieldsForm();
+			checkContainsUser();
 		}
 	});
+}
+
+function checkContainsUser(page = 'add') {
+	const uniqueName = [...addCollection.values()].every(({ fio }) => fio !== addObject.fio);
+	const containsName = [...dbUserNamesCollection.values()].every(({ fio }) => fio !== addObject.fio);
+
+	if (uniqueName) {
+		$(`.main[data-name=${page}]`).find('.info__item--warn.info__item--have').hide();
+	} else {
+		$(`.main[data-name=${page}]`).find('.info__item--warn.info__item--have').show();
+
+		return;
+	}
+
+	if (!containsName) {
+		renderModalContainsUser();
+	}
+
+	if (uniqueName && containsName) {
+		userFromForm();
+		clearFieldsForm();
+	}
 }
 
 function userFromForm() {
@@ -436,7 +523,7 @@ function clearFieldsForm() {
 function memberInputField() {
 	$('.form__item').keyup(({ currentTarget }) => {
 		const nameField = $(currentTarget).data('field');
-		const fieldValue = $(currentTarget).val();
+		const fieldValue = $(currentTarget).val().trim();
 
 		addObject[nameField] = fieldValue ? fieldValue : '';
 	});
@@ -621,6 +708,29 @@ function setAddUsersInDB(array, nameTable, action) {
 				service.modal('error');
 			}
 		});
+	});
+}
+
+function getUserNamesFromDB() {
+	$.ajax({
+		url: "./php/output-request.php",
+		method: "post",
+		dataType: "html",
+		async: false,
+		data: {
+			nameTable: 'names',
+			nameDepart: settingsObject.nameid
+		},
+		success: (data) => {
+			const dataFromDB = JSON.parse(data);
+
+			dataFromDB.forEach((item, i) => {
+				dbUserNamesCollection.set(i + 1, item);
+			});
+		},
+		error: () => {
+			service.modal('download');
+		}
 	});
 }
 

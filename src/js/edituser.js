@@ -519,7 +519,7 @@ function clearFieldsForm() {
 function memberInputField() {
 	$('.form__item').keyup(({ currentTarget }) => {
 		const nameField = $(currentTarget).attr('name');
-		const fieldValue = $(currentTarget).val();
+		const fieldValue = $(currentTarget).val().trim();
 
 		editObject[nameField] = fieldValue ? fieldValue : '';
 	});
