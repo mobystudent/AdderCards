@@ -131,6 +131,46 @@
 		} else {
 			echo $mysqli->error;
 		}
+	} else if ($nameTable === 'filter') {
+		$nameDepart = strtolower($_POST['nameDepart']);
+		$reportDepart = 'report_depart_'.$nameDepart;
+		$options = $_POST['options'];
+
+		if ($options) {
+			$filterContent = '';
+			
+			foreach ($options as $key => $value) {
+				if ($filterContent === '') {
+					if ($key === 'date') {
+						$filterContent .= $key.' LIKE "%'.$value.'%"';
+					} else {
+						$filterContent .= $key.' = "'.$value.'"';
+					}
+				} else {
+					if ($key === 'date') {
+						$filterContent .= ' AND '.$key.' LIKE "%'.$value.'%"';
+					} else {
+						$filterContent .= ' AND '.$key.' = "'.$value.'"';
+					}
+				}
+			}
+
+			if($resultSet = $mysqli->query("SELECT * FROM `$reportDepart` WHERE ".$filterContent."")) {
+				while ($result = $resultSet->fetch_assoc()) {
+					array_push($array, $result);
+				}
+			} else {
+				echo $mysqli->error;
+			}
+		} else {
+			if($resultSet = $mysqli->query("SELECT * FROM `$reportDepart`")) {
+				while ($result = $resultSet->fetch_assoc()) {
+					array_push($array, $result);
+				}
+			} else {
+				echo $mysqli->error;
+			}
+		}
 	}
 
 	echo json_encode($array);

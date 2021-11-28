@@ -107,7 +107,7 @@ function templateAddForm() {
 		<div class="form__field">
 			<label class="form__label">
 				<span class="form__name form__name--form">Дата окончания</span>
-				<input class="form__item form__item--form" id="addDatepicker" data-field="date" name="date" type="text" value="${cardvalidto}" placeholder="Введите дату" required="required"/>
+				<input class="form__item form__item--form" id="addDatepicker" data-field="date" name="date" type="text" value="${cardvalidto}" placeholder="Введите дату" readonly="readonly" required="required"/>
 			</label>
 		</div>
 	` : '';
@@ -491,14 +491,13 @@ function clickSelectItem(nameForm = '#addForm') {
 	$(`${nameForm} .select__item`).click(({ currentTarget }) => {
 		const title = $(currentTarget).find('.select__name').data('title');
 		const select = $(currentTarget).parents('.select').data('select');
+		const statusid = $(currentTarget).find('.select__name').data(select);
 
-		setDataAttrSelectedItem(title, select, currentTarget);
+		setDataAttrSelectedItem(title, select, statusid);
 	});
 }
 
-function setDataAttrSelectedItem(title, select, elem) {
-	const statusid = $(elem).find('.select__name').data(select);
-
+function setDataAttrSelectedItem(title, select, statusid) {
 	if (select === 'type') {
 		addObject.statusid = statusid;
 		addObject.statustitle = title;

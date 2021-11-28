@@ -6,7 +6,7 @@ main.main(data-name="remove")
 			span.main__depart.main__depart--remove(data-depart="" data-id="")
 		
 		form.form.form--page#removeForm(action="#" method="GET")
-			.form__wrap
+			.form__wrap.form__wrap--user
 				.form__fields
 					.form__field
 						span.form__name.form__name--form
@@ -42,7 +42,7 @@ main.main(data-name="remove")
 						label.form__label
 							span.form__name.form__name--form
 								| Дата завершения действия пропуска
-							input.form__item.form__item--form#removeDatepicker(name="date" type="text" placeholder="Введите дату завершения действия пропуска" required)
+							input.form__item.form__item--form#removeDatepicker(name="date" type="text" placeholder="Введите дату завершения действия пропуска" readonly="readonly" required)
 							
 				.form__aside
 					.form__img

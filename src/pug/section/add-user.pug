@@ -6,7 +6,7 @@ main.main(data-name="add")
 			span.main__depart.main__depart--add(data-depart="" data-id="")
 		
 		form.form.form--page#addForm(action="#" method="GET")
-			.form__wrap
+			.form__wrap.form__wrap--user
 				.form__fields
 					.form__field
 						label.form__label
@@ -50,7 +50,7 @@ main.main(data-name="add")
 						label.form__label
 							span.form__name.form__name--form
 								| Дата окончания
-							input.form__item.form__item--form#addDatepicker(data-field="date" name="date" type="text" placeholder="Введите дату" required)
+							input.form__item.form__item--form#addDatepicker(data-field="date" name="date" type="text" placeholder="Введите дату" readonly="readonly" required)
 				.form__aside
 					.form__img
 						img.img.img--form(src="./images/avatar.svg" alt="user avatar")

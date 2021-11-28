@@ -120,4 +120,12 @@
 			background: $middleGray;
 		}
 	}
+
+	&--cancel {
+		&-disabled {
+			background: $darkerGray;
+			color: $gray;
+			cursor: default;
+		}
+	}
 }

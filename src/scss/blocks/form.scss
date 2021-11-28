@@ -24,13 +24,24 @@
 		margin: 0 auto 35px;
 	}
 
+	&--filter {
+		margin-bottom: 40px;
+	}
+
 	&__wrap {
-		display: grid;
-		grid-template-columns: 500px 250px;
-		grid-template-rows: auto;
-		grid-auto-rows: 200px;
-		grid-gap: 20px;
-		margin-bottom: 30px;
+		&--user {
+			display: grid;
+			grid-template-columns: 500px 250px;
+			grid-template-rows: auto;
+			grid-auto-rows: 200px;
+			grid-gap: 20px;
+			margin-bottom: 30px;
+		}
+
+		&--filter {
+			display: flex;
+			align-items: flex-end;
+		}
 
 		&--hide {
 			display: none;
@@ -46,11 +57,26 @@
 		&--login {
 			margin-bottom: 50px;
 		}
+
+		&--filter {
+			display: flex;
+			flex: 1 0 auto;
+		}
 	}
 
 	&__field {
 		&:not(:last-child) {
 			margin-bottom: 20px;
+		}
+
+		&--filter {
+			flex: 1 0 auto;
+			max-width: 285px;
+
+			&:not(:last-child) {
+				margin-right: 30px;
+				margin-bottom: 0;
+			}
 		}
 	}
 
