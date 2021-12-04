@@ -3,7 +3,7 @@
 import $ from 'jquery';
 import service from './service.js';
 import messageMail from './mail.js';
-import settingsObject from './settings.js';
+import { settingsObject, sendUsers } from './settings.js';
 import renderheader from './parts/renderheader.js';
 
 const requestCollection = new Map(); // БД отчета
@@ -494,9 +494,7 @@ function autoRefresh(page = 'request') {
 	});
 }
 
-function setAddUsersInDB(array, nameTable, action, typeTable, page = 'request') {
-	const nameDepart = $(`.main__depart--${page}`).attr('data-depart');
-
+function setAddUsersInDB(array, nameTable, action, typeTable) {
 	$.ajax({
 		url: "./php/change-user-request.php",
 		method: "post",
@@ -509,12 +507,12 @@ function setAddUsersInDB(array, nameTable, action, typeTable, page = 'request') 
 			array
 		},
 		success: () => {
-			const title = action === 'add' ? 'Reject' : 'Approved';
+			const title = nameTable === 'reject' ? 'Отклонено' : 'Изменено';
 
 			service.modal('success');
 
 			sendMail({
-				department: nameDepart,
+				department: requestObject.longname,
 				count: array.length,
 				title,
 				users: array
@@ -570,15 +568,14 @@ function getDepartmentFromDB() {
 
 function sendMail(obj) {
 	const { title = '' } = obj;
-	const sender = 'chepdepart@gmail.com';
+	const sender = sendUsers.operator;
+	const recipient = sendUsers.manager;
 	let subject;
-	let recipient;
 
-	if (title === 'Reject') {
-		recipient = settingsObject.email;
-		subject = 'Пользователи отклонены';
+	if (title === 'Отклонено') {
+		subject = 'Отклонен запрос на изменение данных в БД';
 	} else {
-		subject = 'Пользователи добавлены в БД';
+		subject = 'Успешно изменены данные о пользователях в БД';
 	}
 
 	$.ajax({

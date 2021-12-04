@@ -3,7 +3,7 @@
 import $ from 'jquery';
 import service from './service.js';
 import messageMail from './mail.js';
-import settingsObject from './settings.js';
+import { settingsObject, sendUsers } from './settings.js';
 import renderheader from './parts/renderheader.js';
 
 const editCollection = new Map();
@@ -735,9 +735,9 @@ function getAddUsersInDB(id = '') {
 }
 
 function sendMail(obj) {
-	const sender = 'chepdepart@gmail.com';
-	const recipient = 'xahah55057@secbuf.com';
-	const subject = 'Пользователи успешно добавлены в БД';
+	const sender =  sendUsers.manager;
+	const recipient = sendUsers.operator;
+	const subject = 'Запрос на редактирование данных пользователей в БД';
 
 	$.ajax({
 		url: "./php/mail.php",

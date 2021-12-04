@@ -39,7 +39,7 @@ export default (params) => {
 		const lastChar = String(count).substr(-1, 1);
 
 		if (lastChar === '1') {
-			return `${title} ${count} пользователь`;
+			return `${title} ${count}-го пользователя`;
 		} else if (lastChar === '2' || lastChar === '3' || lastChar === '4') {
 			return `${title} ${count} пользователя`;
 		} else {

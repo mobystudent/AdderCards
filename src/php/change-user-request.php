@@ -248,24 +248,13 @@
 				echo $mysqli->error;
 			}
 		}
-	} else if (($nameTable === 'permis') && ($action === 'remove')) {
-		foreach ($array as $item) {
-			foreach ($item as $key => $value) {
-				if ($key === 'id') $id = $value;
-			}
-
-			if($mysqli->query("DELETE FROM permission WHERE id = '$id'")) {
-				echo('Success remove in BD permission');
-			} else {
-				echo $mysqli->error;
-			}
-		}
 	} else if (($nameTable === 'reject') && ($action === 'add')) {
 		foreach ($array as $item) {
 			foreach ($item as $key => $value) {
 				if ($key === 'id') $id = $value;
 				if ($key === 'fio') $fio = $value;
 				if ($key === 'post') $post = $value;
+				if ($key === 'nameid') $nameid = $value;
 				if ($key === 'photofile') $photofile = $value;
 				if ($key === 'photourl') $photourl = $value;
 				if ($key === 'statusid') $statusid = $value;
@@ -273,10 +262,10 @@
 				if ($key === 'date') $date = $value;
 			}
 
-			$idDepart = strtolower($item['nameid']);
+			$idDepart = strtolower($nameid);
 			$nameDepart = 'reject_depart_'.$idDepart;
 
-			if ($typeBDTable === 'permis') {
+			if ($typeTable === 'permis') {
 				if($mysqli->query("DELETE FROM permission WHERE id = '$id'")) {
 					echo('Success remove in BD permission');
 				} else {

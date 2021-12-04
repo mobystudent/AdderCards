@@ -4,7 +4,7 @@ import $ from 'jquery';
 import QRCode from 'qrcode';
 import service from './service.js';
 import messageMail from './mail.js';
-import settingsObject from './settings.js';
+import { settingsObject, sendUsers } from './settings.js';
 import renderheader from './parts/renderheader.js';
 
 const qrCollection = new Map(); // БД пользователей которым разрешили выдачу qr-кодов
@@ -641,14 +641,14 @@ function setAddUsersInDB(array, nameTable, action, typeTable) {
 			},
 			success: (data) => {
 				console.log(data);
-				window.print();
+				// window.print();
 				service.modal('success');
 
 				sendMail({
 					department: qrObject.longname,
-					count: qrCollection.size,
+					count: array.length,
 					title: 'Добавлено',
-					users: [...qrCollection.values()]
+					users: array
 				});
 			},
 			error: () => {
@@ -723,8 +723,8 @@ function getDepartmentFromDB() {
 }
 
 function sendMail(obj) {
-	const sender = 'chepdepart@gmail.com';
-	const recipient = settingsObject.email;
+	const sender = sendUsers.operator;
+	const recipient = sendUsers.manager;
 	const subject = 'Пользователи успешно добавлены в БД';
 
 	$.ajax({

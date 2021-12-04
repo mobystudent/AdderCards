@@ -3,7 +3,7 @@
 import $ from 'jquery';
 import service from './service.js';
 import messageMail from './mail.js';
-import settingsObject from './settings.js';
+import { settingsObject, sendUsers } from './settings.js';
 import renderheader from './parts/renderheader.js';
 
 const permissionCollection = new Map(); // БД пользователей при старте
@@ -320,7 +320,6 @@ function submitIDinBD(page = 'permis') {
 
 			if (allowItems.length) {
 				delegationID(allowItems);
-				setAddUsersInDB(allowItems, 'permis', 'remove');
 			}
 
 			if (disallowItems.length) {
@@ -366,8 +365,12 @@ function delegationID(users) {
 	const filterArrCards = users.filter(({ statusid }) => statusid === 'newCard' || statusid === 'changeCard');
 	const filterArrQRs = users.filter(({ statusid }) => statusid === 'newQR' || statusid === 'changeQR');
 
-	setAddUsersInDB(filterArrCards, 'const', 'add', 'card');
-	setAddUsersInDB(filterArrQRs, 'const', 'add', 'qr');
+	if (filterArrCards.length) {
+		setAddUsersInDB(filterArrCards, 'const', 'add', 'card');
+	}
+	if (filterArrQRs.length) {
+		setAddUsersInDB(filterArrQRs, 'const', 'add', 'qr');
+	}
 }
 
 function clearObject() {
@@ -496,9 +499,7 @@ function autoRefresh(page = 'permis') {
 	});
 }
 
-function setAddUsersInDB(array, nameTable, action, typeTable, page = 'permis') {
-	const nameDepart = $(`.main__depart--${page}`).attr('data-depart');
-
+function setAddUsersInDB(array, nameTable, action, typeTable) {
 	$.ajax({
 		url: "./php/change-user-request.php",
 		method: "post",
@@ -511,12 +512,12 @@ function setAddUsersInDB(array, nameTable, action, typeTable, page = 'permis') {
 			array
 		},
 		success: () => {
-			const title = action === 'add' ? 'Reject' : 'Approved';
+			const title = nameTable === 'reject' ? 'Отклонено' : 'Добавить';
 
 			service.modal('success');
 
 			sendMail({
-				department: nameDepart,
+				department: permisObject.longname,
 				count: array.length,
 				title,
 				users: array
@@ -572,15 +573,16 @@ function getDepartmentFromDB() {
 
 function sendMail(obj) {
 	const { title = '' } = obj;
-	const sender = 'chepdepart@gmail.com';
+	const sender = sendUsers.secretary;
 	let subject;
 	let recipient;
 
-	if (title === 'Reject') {
-		recipient = settingsObject.email;
-		subject = 'Пользователи отклонены';
+	if (title === 'Отклонено') {
+		recipient = sendUsers.manager;
+		subject = 'Отклонен запрос на добавление пользователей в БД';
 	} else {
-		subject = 'Пользователи добавлены в БД';
+		recipient = sendUsers.operator;
+		subject = 'Запрос на добавление пользователей в БД';
 	}
 
 	$.ajax({

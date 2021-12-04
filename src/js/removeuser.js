@@ -5,7 +5,7 @@ import datepickerFactory from 'jquery-datepicker';
 import datepickerRUFactory from 'jquery-datepicker/i18n/jquery.ui.datepicker-ru';
 import service from './service.js';
 import messageMail from './mail.js';
-import settingsObject from './settings.js';
+import { settingsObject, sendUsers } from './settings.js';
 import renderheader from './parts/renderheader.js';
 
 datepickerFactory($);
@@ -626,9 +626,9 @@ function getDepartmentFromDB() {
 }
 
 function sendMail(obj) {
-	const sender = 'chepdepart@gmail.com';
-	const recipient = 'xahah55057@secbuf.com';
-	const subject = 'Пользователи успешно добавлены в БД';
+	const sender =  sendUsers.manager;
+	const recipient = sendUsers.operator;
+	const subject = 'Запрос на удаление пользователей из БД';
 
 	$.ajax({
 		url: "./php/mail.php",

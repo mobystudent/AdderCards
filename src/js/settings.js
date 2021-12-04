@@ -28,6 +28,11 @@ const settingsObject = {
 	statustimeautoupdate: '',
 	statuschangeemail: ''
 };
+const sendUsers = {
+	manager: 'nnyviexworgdkmgzus@kvhrw.com',
+	secretary: 'dciiwjaficvlpmesij@nvhrw.com',
+	operator: 'karazin.security@ukr.net'
+};
 
 $(window).on('load', () => {
 	getNameDepartmentFromDB();
@@ -567,4 +572,4 @@ function getNameDepartmentFromDB() {
 	});
 }
 
-export default settingsObject;
+export { settingsObject, sendUsers };

@@ -4,7 +4,7 @@ import $ from 'jquery';
 import service from './service.js';
 import Scrollbar from 'smooth-scrollbar';
 import messageMail from './mail.js';
-import settingsObject from './settings.js';
+import { settingsObject, sendUsers } from './settings.js';
 import renderheader from './parts/renderheader.js';
 
 const rejectCollection = new Map(); // БД отклоненных пользователей
@@ -463,8 +463,9 @@ function setAddUsersInDB(array, nameTable, action) {
 
 			sendMail({
 				department: settingsObject.longname,
-				count: array.length,
-				users: array
+				count: rejectCollection.size,
+				title: 'Повторно добавить',
+				users: [...rejectCollection.values()]
 			});
 		},
 		error: () => {
@@ -495,15 +496,19 @@ function getDataFromDB(nameTable) {
 }
 
 function sendMail(obj) {
+	const sender =  sendUsers.manager;
+	const recipient = sendUsers.secretary;
+	const subject = 'Запрос на повторное добавление пользователей в БД';
+
 	$.ajax({
 		url: "./php/mail.php",
 		method: "post",
 		dataType: "html",
 		async: false,
 		data: {
-			sender: 'karazin.security@ukr.net',
-			recipient: 'yijoric695@otozuz.com',
-			subject: 'Добавлены новые пользователи',
+			sender,
+			recipient,
+			subject,
 			message: messageMail(obj)
 		},
 		success: () => {

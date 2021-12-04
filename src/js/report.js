@@ -4,7 +4,7 @@ import $ from 'jquery';
 import datepickerFactory from 'jquery-datepicker';
 import datepickerRUFactory from 'jquery-datepicker/i18n/jquery.ui.datepicker-ru';
 import service from './service.js';
-import settingsObject from './settings.js';
+import { settingsObject } from './settings.js';
 import renderheader from './parts/renderheader.js';
 
 datepickerFactory($);

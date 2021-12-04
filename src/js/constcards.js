@@ -4,7 +4,7 @@ import $ from 'jquery';
 import convert from './convert.js';
 import service from './service.js';
 import messageMail from './mail.js';
-import settingsObject from './settings.js';
+import { settingsObject, sendUsers } from './settings.js';
 import renderheader from './parts/renderheader.js';
 
 const constCollection = new Map(); // БД пользователей которым разрешили выдачу карт
@@ -474,9 +474,9 @@ function setAddUsersInDB(array, nameTable, action, typeTable) {
 
 			sendMail({
 				department: constObject.longname,
-				count: constCollection.size,
+				count: array.length,
 				title: 'Добавлено',
-				users: [...constCollection.values()]
+				users: array
 			});
 		},
 		error: () => {
@@ -550,8 +550,8 @@ function getConstCardsFromDB() {
 }
 
 function sendMail(obj) {
-	const sender = 'chepdepart@gmail.com';
-	const recipient = settingsObject.email;
+	const sender = sendUsers.operator;
+	const recipient = sendUsers.manager;
 	const subject = 'Пользователи успешно добавлены в БД';
 
 	$.ajax({
