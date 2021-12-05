@@ -138,7 +138,7 @@
 
 		if ($options) {
 			$filterContent = '';
-			
+
 			foreach ($options as $key => $value) {
 				if ($filterContent === '') {
 					if ($key === 'date') {

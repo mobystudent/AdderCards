@@ -53,7 +53,7 @@ $(window).on('load', () => {
 	getGeneratedQRFromDB();
 	submitIDinBD();
 	showDataFromStorage();
-	renderSwitch();
+	typeAssignCode();
 });
 
 function templateQRTable(data) {
@@ -312,6 +312,7 @@ function typeAssignCode(page = 'qr') {
 		}
 
 		resetControlSwitch();
+		renderSwitch();
 		assignCodes();
 		showFieldsInHeaderTable();
 		renderTable();
@@ -393,6 +394,7 @@ function showDataFromStorage(page = 'qr') {
 		dataAdd();
 	} else {
 		getDataFromDB('const', 'qr');
+		getGeneratedQRFromDB();
 	}
 }
 
@@ -577,16 +579,18 @@ function autoRefresh(page = 'qr') {
 		const statusSwitch = $(target).prop('checked');
 		qrSwitch.refresh.status = statusSwitch;
 
-		if (statusSwitch && qrSwitch.refresh.marker) {
+		if (statusSwitch && qrSwitch.refresh.marker == false) {
 			localStorage.removeItem(page);
 
 			qrObject.statusassign = '';
 
 			getDataFromDB('const', 'qr');
+			getGeneratedQRFromDB();
 			assignCodes();
 
 			qrSwitch.refresh.marker = setInterval(() => {
 				getDataFromDB('const', 'qr');
+				getGeneratedQRFromDB();
 			}, timeReload);
 		} else if (!statusSwitch && qrSwitch.refresh.marker) {
 			clearInterval(qrSwitch.refresh.marker);
@@ -669,6 +673,8 @@ function getGeneratedQRFromDB() {
 		},
 		success: (data) => {
 			const dataFromDB = JSON.parse(data);
+
+			generateCollection.clear();
 
 			dataFromDB.forEach((item, i) => {
 				generateCollection.set(i, item);
