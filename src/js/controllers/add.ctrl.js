@@ -3,10 +3,16 @@
 import $ from 'jquery';
 import datepickerFactory from 'jquery-datepicker';
 import datepickerRUFactory from 'jquery-datepicker/i18n/jquery.ui.datepicker-ru';
-import service from './service.js';
-import messageMail from './mail.js';
-import { settingsObject, sendUsers } from './settings.js';
-import renderheader from './parts/renderheader.js';
+import service from '../service.js';
+import messageMail from '../mail.js';
+import { settingsObject, sendUsers } from './settings.ctrl.js';
+import renderheader from '../parts/renderheader.js';
+
+import { table } from '../components/add/table.tpl.js';
+import { form } from '../components/add/form.tpl.js';
+import { count } from '../components/add/count.tpl.js';
+import { headerTable } from '../components/add/header-table.tpl.js';
+import { modalUser } from '../components/add/modal-user.tpl.js';
 
 datepickerFactory($);
 datepickerRUFactory($);
@@ -55,213 +61,11 @@ $(window).on('load', () => {
 	getUserNamesFromDB();
 });
 
-function templateAddTable(data) {
-	const { id = '', fio = '', post = '', photoname = '', statustitle = '', cardvalidto = '' } = data;
-	const cardvalidtoView = addObject.statuscardvalidto ? `
-		<div class="table__cell table__cell--body table__cell--cardvalidto">
-			<span class="table__text table__text--body">${cardvalidto}</span>
-		</div>
-	` : '';
-
-	return `
-		<div class="table__row" data-id="${id}">
-			<div class="table__cell table__cell--body table__cell--fio">
-				<span class="table__text table__text--body">${fio}</span>
-			</div>
-			<div class="table__cell table__cell--body table__cell--post">
-				<span class="table__text table__text--body">${post}</span>
-			</div>
-			<div class="table__cell table__cell--body table__cell--photoname">
-				<span class="table__text table__text--body">${photoname}</span>
-			</div>
-			<div class="table__cell table__cell--body table__cell--statustitle">
-				<span class="table__text table__text--body">${statustitle}</span>
-			</div>
-			${cardvalidtoView}
-			<div class="table__cell table__cell--body table__cell--edit">
-				<button class="table__btn table__btn--edit" type="button">
-					<svg class="icon icon--edit icon--edit-black">
-						<use class="icon__item" xlink:href="./images/sprite.svg#edit"></use>
-					</svg>
-				</button>
-			</div>
-			<div class="table__cell table__cell--body table__cell--delete">
-				<button class="table__btn table__btn--delete" type="button">
-					<svg class="icon icon--delete icon--delete-black">
-						<use class="icon__item" xlink:href="./images/sprite.svg#delete"></use>
-					</svg>
-				</button>
-			</div>
-		</div>
-	`;
-}
-
-function templateAddForm() {
-	const { fio = '', photourl = '', post = '', statusid = '', statustitle = '', cardvalidtotitle = '', cardvalidtoid = '', cardvalidto = '' } = addObject;
-	const typeValue = statustitle ? statustitle : 'Выберите тип идентификатора';
-	const typeClassView = statustitle ? 'select__value--selected-form' : '';
-	const cardvalidtoValue = cardvalidtotitle ? cardvalidtotitle : 'Выберите окончание действия пропуска';
-	const cardvalidtoClassView = cardvalidtotitle ? 'select__value--selected-form' : '';
-	const photoValue = photourl ? photourl : './images/avatar.svg';
-	const cardvalidtoView = cardvalidtoid === 'date' ? `
-		<div class="form__field">
-			<label class="form__label">
-				<span class="form__name form__name--form">Дата окончания</span>
-				<input class="form__item form__item--form" id="addDatepicker" data-field="date" name="date" type="text" value="${cardvalidto}" placeholder="Введите дату" readonly="readonly" required="required"/>
-			</label>
-		</div>
-	` : '';
-
-	return `
-		<div class="form__fields">
-			<div class="form__field">
-				<label class="form__label">
-					<span class="form__name form__name--form">Фамилия Имя Отчество</span>
-					<input class="form__item form__item--form" data-field="fio" name="fio" type="text" value="${fio}" placeholder="Введите ФИО" required="required"/>
-				</label>
-			</div>
-			<div class="form__field">
-				<label class="form__label">
-					<span class="form__name form__name--form">Должность</span>
-					<input class="form__item form__item--form" data-field="post" name="post" type="text" value="${post}" placeholder="Введите должность" required="required"/>
-				</label>
-			</div>
-			<div class="form__field">
-				<span class="form__name form__name--form">Тип идентификатора</span>
-				<div class="form__select select select--form" data-field="statustitle" data-type="statusid" data-select="type">
-					<header class="select__header select__header--form">
-						<span class="select__value select__value--form ${typeClassView}" data-title="${typeValue}" data-type="${statusid}">${typeValue}</span>
-					</header>
-					<ul class="select__list select__list--form">
-						<li class="select__item">
-							<span class="select__name select__name--form" data-title="Новая карта" data-type="newCard">Новая карта</span>
-						</li>
-						<li class="select__item">
-							<span class="select__name select__name--form" data-title="Новый QR-код" data-type="newQR">Новый QR-код</span>
-						</li>
-					</ul>
-				</div>
-			</div>
-			<div class="form__field">
-				<span class="form__name form__name--form">Окончание действия пропуска</span>
-				<div class="form__select select select--form" data-field="cardvalidtotitle" data-type="statuscardvalidto" data-select="cardvalidto">
-					<header class="select__header select__header--form">
-						<span class="select__value select__value--form ${cardvalidtoClassView}" data-title="${cardvalidtoValue}" data-cardvalidto="${cardvalidtoid}">${cardvalidtoValue}</span>
-					</header>
-					<ul class="select__list select__list--form">
-						<li class="select__item">
-							<span class="select__name select__name--form" data-title="Ввести дату" data-cardvalidto="date">Ввести дату</span>
-						</li>
-						<li class="select__item">
-							<span class="select__name select__name--form" data-title="Безвременно" data-cardvalidto="infinite">Безвременно</span>
-						</li>
-					</ul>
-				</div>
-			</div>
-			${cardvalidtoView}
-		</div>
-		<div class="form__aside">
-			<div class="form__img">
-				<img class="img img--form" src="${photoValue}" alt="user avatar"/>
-			</div>
-			<div class="form__field">
-				<input class="form__item form__item--file" id="addFile" name="photofile" type="file" required="required"/>
-				<label class="form__download" for="addFile">
-					<svg class="icon icon--download">
-						<use xlink:href=./images/sprite.svg#download></use>
-					</svg>
-					<span class="form__title form__title--page">Загрузить фото</span>
-				</label>
-			</div>
-		</div>
-	`;
-}
-
-function templateAddHeaderTable() {
-	const cardvalidtoView = addObject.statuscardvalidto ? `
-		<div class="table__cell table__cell--header table__cell--cardvalidto">
-			<span class="table__text table__text--header">Дата</span>
-		</div>
-	` : '';
-
-	return `
-		<div class="table__cell table__cell--header table__cell--fio">
-			<span class="table__text table__text--header">Фамилия Имя Отчество</span>
-			<button class="btn btn--sort" type="button" data-direction="true"></button>
-		</div>
-		<div class="table__cell table__cell--header table__cell--post">
-			<span class="table__text table__text--header">Должность</span>
-		</div>
-		<div class="table__cell table__cell--header table__cell--photoname">
-			<span class="table__text table__text--header">Фотография</span>
-		</div>
-		<div class="table__cell table__cell--header table__cell--statustitle">
-			<span class="table__text table__text--header">Идентификатор</span>
-		</div>
-		${cardvalidtoView}
-		<div class="table__cell table__cell--header table__cell--edit">
-			<svg class="icon icon--edit icon--edit-white">
-				<use class="icon__item" xlink:href="./images/sprite.svg#edit"></use>
-			</svg>
-		</div>
-		<div class="table__cell table__cell--header table__cell--delete">
-			<svg class="icon icon--delete icon--delete-white">
-				<use class="icon__item" xlink:href="./images/sprite.svg#delete"></use>
-			</svg>
-		</div>
-	`;
-}
-
-function templateModalContainsUser(data) {
-	const { fio = '', post = '', date = '', photofile = '' } = data;
-
-	return `
-		<h2 class="modal__title">Пользователь с данным именем уже был добавлен!</h2>
-		<div class="modal__wrap">
-			<div class="modal__fields">
-				<div class="modal__field">
-					<span class="modal__name">Фамилия Имя Отчество</span>
-					<span class="modal__value">${fio}</span>
-				</div>
-				<div class="modal__field">
-					<span class="modal__name">Должность</span>
-					<span class="modal__value">${post}</span>
-				</div>
-				<div class="modal__field">
-					<span class="modal__name">Дата добавления</span>
-					<span class="modal__value">${date}</span>
-				</div>
-			</div>
-			<div class="modal__aside">
-				<div class="modal__img">
-					<img class="img img--form" src="${photofile}" alt="user avatar"/>
-				</div>
-			</div>
-		</div>
-		<p class="modal__propose">Выберите действие с добавляемым пользователем.<br/><span class="modal__mark modal__mark--add">всё равно добавить</span> или <span class="modal__mark modal__mark--cancel">отменить добавление</span>:</p>
-		<div class="modal__btns">
-			<button class="modal__btn modal__btn--add" type="button" data-name="add">Добавить</button>
-			<button class="modal__btn modal__btn--cancel" type="button" data-name="cancel">Отмена</button>
-		</div>
-	`;
-}
-
-function templateAddCount(data) {
-	const { title, count } = data;
-
-	return `
-		<p class="main__count-wrap">
-			<span class="main__count-text">${title}</span>
-			<span class="main__count">${count}</span>
-		</p>
-	`;
-}
-
 function renderTable(nameTable = '#tableAdd') {
 	$(`${nameTable} .table__content`).html('');
 
 	addCollection.forEach((item) => {
-		$(`${nameTable} .table__content`).append(templateAddTable(item));
+		$(`${nameTable} .table__content`).append(table(item, addObject));
 	});
 
 	renderCount();
@@ -269,7 +73,7 @@ function renderTable(nameTable = '#tableAdd') {
 
 function renderForm(nameForm = '#addForm') {
 	$(`${nameForm} .form__wrap`).html('');
-	$(`${nameForm} .form__wrap`).append(templateAddForm());
+	$(`${nameForm} .form__wrap`).append(form(addObject));
 
 	toggleSelect();
 	datepicker();
@@ -279,7 +83,7 @@ function renderForm(nameForm = '#addForm') {
 
 function renderHeaderTable(page = 'add') {
 	$(`.table--${page} .table__header`).html('');
-	$(`.table--${page} .table__header`).append(templateAddHeaderTable());
+	$(`.table--${page} .table__header`).append(headerTable(addObject));
 }
 
 function renderModalContainsUser() {
@@ -290,7 +94,7 @@ function renderModalContainsUser() {
 
 	dbUserNamesCollection.forEach((item) => {
 		if (addObject.fio === item.fio) {
-			$('.modal__item--user').append(templateModalContainsUser(item));
+			$('.modal__item--user').append(modalUser(item));
 		}
 	});
 
@@ -300,7 +104,7 @@ function renderModalContainsUser() {
 function renderCount(page = 'add') {
 	$(`.main__wrap-info--${page} .main__cards`).html('');
 	for (let key in addCount) {
-		$(`.main__wrap-info--${page} .main__cards`).append(templateAddCount(addCount[key]));
+		$(`.main__wrap-info--${page} .main__cards`).append(count(addCount[key]));
 	}
 }
 

@@ -1,11 +1,16 @@
 'use strict';
 
 import $ from 'jquery';
-import convert from './convert.js';
-import service from './service.js';
-import messageMail from './mail.js';
-import { settingsObject, sendUsers } from './settings.js';
-import renderheader from './parts/renderheader.js';
+import convert from '../convert.js';
+import service from '../service.js';
+import messageMail from '../mail.js';
+import { settingsObject, sendUsers } from './settings.ctrl.js';
+import renderheader from '../parts/renderheader.js';
+
+import { table } from '../components/const/table.tpl.js';
+import { tabs } from '../components/const/tabs.tpl.js';
+import { switchElem } from '../components/const/switch.tpl.js';
+import { count } from '../components/const/count.tpl.js';
 
 const constCollection = new Map(); // БД пользователей которым разрешили выдачу карт
 const departmentCollection = new Map();  // Коллекция подразделений
@@ -44,102 +49,12 @@ $(window).on('load', () => {
 	renderSwitch();
 });
 
-function templateConstTable(data) {
-	const { id = '', fio = '', post  = '', cardid = '', cardname = '', statustitle = '' } = data;
-	const typeIDField = cardid ? `
-		<span class="table__text table__text--body">${cardid}</span>
-	` : `
-		<input class="table__input" />
-	`;
-
-	return `
-		<div class="table__row" data-id="${id}">
-			<div class="table__cell table__cell--body table__cell--fio">
-				<span class="table__text table__text--body">${fio}</span>
-			</div>
-			<div class="table__cell table__cell--body table__cell--post">
-				<span class="table__text table__text--body">${post}</span>
-			</div>
-			<div class="table__cell table__cell--body table__cell--cardid">
-				${typeIDField}
-			</div>
-			<div class="table__cell table__cell--body table__cell--cardname">
-				<span class="table__text table__text--body">${cardname}</span>
-			</div>
-			<div class="table__cell table__cell--body table__cell--statustitle">
-				<span class="table__text table__text--body">${statustitle}</span>
-			</div>
-			<div class="table__cell table__cell--body table__cell--signature">
-				<span class="table__text table__text--body"></span>
-			</div>
-			<div class="table__cell table__cell--body table__cell--clear">
-				<button class="table__btn table__btn--clear" type="button">
-					<svg class="icon icon--clear">
-						<use class="icon__item" xlink:href="./images/sprite.svg#clear"></use>
-					</svg>
-				</button>
-			</div>
-		</div>
-	`;
-}
-
-function templateConstTabs(data) {
-	const { nameid = '', shortname = '', status = '' } = data;
-	const statusView = status ? 'tab__item--active' : '';
-
-	return `
-		<button class="tab__item ${statusView}" type="button" data-depart=${nameid}>
-			<span class="tab__name">${shortname}</span>
-		</button>
-	`;
-}
-
-function templateConstSwitch(data, page = 'const') {
-	const { type, status } = data;
-	const assingBtnCheck = status ? 'checked="checked"' : '';
-	const assingBtnClass = type === 'refresh' && !status ? 'switch__name--disabled' : '';
-	let switchText;
-	let tooltipInfo;
-
-	if (type === 'refresh') {
-		switchText = 'Автообновление';
-		tooltipInfo = 'Если данная опция включена, тогда при поступлении новых данных, они автоматически отобразятся в таблице. Перезагружать страницу не нужно.<br/> Рекомендуется отключить данную функцию при работе с данными в таблице!';
-	}
-
-	return `
-		<div class="main__switch">
-			<div class="tooltip">
-				<span class="tooltip__item">!</span>
-				<div class="tooltip__info tooltip__info--${type}">${tooltipInfo}</div>
-			</div>
-			<div class="switch switch--${type}-${page}">
-				<label class="switch__wrap switch__wrap--head">
-					<input class="switch__input" type="checkbox" ${assingBtnCheck}/>
-					<small class="switch__btn"></small>
-				</label>
-				<span class="switch__name ${assingBtnClass}">${switchText}</span>
-			</div>
-		</div>
-	`;
-}
-
-function templateConstCount(data) {
-	const { title, count } = data;
-
-	return `
-		<p class="main__count-wrap">
-			<span class="main__count-text">${title}</span>
-			<span class="main__count">${count}</span>
-		</p>
-	`;
-}
-
 function renderTable(nameTable = '#tableConst') {
 	$(`${nameTable} .table__content`).html('');
 
 	constCollection.forEach((item) => {
 		if (item.nameid === constObject.nameid) {
-			$(`${nameTable} .table__content`).append(templateConstTable(item));
+			$(`${nameTable} .table__content`).append(table(item));
 		}
 	});
 }
@@ -147,7 +62,7 @@ function renderTable(nameTable = '#tableConst') {
 function renderSwitch(page = 'const') {
 	$(`.main__wrap-info--${page} .main__switchies`).html('');
 	for (let key in constSwitch) {
-		$(`.main__wrap-info--${page} .main__switchies`).append(templateConstSwitch(constSwitch[key]));
+		$(`.main__wrap-info--${page} .main__switchies`).append(switchElem(constSwitch[key]));
 	}
 
 	autoRefresh();
@@ -156,7 +71,7 @@ function renderSwitch(page = 'const') {
 function renderCount(page = 'const') {
 	$(`.main__wrap-info--${page} .main__cards`).html('');
 	for (let key in constCount) {
-		$(`.main__wrap-info--${page} .main__cards`).append(templateConstCount(constCount[key]));
+		$(`.main__wrap-info--${page} .main__cards`).append(count(constCount[key]));
 	}
 }
 
@@ -595,7 +510,7 @@ function addTabs(page = 'const') {
 					status: constObject.nameid === nameid
 				};
 
-				$(`.tab--${page}`).append(templateConstTabs(tabItem));
+				$(`.tab--${page}`).append(tabs(tabItem));
 			}
 		});
 	});

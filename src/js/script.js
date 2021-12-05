@@ -2,19 +2,19 @@
 
 // import $ from '../../node_modules/jquery';
 import $ from 'jquery';
-import './timecards.js';
-import './constcards.js';
-import './download-qr.js';
-import './permission.js';
-import './constqr.js';
-import './adduser.js';
-import './removeuser.js';
-import './edituser.js';
-import './report.js';
-import './reject.js';
-import './requestchange.js';
+import './controllers/time.ctrl.js';
+import './controllers/const.ctrl.js';
+import './controllers/download.ctrl.js';
+import './controllers/permis.ctrl.js';
+import './controllers/qr.ctrl.js';
+import './controllers/add.ctrl.js';
+import './controllers/remove.ctrl.js';
+import './controllers/edit.ctrl.js';
+import './controllers/report.ctrl.js';
+import './controllers/reject.ctrl.js';
+import './controllers/request.ctrl.js';
+import './controllers/settings.ctrl.js';
 import './login.js';
-import './settings.js';
 import service from './service.js';
 import './parts/renderheader.js';
 

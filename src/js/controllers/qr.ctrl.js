@@ -2,10 +2,17 @@
 
 import $ from 'jquery';
 import QRCode from 'qrcode';
-import service from './service.js';
-import messageMail from './mail.js';
-import { settingsObject, sendUsers } from './settings.js';
-import renderheader from './parts/renderheader.js';
+import service from '../service.js';
+import messageMail from '../mail.js';
+import { settingsObject, sendUsers } from './settings.ctrl.js';
+import renderheader from '../parts/renderheader.js';
+
+import { table } from '../components/qr/table.tpl.js';
+import { headerTable } from '../components/qr/header-table.tpl.js';
+import { switchElem } from '../components/qr/switch.tpl.js';
+import { count } from '../components/qr/count.tpl.js';
+import { tabs } from '../components/qr/tabs.tpl.js';
+import { qrItems } from '../components/qr/qr-items.tpl.js';
 
 const qrCollection = new Map(); // БД пользователей которым разрешили выдачу qr-кодов
 const departmentCollection = new Map(); // Коллекция подразделений
@@ -56,200 +63,30 @@ $(window).on('load', () => {
 	typeAssignCode();
 });
 
-function templateQRTable(data) {
-	const { id = '', fio = '', post  = '', cardid = '', cardname = '', statustitle = '' } = data;
-	const assingBtnCheck = qrObject.statusassign ? 'checked="checked"' : '';
-	const assignView = qrObject.statusmanual ? `
-		<div class="table__cell table__cell--body table__cell--switch-assign">
-			<div class="switch switch--item">
-				<label class="switch__wrap switch__wrap--item">
-					<input class="switch__input" type="checkbox" ${assingBtnCheck} disabled="disabled"/>
-					<span class="switch__btn switch__btn--disabled"></span>
-				</label>
-			</div>
-		</div>
-	` : '';
-
-	return `
-		<div class="table__row table__row--time" data-id="${id}">
-			<div class="table__cell table__cell--body table__cell--fio">
-				<span class="table__text table__text--body">${fio}</span>
-			</div>
-			<div class="table__cell table__cell--body table__cell--post">
-				<span class="table__text table__text--body">${post}</span>
-			</div>
-			<div class="table__cell table__cell--body table__cell--cardid">
-				<span class="table__text table__text--body">${cardid}</span>
-			</div>
-			<div class="table__cell table__cell--body table__cell--cardname">
-				<span class="table__text table__text--body">${cardname}</span>
-			</div>
-			<div class="table__cell table__cell--body table__cell--statustitle">
-				<span class="table__text table__text--body">${statustitle}</span>
-			</div>
-			${assignView}
-			<div class="table__cell table__cell--body table__cell--signature">
-				<span class="table__text table__text--body"></span>
-			</div>
-		</div>
-	`;
-}
-
-function templateQRHeaderTable() {
-	const assingBtnCheck = qrObject.statusassign ? 'checked="checked"' : '';
-	const assignView = qrObject.statusmanual ? `
-		<div class="table__cell table__cell--header table__cell--switch-assign">
-			<div class="switch switch--item">
-				<label class="switch__wrap switch__wrap--item" id="assignAll">
-					<input class="switch__input" type="checkbox" ${assingBtnCheck}/>
-					<span class="switch__btn"></span>
-				</label>
-			</div>
-		</div>
-	` : '';
-
-	return `
-		<div class="table__cell table__cell--header table__cell--fio">
-			<span class="table__text table__text--header">Фамилия Имя Отчество</span>
-			<button class="btn btn--sort" type="button" data-direction="true"></button>
-		</div>
-		<div class="table__cell table__cell--header table__cell--post">
-			<span class="table__text table__text--header">Должность</span>
-			<button class="btn btn--sort" type="button" data-direction="true"></button>
-		</div>
-		<div class="table__cell table__cell--header table__cell--cardid">
-			<span class="table__text table__text--header">ID qr-кода</span>
-		</div>
-		<div class="table__cell table__cell--header table__cell--cardname">
-			<span class="table__text table__text--header">Номер qr-кода</span>
-		</div>
-		<div class="table__cell table__cell--header table__cell--statustitle">
-			<span class="table__text table__text--header">Статус</span>
-		</div>
-		${assignView}
-		<div class="table__cell table__cell--header table__cell--signature">
-			<span class="table__text table__text--header">Подпись</span>
-		</div>
-	`;
-}
-
-function templateQRItems(users) {
-	const qrBlocks = users.reduce((grid, user) => {
-		const { fio = '', post = '', pictureurl = '' } = user;
-		const fioArr = fio.split(' ');
-		let fullName = '';
-
-		if (fioArr.length <= 3) {
-			fullName = fioArr.reduce((acc, elem) => {
-				const templateName = `<span>${elem}</span>`;
-
-				acc += templateName;
-
-				return acc;
-			}, '');
-		} else {
-			fullName = `<p>${fio}</p>`;
-		}
-
-		grid += `
-			<article class="document__item">
-				<img class="document__code" src="${pictureurl}" alt="qr code" />
-				<h3 class="document__name">${fullName}</h3>
-				<span class="document__post">${post}</span>
-				<p class="document__instruct">Скачайте с Google Play или App Store приложение UProx и отсканируейте через него QR-код.</p>
-			</article>
-		`;
-
-		return grid;
-	}, '');
-
-	return `
-		<h2 class="document__depart">${qrObject.longname}</h2>
-		<span class="document__count">Количество qp-кодов: ${users.length}</span>
-		<div class="document__grid">
-			${qrBlocks}
-		</div>
-	`;
-}
-
-function templateQRTabs(data) {
-	const { nameid = '', shortname = '', status = '' } = data;
-	const statusView = status ? 'tab__item--active' : '';
-
-	return `
-		<button class="tab__item ${statusView}" type="button" data-depart=${nameid}>
-			<span class="tab__name">${shortname}</span>
-		</button>
-	`;
-}
-
-function templateQRSwitch(data, page = 'qr') {
-	const { type, status } = data;
-	const assingBtnCheck = qrSwitch[type].status ? 'checked="checked"' : '';
-	const assingBtnClass = type === 'refresh' && !status ? 'switch__name--disabled' : '';
-	let switchText;
-	let tooltipInfo;
-
-	if (type === 'assign') {
-		switchText = status ? 'Ручное присвоение' : 'Автоприсвоение';
-		tooltipInfo = 'Если в данной опции выставлено автоприсвоение, тогда коды будут автоматически присвоены пользователям. Важно! При нехватке кодов для всех пользователей данная ф-я будет отключена. <br/> Если в данной опции выставлено ручное присваивание, тогда код будет присваеватся для каждого пользоватебя в отдельности.';
-	} else {
-		switchText = 'Автообновление';
-		tooltipInfo = 'Если данная опция включена, тогда при поступлении новых данных, они автоматически отобразятся в таблице. Перезагружать страницу не нужно.<br/> Рекомендуется отключить данную функцию при работе с данными в таблице!';
-	}
-
-	return `
-		<div class="main__switch">
-			<div class="tooltip">
-				<span class="tooltip__item">!</span>
-				<div class="tooltip__info tooltip__info--${type}">${tooltipInfo}</div>
-			</div>
-			<div class="switch switch--${type}-${page}">
-				<label class="switch__wrap switch__wrap--head">
-					<input class="switch__input" type="checkbox" ${assingBtnCheck}/>
-					<small class="switch__btn"></small>
-				</label>
-				<span class="switch__name ${assingBtnClass}">${switchText}</span>
-			</div>
-		</div>
-	`;
-}
-
-function templateQRCount(data) {
-	const { title, count } = data;
-
-	return `
-		<p class="main__count-wrap">
-			<span class="main__count-text">${title}</span>
-			<span class="main__count">${count}</span>
-		</p>
-	`;
-}
-
 function renderTable(nameTable = '#tableQR') {
 	$(`${nameTable} .table__content`).html('');
 
 	qrCollection.forEach((item) => {
 		if (item.nameid === qrObject.nameid) {
-			$(`${nameTable} .table__content`).append(templateQRTable(item));
+			$(`${nameTable} .table__content`).append(table(item, qrObject));
 		}
 	});
 }
 
 function renderHeaderTable(page = 'qr') {
 	$(`.table--${page} .table__header`).html('');
-	$(`.table--${page} .table__header`).append(templateQRHeaderTable());
+	$(`.table--${page} .table__header`).append(headerTable(qrObject));
 }
 
 function renderQRItems(array) {
 	$('.document').html('');
-	$('.document').append(templateQRItems(array));
+	$('.document').append(qrItems(array, qrObject));
 }
 
 function renderSwitch(page = 'qr') {
 	$(`.main__wrap-info--${page} .main__switchies`).html('');
 	for (let key in qrSwitch) {
-		$(`.main__wrap-info--${page} .main__switchies`).append(templateQRSwitch(qrSwitch[key]));
+		$(`.main__wrap-info--${page} .main__switchies`).append(switchElem(qrSwitch[key]));
 	}
 
 	autoRefresh();
@@ -259,7 +96,7 @@ function renderSwitch(page = 'qr') {
 function renderCount(page = 'qr') {
 	$(`.main__wrap-info--${page} .main__cards`).html('');
 	for (let key in qrCount) {
-		$(`.main__wrap-info--${page} .main__cards`).append(templateQRCount(qrCount[key]));
+		$(`.main__wrap-info--${page} .main__cards`).append(count(qrCount[key]));
 	}
 }
 
@@ -768,7 +605,7 @@ function addTabs(page = 'qr') {
 					status: qrObject.nameid === nameid
 				};
 
-				$(`.tab--${page}`).append(templateQRTabs(tabItem));
+				$(`.tab--${page}`).append(tabs(tabItem));
 			}
 		});
 	});

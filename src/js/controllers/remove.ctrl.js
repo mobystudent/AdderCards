@@ -3,10 +3,15 @@
 import $ from 'jquery';
 import datepickerFactory from 'jquery-datepicker';
 import datepickerRUFactory from 'jquery-datepicker/i18n/jquery.ui.datepicker-ru';
-import service from './service.js';
-import messageMail from './mail.js';
-import { settingsObject, sendUsers } from './settings.js';
-import renderheader from './parts/renderheader.js';
+import service from '../service.js';
+import messageMail from '../mail.js';
+import { settingsObject, sendUsers } from './settings.ctrl.js';
+import renderheader from '../parts/renderheader.js';
+
+import { table } from '../components/remove/table.tpl.js';
+import { form } from '../components/remove/form.tpl.js';
+import { count } from '../components/remove/count.tpl.js';
+import { headerTable } from '../components/remove/header-table.tpl.js';
 
 datepickerFactory($);
 datepickerRUFactory($);
@@ -54,171 +59,11 @@ $(window).on('load', () => {
 	showDataFromStorage();
 });
 
-function templateRemoveTable(data) {
-	const { id = '', fio = '', post = '', statustitle = '', newdepart = '',  cardvalidto = '' } = data;
-	const newdepartView = removeObject.statusnewdepart ? `
-		<div class="table__cell table__cell--body table__cell--department">
-			<span class="table__text table__text--body">${newdepart}</span>
-		</div>
-	` : '';
-	const cardvalidtoView = removeObject.statuscardvalidto ? `
-		<div class="table__cell table__cell--body table__cell--cardvalidto">
-			<span class="table__text table__text--body">${cardvalidto}</span>
-		</div>
-	` : '';
-
-	return `
-		<div class="table__row" data-id="${id}">
-			<div class="table__cell table__cell--body table__cell--fio">
-				<span class="table__text table__text--body">${fio}</span>
-			</div>
-			<div class="table__cell table__cell--body table__cell--post">
-				<span class="table__text table__text--body">${post}</span>
-			</div>
-			<div class="table__cell table__cell--body table__cell--statustitle">
-				<span class="table__text table__text--body">${statustitle}</span>
-			</div>
-			${newdepartView}
-			${cardvalidtoView}
-			<div class="table__cell table__cell--body table__cell--edit">
-				<button class="table__btn table__btn--edit" type="button">
-					<svg class="icon icon--edit icon--edit-black">
-						<use class="icon__item" xlink:href="./images/sprite.svg#edit"></use>
-					</svg>
-				</button>
-			</div>
-			<div class="table__cell table__cell--body table__cell--delete">
-				<button class="table__btn table__btn--delete" type="button">
-					<svg class="icon icon--delete icon--delete-black">
-						<use class="icon__item" xlink:href="./images/sprite.svg#delete"></use>
-					</svg>
-				</button>
-			</div>
-		</div>
-	`;
-}
-
-function templateRemoveForm() {
-	const { fio = '', statusid = '', newdepart = '', newnameid = '', statustitle = '', cardvalidto  = '', photofile = '' } = removeObject;
-	const fioValue = fio ? fio : 'Выберите пользователя';
-	const fioClassView = fio ? 'select__value--selected-form' : '';
-	const reasonValue = statustitle ? statustitle : 'Выберите причину удаления';
-	const reasonClassView = statustitle ? 'select__value--selected-form' : '';
-	const photoUrl = photofile ? photofile : './images/avatar.svg';
-	const newdepartValue = newdepart ? newdepart : 'Выберите подразделение';
-	const newdepartClassView = newdepart ? 'select__value--selected-form' : '';
-	const departView = statusid === 'changeDepart' ? `
-		<div class="form__field" data-name="depart">
-			<span class="form__name form__name--form">Новое подразделение</span>
-			<div class="form__select select select--form" data-type="newnameid" data-select="newnameid">
-				<header class="select__header select__header--form">
-					<span class="select__value select__value--form ${newdepartClassView}" data-title="${newdepartValue}" data-newnameid="${newnameid}">${newdepartValue}</span>
-				</header>
-				<ul class="select__list select__list--form"></ul>
-			</div>
-		</div>
-	` : '';
-	const cardvalidtoView = statusid === 'remove' ? `
-		<div class="form__field" data-name="date">
-			<label class="form__label">
-				<span class="form__name form__name--form">Дата завершения действия пропуска</span>
-				<input class="form__item form__item--form" id="removeDatepicker" name="date" type="text" value="${cardvalidto}" placeholder="Введите дату завершения действия пропуска" readonly="readonly" required="required"/>
-			</label>
-		</div>
-	` : '';
-
-	return `
-		<div class="form__fields">
-			<div class="form__field">
-				<span class="form__name form__name--form">Пользователь</span>
-				<div class="form__select select select--form" data-select="fio">
-					<header class="select__header select__header--form">
-						<span class="select__value select__value--form ${fioClassView}" data-title="${fioValue}" data-fio="fio">${fioValue}</span>
-					</header>
-					<ul class="select__list select__list--form"></ul>
-				</div>
-			</div>
-			<div class="form__field">
-				<span class="form__name form__name--form">Причина удаления/отчисления</span>
-				<div class="form__select select select--form" data-type="statusid" data-select="reason">
-					<header class="select__header select__header--form">
-						<span class="select__value select__value--form ${reasonClassView}" data-title="${reasonValue}" data-reason="${statusid}">${reasonValue}</span>
-					</header>
-					<ul class="select__list select__list--form">
-						<li class="select__item">
-							<span class="select__name select__name--form" data-title="Перевод в другое подразделение" data-reason="changeDepart">Перевод в другое подразделение</span>
-						</li>
-						<li class="select__item">
-							<span class="select__name select__name--form" data-title="Увольнение/отчисление" data-reason="remove">Увольнение/отчисление</span>
-						</li>
-					</ul>
-				</div>
-			</div>
-			${departView}
-			${cardvalidtoView}
-		</div>
-		<div class="form__aside">
-			<div class="form__img">
-				<img class="img img--form img--form-remove" src="${photoUrl}" alt="user avatar"/>
-			</div>
-		</div>
-	`;
-}
-
-function templateRemoveHeaderTable() {
-	const newDepartView = removeObject.statusnewdepart ? `
-		<div class="table__cell table__cell--header table__cell--department">
-			<span class="table__text table__text--header">Новое подразделение</span>
-		</div>
-	` : '';
-	const cardvalidtoView = removeObject.statuscardvalidto ? `
-		<div class="table__cell table__cell--header table__cell--cardvalidto">
-			<span class="table__text table__text--header">Дата</span>
-		</div>
-	` : '';
-
-	return `
-		<div class="table__cell table__cell--header table__cell--fio">
-			<span class="table__text table__text--header">Фамилия Имя Отчество</span>
-			<button class="btn btn--sort" type="button" data-direction="true"></button>
-		</div>
-		<div class="table__cell table__cell--header table__cell--post">
-			<span class="table__text table__text--header">Должность</span>
-		</div>
-		<div class="table__cell table__cell--header table__cell--statustitle">
-			<span class="table__text table__text--header">Причина удаления</span>
-		</div>
-		${newDepartView}
-		${cardvalidtoView}
-		<div class="table__cell table__cell--header table__cell--edit">
-			<svg class="icon icon--edit icon--edit-white">
-				<use class="icon__item" xlink:href="./images/sprite.svg#edit"></use>
-			</svg>
-		</div>
-		<div class="table__cell table__cell--header table__cell--delete">
-			<svg class="icon icon--delete icon--delete-white">
-				<use class="icon__item" xlink:href="./images/sprite.svg#delete"></use>
-			</svg>
-		</div>
-	`;
-}
-
-function templateRemoveCount(data) {
-	const { title, count } = data;
-
-	return `
-		<p class="main__count-wrap">
-			<span class="main__count-text">${title}</span>
-			<span class="main__count">${count}</span>
-		</p>
-	`;
-}
-
 function renderTable(nameTable = '#tableRemove') {
 	$(`${nameTable} .table__content`).html('');
 
 	removeCollection.forEach((item) => {
-		$(`${nameTable} .table__content`).append(templateRemoveTable(item));
+		$(`${nameTable} .table__content`).append(table(item, removeObject));
 	});
 
 	renderCount();
@@ -227,13 +72,13 @@ function renderTable(nameTable = '#tableRemove') {
 function renderCount(page = 'remove') {
 	$(`.main__wrap-info--${page} .main__cards`).html('');
 	for (let key in removeCount) {
-		$(`.main__wrap-info--${page} .main__cards`).append(templateRemoveCount(removeCount[key]));
+		$(`.main__wrap-info--${page} .main__cards`).append(count(removeCount[key]));
 	}
 }
 
 function renderForm(nameForm = '#removeForm') {
 	$(`${nameForm} .form__wrap`).html('');
-	$(`${nameForm} .form__wrap`).append(templateRemoveForm());
+	$(`${nameForm} .form__wrap`).append(form(removeObject));
 
 	toggleSelect(); // 3
 	getAddUsersInDB(); // вывести всех пользователей в селект 1
@@ -243,7 +88,7 @@ function renderForm(nameForm = '#removeForm') {
 
 function renderHeaderTable(page = 'remove') {
 	$(`.table--${page} .table__header`).html('');
-	$(`.table--${page} .table__header`).append(templateRemoveHeaderTable());
+	$(`.table--${page} .table__header`).append(headerTable(removeObject));
 }
 
 function addUser(page = 'remove') {

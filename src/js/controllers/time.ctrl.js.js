@@ -1,9 +1,12 @@
 'use strict';
 
 import $ from 'jquery';
-import convert from './convert.js';
-import service from './service.js';
-import renderheader from './parts/renderheader.js';
+import convert from '../convert.js';
+import service from '../service.js';
+import renderheader from '../parts/renderheader.js';
+
+import { table } from '../components/time/table.tpl.js';
+import { count } from '../components/time/count.tpl.js';
 
 const timeCollection = new Map(); // БД в которую будут добавляться карты при вводе и из неё будут выводиться данные в таблицу.
 const dbTimeCardsCollection = new Map();  // Коллекция всех добавленных карт
@@ -29,66 +32,18 @@ $(window).on('load', () => {
 	showDataFromStorage();
 });
 
-function templateTimeTable(data) {
-	const { id = '', fio = '', cardid = '', cardname = '' } = data;
-	const typeIDField = cardid ? `
-		<span class="table__text table__text--body">${cardid}</span>
-	` : `
-		<input class="table__input" />
-	`;
-
-	return `
-		<div class="table__row" data-id="${id}">
-			<div class="table__cell table__cell--body table__cell--fio">
-				<span class="table__text table__text--body">${fio}</span>
-			</div>
-			<div class="table__cell table__cell--body table__cell--cardid">
-				${typeIDField}
-			</div>
-			<div class="table__cell table__cell--body table__cell--cardname">
-				<span class="table__text table__text--body">${cardname}</span>
-			</div>
-			<div class="table__cell table__cell--body table__cell--clear">
-				<button class="table__btn table__btn--clear" type="button">
-					<svg class="icon icon--clear icon--clear-black">
-						<use class="icon__item" xlink:href="./images/sprite.svg#clear"></use>
-					</svg>
-				</button>
-			</div>
-			<div class="table__cell table__cell--body table__cell--delete">
-				<button class="table__btn table__btn--delete" type="button">
-					<svg class="icon icon--delete icon--delete-black">
-						<use class="icon__item" xlink:href="./images/sprite.svg#delete"></use>
-					</svg>
-				</button>
-			</div>
-		</div>
-	`;
-}
-
-function templateTimeCount(data) {
-	const { title, count } = data;
-
-	return `
-		<p class="main__count-wrap">
-			<span class="main__count-text">${title}</span>
-			<span class="main__count">${count}</span>
-		</p>
-	`;
-}
-
 function renderTable(nameTable = '#tableTime') {
 	$(`${nameTable} .table__content`).html('');
 
 	timeCollection.forEach((item) => {
-		$(`${nameTable} .table__content`).append(templateTimeTable(item));
+		$(`${nameTable} .table__content`).append(table(item));
 	});
 }
 
 function renderCount(page = 'time') {
 	$(`.main__wrap-info--${page} .main__cards`).html('');
 	for (let key in timeCount) {
-		$(`.main__wrap-info--${page} .main__cards`).append(templateTimeCount(timeCount[key]));
+		$(`.main__wrap-info--${page} .main__cards`).append(count(timeCount[key]));
 	}
 }
 

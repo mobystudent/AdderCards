@@ -1,8 +1,11 @@
 'use strict';
 
 import $ from 'jquery';
-import service from './service.js';
-import renderheader from './parts/renderheader.js';
+import service from '../service.js';
+import renderheader from '../parts/renderheader.js';
+
+import { table } from '../components/download/table.tpl.js';
+import { count } from '../components/download/count.tpl.js';
 
 const downloadCollection = new Map(); // БД сформированных qr-кодов
 const parseQRCollection = new Map(); // БД загруженых qr-кодов
@@ -38,47 +41,11 @@ $(window).on('load', () => {
 	showDataFromStorage();
 });
 
-function templateDownloadTable(data) {
-	const { id = '', codepicture = '', cardid = '', cardname = '' } = data;
-
-	return `
-		<div class="table__row" data-id="${id}">
-			<div class="table__cell table__cell--body table__cell--codepicture">
-				<span class="table__text table__text--body">${codepicture}</span>
-			</div>
-			<div class="table__cell table__cell--body table__cell--cardid">
-				<span class="table__text table__text--body">${cardid}</span>
-			</div>
-			<div class="table__cell table__cell--body table__cell--cardname">
-				<span class="table__text table__text--body">${cardname}</span>
-			</div>
-			<div class="table__cell table__cell--body table__cell--delete">
-				<button class="table__btn table__btn--delete" type="button">
-					<svg class="icon icon--delete icon--delete-black">
-						<use class="icon__item" xlink:href="./images/sprite.svg#delete"></use>
-					</svg>
-				</button>
-			</div>
-		</div>
-	`;
-}
-
-function templateDownloadCount(data) {
-	const { title, count } = data;
-
-	return `
-		<p class="main__count-wrap">
-			<span class="main__count-text">${title}</span>
-			<span class="main__count">${count}</span>
-		</p>
-	`;
-}
-
 function renderTable(nameTable = '#tableDownload') {
 	$(`${nameTable} .table__content`).html('');
 
 	downloadCollection.forEach((item) => {
-		$(`${nameTable} .table__content`).append(templateDownloadTable(item));
+		$(`${nameTable} .table__content`).append(table(item));
 	});
 
 	renderCount();
@@ -99,7 +66,7 @@ function renderCount() {
 	pageParts.forEach((page) => {
 		$(`.main__wrap-info--${page.type} .main__cards`).html('');
 		for (let key in page.object) {
-			$(`.main__wrap-info--${page.type} .main__cards`).append(templateDownloadCount(page.object[key]));
+			$(`.main__wrap-info--${page.type} .main__cards`).append(count(page.object[key]));
 		}
 	});
 }

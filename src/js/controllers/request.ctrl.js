@@ -1,10 +1,16 @@
 'use strict';
 
 import $ from 'jquery';
-import service from './service.js';
-import messageMail from './mail.js';
-import { settingsObject, sendUsers } from './settings.js';
-import renderheader from './parts/renderheader.js';
+import service from '../service.js';
+import messageMail from '../mail.js';
+import { settingsObject, sendUsers } from './settings.ctrl.js';
+import renderheader from '../parts/renderheader.js';
+
+import { table } from '../components/request/table.tpl.js';
+import { tabs } from '../components/request/tabs.tpl.js';
+import { headerTable } from '../components/request/header-table.tpl.js';
+import { switchElem } from '../components/request/switch.tpl.js';
+import { count } from '../components/request/count.tpl.js';
 
 const requestCollection = new Map(); // БД отчета
 const departmentCollection = new Map();  // Коллекци подразделений
@@ -43,150 +49,25 @@ $(window).on('load', () => {
 	renderSwitch();
 });
 
-function templateRequestTable(data) {
-	const { id = '', fio = '', post = '', statustitle = '', date = '', statususer = '', allow = '', disallow = '', allowblock = '', disallowblock = '' } = data;
-	const rowClassView = statususer ? 'table__row--disabled' : '';
-	const allowBtnValue = allow ? 'Отменить' : 'Разрешить';
-	const disallowBtnValue = disallow ? 'Отменить' : 'Запретить';
-	const allowBtnClassView = allow ? 'btn--allow-cancel' : '';
-	const disallowBtnClassView = disallow ? 'btn--disallow-cancel' : '';
-	const allowDiffClassView = allowblock ? 'btn--allow-disabled' : '';
-	const disallowDiffClassView = disallowblock ? 'btn--disallow-disabled' : '';
-	const allowBtnBlock = allowblock ? 'disabled="disabled"' : '';
-	const disallowBtnBlock = disallowblock ? 'disabled="disabled"' : '';
-
-	return `
-		<div class="table__row ${rowClassView}" data-id="${id}">
-			<div class="table__cell table__cell--body table__cell--fio">
-				<span class="table__text table__text--body">${fio}</span>
-			</div>
-			<div class="table__cell table__cell--body table__cell--post">
-				<span class="table__text table__text--body">${post}</span>
-			</div>
-			<div class="table__cell table__cell--body table__cell--statustitle">
-				<span class="table__text table__text--body">${statustitle}</span>
-			</div>
-			<div class="table__cell table__cell--body table__cell--date">
-				<span class="table__text table__text--body">${date}</span>
-			</div>
-			<div class="table__cell table__cell--body table__cell--btn-permis">
-				<button class="btn btn--allow ${allowBtnClassView} ${allowDiffClassView}" type="button" data-type="allow" ${allowBtnBlock}>
-					${allowBtnValue}
-				</button>
-				<button class="btn btn--disallow ${disallowBtnClassView} ${disallowDiffClassView}" type="button" data-type="disallow" ${disallowBtnBlock}>
-					${disallowBtnValue}
-				</button>
-			</div>
-		</div>
-	`;
-}
-
-function templateRequestTabs(data) {
-	const { nameid = '', shortname = '', status = '' } = data;
-	const statusView = status ? 'tab__item--active' : '';
-
-	return `
-		<button class="tab__item ${statusView}" type="button" data-depart=${nameid}>
-			<span class="tab__name">${shortname}</span>
-		</button>
-	`;
-}
-
-function templateRequestHeaderTable() {
-	const allowBtnValue = requestObject.statusallow ? 'Отменить' : 'Разрешить все';
-	const disallowBtnValue = requestObject.statusdisallow ? 'Отменить' : 'Запретить все';
-	const allowBtnClassView = requestObject.statusallow ? 'btn--allow-cancel' : '';
-	const disallowBtnClassView = requestObject.statusdisallow ? 'btn--disallow-cancel' : '';
-	const allowDiffClassView = requestObject.statusdisallow ? 'btn--allow-disabled' : '';
-	const disallowDiffClassView = requestObject.statusallow ? 'btn--disallow-disabled' : '';
-	const allowBtnBlock = requestObject.statusdisallow ? 'disabled="disabled"' : '';
-	const disallowBtnBlock = requestObject.statusallow ? 'disabled="disabled"' : '';
-
-	return `
-		<div class="table__cell table__cell--header table__cell--fio">
-			<span class="table__text table__text--header">Фамилия Имя Отчество</span>
-			<button class="btn btn--sort" type="button" data-direction="true"></button>
-		</div>
-		<div class="table__cell table__cell--header table__cell--post">
-			<span class="table__text table__text--header">Должность</span>
-			<button class="btn btn--sort" type="button" data-direction="true"></button>
-		</div>
-		<div class="table__cell table__cell--header table__cell--statustitle">
-			<span class="table__text table__text--header">Статус</span>
-		</div>
-		<div class="table__cell table__cell--header table__cell--date">
-			<span class="table__text table__text--header">Дата</span>
-		</div>
-		<div class="table__cell table__cell--header table__cell--btn-permis">
-			<button class="btn btn--allow ${allowBtnClassView} ${allowDiffClassView}" id="allowAll" type="button" data-type="allow" ${allowBtnBlock}>
-				${allowBtnValue}
-			</button>
-			<button class="btn btn--disallow ${disallowBtnClassView} ${disallowDiffClassView}" id="disallowAll" type="button" data-type="disallow" ${disallowBtnBlock}>
-				${disallowBtnValue}
-			</button>
-		</div>
-	`;
-}
-
-function templateRequestSwitch(data, page = 'request') {
-	const { type, status } = data;
-	const assingBtnCheck = status ? 'checked="checked"' : '';
-	const assingBtnClass = type === 'refresh' && !status ? 'switch__name--disabled' : '';
-	let switchText;
-	let tooltipInfo;
-
-	if (type === 'refresh') {
-		switchText = 'Автообновление';
-		tooltipInfo = 'Если данная опция включена, тогда при поступлении новых данных, они автоматически отобразятся в таблице. Перезагружать страницу не нужно.<br/> Рекомендуется отключить данную функцию при работе с данными в таблице!';
-	}
-
-	return `
-		<div class="main__switch">
-			<div class="tooltip">
-				<span class="tooltip__item">!</span>
-				<div class="tooltip__info tooltip__info--${type}">${tooltipInfo}</div>
-			</div>
-			<div class="switch switch--${type}-${page}">
-				<label class="switch__wrap switch__wrap--head">
-					<input class="switch__input" type="checkbox" ${assingBtnCheck}/>
-					<small class="switch__btn"></small>
-				</label>
-				<span class="switch__name ${assingBtnClass}">${switchText}</span>
-			</div>
-		</div>
-	`;
-}
-
-function templateRequestCount(data) {
-	const { title, count } = data;
-
-	return `
-		<p class="main__count-wrap">
-			<span class="main__count-text">${title}</span>
-			<span class="main__count">${count}</span>
-		</p>
-	`;
-}
-
 function renderTable(nameTable = '#tableRequest') {
 	$(`${nameTable} .table__content`).html('');
 
 	requestCollection.forEach((item) => {
 		if (item.nameid === requestObject.nameid) {
-			$(`${nameTable} .table__content`).append(templateRequestTable(item));
+			$(`${nameTable} .table__content`).append(table(item));
 		}
 	});
 }
 
 function renderHeaderTable(page = 'request') {
 	$(`.table--${page} .table__header`).html('');
-	$(`.table--${page} .table__header`).append(templateRequestHeaderTable());
+	$(`.table--${page} .table__header`).append(headerTable(requestObject));
 }
 
 function renderSwitch(page = 'request') {
 	$(`.main__wrap-info--${page} .main__switchies`).html('');
 	for (let key in requestSwitch) {
-		$(`.main__wrap-info--${page} .main__switchies`).append(templateRequestSwitch(requestSwitch[key]));
+		$(`.main__wrap-info--${page} .main__switchies`).append(switchElem(requestSwitch[key]));
 	}
 
 	autoRefresh();
@@ -195,7 +76,7 @@ function renderSwitch(page = 'request') {
 function renderCount(page = 'request') {
 	$(`.main__wrap-info--${page} .main__cards`).html('');
 	for (let key in requestCount) {
-		$(`.main__wrap-info--${page} .main__cards`).append(templateRequestCount(requestCount[key]));
+		$(`.main__wrap-info--${page} .main__cards`).append(count(requestCount[key]));
 	}
 }
 
@@ -616,7 +497,7 @@ function addTabs(page = 'request') {
 						status: requestObject.nameid === nameid ? true : false
 					};
 
-					$(`.tab--${page}`).append(templateRequestTabs(tabItem));
+					$(`.tab--${page}`).append(tabs(tabItem));
 				}
 			});
 		});

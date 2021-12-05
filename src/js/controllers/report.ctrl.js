@@ -3,9 +3,15 @@
 import $ from 'jquery';
 import datepickerFactory from 'jquery-datepicker';
 import datepickerRUFactory from 'jquery-datepicker/i18n/jquery.ui.datepicker-ru';
-import service from './service.js';
-import { settingsObject } from './settings.js';
-import renderheader from './parts/renderheader.js';
+import service from '../service.js';
+import { settingsObject } from './settings.ctrl.js';
+import renderheader from '../parts/renderheader.js';
+
+import { table } from '../components/report/table.tpl.js';
+import { form } from '../components/report/form.tpl.js';
+import { switchElem } from '../components/report/switch.tpl.js';
+import { count } from '../components/report/count.tpl.js';
+import { filter } from '../components/report/filter.tpl.js';
 
 datepickerFactory($);
 datepickerRUFactory($);
@@ -52,128 +58,11 @@ $(window).on('load', () => {
 	renderSwitch();
 });
 
-function templateReportTable(data) {
-	const { id = '', fio = '', post = '', cardname = '', statustitle = '', date = '' } = data;
-
-	return `
-		<div class="table__row" data-id="${id}">
-			<div class="table__cell table__cell--body table__cell--fio">
-				<span class="table__text table__text--body">${fio}</span>
-			</div>
-			<div class="table__cell table__cell--body table__cell--post">
-				<span class="table__text table__text--body">${post}</span>
-			</div>
-			<div class="table__cell table__cell--body table__cell--cardname">
-				<span class="table__text table__text--body">${cardname}</span>
-			</div>
-			<div class="table__cell table__cell--body table__cell--statustitle">
-				<span class="table__text table__text--body">${statustitle}</span>
-			</div>
-			<div class="table__cell table__cell--body table__cell--date">
-				<span class="table__text table__text--body">${date}</span>
-			</div>
-		</div>
-	`;
-}
-
-function templateReportForm() {
-	const { posttitle = '', datetitle = '', statusid = '', statustitle = '' } = reportObject;
-	const postValue = posttitle ? posttitle : 'Выберите должность';
-	const postClassView = posttitle ? 'select__value--selected-form' : '';
-	const statusValue = statustitle ? statustitle : 'Выберите статус';
-	const statusClassView = statustitle ? 'select__value--selected-form' : '';
-	const filterDiffClassView = datetitle || posttitle || statusid ? '' : 'btn--cancel-disabled';
-	const filterBtnBlock = datetitle || posttitle || statusid ? '' : 'disabled="disabled"';
-
-	return `
-		<div class="form__fields form__fields--filter">
-			<div class="form__field form__field--filter">
-				<span class="form__name form__name--form">Фильтровать по должности</span>
-				<div class="select" data-select="post">
-					<header class="select__header select__header--form">
-						<span class="select__value select__value--form ${postClassView}" data-title="${postValue}" data-type="${posttitle}">${postValue}</span>
-					</header>
-					<ul class="select__list select__list--form"></ul>
-				</div>
-			</div>
-			<div class="form__field form__field--filter">
-				<span class="form__name form__name--form">Фильтровать по статусу</span>
-				<div class="select" data-select="statusid">
-					<header class="select__header select__header--form">
-						<span class="select__value select__value--form ${statusClassView}" data-title="${statusValue}" data-type="${statusid}">${statusValue}</span>
-					</header>
-					<ul class="select__list select__list--form"></ul>
-				</div>
-			</div>
-			<div class="form__field form__field--filter">
-				<label class="form__label">
-					<span class="form__name form__name--form">Фильтровать по дате</span>
-					<input class="form__item form__item--form" id="reportDatepicker" name="date" type="text" value="${datetitle}" placeholder="Выберите дату" readonly="readonly"/>
-				</label>
-			</div>
-		</div>
-		<button class="btn btn--cancel ${filterDiffClassView}" type="reset" ${filterBtnBlock}>Сбросить фильтры</button>
-	`;
-}
-
-function templateReportSwitch(data, page = 'report') {
-	const { type, status } = data;
-	const assingBtnCheck = status ? 'checked="checked"' : '';
-	const assingBtnClass = type === 'refresh' && !status ? 'switch__name--disabled' : '';
-	let switchText;
-	let tooltipInfo;
-
-	if (type === 'refresh') {
-		switchText = 'Автообновление';
-		tooltipInfo = 'Если данная опция включена, тогда при поступлении новых данных, они автоматически отобразятся в таблице. Перезагружать страницу не нужно.<br/> Рекомендуется отключить данную функцию при работе с данными в таблице!';
-	}
-
-	return `
-		<div class="main__switch">
-			<div class="tooltip">
-				<span class="tooltip__item">!</span>
-				<div class="tooltip__info tooltip__info--${type}">${tooltipInfo}</div>
-			</div>
-			<div class="switch switch--${type}-${page}">
-				<label class="switch__wrap switch__wrap--head">
-					<input class="switch__input" type="checkbox" ${assingBtnCheck}/>
-					<small class="switch__btn"></small>
-				</label>
-				<span class="switch__name ${assingBtnClass}">${switchText}</span>
-			</div>
-		</div>
-	`;
-}
-
-function templateReportCount(data) {
-	const { title, count } = data;
-
-	return `
-		<p class="main__count-wrap">
-			<span class="main__count-text">${title}</span>
-			<span class="main__count">${count}</span>
-		</p>
-	`;
-}
-
-function templateFilter(data) {
-	const { select, item: { title, statusid } } = data;
-	const nameidType = statusid ? statusid : title;
-
-	return `
-		<li class="select__item">
-			<span class="select__name select__name--form" data-title="${title}" data-${select}="${nameidType}">
-				${title}
-			</span>
-		</li>
-	`;
-}
-
 function renderTable(nameTable = '#tableReport') {
 	$(`${nameTable} .table__content`).html('');
 
 	reportCollection.forEach((item) => {
-		$(`${nameTable} .table__content`).append(templateReportTable(item));
+		$(`${nameTable} .table__content`).append(table(item));
 	});
 
 	renderCount();
@@ -181,7 +70,7 @@ function renderTable(nameTable = '#tableReport') {
 
 function renderForm(nameForm = '#reportForm') {
 	$(`${nameForm} .form__wrap`).html('');
-	$(`${nameForm} .form__wrap`).append(templateReportForm());
+	$(`${nameForm} .form__wrap`).append(form(reportObject));
 
 	filterUsersFromDB();
 	renderFilter();
@@ -193,7 +82,7 @@ function renderForm(nameForm = '#reportForm') {
 function renderSwitch(page = 'report') {
 	$(`.main__wrap-info--${page} .main__switchies`).html('');
 	for (let key in reportSwitch) {
-		$(`.main__wrap-info--${page} .main__switchies`).append(templateReportSwitch(reportSwitch[key]));
+		$(`.main__wrap-info--${page} .main__switchies`).append(switchElem(reportSwitch[key]));
 	}
 
 	autoRefresh();
@@ -202,7 +91,7 @@ function renderSwitch(page = 'report') {
 function renderCount(page = 'report') {
 	$(`.main__wrap-info--${page} .main__cards`).html('');
 	for (let key in reportCount) {
-		$(`.main__wrap-info--${page} .main__cards`).append(templateReportCount(reportCount[key]));
+		$(`.main__wrap-info--${page} .main__cards`).append(count(reportCount[key]));
 	}
 }
 
@@ -221,7 +110,7 @@ function renderFilter(nameForm = '#reportForm') {
 	$(`${nameForm} .select__list`).html('');
 	filters.forEach(({ select, array }) => {
 		array.forEach((item) => {
-			$(`${nameForm} .select[data-select=${select}] .select__list`).append(templateFilter({ select, item }));
+			$(`${nameForm} .select[data-select=${select}] .select__list`).append(filter({ select, item }));
 		});
 	});
 

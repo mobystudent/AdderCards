@@ -1,10 +1,15 @@
 'use strict';
 
 import $ from 'jquery';
-import service from './service.js';
-import messageMail from './mail.js';
-import { settingsObject, sendUsers } from './settings.js';
-import renderheader from './parts/renderheader.js';
+import service from '../service.js';
+import messageMail from '../mail.js';
+import { settingsObject, sendUsers } from './settings.ctrl.js';
+import renderheader from '../parts/renderheader.js';
+
+import { table } from '../components/edit/table.tpl.js';
+import { form } from '../components/edit/form.tpl.js';
+import { count } from '../components/edit/count.tpl.js';
+import { headerTable } from '../components/edit/header-table.tpl.js';
 
 const editCollection = new Map();
 const editObject = {
@@ -50,208 +55,11 @@ $(window).on('load', () => {
 	showDataFromStorage();
 });
 
-function templateEditTable(data) {
-	const { id = '', fio = '', post = '', statustitle = '', newfio = '', newpost = '', newphotoname = '' } = data;
-	const newfioView = editObject.statusnewfio ? `
-		<div class="table__cell table__cell--body table__cell--fio">
-			<span class="table__text table__text--body">${newfio}</span>
-		</div>
-	` : '';
-	const newpostView = editObject.statusnewpost ? `
-		<div class="table__cell table__cell--body table__cell--post">
-			<span class="table__text table__text--body">${newpost}</span>
-		</div>
-	` : '';
-	const newphotofileView = editObject.statusnewphotofile ? `
-		<div class="table__cell table__cell--body table__cell--photoname">
-			<span class="table__text table__text--body">${newphotoname}</span>
-		</div>
-	` : '';
-
-	return `
-		<div class="table__row" data-id="${id}">
-			<div class="table__cell table__cell--body table__cell--fio">
-				<span class="table__text table__text--body">${fio}</span>
-			</div>
-			<div class="table__cell table__cell--body table__cell--post">
-				<span class="table__text table__text--body">${post}</span>
-			</div>
-			<div class="table__cell table__cell--body table__cell--statustitle">
-				<span class="table__text table__text--body">${statustitle}</span>
-			</div>
-			${newfioView}
-			${newpostView}
-			${newphotofileView}
-			<div class="table__cell table__cell--body table__cell--edit">
-				<button class="table__btn table__btn--edit" type="button">
-					<svg class="icon icon--edit icon--edit-black">
-						<use class="icon__item" xlink:href="./images/sprite.svg#edit"></use>
-					</svg>
-				</button>
-			</div>
-			<div class="table__cell table__cell--body table__cell--delete">
-				<button class="table__btn table__btn--delete" type="button">
-					<svg class="icon icon--delete icon--delete-black">
-						<use class="icon__item" xlink:href="./images/sprite.svg#delete"></use>
-					</svg>
-				</button>
-			</div>
-		</div>
-	`;
-}
-
-function templateEditForm() {
-	const { fio = '', statusid = '', newpost = '', newfio = '', statustitle = '', photofile = '', newphotourl = '' } = editObject;
-	const fioValue = fio ? fio : 'Выберите пользователя';
-	const fioClassView = fio ? 'select__value--selected-form' : '';
-	const changeValue = statustitle ? statustitle : 'Выберите тип изменения';
-	const changeClassView = statustitle ? 'select__value--selected-form' : '';
-	const fioView = statusid === 'changeFIO' ? `
-		<div class="form__field" data-name="newfio">
-			<label class="form__label">
-				<span class="form__name form__name--form">Новое ФИО</span>
-				<input class="form__item form__item--form" name="newfio" type="text" value="${newfio}" placeholder="Введите новое ФИО" required="required"/>
-			</label>
-		</div>
-	` : '';
-	const postView = statusid === 'changePost' ? `
-		<div class="form__field" data-name="newpost">
-			<label class="form__label">
-				<span class="form__name form__name--form">Новая должность</span>
-				<input class="form__item form__item--form" name="newpost" type="text" value="${newpost}" placeholder="Введите новую должность" required/>
-			</label>
-		</div>
-	` : '';
-	const imageView = statusid === 'changeImage' ? `
-		<div class="form__field" data-name="newimage">
-			<input class="form__item form__item--file" id="editFile" name="photofile" type="file" required="required"/>
-			<label class="form__download" for="editFile">
-				<svg class="icon icon--download">
-					<use xlink:href="./images/sprite.svg#download"></use>
-				</svg>
-				<span class="form__title form__title--page">Загрузить фото</span>
-			</label>
-		</div>
-	` : '';
-	let photoUrl;
-
-	if (photofile && !newphotourl) {
-		photoUrl = photofile;
-	} else if (newphotourl) {
-		photoUrl = newphotourl;
-	} else {
-		photoUrl = './images/avatar.svg';
-	}
-
-	return `
-		<div class="form__fields">
-			<div class="form__field">
-				<span class="form__name form__name--form">Пользователь</span>
-				<div class="form__select select select--form" data-select="fio">
-					<header class="select__header select__header--form">
-						<span class="select__value select__value--form ${fioClassView}" data-title="${fioValue}" data-fio="fio">${fioValue}</span>
-					</header>
-					<ul class="select__list select__list--form"></ul>
-				</div>
-			</div>
-			<div class="form__field">
-				<span class="form__name form__name--form">Тип изменения</span>
-				<div class="form__select select select--form" data-type="statusid" data-select="change">
-					<header class="select__header select__header--form">
-						<span class="select__value select__value--form ${changeClassView}" data-title="${changeValue}" data-change="${statusid}">${changeValue}</span>
-					</header>
-					<ul class="select__list select__list--form">
-						<li class="select__item">
-							<span class="select__name select__name--form" data-title="Утеря пластиковой карты" data-change="changeCard">Утеря пластиковой карты</span>
-						</li>
-						<li class="select__item">
-							<span class="select__name select__name--form" data-title="Утеря QR-кода" data-change="changeQR">Утеря QR-кода</span>
-						</li>
-						<li class="select__item">
-							<span class="select__name select__name--form" data-title="Изменение ФИО" data-change="changeFIO">Изменение ФИО</span>
-						</li>
-						<li class="select__item">
-							<span class="select__name select__name--form" data-title="Изменение должности" data-change="changePost">Изменение должности</span>
-						</li>
-						<li class="select__item">
-							<span class="select__name select__name--form" data-title="Изменение фото" data-change="changeImage">Изменение фото</span>
-						</li>
-					</ul>
-				</div>
-			</div>
-			${postView}
-			${fioView}
-		</div>
-		<div class="form__aside">
-			<div class="form__img">
-				<img class="img img--form img--form-edit" src="${photoUrl}" alt="user avatar"/>
-			</div>
-			${imageView}
-		</div>
-	`;
-}
-
-function templateEditHeaderTable() {
-	const newfioView = editObject.statusnewfio ? `
-		<div class="table__cell table__cell--header table__cell--fio">
-			<span class="table__text table__text--header">Новое Фамилия Имя Отчество</span>
-			<button class="btn btn--sort" type="button" data-direction="true"></button>
-		</div>
-	` : '';
-	const newpostView = editObject.statusnewpost ? `
-		<div class="table__cell table__cell--header table__cell--post">
-			<span class="table__text table__text--header">Новая должность</span>
-		</div>
-	` : '';
-	const newphotofileView = editObject.statusnewphotofile ? `
-		<div class="table__cell table__cell--header table__cell--photoname">
-			<span class="table__text table__text--header">Новая фотография</span>
-		</div>
-	` : '';
-
-	return `
-		<div class="table__cell table__cell--header table__cell--fio">
-			<span class="table__text table__text--header">Фамилия Имя Отчество</span>
-			<button class="btn btn--sort" type="button" data-direction="true"></button>
-		</div>
-		<div class="table__cell table__cell--header table__cell--post">
-			<span class="table__text table__text--header">Должность</span>
-		</div>
-		<div class="table__cell table__cell--header table__cell--statustitle">
-			<span class="table__text table__text--header">Тип изменения</span>
-		</div>
-		${newfioView}
-		${newpostView}
-		${newphotofileView}
-		<div class="table__cell table__cell--header table__cell--edit">
-			<svg class="icon icon--edit icon--edit-white">
-				<use class="icon__item" xlink:href="./images/sprite.svg#edit"></use>
-			</svg>
-		</div>
-		<div class="table__cell table__cell--header table__cell--delete">
-			<svg class="icon icon--delete icon--delete-white">
-				<use class="icon__item" xlink:href="./images/sprite.svg#delete"></use>
-			</svg>
-		</div>
-	`;
-}
-
-function templateEditCount(data) {
-	const { title, count } = data;
-
-	return `
-		<p class="main__count-wrap">
-			<span class="main__count-text">${title}</span>
-			<span class="main__count">${count}</span>
-		</p>
-	`;
-}
-
 function renderTable(nameTable = '#tableEdit') {
 	$(`${nameTable} .table__content`).html('');
 
 	editCollection.forEach((item) => {
-		$(`${nameTable} .table__content`).append(templateEditTable(item));
+		$(`${nameTable} .table__content`).append(table(item, editObject));
 	});
 
 	renderCount();
@@ -259,7 +67,7 @@ function renderTable(nameTable = '#tableEdit') {
 
 function renderForm(nameForm = '#editForm') {
 	$(`${nameForm} .form__wrap`).html('');
-	$(`${nameForm} .form__wrap`).append(templateEditForm());
+	$(`${nameForm} .form__wrap`).append(form(editObject));
 
 	toggleSelect();
 	getAddUsersInDB();
@@ -269,13 +77,13 @@ function renderForm(nameForm = '#editForm') {
 
 function renderHeaderTable(page = 'edit') {
 	$(`.table--${page} .table__header`).html('');
-	$(`.table--${page} .table__header`).append(templateEditHeaderTable());
+	$(`.table--${page} .table__header`).append(headerTable(editObject));
 }
 
 function renderCount(page = 'edit') {
 	$(`.main__wrap-info--${page} .main__cards`).html('');
 	for (let key in editCount) {
-		$(`.main__wrap-info--${page} .main__cards`).append(templateEditCount(editCount[key]));
+		$(`.main__wrap-info--${page} .main__cards`).append(count(editCount[key]));
 	}
 }
 

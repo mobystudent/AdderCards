@@ -1,11 +1,17 @@
 'use strict';
 
 import $ from 'jquery';
-import service from './service.js';
+import service from '../service.js';
 import Scrollbar from 'smooth-scrollbar';
-import messageMail from './mail.js';
-import { settingsObject, sendUsers } from './settings.js';
-import renderheader from './parts/renderheader.js';
+import messageMail from '../mail.js';
+import { settingsObject, sendUsers } from './settings.ctrl.js';
+import renderheader from '../parts/renderheader.js';
+
+import { table } from '../components/reject/table.tpl.js';
+import { form } from '../components/reject/form.tpl.js';
+import { headerTable } from '../components/reject/header-table.tpl.js';
+import { switchElem } from '../components/reject/switch.tpl.js';
+import { count } from '../components/reject/count.tpl.js';
 
 const rejectCollection = new Map(); // БД отклоненных пользователей
 const rejectObject = {
@@ -42,151 +48,11 @@ $(window).on('load', () => {
 	renderSwitch();
 });
 
-function templateRejectTable(data) {
-	const { id = '', fio = '', post = '', statustitle = '', date = '', statususer = '', resend = '', resendblock = '' } = data;
-	const rowClassView = statususer ? 'table__row--disabled' : '';
-	const resendBtnValue = resend ? 'Отменить' : 'Выбрать';
-	const resendBtnClassView = resend  ? 'btn--resend-cancel' : '';
-	const resendClassView = resendblock ? 'btn--allow-disabled' : '';
-	const resendBtnBlock = resendblock ? 'disabled="disabled"' : '';
-
-	return `
-		<div class="table__row ${rowClassView}" data-id="${id}">
-			<div class="table__cell table__cell--body table__cell--fio">
-				<span class="table__text table__text--body">${fio}</span>
-			</div>
-			<div class="table__cell table__cell--body table__cell--post">
-				<span class="table__text table__text--body">${post}</span>
-			</div>
-			<div class="table__cell table__cell--body table__cell--statustitle">
-				<span class="table__text table__text--body">${statustitle}</span>
-			</div>
-			<div class="table__cell table__cell--body table__cell--date">
-				<span class="table__text table__text--body">${date}</span>
-			</div>
-			<div class="table__cell table__cell--body table__cell--btn-resend">
-				<button class="btn btn--resend ${resendBtnClassView} ${resendClassView}" type="button" ${resendBtnBlock}>${resendBtnValue}</button>
-			</div>
-			<div class="table__cell table__cell--body table__cell--view">
-				<button class="table__btn table__btn--view" type="button">
-					<svg class="icon icon--view icon--view-black">
-						<use class="icon__item" xlink:href="./images/sprite.svg#view"></use>
-					</svg>
-				</button>
-			</div>
-		</div>
-	`;
-}
-
-function templateRejectForm(data) {
-	const { fio = '', post = '', statustitle = '', date = '', photourl = '' } = data;
-
-	return `
-		<div class="form__fields">
-			<div class="form__field">
-				<span class="form__name form__name--form">Фамилия Имя Отчество</span>
-				<span class="form__item form__item--static" data-field="fio">${fio}</span>
-			</div>
-			<div class="form__field">
-				<span class="form__name form__name--form">Должность</span>
-				<span class="form__item form__item--static" data-field="post">${post}</span>
-			</div>
-			<div class="form__field">
-				<span class="form__name form__name--form">Статус</span>
-				<span class="form__item form__item--static" data-field="statustitle">${statustitle}</span>
-			</div>
-			<div class="form__field">
-				<span class="form__name form__name--form">Дата</span>
-				<span class="form__item form__item--static" data-field="date">${date}</span>
-			</div>
-		</div>
-		<div class="form__aside">
-			<div class="form__img">
-				<img class="img img--form img--form-edit" src="${photourl}" alt="user avatar"/>
-			</div>
-		</div>
-		<div class="form__message">
-			<span class="form__name form__name--form">Причина отклонения</span>
-			<p class="form__item form__item--static form__item--message" data-field="reason">Не привлекательная внешность.</p>
-		</div>
-	`;
-}
-
-function templateRejectHeaderTable() {
-	const resendBtnValue = rejectObject.statusresend ? 'Отменить' : 'Выбрать все';
-	const resendBtnClassView = rejectObject.statusresend ? 'btn--resend-cancel' : '';
-
-	return `
-		<div class="table__cell table__cell--header table__cell--fio">
-			<span class="table__text table__text--header">Фамилия Имя Отчество</span>
-			<button class="btn btn--sort" type="button" data-direction="true"></button>
-		</div>
-		<div class="table__cell table__cell--header table__cell--post">
-			<span class="table__text table__text--header">Должность</span>
-			<button class="btn btn--sort" type="button" data-direction="true"></button>
-		</div>
-		<div class="table__cell table__cell--header table__cell--statustitle">
-			<span class="table__text table__text--header">Статус</span>
-		</div>
-		<div class="table__cell table__cell--header table__cell--date">
-			<span class="table__text table__text--header">Дата</span>
-		</div>
-		<div class="table__cell table__cell--header table__cell--btn-resend">
-			<button class="btn btn--resend ${resendBtnClassView}" id="resendAll" type="button">${resendBtnValue}</button>
-		</div>
-		<div class="table__cell table__cell--header table__cell--view">
-			<svg class="icon icon--view icon--view-white">
-				<use class="icon__item" xlink:href="./images/sprite.svg#view"></use>
-			</svg>
-		</div>
-	`;
-}
-
-function templateRejectSwitch(data, page = 'reject') {
-	const { type, status } = data;
-	const assingBtnCheck = status ? 'checked="checked"' : '';
-	const assingBtnClass = type === 'refresh' && !status ? 'switch__name--disabled' : '';
-	let switchText;
-	let tooltipInfo;
-
-	if (type === 'refresh') {
-		switchText = 'Автообновление';
-		tooltipInfo = 'Если данная опция включена, тогда при поступлении новых данных, они автоматически отобразятся в таблице. Перезагружать страницу не нужно.<br/> Рекомендуется отключить данную функцию при работе с данными в таблице!';
-	}
-
-	return `
-		<div class="main__switch">
-			<div class="tooltip">
-				<span class="tooltip__item">!</span>
-				<div class="tooltip__info tooltip__info--${type}">${tooltipInfo}</div>
-			</div>
-			<div class="switch switch--${type}-${page}">
-				<label class="switch__wrap switch__wrap--head">
-					<input class="switch__input" type="checkbox" ${assingBtnCheck}/>
-					<small class="switch__btn"></small>
-				</label>
-				<span class="switch__name ${assingBtnClass}">${switchText}</span>
-			</div>
-		</div>
-	`;
-}
-
-function templateRejectCount(data) {
-	const { title, count } = data;
-
-	return `
-		<p class="main__count-wrap">
-			<span class="main__count-text">${title}</span>
-			<span class="main__count">${count}</span>
-		</p>
-	`;
-}
-
 function renderTable(nameTable = '#tableReject') {
 	$(`${nameTable} .table__content`).html('');
 
 	rejectCollection.forEach((item) => {
-		$(`${nameTable} .table__content`).append(templateRejectTable(item));
+		$(`${nameTable} .table__content`).append(table(item));
 	});
 }
 
@@ -195,20 +61,20 @@ function renderForm(id, nameForm = '#rejectForm') {
 
 	rejectCollection.forEach((item) => {
 		if (+item.id === id) {
-			$(`${nameForm} .form__wrap`).append(templateRejectForm(item));
+			$(`${nameForm} .form__wrap`).append(form(item));
 		}
 	});
 }
 
 function renderHeaderTable(page = 'reject') {
 	$(`.table--${page} .table__header`).html('');
-	$(`.table--${page} .table__header`).append(templateRejectHeaderTable());
+	$(`.table--${page} .table__header`).append(headerTable(rejectObject));
 }
 
 function renderSwitch(page = 'reject') {
 	$(`.main__wrap-info--${page} .main__switchies`).html('');
 	for (let key in rejectSwitch) {
-		$(`.main__wrap-info--${page} .main__switchies`).append(templateRejectSwitch(rejectSwitch[key]));
+		$(`.main__wrap-info--${page} .main__switchies`).append(switchElem(rejectSwitch[key]));
 	}
 
 	autoRefresh();
@@ -217,7 +83,7 @@ function renderSwitch(page = 'reject') {
 function renderCount(page = 'reject') {
 	$(`.main__wrap-info--${page} .main__cards`).html('');
 	for (let key in rejectCount) {
-		$(`.main__wrap-info--${page} .main__cards`).append(templateRejectCount(rejectCount[key]));
+		$(`.main__wrap-info--${page} .main__cards`).append(count(rejectCount[key]));
 	}
 }
 
