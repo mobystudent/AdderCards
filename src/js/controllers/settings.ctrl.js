@@ -3,16 +3,17 @@
 import $ from 'jquery';
 import Scrollbar from 'smooth-scrollbar';
 import service from '../service.js';
-import renderheader from '../parts/renderheader.js';
 
 import { changeName } from '../components/settings/change-name.tpl.js';
 import { addDepart } from '../components/settings/add-depart.tpl.js';
 import { removeDepart } from '../components/settings/remove-depart.tpl.js';
 import { autoUpload } from '../components/settings/auto-upload.tpl.js';
 import { changeEmail } from '../components/settings/change-email.tpl.js';
+import { pageTitle } from '../components/page-title.tpl.js';
 
 const departmentCollection = new Map();	// Коллекци подразделений
 const settingsObject = {
+	page: 'Настройки',
 	nameid: '',
 	shortname: '',
 	longname: '',
@@ -44,6 +45,11 @@ $(window).on('load', () => {
 	getNameDepartmentFromDB();
 	renderSection();
 });
+
+function renderHeaderPage(page = 'settings') {
+	$(`.main[data-name=${page}] .main__title-wrap`).html('');
+	$(`.main[data-name=${page}] .container`).prepend(pageTitle(settingsObject));
+}
 
 function templateSettingsForm() {
 	const changeNameTemplate = changeName(settingsObject);
@@ -251,13 +257,6 @@ function memberInputField() {
 
 function setNameDepartOnPage(settings) {
 	const { nameid = '', shortname = '', longname = '', autoupdatetitle = '', autoupdatevalue = '', email = '' } = settings;
-	const options = {
-		page: 'settings',
-		header: {
-			longname,
-			nameid
-		}
-	};
 	settingsObject.nameid = nameid;
 	settingsObject.shortname = shortname;
 	settingsObject.longname = longname;
@@ -265,7 +264,7 @@ function setNameDepartOnPage(settings) {
 	settingsObject.autoupdatetitle = autoupdatetitle;
 	settingsObject.autoupdatevalue = autoupdatevalue;
 
-	renderheader.renderHeaderPage(options);
+	renderHeaderPage();
 	renderSection();
 }
 

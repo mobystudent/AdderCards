@@ -5,17 +5,24 @@ import service from '../service.js';
 import Scrollbar from 'smooth-scrollbar';
 import messageMail from '../mail.js';
 import { settingsObject, sendUsers } from './settings.ctrl.js';
-import renderheader from '../parts/renderheader.js';
 
 import { table } from '../components/reject/table.tpl.js';
 import { form } from '../components/reject/form.tpl.js';
 import { headerTable } from '../components/reject/header-table.tpl.js';
 import { switchElem } from '../components/reject/switch.tpl.js';
 import { count } from '../components/reject/count.tpl.js';
+import { pageTitle } from '../components/page-title.tpl.js';
 
 const rejectCollection = new Map(); // БД отклоненных пользователей
 const rejectObject = {
-	statusresend: ''
+	page: 'Отклоненные пользователи',
+	statusresend: '',
+	get nameid() {
+		return settingsObject.nameid;
+	},
+	get longname() {
+		return settingsObject.longname;
+	}
 };
 const rejectSwitch = {
 	refresh: {
@@ -34,19 +41,16 @@ const rejectCount = {
 };
 
 $(window).on('load', () => {
-	const options = {
-		page: 'reject',
-		header: {
-			longname: settingsObject.longname,
-			nameid: settingsObject.nameid
-		}
-	};
-
-	renderheader.renderHeaderPage(options);
+	renderHeaderPage();
 	submitIDinBD();
 	showDataFromStorage();
 	renderSwitch();
 });
+
+function renderHeaderPage(page = 'reject') {
+	$(`.main[data-name=${page}] .main__title-wrap`).html('');
+	$(`.main[data-name=${page}] .container`).prepend(pageTitle(rejectObject));
+}
 
 function renderTable(nameTable = '#tableReject') {
 	$(`${nameTable} .table__content`).html('');

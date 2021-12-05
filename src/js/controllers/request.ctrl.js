@@ -4,17 +4,18 @@ import $ from 'jquery';
 import service from '../service.js';
 import messageMail from '../mail.js';
 import { settingsObject, sendUsers } from './settings.ctrl.js';
-import renderheader from '../parts/renderheader.js';
 
 import { table } from '../components/request/table.tpl.js';
 import { tabs } from '../components/request/tabs.tpl.js';
 import { headerTable } from '../components/request/header-table.tpl.js';
 import { switchElem } from '../components/request/switch.tpl.js';
 import { count } from '../components/request/count.tpl.js';
+import { pageTitle } from '../components/page-title.tpl.js';
 
 const requestCollection = new Map(); // БД отчета
 const departmentCollection = new Map();  // Коллекци подразделений
 const requestObject = {
+	page: 'Запрос на изменение данных',
 	statusallow: '',
 	statusdisallow: '',
 	nameid: '',
@@ -48,6 +49,11 @@ $(window).on('load', () => {
 	showDataFromStorage();
 	renderSwitch();
 });
+
+function renderHeaderPage(page = 'request') {
+	$(`.main[data-name=${page}] .main__title-wrap`).html('');
+	$(`.main[data-name=${page}] .container`).prepend(pageTitle(requestObject));
+}
 
 function renderTable(nameTable = '#tableRequest') {
 	$(`${nameTable} .table__content`).html('');
@@ -177,15 +183,7 @@ function showActiveDataOnPage() {
 		}
 	});
 
-	const options = {
-		page: 'request',
-		header: {
-			longname: requestObject.longname,
-			nameid: requestObject.nameid
-		}
-	};
-
-	renderheader.renderHeaderPage(options);
+	renderHeaderPage();
 	renderTable();
 	renderCount();
 }
@@ -231,12 +229,7 @@ function submitIDinBD(page = 'request') {
 			confirmAllAllowDisallow();
 
 			if (!requestCollection.size) {
-				const options = {
-					page: 'reject',
-					header: {}
-				};
-
-				renderheader.renderHeaderPage(options);
+				renderHeaderPage();
 			}
 
 			localStorage.removeItem(page);

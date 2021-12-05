@@ -4,17 +4,18 @@ import $ from 'jquery';
 import service from '../service.js';
 import messageMail from '../mail.js';
 import { settingsObject, sendUsers } from './settings.ctrl.js';
-import renderheader from '../parts/renderheader.js';
 
 import { table } from '../components/permis/table.tpl.js';
 import { tabs } from '../components/permis/tabs.tpl.js';
 import { headerTable } from '../components/permis/header-table.tpl.js';
 import { switchElem } from '../components/permis/switch.tpl.js';
 import { count } from '../components/permis/count.tpl.js';
+import { pageTitle } from '../components/page-title.tpl.js';
 
 const permissionCollection = new Map(); // БД пользователей при старте
 const departmentCollection = new Map();  // Коллекци подразделений
 const permisObject = {
+	page: 'Разрешение на добавление <br> идентификаторов пользователям',
 	statusallow: '',
 	statusdisallow: '',
 	nameid: '',
@@ -48,6 +49,11 @@ $(window).on('load', () => {
 	showDataFromStorage();
 	renderSwitch();
 });
+
+function renderHeaderPage(page = 'permis') {
+	$(`.main[data-name=${page}] .main__title-wrap`).html('');
+	$(`.main[data-name=${page}] .container`).prepend(pageTitle(permisObject));
+}
 
 function renderTable(nameTable = '#tablePermis') {
 	$(`${nameTable} .table__content`).html('');
@@ -181,15 +187,7 @@ function showActiveDataOnPage() {
 		}
 	});
 
-	const options = {
-		page: 'permis',
-		header: {
-			longname: permisObject.longname,
-			nameid: permisObject.nameid
-		}
-	};
-
-	renderheader.renderHeaderPage(options);
+	renderHeaderPage();
 	renderTable();
 	renderCount();
 }
@@ -233,12 +231,7 @@ function submitIDinBD(page = 'permis') {
 			confirmAllAllowDisallow();
 
 			if (!permissionCollection.size) {
-				const options = {
-					page: 'permis',
-					header: {}
-				};
-
-				renderheader.renderHeaderPage(options);
+				renderHeaderPage();
 			}
 
 			localStorage.removeItem(page);

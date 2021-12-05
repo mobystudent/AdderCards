@@ -5,13 +5,13 @@ import datepickerFactory from 'jquery-datepicker';
 import datepickerRUFactory from 'jquery-datepicker/i18n/jquery.ui.datepicker-ru';
 import service from '../service.js';
 import { settingsObject } from './settings.ctrl.js';
-import renderheader from '../parts/renderheader.js';
 
 import { table } from '../components/report/table.tpl.js';
 import { form } from '../components/report/form.tpl.js';
 import { switchElem } from '../components/report/switch.tpl.js';
 import { count } from '../components/report/count.tpl.js';
 import { filter } from '../components/report/filter.tpl.js';
+import { pageTitle } from '../components/page-title.tpl.js';
 
 datepickerFactory($);
 datepickerRUFactory($);
@@ -19,11 +19,18 @@ datepickerRUFactory($);
 const reportCollection = new Map(); // БД отчета
 const filterCollection = new Map(); // БД для вывода значений в фильтры
 const reportObject = {
+	page: 'Отчёт по изменениям',
 	posttitle: '',
 	datetitle: '',
 	statusid: '',
 	statustitle: '',
-	filters: {}
+	filters: {},
+	get nameid() {
+		return settingsObject.nameid;
+	},
+	get longname() {
+		return settingsObject.longname;
+	}
 };
 const reportSwitch = {
 	refresh: {
@@ -42,21 +49,18 @@ const reportCount = {
 };
 
 $(window).on('load', () => {
-	const options = {
-		page: 'report',
-		header: {
-			longname: settingsObject.longname,
-			nameid: settingsObject.nameid
-		}
-	};
-
-	renderheader.renderHeaderPage(options);
+	renderHeaderPage();
 	toggleSelect();
 	getDataFromDB('report'); // 1
 	renderFilter(); // 2
 	datepicker();
 	renderSwitch();
 });
+
+function renderHeaderPage(page = 'report') {
+	$(`.main[data-name=${page}] .main__title-wrap`).html('');
+	$(`.main[data-name=${page}] .container`).prepend(pageTitle(reportObject));
+}
 
 function renderTable(nameTable = '#tableReport') {
 	$(`${nameTable} .table__content`).html('');

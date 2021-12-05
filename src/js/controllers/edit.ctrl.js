@@ -4,15 +4,16 @@ import $ from 'jquery';
 import service from '../service.js';
 import messageMail from '../mail.js';
 import { settingsObject, sendUsers } from './settings.ctrl.js';
-import renderheader from '../parts/renderheader.js';
 
 import { table } from '../components/edit/table.tpl.js';
 import { form } from '../components/edit/form.tpl.js';
 import { count } from '../components/edit/count.tpl.js';
 import { headerTable } from '../components/edit/header-table.tpl.js';
+import { pageTitle } from '../components/page-title.tpl.js';
 
 const editCollection = new Map();
 const editObject = {
+	page: 'Редактировать пользователей',
 	id: '',
 	fio: '',
 	post: '',
@@ -26,7 +27,13 @@ const editObject = {
 	newphotoname: '',
 	statusnewfio: '',
 	statusnewpost: '',
-	statusnewphotofile: ''
+	statusnewphotofile: '',
+	get nameid() {
+		return settingsObject.nameid;
+	},
+	get longname() {
+		return settingsObject.longname;
+	}
 };
 const editCount = {
 	item: {
@@ -39,21 +46,18 @@ const editCount = {
 let counter = 0;
 
 $(window).on('load', () => {
-	const options = {
-		page: 'edit',
-		header: {
-			longname: settingsObject.longname,
-			nameid: settingsObject.nameid
-		}
-	};
-
-	renderheader.renderHeaderPage(options);
+	renderHeaderPage();
 	submitIDinBD();
 	toggleSelect();
 	getAddUsersInDB();
 	addUser();
 	showDataFromStorage();
 });
+
+function renderHeaderPage(page = 'edit') {
+	$(`.main[data-name=${page}] .main__title-wrap`).html('');
+	$(`.main[data-name=${page}] .container`).prepend(pageTitle(editObject));
+}
 
 function renderTable(nameTable = '#tableEdit') {
 	$(`${nameTable} .table__content`).html('');

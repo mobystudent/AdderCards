@@ -5,17 +5,18 @@ import convert from '../convert.js';
 import service from '../service.js';
 import messageMail from '../mail.js';
 import { settingsObject, sendUsers } from './settings.ctrl.js';
-import renderheader from '../parts/renderheader.js';
 
 import { table } from '../components/const/table.tpl.js';
 import { tabs } from '../components/const/tabs.tpl.js';
 import { switchElem } from '../components/const/switch.tpl.js';
 import { count } from '../components/const/count.tpl.js';
+import { pageTitle } from '../components/page-title.tpl.js';
 
 const constCollection = new Map(); // БД пользователей которым разрешили выдачу карт
 const departmentCollection = new Map();  // Коллекция подразделений
 const dbConstCardsCollection = new Map();  // Коллекция всех добавленных карт
 const constObject = {
+	page: 'Добавление карт пользователям',
 	nameid: '',
 	longname: '',
 	shortname: ''
@@ -48,6 +49,11 @@ $(window).on('load', () => {
 	showDataFromStorage();
 	renderSwitch();
 });
+
+function renderHeaderPage(page = 'const') {
+	$(`.main[data-name=${page}] .main__title-wrap`).html('');
+	$(`.main[data-name=${page}] .container`).prepend(pageTitle(constObject));
+}
 
 function renderTable(nameTable = '#tableConst') {
 	$(`${nameTable} .table__content`).html('');
@@ -171,15 +177,7 @@ function showActiveDataOnPage() {
 		}
 	});
 
-	const options = {
-		page: 'const',
-		header: {
-			longname: constObject.longname,
-			nameid: constObject.nameid
-		}
-	};
-
-	renderheader.renderHeaderPage(options);
+	renderHeaderPage();
 	renderTable();
 	renderCount();
 }
@@ -213,12 +211,7 @@ function submitIDinBD(page = 'const') {
 			dataAdd();
 
 			if (!constCollection.size) {
-				const options = {
-					page: 'const',
-					header: {}
-				};
-
-				renderheader.renderHeaderPage(options);
+				renderHeaderPage();
 			}
 
 			localStorage.removeItem(page);

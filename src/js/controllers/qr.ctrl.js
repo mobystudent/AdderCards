@@ -5,7 +5,6 @@ import QRCode from 'qrcode';
 import service from '../service.js';
 import messageMail from '../mail.js';
 import { settingsObject, sendUsers } from './settings.ctrl.js';
-import renderheader from '../parts/renderheader.js';
 
 import { table } from '../components/qr/table.tpl.js';
 import { headerTable } from '../components/qr/header-table.tpl.js';
@@ -13,11 +12,13 @@ import { switchElem } from '../components/qr/switch.tpl.js';
 import { count } from '../components/qr/count.tpl.js';
 import { tabs } from '../components/qr/tabs.tpl.js';
 import { qrItems } from '../components/qr/qr-items.tpl.js';
+import { pageTitle } from '../components/page-title.tpl.js';
 
 const qrCollection = new Map(); // БД пользователей которым разрешили выдачу qr-кодов
 const departmentCollection = new Map(); // Коллекция подразделений
 const generateCollection = new Map(); // Коллекция сформированных qr-кодов
 const qrObject = {
+	page: 'Добавление QR-кодов пользователям',
 	nameid: '',
 	longname: '',
 	shortname: '',
@@ -62,6 +63,11 @@ $(window).on('load', () => {
 	showDataFromStorage();
 	typeAssignCode();
 });
+
+function renderHeaderPage(page = 'qr') {
+	$(`.main[data-name=${page}] .main__title-wrap`).html('');
+	$(`.main[data-name=${page}] .container`).prepend(pageTitle(qrObject));
+}
 
 function renderTable(nameTable = '#tableQR') {
 	$(`${nameTable} .table__content`).html('');
@@ -263,15 +269,7 @@ function showActiveDataOnPage() {
 		}
 	});
 
-	const options = {
-		page: 'qr',
-		header: {
-			longname: qrObject.longname,
-			nameid: qrObject.nameid
-		}
-	};
-
-	renderheader.renderHeaderPage(options);
+	renderHeaderPage();
 	renderTable();
 	renderCount();
 }
@@ -320,12 +318,7 @@ function submitIDinBD(page = 'qr') {
 			assignAllQR();
 
 			if (!qrCollection.size) {
-				const options = {
-					page: 'qr',
-					header: {}
-				};
-
-				renderheader.renderHeaderPage(options);
+				renderHeaderPage();
 			}
 
 			localStorage.removeItem(page);

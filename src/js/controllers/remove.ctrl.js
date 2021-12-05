@@ -6,12 +6,12 @@ import datepickerRUFactory from 'jquery-datepicker/i18n/jquery.ui.datepicker-ru'
 import service from '../service.js';
 import messageMail from '../mail.js';
 import { settingsObject, sendUsers } from './settings.ctrl.js';
-import renderheader from '../parts/renderheader.js';
 
 import { table } from '../components/remove/table.tpl.js';
 import { form } from '../components/remove/form.tpl.js';
 import { count } from '../components/remove/count.tpl.js';
 import { headerTable } from '../components/remove/header-table.tpl.js';
+import { pageTitle } from '../components/page-title.tpl.js';
 
 datepickerFactory($);
 datepickerRUFactory($);
@@ -19,6 +19,7 @@ datepickerRUFactory($);
 const removeCollection = new Map();
 const departmentCollection = new Map();  // Коллекци подразделений
 const removeObject = {
+	page: 'Удаление пользователей',
 	id: '',
 	fio: '',
 	post: '',
@@ -29,7 +30,13 @@ const removeObject = {
 	statuscardvalidto: '',
 	newdepart: '',
 	newnameid: '',
-	statusnewdepart: ''
+	statusnewdepart: '',
+	get nameid() {
+		return settingsObject.nameid;
+	},
+	get longname() {
+		return settingsObject.longname;
+	}
 };
 const removeCount = {
 	item: {
@@ -42,15 +49,7 @@ const removeCount = {
 let counter = 0;
 
 $(window).on('load', () => {
-	const options = {
-		page: 'remove',
-		header: {
-			longname: settingsObject.longname,
-			nameid: settingsObject.nameid
-		}
-	};
-
-	renderheader.renderHeaderPage(options);
+	renderHeaderPage();
 	submitIDinBD();
 	toggleSelect();
 	getDepartmentFromDB();
@@ -58,6 +57,11 @@ $(window).on('load', () => {
 	addUser();
 	showDataFromStorage();
 });
+
+function renderHeaderPage(page = 'remove') {
+	$(`.main[data-name=${page}] .main__title-wrap`).html('');
+	$(`.main[data-name=${page}] .container`).prepend(pageTitle(removeObject));
+}
 
 function renderTable(nameTable = '#tableRemove') {
 	$(`${nameTable} .table__content`).html('');

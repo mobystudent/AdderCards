@@ -4,64 +4,52 @@ import $ from 'jquery';
 
 const pageItems = [
 	{
-		name: 'const',
-		title: 'Добавить постоянную карту',
-		titlePage: 'Добавление карт пользователям'
+		name: 'time',
+		title: 'Добавить временную карту'
 	},
 	{
-		name: 'time',
-		title: 'Добавить временную карту',
-		titlePage: 'Добавление временных карт'
+		name: 'const',
+		title: 'Добавить постоянную карту'
 	},
 	{
 		name: 'qr',
-		title: 'Добавить QR-код',
-		titlePage: 'Добавление QR-кодов пользователям'
+		title: 'Добавить QR-код'
 	},
 	{
 		name: 'download',
-		title: 'Загрузить QR-код',
-		titlePage: 'Загрузка QR-кодов'
+		title: 'Загрузить QR-код'
 	},
 	{
 		name: 'permis',
-		title: 'Разрешение на добавление',
-		titlePage: 'Разрешение на добавление <br> идентификаторов пользователям'
+		title: 'Разрешение на добавление'
 	},
 	{
 		name: 'add',
-		title: 'Добавить пользователя',
-		titlePage: 'Добавить новых пользователей'
+		title: 'Добавить пользователя'
 	},
 	{
 		name: 'remove',
-		title: 'Удалить пользователя',
-		titlePage: 'Удаление пользователей'
+		title: 'Удалить пользователя'
 	},
 	{
 		name: 'edit',
-		title: 'Редактировать пользователя',
-		titlePage: 'Редактировать пользователей'
+		title: 'Редактировать пользователя'
 	},
 	{
 		name: 'reject',
-		title: 'Отклоненные пользователи',
-		titlePage: 'Отклоненные пользователи'
+		title: 'Отклоненные пользователи'
 	},
 	{
 		name: 'request',
-		title: 'Запрос на изменение',
-		titlePage: 'Запрос на изменение данных'
+		title: 'Запрос на изменение'
 	},
 	{
 		name: 'settings',
-		title: 'Настройки',
-		titlePage: 'Настройки'
+		title: 'Настройки'
 	},
 	{
 		name: 'report',
-		title: 'Отчёт по изменения',
-		titlePage: 'Отчёт по изменениям'
+		title: 'Отчёт по изменения'
 	}
 ];
 const pageObject = {
@@ -89,38 +77,9 @@ function templateControls() {
 	`;
 }
 
-function templateHeaderPage(title, header) {
-	const { longname = '', nameid = '' } = header;
-	const nameDepart = longname && nameid ? `
-		<span class="main__depart" data-depart="${longname}" data-id="${nameid}">${longname}</span>
-	` : '';
-
-	return `
-		<div class="main__title-wrap">
-			<h1 class="main__title">${title}</h1>
-			${nameDepart}
-		</div>
-	`;
-}
-
 function renderControls() {
 	$('.control__container').html('');
 	$('.control__container').append(templateControls());
-}
-
-function renderHeaderPage(props) {
-	pageItems.forEach(({ name, titlePage }) => {
-		const { page = '', header = {} } = props;
-
-		// if (page === pageObject.active) {
-		if (page === name) {
-			// console.log(page);
-			// console.log(pageObject.active);
-			// return;
-			$(`.main[data-name=${page}] .main__title-wrap`).remove('');
-			$(`.main[data-name=${page}] .container`).prepend(templateHeaderPage(titlePage, header));
-		}
-	});
 }
 
 function switchControl() {
@@ -158,7 +117,6 @@ function setUrlSection(page = '') {
 	history.replaceState(null, null, urlApp);
 
 	renderControls();
-	// renderHeaderPage(section);
 }
 
 function focusFirstCell(nameTable) {
@@ -168,5 +126,4 @@ function focusFirstCell(nameTable) {
 }
 
 export default {
-	renderHeaderPage
 };

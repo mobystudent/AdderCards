@@ -3,13 +3,16 @@
 import $ from 'jquery';
 import convert from '../convert.js';
 import service from '../service.js';
-import renderheader from '../parts/renderheader.js';
 
 import { table } from '../components/time/table.tpl.js';
 import { count } from '../components/time/count.tpl.js';
+import { pageTitle } from '../components/page-title.tpl.js';
 
 const timeCollection = new Map(); // БД в которую будут добавляться карты при вводе и из неё будут выводиться данные в таблицу.
 const dbTimeCardsCollection = new Map();  // Коллекция всех добавленных карт
+const timeObject = {
+	page: 'Добавление временных карт'
+};
 const timeCount = {
 	item: {
 		title: 'Количество карт:&nbsp',
@@ -21,16 +24,17 @@ const timeCount = {
 let counter = 0;
 
 $(window).on('load', () => {
-	const options = {
-		page: 'time',
-		header: {}
-	};
 
-	renderheader.renderHeaderPage(options);
+	renderHeaderPage();
 	submitIDinBD();
 	addTimeCard();
 	showDataFromStorage();
 });
+
+function renderHeaderPage(page = 'time') {
+	$(`.main[data-name=${page}] .main__title-wrap`).html('');
+	$(`.main[data-name=${page}] .container`).prepend(pageTitle(timeObject));
+}
 
 function renderTable(nameTable = '#tableTime') {
 	$(`${nameTable} .table__content`).html('');

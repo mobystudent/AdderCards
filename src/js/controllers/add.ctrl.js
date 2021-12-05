@@ -6,13 +6,13 @@ import datepickerRUFactory from 'jquery-datepicker/i18n/jquery.ui.datepicker-ru'
 import service from '../service.js';
 import messageMail from '../mail.js';
 import { settingsObject, sendUsers } from './settings.ctrl.js';
-import renderheader from '../parts/renderheader.js';
 
 import { table } from '../components/add/table.tpl.js';
 import { form } from '../components/add/form.tpl.js';
 import { count } from '../components/add/count.tpl.js';
 import { headerTable } from '../components/add/header-table.tpl.js';
 import { modalUser } from '../components/add/modal-user.tpl.js';
+import { pageTitle } from '../components/page-title.tpl.js';
 
 datepickerFactory($);
 datepickerRUFactory($);
@@ -20,6 +20,7 @@ datepickerRUFactory($);
 const addCollection = new Map();
 const dbUserNamesCollection = new Map();
 const addObject = {
+	page: 'Добавить новых пользователей',
 	fio: '',
 	post: '',
 	photofile: '',
@@ -30,7 +31,13 @@ const addObject = {
 	cardvalidto: '',
 	cardvalidtoid: '',
 	cardvalidtotitle: '',
-	statuscardvalidto: ''
+	statuscardvalidto: '',
+	get nameid() {
+		return settingsObject.nameid;
+	},
+	get longname() {
+		return settingsObject.longname;
+	}
 };
 const addCount = {
 	item: {
@@ -43,15 +50,7 @@ const addCount = {
 let counter = 0;
 
 $(window).on('load', () => {
-	const options = {
-		page: 'add',
-		header: {
-			longname: settingsObject.longname,
-			nameid: settingsObject.nameid
-		}
-	};
-
-	renderheader.renderHeaderPage(options); // 1
+	renderHeaderPage(); // 1
 	submitIDinBD(); // 1
 	toggleSelect(); // 1
 	downloadFoto(); // 1
@@ -60,6 +59,11 @@ $(window).on('load', () => {
 	showDataFromStorage(); // 1
 	getUserNamesFromDB();
 });
+
+function renderHeaderPage(page = 'add') {
+	$(`.main[data-name=${page}] .main__title-wrap`).html('');
+	$(`.main[data-name=${page}] .container`).prepend(pageTitle(addObject));
+}
 
 function renderTable(nameTable = '#tableAdd') {
 	$(`${nameTable} .table__content`).html('');

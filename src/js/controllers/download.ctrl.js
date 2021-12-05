@@ -2,14 +2,17 @@
 
 import $ from 'jquery';
 import service from '../service.js';
-import renderheader from '../parts/renderheader.js';
 
 import { table } from '../components/download/table.tpl.js';
 import { count } from '../components/download/count.tpl.js';
+import { pageTitle } from '../components/page-title.tpl.js';
 
 const downloadCollection = new Map(); // БД сформированных qr-кодов
 const parseQRCollection = new Map(); // БД загруженых qr-кодов
 const dbQRCodesCollection = new Map();  // Коллекция всех добавленных qr-кодов
+const downloadObject = {
+	page: 'Загрузка QR-кодов'
+};
 const parseCount = {
 	item: {
 		title: 'Количество загруженых qr-кодов:&nbsp',
@@ -29,17 +32,17 @@ const downloadCount = {
 let counter = 0;
 
 $(window).on('load', () => {
-	const options = {
-		page: 'download',
-		header: {}
-	};
-
-	renderheader.renderHeaderPage(options);
+	renderHeaderPage();
 	addQRCodesInTable();
 	countQRCodes();
 	submitIDinBD();
 	showDataFromStorage();
 });
+
+function renderHeaderPage(page = 'download') {
+	$(`.main[data-name=${page}] .main__title-wrap`).html('');
+	$(`.main[data-name=${page}] .container`).prepend(pageTitle(downloadObject));
+}
 
 function renderTable(nameTable = '#tableDownload') {
 	$(`${nameTable} .table__content`).html('');
