@@ -7,7 +7,7 @@ import { settingsObject, sendUsers } from './settings.ctrl.js';
 
 import { table } from '../components/edit/table.tpl.js';
 import { form } from '../components/edit/form.tpl.js';
-import { count } from '../components/edit/count.tpl.js';
+import { count } from '../components/count.tpl.js';
 import { headerTable } from '../components/edit/header-table.tpl.js';
 import { pageTitle } from '../components/page-title.tpl.js';
 

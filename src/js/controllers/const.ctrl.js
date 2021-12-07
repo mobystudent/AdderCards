@@ -7,9 +7,9 @@ import messageMail from '../mail.js';
 import { settingsObject, sendUsers } from './settings.ctrl.js';
 
 import { table } from '../components/const/table.tpl.js';
-import { tabs } from '../components/const/tabs.tpl.js';
+import { tabs } from '../components/tabs.tpl.js';
 import { switchElem } from '../components/const/switch.tpl.js';
-import { count } from '../components/const/count.tpl.js';
+import { count } from '../components/count.tpl.js';
 import { pageTitle } from '../components/page-title.tpl.js';
 
 const constCollection = new Map(); // БД пользователей которым разрешили выдачу карт

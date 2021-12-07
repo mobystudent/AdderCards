@@ -9,7 +9,7 @@ import { settingsObject, sendUsers } from './settings.ctrl.js';
 
 import { table } from '../components/add/table.tpl.js';
 import { form } from '../components/add/form.tpl.js';
-import { count } from '../components/add/count.tpl.js';
+import { count } from '../components/count.tpl.js';
 import { headerTable } from '../components/add/header-table.tpl.js';
 import { modalUser } from '../components/add/modal-user.tpl.js';
 import { pageTitle } from '../components/page-title.tpl.js';

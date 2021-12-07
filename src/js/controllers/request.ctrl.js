@@ -6,10 +6,10 @@ import messageMail from '../mail.js';
 import { settingsObject, sendUsers } from './settings.ctrl.js';
 
 import { table } from '../components/request/table.tpl.js';
-import { tabs } from '../components/request/tabs.tpl.js';
+import { tabs } from '../components/tabs.tpl.js';
 import { headerTable } from '../components/request/header-table.tpl.js';
 import { switchElem } from '../components/request/switch.tpl.js';
-import { count } from '../components/request/count.tpl.js';
+import { count } from '../components/count.tpl.js';
 import { pageTitle } from '../components/page-title.tpl.js';
 
 const requestCollection = new Map(); // БД отчета

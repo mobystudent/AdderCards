@@ -6,10 +6,10 @@ import messageMail from '../mail.js';
 import { settingsObject, sendUsers } from './settings.ctrl.js';
 
 import { table } from '../components/permis/table.tpl.js';
-import { tabs } from '../components/permis/tabs.tpl.js';
+import { tabs } from '../components/tabs.tpl.js';
 import { headerTable } from '../components/permis/header-table.tpl.js';
 import { switchElem } from '../components/permis/switch.tpl.js';
-import { count } from '../components/permis/count.tpl.js';
+import { count } from '../components/count.tpl.js';
 import { pageTitle } from '../components/page-title.tpl.js';
 
 const permissionCollection = new Map(); // БД пользователей при старте

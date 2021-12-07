@@ -4,7 +4,8 @@ import $ from 'jquery';
 import service from '../service.js';
 
 import { table } from '../components/download/table.tpl.js';
-import { count } from '../components/download/count.tpl.js';
+import { headerTable } from '../components/download/header-table.tpl.js';
+import { count } from '../components/count.tpl.js';
 import { pageTitle } from '../components/page-title.tpl.js';
 
 const downloadCollection = new Map(); // БД сформированных qr-кодов
@@ -52,6 +53,11 @@ function renderTable(nameTable = '#tableDownload') {
 	});
 
 	renderCount();
+}
+
+function renderHeaderTable(page = 'download') {
+	$(`.table--${page} .table__header`).html('');
+	$(`.table--${page} .table__header`).append(headerTable());
 }
 
 function renderCount() {
@@ -140,6 +146,7 @@ function codeFromForm(page = 'download') {
 		counter++;
 	});
 
+	renderHeaderTable();
 	setDataInStorage();
 	dataAdd();
 }

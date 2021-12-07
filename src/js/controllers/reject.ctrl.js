@@ -10,7 +10,7 @@ import { table } from '../components/reject/table.tpl.js';
 import { form } from '../components/reject/form.tpl.js';
 import { headerTable } from '../components/reject/header-table.tpl.js';
 import { switchElem } from '../components/reject/switch.tpl.js';
-import { count } from '../components/reject/count.tpl.js';
+import { count } from '../components/count.tpl.js';
 import { pageTitle } from '../components/page-title.tpl.js';
 
 const rejectCollection = new Map(); // БД отклоненных пользователей

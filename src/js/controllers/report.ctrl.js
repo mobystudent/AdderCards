@@ -7,9 +7,10 @@ import service from '../service.js';
 import { settingsObject } from './settings.ctrl.js';
 
 import { table } from '../components/report/table.tpl.js';
+import { headerTable } from '../components/report/header-table.tpl.js';
 import { form } from '../components/report/form.tpl.js';
 import { switchElem } from '../components/report/switch.tpl.js';
-import { count } from '../components/report/count.tpl.js';
+import { count } from '../components/count.tpl.js';
 import { filter } from '../components/report/filter.tpl.js';
 import { pageTitle } from '../components/page-title.tpl.js';
 
@@ -70,6 +71,11 @@ function renderTable(nameTable = '#tableReport') {
 	});
 
 	renderCount();
+}
+
+function renderHeaderTable(page = 'report') {
+	$(`.table--${page} .table__header`).html('');
+	$(`.table--${page} .table__header`).append(headerTable());
 }
 
 function renderForm(nameForm = '#reportForm') {
@@ -133,6 +139,7 @@ function userFromDB(array, filter = '') {
 		});
 	}
 
+	renderHeaderTable();
 	dataAdd();
 }
 

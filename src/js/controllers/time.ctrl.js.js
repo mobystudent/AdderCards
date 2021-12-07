@@ -5,7 +5,8 @@ import convert from '../convert.js';
 import service from '../service.js';
 
 import { table } from '../components/time/table.tpl.js';
-import { count } from '../components/time/count.tpl.js';
+import { headerTable } from '../components/time/header-table.tpl.js';
+import { count } from '../components/count.tpl.js';
 import { pageTitle } from '../components/page-title.tpl.js';
 
 const timeCollection = new Map(); // БД в которую будут добавляться карты при вводе и из неё будут выводиться данные в таблицу.
@@ -44,6 +45,11 @@ function renderTable(nameTable = '#tableTime') {
 	});
 }
 
+function renderHeaderTable(page = 'time') {
+	$(`.table--${page} .table__header`).html('');
+	$(`.table--${page} .table__header`).append(headerTable());
+}
+
 function renderCount(page = 'time') {
 	$(`.main__wrap-info--${page} .main__cards`).html('');
 	for (let key in timeCount) {
@@ -63,6 +69,7 @@ function itemUserInTable(id) {
 		cardname: ''
 	});
 
+	renderHeaderTable();
 	dataAdd();
 
 	counter++;

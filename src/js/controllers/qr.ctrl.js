@@ -9,8 +9,8 @@ import { settingsObject, sendUsers } from './settings.ctrl.js';
 import { table } from '../components/qr/table.tpl.js';
 import { headerTable } from '../components/qr/header-table.tpl.js';
 import { switchElem } from '../components/qr/switch.tpl.js';
-import { count } from '../components/qr/count.tpl.js';
-import { tabs } from '../components/qr/tabs.tpl.js';
+import { count } from '../components/count.tpl.js';
+import { tabs } from '../components/tabs.tpl.js';
 import { qrItems } from '../components/qr/qr-items.tpl.js';
 import { pageTitle } from '../components/page-title.tpl.js';
 
