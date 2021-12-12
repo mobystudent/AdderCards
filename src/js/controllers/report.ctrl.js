@@ -63,19 +63,26 @@ function renderHeaderPage(page = 'report') {
 	$(`.main[data-name=${page}] .container`).prepend(pageTitle(reportObject));
 }
 
-function renderTable(nameTable = '#tableReport') {
-	$(`${nameTable} .table__content`).html('');
+function renderTable(status, page = 'report') {
+	let stateTable;
 
-	reportCollection.forEach((item) => {
-		$(`${nameTable} .table__content`).append(table(item));
-	});
+	if (status == 'empty') {
+		stateTable = `<p class="table__nothing">Новых данных нет</p>`;
+	} else {
+		stateTable = [...reportCollection.values()].reduce((content, item) => {
+			content += table(item);
+
+			return content;
+		}, '');
+	}
+
+	$(`.table--${page}`).html('');
+	$(`.table--${page}`).append(`
+		<header class="table__header">${headerTable()}</header>
+		<div class="table__body">${stateTable}</div>
+		`);
 
 	renderCount();
-}
-
-function renderHeaderTable(page = 'report') {
-	$(`.table--${page} .table__header`).html('');
-	$(`.table--${page} .table__header`).append(headerTable());
 }
 
 function renderForm(nameForm = '#reportForm') {
@@ -139,20 +146,17 @@ function userFromDB(array, filter = '') {
 		});
 	}
 
-	renderHeaderTable();
 	dataAdd();
 }
 
 function dataAdd() {
 	if (reportCollection.size) {
-		emptySign('full');
+		renderTable('full');
 	} else {
-		emptySign('empty');
+		renderTable('empty');
 
 		return;
 	}
-
-	renderTable();
 }
 
 function toggleSelect(nameForm = '#reportForm') {
@@ -184,20 +188,6 @@ function setDataAttrSelectedItem(title, select, statusid) {
 	}
 
 	renderForm();
-}
-
-function emptySign(status, nameTable = '#tableReport') {
-	if (status == 'empty') {
-		$(nameTable)
-			.addClass('table__body--empty')
-			.html('')
-			.append('<p class="table__nothing">Новых данных нет</p>');
-	} else {
-		$(nameTable)
-			.removeClass('table__body--empty')
-			.html('')
-			.append('<div class="table__content"></div>');
-	}
 }
 
 function datepicker() {
