@@ -25,7 +25,6 @@ const timeCount = {
 let counter = 0;
 
 $(window).on('load', () => {
-
 	renderHeaderPage();
 	submitIDinBD();
 	addTimeCard();
@@ -37,17 +36,29 @@ function renderHeaderPage(page = 'time') {
 	$(`.main[data-name=${page}] .container`).prepend(pageTitle(timeObject));
 }
 
-function renderTable(nameTable = '#tableTime') {
-	$(`${nameTable} .table__content`).html('');
+function renderTable(status, page = 'time') {
+	let stateTable;
 
-	timeCollection.forEach((item) => {
-		$(`${nameTable} .table__content`).append(table(item));
-	});
-}
+	if (status == 'empty') {
+		stateTable = `<p class="table__nothing">Новых данных нет</p>`;
+	} else {
+		stateTable = [...timeCollection.values()].reduce((content, item) => {
+			content += table(item);
 
-function renderHeaderTable(page = 'time') {
-	$(`.table--${page} .table__header`).html('');
-	$(`.table--${page} .table__header`).append(headerTable());
+			return content;
+		}, '');
+	}
+
+	$(`.table--${page}`).html('');
+	$(`.table--${page}`).append(`
+		<header class="table__header">${headerTable()}</header>
+		<div class="table__body">${stateTable}</div>
+		`);
+
+	convertCardIDInCardName();
+	deleteTimeCard();
+	clearNumberCard();
+	renderCount();
 }
 
 function renderCount(page = 'time') {
@@ -69,29 +80,20 @@ function itemUserInTable(id) {
 		cardname: ''
 	});
 
-	renderHeaderTable();
 	dataAdd();
 
 	counter++;
 }
 
-function addTimeCard(nameTable = '#tableTime') {
+function addTimeCard() {
 	$('#addTimeCard').click(() => {
-		$(nameTable)
-			.html('')
-			.append('<div class="table__content"></div>');
-
 		itemUserInTable(counter);
 	});
 }
 
 function dataAdd() {
 	getTimeCardsFromDB();
-	renderCount();
-	renderTable();
-	deleteTimeCard();
-	convertCardIDInCardName();
-	clearNumberCard();
+	renderTable('full');
 }
 
 function showDataFromStorage(page = 'time') {
@@ -143,13 +145,13 @@ function submitIDinBD(page = 'time') {
 	});
 }
 
-function clearNumberCard(nameTable = '#tableTime') {
-	$(`${nameTable} .table__content`).click(({ target }) => {
+function clearNumberCard(page = 'time') {
+	$(`.table--${page} .table__body`).click(({ target }) => {
 		if ($(target).parents('.table__btn--clear').length || $(target).hasClass('table__btn--clear')) {
 			const userID = $(target).parents('.table__row').data('id');
 			let collectionID;
 
-			[...timeCollection].forEach(([ key, { id } ]) => {
+			[...timeCollection].forEach(([key, { id }]) => {
 				if (userID === +id) {
 					collectionID = key;
 				}
@@ -160,12 +162,12 @@ function clearNumberCard(nameTable = '#tableTime') {
 	});
 }
 
-function deleteTimeCard(nameTable = '#tableTime', page = 'time') {
-	$(`${nameTable} .table__content`).click(({ target }) => {
+function deleteTimeCard(page = 'time') {
+	$(`.table--${page} .table__body`).click(({ target }) => {
 		if ($(target).parents('.table__btn--delete').length || $(target).hasClass('table__btn--delete')) {
 			const userID = $(target).closest('.table__row').data('id');
 
-			[...timeCollection].forEach(([ key, { id } ]) => {
+			[...timeCollection].forEach(([key, { id }]) => {
 				if (userID === +id) {
 					blockLastCard(key);
 				}
@@ -190,14 +192,13 @@ function blockLastCard(idRemove, page = 'time') {
 	} else {
 		timeCollection.delete(idRemove);
 
-		renderTable();
-		renderCount();
+		renderTable('full');
 		setDataInStorage();
 	}
 }
 
-function convertCardIDInCardName(nameTable = '#tableTime', page = 'time') {
-	$(`${nameTable} .table__content`).click(({ target }) => {
+function convertCardIDInCardName(page = 'time') {
+	$(`.table--${page} .table__body`).click(({ target }) => {
 		if (!$(target).hasClass('table__input')) return;
 
 		$(target).on('input', () => {
@@ -235,7 +236,7 @@ function convertCardIDInCardName(nameTable = '#tableTime', page = 'time') {
 				return;
 			}
 
-			[...timeCollection].forEach(([ key, { id } ]) => {
+			[...timeCollection].forEach(([key, { id }]) => {
 				if (userID === +id) {
 					setDataInTable(key, cardObj);
 				}
@@ -258,12 +259,12 @@ function setDataInTable(userID, cardObj, page = 'time') {
 		setDataInStorage();
 	}
 
-	renderTable();
+	renderTable('full');
 }
 
 function checkInvalidValueCardID(page = 'time') {
 	const checkValueCard = [...timeCollection.values()].every(({ cardid }) => {
-		if(cardid) convert.convertCardId(cardid);
+		if (cardid) convert.convertCardId(cardid);
 	});
 
 	if (checkValueCard) {
@@ -315,8 +316,8 @@ function getTimeCardsFromDB() {
 
 function getData() {
 	const data = {
-		"PasswordHash":"88020F057FE7287D8D57494382356F97",
-		"UserName":"admin"
+		"PasswordHash": "88020F057FE7287D8D57494382356F97",
+		"UserName": "admin"
 	};
 	let resultAuthent = {};
 
@@ -353,57 +354,57 @@ function createObjectForBD() {
 	console.log(UserSID);
 
 	const object = {
-		"Language":"ua",
-		"UserSID":UserSID,
-		"ResultTokenRequired":true,
-		"AccessGroupInherited":true,
-		"AccessGroupToken":UserToken,
-		"AdditionalFields":[{
-			"Name":"",
-			"Value":""
+		"Language": "ua",
+		"UserSID": UserSID,
+		"ResultTokenRequired": true,
+		"AccessGroupInherited": true,
+		"AccessGroupToken": UserToken,
+		"AdditionalFields": [{
+			"Name": "",
+			"Value": ""
 		}],
-		"AdditionalFieldsChanged":true,
-		"FieldGroupToken":UserToken,
-		"Name":"Временная карта",
-		"NewCards":[{
-			"AntipassbackDisabled":true,
-			"Code":"",
-			"ConfirmationUrl":"",
-			"Disalarm":true,
-			"Email":"",
-			"EmailRequestCode":"",
-			"IdentifierType":2147483647,
-			"Name":"",
-			"PIN":"",
-			"Security":true,
-			"Status":2147483647,
-			"Token":UserToken,
-			"VIP":true,
-			"ValidTo":"\/Date(928135200000+0300)\/",
-			"ValidToUsed":true
+		"AdditionalFieldsChanged": true,
+		"FieldGroupToken": UserToken,
+		"Name": "Временная карта",
+		"NewCards": [{
+			"AntipassbackDisabled": true,
+			"Code": "",
+			"ConfirmationUrl": "",
+			"Disalarm": true,
+			"Email": "",
+			"EmailRequestCode": "",
+			"IdentifierType": 2147483647,
+			"Name": "",
+			"PIN": "",
+			"Security": true,
+			"Status": 2147483647,
+			"Token": UserToken,
+			"VIP": true,
+			"ValidTo": "\/Date(928135200000+0300)\/",
+			"ValidToUsed": true
 		}],
-		"OwnAccessRulesChanged":true,
-		"Token":UserToken,
-		"WorktimeInherited":true,
-		"CardCodes":[""],
-		"CardTokens":[UserToken],
-		"CardsChanged":true,
-		"DepartmentToken":UserToken,
-		"EmployeeNumber":"",
-		"NewBiometricIdentifiers":[{
-			"BiometricIndex":2147483647,
-			"BiometricType":"",
-			"Data":"",
-			"Quality":2147483647
+		"OwnAccessRulesChanged": true,
+		"Token": UserToken,
+		"WorktimeInherited": true,
+		"CardCodes": [""],
+		"CardTokens": [UserToken],
+		"CardsChanged": true,
+		"DepartmentToken": UserToken,
+		"EmployeeNumber": "",
+		"NewBiometricIdentifiers": [{
+			"BiometricIndex": 2147483647,
+			"BiometricType": "",
+			"Data": "",
+			"Quality": 2147483647
 		}],
-		"PhotoBase64":"",
-		"PhotoChanged":true,
-		"PhotoFileExt":"",
-		"Post":"",
-		"OwnAccessRules":[{
-			"DoorToken":UserToken,
-			"PassCounter":2147483647,
-			"ScheduleToken":UserToken
+		"PhotoBase64": "",
+		"PhotoChanged": true,
+		"PhotoFileExt": "",
+		"Post": "",
+		"OwnAccessRules": [{
+			"DoorToken": UserToken,
+			"PassCounter": 2147483647,
+			"ScheduleToken": UserToken
 		}]
 	};
 	// const fillOutObjectInBD = map.map((elem) => {

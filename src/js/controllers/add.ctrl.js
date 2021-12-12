@@ -69,7 +69,7 @@ function renderTable(status, page = 'add') {
 	let stateTable;
 
 	if (status == 'empty') {
-		stateTable = `<p class="table__nothing">Новых данных нет</p>`;
+		stateTable = `<p class="table__nothing">Не добавленно ни одного пользователя</p>`;
 	} else {
 		stateTable = [...addCollection.values()].reduce((content, item) => {
 			content += table(item, addObject);
