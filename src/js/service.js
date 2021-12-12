@@ -56,7 +56,7 @@ function showDataInTable() {
 	const nameTables = ['const', 'qr', 'permis', 'add', 'remove', 'edit', 'request', 'download', 'report', 'reject'];
 
 	nameTables.forEach((item) => {
-		if (!$(`.table--${item} .table__body .table__content`).length) {
+		if (!$(`.table--${item} .table__body`).length) {
 			$(`.table--${item} .table__body`).addClass('table__body--empty');
 			$(`.table--${item} .table__nothing`).show();
 		} else {

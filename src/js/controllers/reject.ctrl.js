@@ -52,12 +52,29 @@ function renderHeaderPage(page = 'reject') {
 	$(`.main[data-name=${page}] .container`).prepend(pageTitle(rejectObject));
 }
 
-function renderTable(nameTable = '#tableReject') {
-	$(`${nameTable} .table__content`).html('');
+function renderTable(status, page = 'reject') {
+	let stateTable;
 
-	rejectCollection.forEach((item) => {
-		$(`${nameTable} .table__content`).append(table(item));
-	});
+	if (status == 'empty') {
+		stateTable = `<p class="table__nothing">Новых данных нет</p>`;
+	} else {
+		stateTable = [...rejectCollection.values()].reduce((content, item) => {
+			content += table(item);
+
+			return content;
+		}, '');
+	}
+
+	$(`.table--${page}`).html('');
+	$(`.table--${page}`).append(`
+		<header class="table__header">${headerTable(rejectObject)}</header>
+		<div class="table__body">${stateTable}</div>
+		`);
+
+	resendAllUsers();
+	viewDataUser();
+	resendUsers();
+	renderCount();
 }
 
 function renderForm(id, nameForm = '#rejectForm') {
@@ -68,11 +85,6 @@ function renderForm(id, nameForm = '#rejectForm') {
 			$(`${nameForm} .form__wrap`).append(form(item));
 		}
 	});
-}
-
-function renderHeaderTable(page = 'reject') {
-	$(`.table--${page} .table__header`).html('');
-	$(`.table--${page} .table__header`).append(headerTable(rejectObject));
 }
 
 function renderSwitch(page = 'reject') {
@@ -106,7 +118,7 @@ function userFromDB(array) {
 	};
 
 	array.forEach((elem, i) => {
-		const itemObject = {...objToCollection};
+		const itemObject = { ...objToCollection };
 
 		for (const itemField in itemObject) {
 			for (const key in elem) {
@@ -124,17 +136,12 @@ function userFromDB(array) {
 
 function dataAdd() {
 	if (rejectCollection.size) {
-		emptySign('full');
+		renderTable('full');
 	} else {
-		emptySign('empty');
+		renderTable('empty');
 
 		return;
 	}
-
-	renderTable();
-	renderCount();
-	viewDataUser();
-	resendUsers();
 }
 
 function showDataFromStorage(page = 'reject') {
@@ -153,13 +160,10 @@ function showDataFromStorage(page = 'reject') {
 		rejectObject.statusresend = statusresend;
 		rejectSwitch.refresh = refresh;
 
-		renderHeaderTable();
 		dataAdd();
 	} else {
 		getDataFromDB('reject');
 	}
-
-	resendAllUsers();
 }
 
 function setDataInStorage(page = 'reject') {
@@ -187,7 +191,7 @@ function submitIDinBD(page = 'reject') {
 			setAddUsersInDB(resendItems, 'permis', 'add');
 
 			resendItems.forEach(({ id: userID }) => {
-				[...rejectCollection].forEach(([ key, { id } ]) => {
+				[...rejectCollection].forEach(([key, { id }]) => {
 					if (userID === id) {
 						rejectCollection.delete(key);
 					}
@@ -197,7 +201,6 @@ function submitIDinBD(page = 'reject') {
 
 			clearObject();
 			dataAdd();
-			resendAllUsers();
 			localStorage.removeItem(page);
 		} else {
 			$('.info__item--warn').show();
@@ -209,22 +212,8 @@ function clearObject() {
 	rejectObject.statusresend = '';
 }
 
-function emptySign(status, nameTable = '#tableReject') {
-	if (status == 'empty') {
-		$(nameTable)
-			.addClass('table__body--empty')
-			.html('')
-			.append('<p class="table__nothing">Новых данных нет</p>');
-	} else {
-		$(nameTable)
-			.removeClass('table__body--empty')
-			.html('')
-			.append('<div class="table__content"></div>');
-	}
-}
-
-function viewDataUser(nameTable = '#tableReject', nameForm = '#rejectForm') {
-	$(`${nameTable} .table__content`).click(({ target }) => {
+function viewDataUser(page = 'reject', nameForm = '#rejectForm') {
+	$(`.table--${page} .table__body`).click(({ target }) => {
 		if ($(target).parents('.table__btn--view').length || $(target).hasClass('table__btn--view')) {
 			const userID = $(target).parents('.table__row').data('id');
 
@@ -236,14 +225,14 @@ function viewDataUser(nameTable = '#tableReject', nameForm = '#rejectForm') {
 	});
 }
 
-function resendUsers(nameTable = '#tableReject', page = 'reject') {
-	$(`${nameTable} .table__content`).click((e) => {
-		if (!$(e.target).hasClass('btn--resend')) return;
+function resendUsers(page = 'reject') {
+	$(`.table--${page} .table__body`).click(({ target }) => {
+		if (!$(target).hasClass('btn--resend')) return;
 
-		const userID = $(e.target).parents('.table__row').data('id');
+		const userID = $(target).parents('.table__row').data('id');
 		let collectionID;
 
-		[...rejectCollection].forEach(([ key, { id } ]) => {
+		[...rejectCollection].forEach(([key, { id }]) => {
 			if (userID === +id) {
 				collectionID = key;
 			}
@@ -260,7 +249,7 @@ function resendUsers(nameTable = '#tableReject', page = 'reject') {
 			setDataInStorage();
 		}
 
-		renderTable();
+		renderTable('full');
 	});
 }
 
@@ -280,9 +269,7 @@ function resendAllUsers(page = 'reject') {
 			setDataInStorage();
 		}
 
-		renderHeaderTable();
-		renderTable();
-		resendAllUsers();
+		renderTable('full');
 	});
 }
 
@@ -359,14 +346,14 @@ function getDataFromDB(nameTable) {
 
 			userFromDB(dataFromDB);
 		},
-		error: ()  => {
+		error: () => {
 			service.modal('download');
 		}
 	});
 }
 
 function sendMail(obj) {
-	const sender =  sendUsers.manager;
+	const sender = sendUsers.manager;
 	const recipient = sendUsers.secretary;
 	const subject = 'Запрос на повторное добавление пользователей в БД';
 

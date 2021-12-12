@@ -33,30 +33,6 @@ main.main(data-name="reject")
 			.wrap.wrap--table
 				header.tab.tab--reject
 				.table.table--reject
-					header.table__header
-						.table__cell.table__cell--header.table__cell--fio
-							span.table__text.table__text--header
-								| Фамилия Имя Отчество
-							button.btn.btn--sort(type="button" data-direction="true")
-						.table__cell.table__cell--header.table__cell--post
-							span.table__text.table__text--header
-								| Должность
-							button.btn.btn--sort(type="button" data-direction="true")
-						.table__cell.table__cell--header.table__cell--statustitle
-							span.table__text.table__text--header
-								| Статус
-						.table__cell.table__cell--header.table__cell--date
-							span.table__text.table__text--header
-								| Дата
-						.table__cell.table__cell--header.table__cell--btn-resend
-							button.btn.btn--resend#resendAll(type="button")
-								| Выбрать все
-						.table__cell.table__cell--header.table__cell--view
-							svg.icon.icon--view.icon--view-white
-								use.icon__item(xlink:href="./images/sprite.svg#view")
-					.table__body.table__body--empty#tableReject
-						p.table__nothing
-							| Новых данных нет
 							
 		.info.info--page
 			p.info__item.info__item--warn.info__item--fields
