@@ -69,19 +69,29 @@ function renderHeaderPage(page = 'qr') {
 	$(`.main[data-name=${page}] .container`).prepend(pageTitle(qrObject));
 }
 
-function renderTable(nameTable = '#tableQR') {
-	$(`${nameTable} .table__content`).html('');
+function renderTable(status, page = 'qr') {
+	let stateTable;
 
-	qrCollection.forEach((item) => {
-		if (item.nameid === qrObject.nameid) {
-			$(`${nameTable} .table__content`).append(table(item, qrObject));
-		}
-	});
-}
+	if (status == 'empty') {
+		stateTable = `<p class="table__nothing">Новых данных нет</p>`;
+	} else {
+		stateTable = [...qrCollection.values()].reduce((content, item) => {
+			if (item.nameid === qrObject.nameid) {
+				content += table(item, qrObject);
+			}
 
-function renderHeaderTable(page = 'qr') {
-	$(`.table--${page} .table__header`).html('');
-	$(`.table--${page} .table__header`).append(headerTable(qrObject));
+			return content;
+		}, '');
+	}
+
+	$(`.table--${page}`).html('');
+	$(`.table--${page}`).append(`
+		<header class="table__header">${headerTable(qrObject)}</header>
+		<div class="table__body">${stateTable}</div>
+		`);
+
+	assignAllQR();
+	renderCount();
 }
 
 function renderQRItems(array) {
@@ -125,7 +135,7 @@ function userFromDB(array) {
 	};
 
 	array.forEach((elem, i) => {
-		const itemObject = {...objToCollection};
+		const itemObject = { ...objToCollection };
 
 		for (const itemField in itemObject) {
 			for (const key in elem) {
@@ -158,7 +168,7 @@ function typeAssignCode(page = 'qr') {
 		renderSwitch();
 		assignCodes();
 		showFieldsInHeaderTable();
-		renderTable();
+		renderTable('full');
 	});
 }
 
@@ -196,9 +206,10 @@ function dataAdd(page = 'qr') {
 	getDepartmentFromDB();
 
 	if (qrCollection.size) {
-		emptySign('full');
+		showFieldsInHeaderTable();
+		renderTable('full');
 	} else {
-		emptySign('empty');
+		renderTable('empty');
 
 		return;
 	}
@@ -210,7 +221,6 @@ function dataAdd(page = 'qr') {
 		$(`.tab--${page}`).html('');
 	}
 
-	showFieldsInHeaderTable();
 	assignCodes();
 	showActiveDataOnPage();
 }
@@ -233,7 +243,6 @@ function showDataFromStorage(page = 'qr') {
 		qrSwitch.assign = assign;
 		qrSwitch.refresh = refresh;
 
-		renderHeaderTable();
 		dataAdd();
 	} else {
 		getDataFromDB('const', 'qr');
@@ -254,9 +263,6 @@ function showFieldsInHeaderTable(page = 'qr') {
 	const className = `wrap wrap--content wrap--content-${page}${assignMod}`;
 
 	$(`.main[data-name="${page}"]`).find('.wrap--content').attr('class', className);
-
-	renderHeaderTable();
-	assignAllQR();
 }
 
 function showActiveDataOnPage() {
@@ -270,8 +276,6 @@ function showActiveDataOnPage() {
 	});
 
 	renderHeaderPage();
-	renderTable();
-	renderCount();
 }
 
 function submitIDinBD(page = 'qr') {
@@ -291,12 +295,12 @@ function submitIDinBD(page = 'qr') {
 			setAddUsersInDB(filterDepartCollection, 'const', 'report', 'qr');
 
 			filterDepartCollection.forEach(({ id: userID, codeid }) => {
-				[...qrCollection].forEach(([ key, { id } ]) => {
+				[...qrCollection].forEach(([key, { id }]) => {
 					if (userID === id) {
 						qrCollection.delete(key);
 					}
 				});
-				[...generateCollection].forEach(([ key, { id } ]) => {
+				[...generateCollection].forEach(([key, { id }]) => {
 					if (codeid === id) {
 						generateCollection.delete(key);
 					}
@@ -313,9 +317,7 @@ function submitIDinBD(page = 'qr') {
 			}
 
 			dataAdd();
-			renderHeaderTable();
 			typeAssignCode();
-			assignAllQR();
 
 			if (!qrCollection.size) {
 				renderHeaderPage();
@@ -331,20 +333,6 @@ function submitIDinBD(page = 'qr') {
 function clearObject() {
 	for (const key in qrObject) {
 		qrObject[key] = '';
-	}
-}
-
-function emptySign(status, nameTable = '#tableQR') {
-	if (status == 'empty') {
-		$(nameTable)
-			.addClass('table__body--empty')
-			.html('')
-			.append('<p class="table__nothing">Новых данных нет</p>');
-	} else {
-		$(nameTable)
-			.removeClass('table__body--empty')
-			.html('')
-			.append('<div class="table__content"></div>');
 	}
 }
 
@@ -384,7 +372,7 @@ function assignAllQR(page = 'qr') {
 			resetControlSwitch();
 		}
 
-		renderTable();
+		renderTable('full');
 		setDataInStorage();
 	});
 }
@@ -445,15 +433,15 @@ function setAddUsersInDB(array, nameTable, action, typeTable) {
 		qrCollection.forEach((user) => {
 			if (user.codeid) {
 				QRCode.toDataURL(user.codepicture)
-				.then((url) => {
-					user.pictureurl = url;
+					.then((url) => {
+						user.pictureurl = url;
 
-					filterUsers.push(user);
-				})
-				.catch((error) => {
-					service.modal('qr');
-					console.log(error);
-				});
+						filterUsers.push(user);
+					})
+					.catch((error) => {
+						service.modal('qr');
+						console.log(error);
+					});
 			}
 		});
 
@@ -613,12 +601,11 @@ function changeTabs(page = 'qr') {
 
 		if (qrObject.statusmanual) {
 			resetControlSwitch();
-			renderHeaderTable();
-			assignAllQR();
 		}
 
 		addTabs();
 		showActiveDataOnPage();
+		renderTable('full');
 
 		localStorage.removeItem(page); // в самом конце, т.к. функции выше записывают в localStorage
 	});
