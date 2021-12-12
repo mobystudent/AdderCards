@@ -21,28 +21,9 @@
 	}
 
 	&__body {
+		height: 370px;
 		background: $gray;
 		overflow-y: auto;
-
-		&--empty {
-			height: 370px;
-
-			@media print {
-				display: none;
-			}
-		}
-
-		@media print {
-			padding-bottom: 0;
-		}
-	}
-
-	&__content {
-		height: 370px;
-
-		@media print {
-			height: auto;
-		}
 	}
 
 	&__row {
@@ -50,7 +31,6 @@
 		border-bottom: 1px solid $deepDarkBlue;
 		transition: background .25s ease;
 		background: $gray;
-		cursor: pointer;
 
 		&:not(:last-child) {
 			@media print {

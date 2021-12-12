@@ -55,19 +55,30 @@ function renderHeaderPage(page = 'request') {
 	$(`.main[data-name=${page}] .container`).prepend(pageTitle(requestObject));
 }
 
-function renderTable(nameTable = '#tableRequest') {
-	$(`${nameTable} .table__content`).html('');
+function renderTable(status, page = 'request') {
+	let stateTable;
 
-	requestCollection.forEach((item) => {
-		if (item.nameid === requestObject.nameid) {
-			$(`${nameTable} .table__content`).append(table(item));
-		}
-	});
-}
+	if (status == 'empty') {
+		stateTable = `<p class="table__nothing">Новых данных нет</p>`;
+	} else {
+		stateTable = [...requestCollection.values()].reduce((content, item) => {
+			if (item.nameid === requestObject.nameid) {
+				content += table(item);
+			}
 
-function renderHeaderTable(page = 'request') {
-	$(`.table--${page} .table__header`).html('');
-	$(`.table--${page} .table__header`).append(headerTable(requestObject));
+			return content;
+		}, '');
+	}
+
+	$(`.table--${page}`).html('');
+	$(`.table--${page}`).append(`
+		<header class="table__header">${headerTable(requestObject)}</header>
+		<div class="table__body">${stateTable}</div>
+		`);
+
+	clickAllowDisallowRequest();
+	confirmAllAllowDisallow();
+	renderCount();
 }
 
 function renderSwitch(page = 'request') {
@@ -99,7 +110,7 @@ function userFromDB(array) {
 	};
 
 	array.forEach((elem, i) => {
-		const itemObject = {...objToCollection};
+		const itemObject = { ...objToCollection };
 
 		for (const itemField in itemObject) {
 			for (const key in elem) {
@@ -122,9 +133,9 @@ function dataAdd(page = 'request') {
 	getDepartmentFromDB();
 
 	if (requestCollection.size) {
-		emptySign('full');
+		renderTable('full');
 	} else {
-		emptySign('empty');
+		renderTable('empty');
 
 		return;
 	}
@@ -136,8 +147,6 @@ function dataAdd(page = 'request') {
 		$(`.tab--${page}`).html('');
 	}
 
-	clickAllowDisallowRequest();
-	confirmAllAllowDisallow();
 	showActiveDataOnPage();
 }
 
@@ -158,7 +167,6 @@ function showDataFromStorage(page = 'request') {
 		requestObject.statusdisallow = statusdisallow;
 		requestSwitch.refresh = refresh;
 
-		renderHeaderTable();
 		dataAdd();
 	} else {
 		getDataFromDB('request');
@@ -184,8 +192,6 @@ function showActiveDataOnPage() {
 	});
 
 	renderHeaderPage();
-	renderTable();
-	renderCount();
 }
 
 function submitIDinBD(page = 'request') {
@@ -214,7 +220,7 @@ function submitIDinBD(page = 'request') {
 			console.log(filterDepartCollection);
 
 			filterDepartCollection.forEach(({ id: userID }) => {
-				[...requestCollection].forEach(([ key, { id } ]) => {
+				[...requestCollection].forEach(([key, { id }]) => {
 					if (userID === id) {
 						requestCollection.delete(key);
 					}
@@ -225,8 +231,6 @@ function submitIDinBD(page = 'request') {
 			clearObject();
 			resetControlBtns();
 			dataAdd();
-			renderHeaderTable();
-			confirmAllAllowDisallow();
 
 			if (!requestCollection.size) {
 				renderHeaderPage();
@@ -245,22 +249,8 @@ function clearObject() {
 	requestObject.shortname = '';
 }
 
-function emptySign(status, nameTable = '#tableRequest') {
-	if (status == 'empty') {
-		$(nameTable)
-			.addClass('table__body--empty')
-			.html('')
-			.append('<p class="table__nothing">Новых данных нет</p>');
-	} else {
-		$(nameTable)
-			.removeClass('table__body--empty')
-			.html('')
-			.append('<div class="table__content"></div>');
-	}
-}
-
-function clickAllowDisallowRequest(nameTable = '#tableRequest', page = 'request') {
-	$(`${nameTable} .table__content`).click(({ target }) => {
+function clickAllowDisallowRequest(page = 'request') {
+	$(`.table--${page} .table__body`).click(({ target }) => {
 		if (!$(target).hasClass('btn--allow') && !$(target).hasClass('btn--disallow')) return;
 
 		const userID = $(target).parents('.table__row').data('id');
@@ -286,7 +276,7 @@ function clickAllowDisallowRequest(nameTable = '#tableRequest', page = 'request'
 			setDataInStorage();
 		}
 
-		renderTable();
+		renderTable('full');
 	});
 }
 
@@ -313,9 +303,7 @@ function confirmAllAllowDisallow(page = 'request') {
 			setDataInStorage();
 		}
 
-		renderHeaderTable();
-		renderTable();
-		confirmAllAllowDisallow();
+		renderTable('full');
 	});
 }
 
@@ -348,10 +336,8 @@ function autoRefresh(page = 'request') {
 			localStorage.removeItem(page);
 			requestCollection.clear();
 
-			getDataFromDB('request');
-			resetControlBtns();
-			renderHeaderTable();
-			confirmAllAllowDisallow();
+			resetControlBtns(); // 1
+			getDataFromDB('request'); // 2
 			setDataInStorage();
 
 			requestSwitch.refresh.marker = setInterval(() => {
@@ -505,10 +491,9 @@ function changeTabs(page = 'request') {
 		requestObject.nameid = activeDepart;
 
 		resetControlBtns();
-		renderHeaderTable();
+		renderTable();
 		addTabs();
 		showActiveDataOnPage();
-		confirmAllAllowDisallow();
 
 		localStorage.removeItem(page); // в самом конце, т.к. функции выше записывают в localStorage
 	});
