@@ -89,32 +89,6 @@ main.main(data-name="add")
 			.wrap.wrap--table
 				header.tab.tab--add
 				.table.table--add
-					header.table__header
-						.table__cell.table__cell--header.table__cell--fio
-							span.table__text.table__text--header
-								| Фамилия Имя Отчество
-							button.btn.btn--sort(type="button" data-direction="true")
-						.table__cell.table__cell--header.table__cell--post
-							span.table__text.table__text--header
-								| Должность
-						.table__cell.table__cell--header.table__cell--photoname
-							span.table__text.table__text--header
-								| Фотография
-						.table__cell.table__cell--header.table__cell--statustitle
-							span.table__text.table__text--header
-								| Идентификатор
-						//- .table__cell.table__cell--header.table__cell--date
-						//- 	span.table__text.table__text--header
-						//- 		| Дата
-						.table__cell.table__cell--header.table__cell--edit
-							svg.icon.icon--edit.icon--edit-white
-								use.icon__item(xlink:href="./images/sprite.svg#edit")
-						.table__cell.table__cell--header.table__cell--delete
-							svg.icon.icon--delete.icon--delete-white
-								use.icon__item(xlink:href="./images/sprite.svg#delete")
-					.table__body#tableAdd
-						p.table__nothing
-							| Не добавленно ни одного пользователя
 		
 		.main__btns
 			button.btn#submitAddUser(type="button")

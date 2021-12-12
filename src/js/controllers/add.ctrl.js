@@ -65,13 +65,27 @@ function renderHeaderPage(page = 'add') {
 	$(`.main[data-name=${page}] .container`).prepend(pageTitle(addObject));
 }
 
-function renderTable(nameTable = '#tableAdd') {
-	$(`${nameTable} .table__content`).html('');
+function renderTable(status, page = 'add') {
+	let stateTable;
 
-	addCollection.forEach((item) => {
-		$(`${nameTable} .table__content`).append(table(item, addObject));
-	});
+	if (status == 'empty') {
+		stateTable = `<p class="table__nothing">Новых данных нет</p>`;
+	} else {
+		stateTable = [...addCollection.values()].reduce((content, item) => {
+			content += table(item, addObject);
 
+			return content;
+		}, '');
+	}
+
+	$(`.table--${page}`).html('');
+	$(`.table--${page}`).append(`
+		<header class="table__header">${headerTable(addObject)}</header>
+		<div class="table__body">${stateTable}</div>
+		`);
+
+	deleteUser();
+	editUser();
 	renderCount();
 }
 
@@ -83,11 +97,6 @@ function renderForm(nameForm = '#addForm') {
 	datepicker();
 	downloadFoto();
 	memberInputField();
-}
-
-function renderHeaderTable(page = 'add') {
-	$(`.table--${page} .table__header`).html('');
-	$(`.table--${page} .table__header`).append(headerTable(addObject));
 }
 
 function renderModalContainsUser() {
@@ -112,7 +121,7 @@ function renderCount(page = 'add') {
 	}
 }
 
-function modalActions(){
+function modalActions() {
 	$('.modal__btn').click(({ currentTarget }) => {
 		const btnName = $(currentTarget).data('name');
 
@@ -197,7 +206,7 @@ function userFromForm() {
 		cardvalidtoid: '',
 		cardvalidtotitle: ''
 	};
-	const itemObject = {...objToCollection};
+	const itemObject = { ...objToCollection };
 
 	for (const itemField in itemObject) {
 		for (const key in addObject) {
@@ -218,17 +227,13 @@ function userFromForm() {
 
 function dataAdd() {
 	if (addCollection.size) {
-		emptySign('full');
+		showFieldsInHeaderTable();
+		renderTable('full');
 	} else {
-		emptySign('empty');
+		renderTable('empty');
 
 		return;
 	}
-
-	showFieldsInHeaderTable();
-	renderTable();
-	deleteUser();
-	editUser();
 }
 
 function showDataFromStorage(page = 'add') {
@@ -283,8 +288,6 @@ function showFieldsInHeaderTable(page = 'add') {
 	const className = `wrap wrap--content wrap--content-${page}${cardvalidtoMod}`;
 
 	$(`.main[data-name="${page}"]`).find('.wrap--content').attr('class', className);
-
-	renderHeaderTable();
 }
 
 function toggleSelect(nameForm = '#addForm') {
@@ -321,7 +324,9 @@ function setDataAttrSelectedItem(title, select, statusid) {
 
 function clearFieldsForm() {
 	for (const key in addObject) {
-		addObject[key] = '';
+		if (key !== 'nameid' && key !== 'longname') {
+			addObject[key] = '';
+		}
 	}
 
 	renderForm();
@@ -334,20 +339,6 @@ function memberInputField() {
 
 		addObject[nameField] = fieldValue ? fieldValue : '';
 	});
-}
-
-function emptySign(status, nameTable = '#tableAdd') {
-	if (status == 'empty') {
-		$(nameTable)
-			.addClass('table__body--empty')
-			.html('')
-			.append('<p class="table__nothing">Новых данных нет</p>');
-	} else {
-		$(nameTable)
-			.removeClass('table__body--empty')
-			.html('')
-			.append('<div class="table__content"></div>');
-	}
 }
 
 function datepicker() {
@@ -399,8 +390,8 @@ function validPhotoExtention(photoName) {
 	return validPhotoName;
 }
 
-function deleteUser(nameTable = '#tableAdd', page = 'add') {
-	$(`${nameTable} .table__content`).click(({ target }) => {
+function deleteUser(page = 'add') {
+	$(`.table--${page} .table__body`).click(({ target }) => {
 		if ($(target).parents('.table__btn--delete').length || $(target).hasClass('table__btn--delete')) {
 			const userID = $(target).closest('.table__row').data('id');
 
@@ -411,19 +402,17 @@ function deleteUser(nameTable = '#tableAdd', page = 'add') {
 			});
 
 			setDataInStorage();
-			showFieldsInHeaderTable();
-			renderTable();
+			dataAdd();
 
 			if (!addCollection.size) {
-				emptySign('empty');
 				localStorage.removeItem(page);
 			}
 		}
 	});
 }
 
-function editUser(nameTable = '#tableAdd') {
-	$(`${nameTable} .table__content`).click(({ target }) => {
+function editUser(page = 'add') {
+	$(`.table--${page} .table__body`).click(({ target }) => {
 		if ($(target).parents('.table__btn--edit').length || $(target).hasClass('table__btn--edit')) {
 			const userID = $(target).closest('.table__row').data('id');
 
@@ -440,12 +429,7 @@ function editUser(nameTable = '#tableAdd') {
 			});
 
 			renderForm(); // 1
-			showFieldsInHeaderTable(); // 2
-			renderTable();
-
-			if (!addCollection.size) {
-				emptySign('empty');
-			}
+			dataAdd(); // 2
 		}
 	});
 }
@@ -462,8 +446,7 @@ function submitIDinBD(page = 'add') {
 		setAddUsersInDB([...addCollection.values()], 'add', page);
 
 		addCollection.clear();
-		emptySign('empty');
-		renderTable();
+		renderTable('empty');
 
 		localStorage.removeItem(page);
 		counter = 0;
@@ -542,7 +525,7 @@ function getUserNamesFromDB() {
 }
 
 function sendMail(obj) {
-	const sender =  sendUsers.manager;
+	const sender = sendUsers.manager;
 	const recipient = sendUsers.secretary;
 	const subject = 'Запрос на добавление пользователей в БД';
 
