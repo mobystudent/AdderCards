@@ -63,13 +63,27 @@ function renderHeaderPage(page = 'remove') {
 	$(`.main[data-name=${page}] .container`).prepend(pageTitle(removeObject));
 }
 
-function renderTable(nameTable = '#tableRemove') {
-	$(`${nameTable} .table__content`).html('');
+function renderTable(status, page = 'remove') {
+	let stateTable;
 
-	removeCollection.forEach((item) => {
-		$(`${nameTable} .table__content`).append(table(item, removeObject));
-	});
+	if (status == 'empty') {
+		stateTable = `<p class="table__nothing">Не добавленно ни одного пользователя</p>`;
+	} else {
+		stateTable = [...removeCollection.values()].reduce((content, item) => {
+			content += table(item, removeObject);
 
+			return content;
+		}, '');
+	}
+
+	$(`.table--${page}`).html('');
+	$(`.table--${page}`).append(`
+		<header class="table__header">${headerTable(removeObject)}</header>
+		<div class="table__body">${stateTable}</div>
+		`);
+
+	deleteUser();
+	editUser();
 	renderCount();
 }
 
@@ -88,11 +102,6 @@ function renderForm(nameForm = '#removeForm') {
 	getAddUsersInDB(); // вывести всех пользователей в селект 1
 	datepicker();
 	setDepartInSelect(); // 2
-}
-
-function renderHeaderTable(page = 'remove') {
-	$(`.table--${page} .table__header`).html('');
-	$(`.table--${page} .table__header`).append(headerTable(removeObject));
 }
 
 function addUser(page = 'remove') {
@@ -131,7 +140,7 @@ function userFromForm() {
 		newdepart: '',
 		cardvalidto: ''
 	};
-	const itemObject = {...objToCollection};
+	const itemObject = { ...objToCollection };
 
 	for (const itemField in itemObject) {
 		for (const key in removeObject) {
@@ -150,17 +159,13 @@ function userFromForm() {
 
 function dataAdd() {
 	if (removeCollection.size) {
-		emptySign('full');
+		showFieldsInHeaderTable();
+		renderTable('full');
 	} else {
-		emptySign('empty');
+		renderTable('empty');
 
 		return;
 	}
-
-	showFieldsInHeaderTable();
-	renderTable();
-	deleteUser();
-	editUser();
 }
 
 function showDataFromStorage(page = 'remove') {
@@ -188,7 +193,7 @@ function setDataInStorage(page = 'remove') {
 
 function setDepartInSelect() {
 	departmentCollection.forEach(({ nameid = '', longname = '' }) => {
-		const quoteName = longname.replace(/["']/g , '&quot;');
+		const quoteName = longname.replace(/["']/g, '&quot;');
 
 		if (nameid !== settingsObject.nameid) {
 			$('.select[data-select="newnameid"] .select__list').append(`
@@ -208,8 +213,6 @@ function showFieldsInHeaderTable(page = 'remove') {
 	const className = `wrap wrap--content wrap--content-${page}${newdepartMod}${cardvalidtoMod}`;
 
 	$(`.main[data-name="${page}"]`).find('.wrap--content').attr('class', className);
-
-	renderHeaderTable();
 }
 
 function setUsersInSelect(users, nameForm = '#removeForm') {
@@ -275,7 +278,7 @@ function setDataAttrSelectedItem(title, select, statusid) {
 		}
 	} else if (select === 'newnameid') {
 		removeObject.newnameid = statusid;
-		removeObject.newdepart = title.replace(/["']/g , '&quot;');
+		removeObject.newdepart = title.replace(/["']/g, '&quot;');
 	}
 
 	renderForm();
@@ -283,24 +286,12 @@ function setDataAttrSelectedItem(title, select, statusid) {
 
 function clearFieldsForm() {
 	for (const key in removeObject) {
-		removeObject[key] = '';
+		if (key !== 'nameid' && key !== 'longname') {
+			removeObject[key] = '';
+		}
 	}
 
 	renderForm();
-}
-
-function emptySign(status, nameTable = '#tableRemove') {
-	if (status == 'empty') {
-		$(nameTable)
-			.addClass('table__body--empty')
-			.html('')
-			.append('<p class="table__nothing">Новых данных нет</p>');
-	} else {
-		$(nameTable)
-			.removeClass('table__body--empty')
-			.html('')
-			.append('<div class="table__content"></div>');
-	}
 }
 
 function datepicker() {
@@ -320,35 +311,33 @@ function datepicker() {
 	});
 }
 
-function deleteUser(nameTable = '#tableRemove', page = 'remove') {
-	$(`${nameTable} .table__content`).click(({ target }) => {
+function deleteUser(page = 'remove') {
+	$(`.table--${page} .table__body`).click(({ target }) => {
 		if ($(target).parents('.table__btn--delete').length || $(target).hasClass('table__btn--delete')) {
 			const userID = $(target).closest('.table__row').data('id');
 
-			[...removeCollection].forEach(([ key, { id } ]) => {
+			[...removeCollection].forEach(([key, { id }]) => {
 				if (userID === +id) {
 					removeCollection.delete(key);
 				}
 			});
 
 			setDataInStorage();
-			showFieldsInHeaderTable();
-			renderTable();
+			dataAdd();
 
 			if (!removeCollection.size) {
-				emptySign('empty');
 				localStorage.removeItem(page);
 			}
 		}
 	});
 }
 
-function editUser(nameTable = '#tableRemove') {
-	$(`${nameTable} .table__content`).click(({ target }) => {
+function editUser(page = 'remove') {
+	$(`.table--${page} .table__body`).click(({ target }) => {
 		if ($(target).parents('.table__btn--edit').length || $(target).hasClass('table__btn--edit')) {
 			const userID = $(target).closest('.table__row').data('id');
 
-			[...removeCollection].forEach(([ keyCollection, item ]) => {
+			[...removeCollection].forEach(([keyCollection, item]) => {
 				if (userID === +item.id) {
 					for (let key in item) {
 						removeObject[key] = item[key];
@@ -359,12 +348,7 @@ function editUser(nameTable = '#tableRemove') {
 			});
 
 			renderForm();
-			showFieldsInHeaderTable();
-			renderTable();
-
-			if (!removeCollection.size) {
-				emptySign('empty');
-			}
+			dataAdd();
 		}
 	});
 }
@@ -382,15 +366,14 @@ function submitIDinBD(page = 'remove') {
 		const changeDepartArray = [...removeCollection.values()].filter(({ statusid }) => statusid === 'changeDepart');
 
 		if (removeArray.length) {
-			setAddUsersInDB(removeArray, 'add' , 'remove');
+			setAddUsersInDB(removeArray, 'add', 'remove');
 		}
 		if (changeDepartArray.length) {
 			setAddUsersInDB(changeDepartArray, 'add', 'transfer');
 		}
 
 		removeCollection.clear();
-		emptySign('empty');
-		renderTable();
+		renderTable('empty');
 
 		localStorage.removeItem(page);
 		counter = 0;
@@ -436,7 +419,7 @@ function getAddUsersInDB(id = '') {
 		},
 		success: (data) => {
 			if (id) {
-				const { id = '', post  = '', photofile = '' } = JSON.parse(data);
+				const { id = '', post = '', photofile = '' } = JSON.parse(data);
 
 				removeObject.post = post;
 				removeObject.id = id;
@@ -475,7 +458,7 @@ function getDepartmentFromDB() {
 }
 
 function sendMail(obj) {
-	const sender =  sendUsers.manager;
+	const sender = sendUsers.manager;
 	const recipient = sendUsers.operator;
 	const subject = 'Запрос на удаление пользователей из БД';
 
