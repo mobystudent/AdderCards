@@ -35,26 +35,6 @@ main.main(data-name="permis")
 			.wrap.wrap--table
 				header.tab.tab--permis
 				.table.table--permis
-					header.table__header
-						.table__cell.table__cell--header.table__cell--fio
-							span.table__text.table__text--header
-								| Фамилия Имя Отчество
-							button.btn.btn--sort(type='button' data-direction='true')
-						.table__cell.table__cell--header.table__cell--post
-							span.table__text.table__text--header
-								| Должность
-							button.btn.btn--sort(type='button' data-direction='true')
-						.table__cell.table__cell--header.table__cell--statustitle
-							span.table__text.table__text--header
-								| Статус
-						.table__cell.table__cell--header.table__cell--btn-permis
-							button.btn.btn--allow#allowAll(type='button' data-type="allow")
-								| Разрешить все
-							button.btn.btn--disallow#disallowAll(type='button' data-type="disallow")
-								| Запретить все
-					.table__body#tablePermis
-						p.table__nothing
-							| Новых данных нет
 	
 		.info.info--page
 			p.info__item.info__item--warn.info__item--fields
