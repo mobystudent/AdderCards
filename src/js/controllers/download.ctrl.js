@@ -38,6 +38,7 @@ $(window).on('load', () => {
 	countQRCodes();
 	submitIDinBD();
 	showDataFromStorage();
+	renderTable('empty');
 });
 
 function renderHeaderPage(page = 'download') {
@@ -45,19 +46,27 @@ function renderHeaderPage(page = 'download') {
 	$(`.main[data-name=${page}] .container`).prepend(pageTitle(downloadObject));
 }
 
-function renderTable(nameTable = '#tableDownload') {
-	$(`${nameTable} .table__content`).html('');
+function renderTable(status, page = 'download') {
+	let stateTable;
 
-	downloadCollection.forEach((item) => {
-		$(`${nameTable} .table__content`).append(table(item));
-	});
+	if (status == 'empty') {
+		stateTable = `<p class="table__nothing">Новых данных нет</p>`;
+	} else {
+		stateTable = [...downloadCollection.values()].reduce((content, item) => {
+			content += table(item);
 
+			return content;
+		}, '');
+	}
+
+	$(`.table--${page}`).html('');
+	$(`.table--${page}`).append(`
+		<header class="table__header">${headerTable()}</header>
+		<div class="table__body">${stateTable}</div>
+		`);
+
+	deleteUser();
 	renderCount();
-}
-
-function renderHeaderTable(page = 'download') {
-	$(`.table--${page} .table__header`).html('');
-	$(`.table--${page} .table__header`).append(headerTable());
 }
 
 function renderCount() {
@@ -146,22 +155,18 @@ function codeFromForm(page = 'download') {
 		counter++;
 	});
 
-	renderHeaderTable();
-	setDataInStorage();
 	dataAdd();
+	setDataInStorage();
 }
 
 function dataAdd() {
 	if (downloadCollection.size) {
-		emptySign('full');
+		renderTable('full');
 	} else {
-		emptySign('empty');
+		renderTable('empty');
 
 		return;
 	}
-
-	renderTable();
-	deleteUser();
 }
 
 function showDataFromStorage(page = 'download') {
@@ -187,8 +192,8 @@ function setDataInStorage(page = 'download') {
 	}));
 }
 
-function deleteUser(nameTable = '#tableDownload', page = 'download') {
-	$(`${nameTable} .table__content`).click(({ target }) => {
+function deleteUser(page = 'download') {
+	$(`.table--${page} .table__body`).click(({ target }) => {
 		if ($(target).parents('.table__btn--delete').length || $(target).hasClass('table__btn--delete')) {
 			const userID = $(target).closest('.table__row').data('id');
 
@@ -198,11 +203,10 @@ function deleteUser(nameTable = '#tableDownload', page = 'download') {
 				}
 			});
 
+			dataAdd();
 			setDataInStorage();
-			renderTable();
 
 			if (!downloadCollection.size) {
-				emptySign('empty');
 				localStorage.removeItem(page);
 			}
 		}
@@ -221,29 +225,14 @@ function clearFieldsForm(nameForm = '#downloadForm', page = 'download') {
 	renderCount();
 }
 
-function emptySign(status, nameTable = '#tableDownload') {
-	if (status == 'empty') {
-		$(nameTable)
-			.addClass('table__body--empty')
-			.html('')
-			.append('<p class="table__nothing">Новых данных нет</p>');
-	} else {
-		$(nameTable)
-			.removeClass('table__body--empty')
-			.html('')
-			.append('<div class="table__content"></div>');
-	}
-}
-
 function submitIDinBD(page = 'download') {
 	$('#submitDownloadQR').click(() => {
 		if (!downloadCollection.size) return;
 
-		setAddUsersInDB([...downloadCollection.values()], 'download' , 'add');
+		setAddUsersInDB([...downloadCollection.values()], 'download', 'add');
 
 		downloadCollection.clear();
-		emptySign('empty');
-		renderTable();
+		renderTable('empty');
 
 		localStorage.removeItem(page);
 		counter = 0;
