@@ -7,6 +7,7 @@ import messageMail from '../mail.js';
 import { settingsObject, sendUsers } from './settings.ctrl.js';
 
 import { table } from '../components/const/table.tpl.js';
+import { headerTable } from '../components/const/header-table.tpl.js';
 import { tabs } from '../components/tabs.tpl.js';
 import { switchElem } from '../components/const/switch.tpl.js';
 import { count } from '../components/count.tpl.js';
@@ -55,14 +56,30 @@ function renderHeaderPage(page = 'const') {
 	$(`.main[data-name=${page}] .container`).prepend(pageTitle(constObject));
 }
 
-function renderTable(nameTable = '#tableConst') {
-	$(`${nameTable} .table__content`).html('');
+function renderTable(status, page = 'const') {
+	let stateTable;
 
-	constCollection.forEach((item) => {
-		if (item.nameid === constObject.nameid) {
-			$(`${nameTable} .table__content`).append(table(item));
-		}
-	});
+	if (status == 'empty') {
+		stateTable = `<p class="table__nothing">Новых данных нет</p>`;
+	} else {
+		stateTable = [...constCollection.values()].reduce((content, item) => {
+			if (item.nameid === constObject.nameid) {
+				content += table(item);
+			}
+
+			return content;
+		}, '');
+	}
+
+	$(`.table--${page}`).html('');
+	$(`.table--${page}`).append(`
+		<header class="table__header">${headerTable()}</header>
+		<div class="table__body">${stateTable}</div>
+		`);
+
+	convertCardIDInCardName();
+	clearNumberCard();
+	renderCount();
 }
 
 function renderSwitch(page = 'const') {
@@ -97,7 +114,7 @@ function userFromDB(array) {
 	};
 
 	array.forEach((elem, i) => {
-		const itemObject = {...objToCollection};
+		const itemObject = { ...objToCollection };
 
 		for (const itemField in itemObject) {
 			for (const key in elem) {
@@ -121,9 +138,9 @@ function dataAdd(page = 'const') {
 	getConstCardsFromDB();
 
 	if (constCollection.size) {
-		emptySign('full');
+		renderTable('full');
 	} else {
-		emptySign('empty');
+		renderTable('empty');
 
 		return;
 	}
@@ -135,8 +152,6 @@ function dataAdd(page = 'const') {
 		$(`.tab--${page}`).html('');
 	}
 
-	convertCardIDInCardName();
-	clearNumberCard();
 	showActiveDataOnPage();
 }
 
@@ -178,8 +193,6 @@ function showActiveDataOnPage() {
 	});
 
 	renderHeaderPage();
-	renderTable();
-	renderCount();
 }
 
 function submitIDinBD(page = 'const') {
@@ -199,7 +212,7 @@ function submitIDinBD(page = 'const') {
 			setAddUsersInDB(filterDepartCollection, 'const', 'report', 'card');
 
 			filterDepartCollection.forEach(({ id: userID }) => {
-				[...constCollection].forEach(([ key, { id } ]) => {
+				[...constCollection].forEach(([key, { id }]) => {
 					if (userID === id) {
 						constCollection.delete(key);
 					}
@@ -227,27 +240,13 @@ function clearObject() {
 	constObject.shortname = '';
 }
 
-function emptySign(status, nameTable = '#tableConst') {
-	if (status == 'empty') {
-		$(nameTable)
-			.addClass('table__body--empty')
-			.html('')
-			.append('<p class="table__nothing">Новых данных нет</p>');
-	} else {
-		$(nameTable)
-			.removeClass('table__body--empty')
-			.html('')
-			.append('<div class="table__content"></div>');
-	}
-}
-
-function clearNumberCard(nameTable = '#tableConst') {
-	$(`${nameTable} .table__content`).click(({ target }) => {
+function clearNumberCard(page = 'const') {
+	$(`.table--${page} .table__body`).click(({ target }) => {
 		if ($(target).parents('.table__btn--clear').length || $(target).hasClass('table__btn--clear')) {
 			const userID = $(target).parents('.table__row').data('id');
 			let collectionID;
 
-			[...constCollection].forEach(([ key, { id } ]) => {
+			[...constCollection].forEach(([key, { id }]) => {
 				if (userID === +id) {
 					collectionID = key;
 				}
@@ -258,8 +257,8 @@ function clearNumberCard(nameTable = '#tableConst') {
 	});
 }
 
-function convertCardIDInCardName(nameTable = '#tableConst', page = 'const') {
-	$(`${nameTable} .table__content`).click(({ target }) => {
+function convertCardIDInCardName(page = 'const') {
+	$(`.table--${page} .table__body`).click(({ target }) => {
 		if (!$(target).hasClass('table__input')) return;
 
 		$(target).on('input', () => {
@@ -297,7 +296,7 @@ function convertCardIDInCardName(nameTable = '#tableConst', page = 'const') {
 				return;
 			}
 
-			[...constCollection].forEach(([ key, { id } ]) => {
+			[...constCollection].forEach(([key, { id }]) => {
 				if (userID === +id) {
 					setDataInTable(key, cardObj);
 				}
@@ -321,12 +320,13 @@ function setDataInTable(userID, cardObj, page = 'const') {
 	}
 
 	showActiveDataOnPage();
+	renderTable('full');
 }
 
 function checkInvalidValueCardID(page = 'const') {
 	const filterDepartCollection = [...constCollection.values()].filter(({ nameid }) => nameid == constObject.nameid);
 	const checkValueCard = filterDepartCollection.every(({ cardid }) => {
-		if(cardid) convert.convertCardId(cardid);
+		if (cardid) convert.convertCardId(cardid);
 	});
 
 	if (checkValueCard) {
@@ -518,6 +518,7 @@ function changeTabs(page = 'const') {
 
 		addTabs();
 		showActiveDataOnPage();
+		renderTable('full');
 
 		localStorage.removeItem(page); // в самом конце, т.к. функции выше записывают в localStorage
 	});
@@ -527,43 +528,6 @@ function filterDepart() {
 	const arrayDepart = [...constCollection.values()].map(({ nameid }) => nameid);
 
 	return [...new Set(arrayDepart)];
-}
-
-function createObjectForBD() {
-	const object = {
-		FIO: '',
-		Department: '',
-		FieldGroup: '',
-		Badge: '',
-		CardName: '',
-		CardID: '',
-		CardValidTo: '',
-		PIN: '',
-		CardStatus: 1,
-		Security: 0,
-		Disalarm: 0,
-		VIP: 0,
-		DayNightCLM: 0,
-		AntipassbackDisabled: 0,
-		PhotoFile: '',
-		EmployeeNumber: '',
-		Post: ''
-	};
-	const fillOutObjectInBD = [...constFillOutCardCollection].map((elem) => {
-		const itemObject = Object.assign({}, object);
-
-		for (const itemField in itemObject) {
-			for (const key in elem) {
-				if (itemField.toLocaleLowerCase() == key) {
-					itemObject[itemField] = elem[key];
-				}
-			}
-		}
-
-		return itemObject;
-	});
-
-	console.log(fillOutObjectInBD);
 }
 
 export default {
