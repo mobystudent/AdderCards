@@ -59,13 +59,27 @@ function renderHeaderPage(page = 'edit') {
 	$(`.main[data-name=${page}] .container`).prepend(pageTitle(editObject));
 }
 
-function renderTable(nameTable = '#tableEdit') {
-	$(`${nameTable} .table__content`).html('');
+function renderTable(status, page = 'edit') {
+	let stateTable;
 
-	editCollection.forEach((item) => {
-		$(`${nameTable} .table__content`).append(table(item, editObject));
-	});
+	if (status == 'empty') {
+		stateTable = `<p class="table__nothing">Не добавленно ни одного пользователя</p>`;
+	} else {
+		stateTable = [...editCollection.values()].reduce((content, item) => {
+			content += table(item, editObject);
 
+			return content;
+		}, '');
+	}
+
+	$(`.table--${page}`).html('');
+	$(`.table--${page}`).append(`
+		<header class="table__header">${headerTable(editObject)}</header>
+		<div class="table__body">${stateTable}</div>
+		`);
+
+	deleteUser();
+	editUser();
 	renderCount();
 }
 
@@ -77,11 +91,6 @@ function renderForm(nameForm = '#editForm') {
 	getAddUsersInDB();
 	downloadFoto();
 	memberInputField();
-}
-
-function renderHeaderTable(page = 'edit') {
-	$(`.table--${page} .table__header`).html('');
-	$(`.table--${page} .table__header`).append(headerTable(editObject));
 }
 
 function renderCount(page = 'edit') {
@@ -154,7 +163,7 @@ function userFromForm() {
 		newphotourl: '',
 		newphotoname: ''
 	};
-	const itemObject = {...objToCollection};
+	const itemObject = { ...objToCollection };
 
 	for (const itemField in itemObject) {
 		for (const key in editObject) {
@@ -173,17 +182,13 @@ function userFromForm() {
 
 function dataAdd() {
 	if (editCollection.size) {
-		emptySign('full');
+		showFieldsInHeaderTable();
+		renderTable('full');
 	} else {
-		emptySign('empty');
+		renderTable('empty');
 
 		return;
 	}
-
-	showFieldsInHeaderTable();
-	renderTable();
-	deleteUser();
-	editUser();
 }
 
 function showDataFromStorage(page = 'edit') {
@@ -243,8 +248,6 @@ function showFieldsInHeaderTable(page = 'edit') {
 	const className = `wrap wrap--content wrap--content-${page}${newfioMod}${newpostMod}${photofileMod}`;
 
 	$(`.main[data-name="${page}"]`).find('.wrap--content').attr('class', className);
-
-	renderHeaderTable();
 }
 
 function setUsersInSelect(users, nameForm = '#editForm') {
@@ -322,7 +325,9 @@ function setDataAttrSelectedItem(title, select, statusid) {
 
 function clearFieldsForm() {
 	for (const key in editObject) {
-		editObject[key] = '';
+		if (key !== 'nameid' && key !== 'longname') {
+			editObject[key] = '';
+		}
 	}
 
 	renderForm();
@@ -335,20 +340,6 @@ function memberInputField() {
 
 		editObject[nameField] = fieldValue ? fieldValue : '';
 	});
-}
-
-function emptySign(status, nameTable = '#tableEdit') {
-	if (status == 'empty') {
-		$(nameTable)
-			.addClass('table__body--empty')
-			.html('')
-			.append('<p class="table__nothing">Новых данных нет</p>');
-	} else {
-		$(nameTable)
-			.removeClass('table__body--empty')
-			.html('')
-			.append('<div class="table__content"></div>');
-	}
 }
 
 function downloadFoto(nameForm = '#editForm', page = 'edit') {
@@ -383,35 +374,33 @@ function validPhotoExtention(photoName) {
 	return validPhotoName;
 }
 
-function deleteUser(nameTable = '#tableEdit', page = 'edit') {
-	$(`${nameTable} .table__content`).click(({ target }) => {
+function deleteUser(page = 'edit') {
+	$(`.table--${page} .table__body`).click(({ target }) => {
 		if ($(target).parents('.table__btn--delete').length || $(target).hasClass('table__btn--delete')) {
 			const userID = $(target).closest('.table__row').data('id');
 
-			[...editCollection].forEach(([ key, { id } ]) => {
+			[...editCollection].forEach(([key, { id }]) => {
 				if (userID === +id) {
 					editCollection.delete(key);
 				}
 			});
 
 			setDataInStorage();
-			showFieldsInHeaderTable();
-			renderTable();
+			dataAdd();
 
 			if (!editCollection.size) {
-				emptySign('empty');
 				localStorage.removeItem(page);
 			}
 		}
 	});
 }
 
-function editUser(nameTable = '#tableEdit') {
-	$(`${nameTable} .table__content`).click(({ target }) => {
+function editUser(page = 'edit') {
+	$(`.table--${page} .table__body`).click(({ target }) => {
 		if ($(target).parents('.table__btn--edit').length || $(target).hasClass('table__btn--edit')) {
 			const userID = $(target).closest('.table__row').data('id');
 
-			[...editCollection].forEach(([ keyCollection, item ]) => {
+			[...editCollection].forEach(([keyCollection, item]) => {
 				if (userID === +item.id) {
 					for (let key in item) {
 						editObject[key] = item[key];
@@ -422,8 +411,7 @@ function editUser(nameTable = '#tableEdit') {
 			});
 
 			renderForm();
-			showFieldsInHeaderTable();
-			renderTable();
+			dataAdd();
 		}
 	});
 }
@@ -460,8 +448,7 @@ function submitIDinBD(page = 'edit') {
 		}
 
 		editCollection.clear();
-		emptySign('empty');
-		renderTable();
+		renderTable('empty');
 
 		localStorage.removeItem(page);
 		counter = 0;
@@ -529,7 +516,7 @@ function getAddUsersInDB(id = '') {
 		},
 		success: (data) => {
 			if (id) {
-				const { id = '', post  = '', photofile  = '' } = JSON.parse(data);
+				const { id = '', post = '', photofile = '' } = JSON.parse(data);
 
 				editObject.post = post;
 				editObject.id = id;
@@ -547,7 +534,7 @@ function getAddUsersInDB(id = '') {
 }
 
 function sendMail(obj) {
-	const sender =  sendUsers.manager;
+	const sender = sendUsers.manager;
 	const recipient = sendUsers.operator;
 	const subject = 'Запрос на редактирование данных пользователей в БД';
 

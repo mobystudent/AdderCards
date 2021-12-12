@@ -81,36 +81,6 @@ main.main(data-name="edit")
 			.wrap.wrap--table
 				header.tab.tab--edit
 				.table.table--edit
-					header.table__header
-						.table__cell.table__cell--header.table__cell--fio
-							span.table__text.table__text--header
-								| Фамилия Имя Отчество
-							button.btn.btn--sort(type="button" data-direction="true")
-						.table__cell.table__cell--header.table__cell--post
-							span.table__text.table__text--header
-								| Должность
-						.table__cell.table__cell--header.table__cell--statustitle
-							span.table__text.table__text--header
-								| Тип изменения
-						//- .table__cell.table__cell--header.table__cell--fio
-						//- 	span.table__text.table__text--header
-						//- 		| Новое Фамилия Имя Отчество
-						//- 	button.btn.btn--sort(type="button" data-direction="true")
-						//- .table__cell.table__cell--header.table__cell--post
-						//- 	span.table__text.table__text--header
-						//- 		| Новая должность
-						//- .table__cell.table__cell--header.table__cell--photoname
-						//- 	span.table__text.table__text--header
-						//- 		| Новая фотография
-						.table__cell.table__cell--header.table__cell--edit
-							svg.icon.icon--edit.icon--edit-white
-								use.icon__item(xlink:href="./images/sprite.svg#edit")
-						.table__cell.table__cell--header.table__cell--delete
-							svg.icon.icon--delete.icon--delete-white
-								use.icon__item(xlink:href="./images/sprite.svg#delete")
-					.table__body#tableEdit
-						p.table__nothing
-							| Не добавленно ни одного пользователя
 		
 		.main__btns
 			button.btn#submitEditUser(type="button")
