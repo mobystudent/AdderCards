@@ -12,6 +12,7 @@ import { form } from '../components/remove/form.tpl.js';
 import { count } from '../components/count.tpl.js';
 import { headerTable } from '../components/remove/header-table.tpl.js';
 import { pageTitle } from '../components/page-title.tpl.js';
+import { select } from '../components/select.tpl.js';
 
 datepickerFactory($);
 datepickerRUFactory($);
@@ -196,11 +197,14 @@ function setDepartInSelect() {
 		const quoteName = longname.replace(/["']/g, '&quot;');
 
 		if (nameid !== settingsObject.nameid) {
-			$('.select[data-select="newnameid"] .select__list').append(`
-				<li class="select__item">
-					<span class="select__name select__name--form" data-title="${quoteName}" data-newnameid="${nameid}">${quoteName}</span>
-				</li>
-			`);
+			const item = {
+				value: quoteName,
+				id: nameid,
+				type: 'form',
+				dataid: 'newnameid'
+			};
+
+			$('.select[data-select="newnameid"] .select__list').append(select(item));
 		}
 	});
 }
@@ -216,7 +220,7 @@ function showFieldsInHeaderTable(page = 'remove') {
 }
 
 function setUsersInSelect(users, nameForm = '#removeForm') {
-	$(`${nameForm} .select[data-select="fio"]`).find('.select__list').html('');
+	$(`${nameForm} .select[data-select="fio"] .select__list`).html('');
 
 	if (removeCollection.size) {
 		removeCollection.forEach((elem) => {
@@ -225,13 +229,14 @@ function setUsersInSelect(users, nameForm = '#removeForm') {
 	}
 
 	users.forEach(({ id = '', fio = '' }) => {
-		$(`${nameForm} .select[data-select="fio"]`).find('.select__list').append(`
-			<li class="select__item">
-				<span class="select__name select__name--form" data-title="${fio}" data-id="${id}">
-					${fio}
-				</span>
-			</li>
-		`);
+		const item = {
+			value: fio,
+			id,
+			type: 'form',
+			dataid: 'id'
+		};
+
+		$(`${nameForm} .select[data-select="fio"] .select__list`).append(select(item));
 	});
 
 	clickSelectItem();

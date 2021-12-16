@@ -513,12 +513,11 @@ function changeTabs(page = 'const') {
 	$(`.tab--${page}`).click(({ target }) => {
 		if (!$(target).parents('.tab__item').length && !$(target).hasClass('tab__item')) return;
 
-		const activeDepart = $(target).closest('.tab__item').data('depart');
-		constObject.nameid = activeDepart;
+		constObject.nameid = $(target).closest('.tab__item').data('depart');
 
 		addTabs();
-		showActiveDataOnPage();
 		renderTable('full');
+		showActiveDataOnPage();
 
 		localStorage.removeItem(page); // в самом конце, т.к. функции выше записывают в localStorage
 	});

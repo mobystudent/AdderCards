@@ -596,8 +596,7 @@ function changeTabs(page = 'qr') {
 	$(`.tab--${page}`).click(({ target }) => {
 		if (!$(target).parents('.tab__item').length && !$(target).hasClass('tab__item')) return;
 
-		const activeDepart = $(target).closest('.tab__item').data('depart');
-		qrObject.nameid = activeDepart;
+		qrObject.nameid = $(target).closest('.tab__item').data('depart');
 
 		if (qrObject.statusmanual) {
 			resetControlSwitch();

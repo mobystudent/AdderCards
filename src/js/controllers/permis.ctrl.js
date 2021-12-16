@@ -479,14 +479,12 @@ function addTabs(page = 'permis') {
 
 	if (filterNameDepart.length > 1) {
 		filterNameDepart.forEach((item) => {
-			departmentCollection.forEach((depart) => {
-				const { nameid = '', shortname = '' } = depart;
-
-				if (item == nameid) {
+			departmentCollection.forEach(({ nameid = '', shortname = '' }) => {
+				if (item === nameid) {
 					const tabItem = {
 						nameid,
 						shortname,
-						status: permisObject.nameid === nameid ? true : false
+						status: permisObject.nameid === nameid
 					};
 
 					$(`.tab--${page}`).append(tabs(tabItem));
@@ -500,12 +498,11 @@ function changeTabs(page = 'permis') {
 	$(`.tab--${page}`).click(({ target }) => {
 		if (!$(target).parents('.tab__item').length && !$(target).hasClass('tab__item')) return;
 
-		const activeDepart = $(target).closest('.tab__item').data('depart');
-		permisObject.nameid = activeDepart;
+		permisObject.nameid = $(target).closest('.tab__item').data('depart');
 
 		resetControlBtns();
-		renderTable();
 		addTabs();
+		renderTable('full');
 		showActiveDataOnPage();
 
 		localStorage.removeItem(page); // в самом конце, т.к. функции выше записывают в localStorage

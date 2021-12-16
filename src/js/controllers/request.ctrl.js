@@ -260,11 +260,11 @@ function clickAllowDisallowRequest(page = 'request') {
 			if (+item.id === userID) {
 				const status = item[typeBtn] ? false : true;
 
-				item.statususer = status ? true : false;
+				item.statususer = status;
 				item.statusrequest = typeBtn;
 				item[typeBtn] = status;
-				item.allowblock = typeBtn === 'disallow' && status ? true : false;
-				item.disallowblock = typeBtn === 'allow' && status ? true : false;
+				item.allowblock = typeBtn === 'disallow' && status;
+				item.disallowblock = typeBtn === 'allow' && status;
 			}
 		});
 
@@ -288,12 +288,12 @@ function confirmAllAllowDisallow(page = 'request') {
 
 		requestCollection.forEach((item) => {
 			if (item.nameid === requestObject.nameid) {
-				item.statususer = requestObject[statusTypeBtn] ? true : false;
+				item.statususer = requestObject[statusTypeBtn];
 				item.statusrequest = typeBtn;
 				item.allow = '';
 				item.disallow = '';
-				item.allowblock = requestObject[statusTypeBtn] ? true : false;
-				item.disallowblock = requestObject[statusTypeBtn] ? true : false;
+				item.allowblock = requestObject[statusTypeBtn];
+				item.disallowblock = requestObject[statusTypeBtn];
 			}
 		});
 
@@ -466,14 +466,12 @@ function addTabs(page = 'request') {
 
 	if (filterNameDepart.length > 1) {
 		filterNameDepart.forEach((item) => {
-			departmentCollection.forEach((depart) => {
-				const { nameid = '', shortname = '' } = depart;
-
-				if (item == nameid) {
+			departmentCollection.forEach(({ nameid = '', shortname = '' }) => {
+				if (item === nameid) {
 					const tabItem = {
 						nameid,
 						shortname,
-						status: requestObject.nameid === nameid ? true : false
+						status: requestObject.nameid === nameid
 					};
 
 					$(`.tab--${page}`).append(tabs(tabItem));
@@ -487,12 +485,11 @@ function changeTabs(page = 'request') {
 	$(`.tab--${page}`).click(({ target }) => {
 		if (!$(target).parents('.tab__item').length && !$(target).hasClass('tab__item')) return;
 
-		const activeDepart = $(target).closest('.tab__item').data('depart');
-		requestObject.nameid = activeDepart;
+		requestObject.nameid = $(target).closest('.tab__item').data('depart');
 
 		resetControlBtns();
-		renderTable();
 		addTabs();
+		renderTable('full');
 		showActiveDataOnPage();
 
 		localStorage.removeItem(page); // в самом конце, т.к. функции выше записывают в localStorage

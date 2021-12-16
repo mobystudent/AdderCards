@@ -1,7 +1,7 @@
 'use strict';
 
 export const form = (data) => {
-	const { fio = '', statusid = '', newdepart = '', newnameid = '', statustitle = '', cardvalidto  = '', photofile = '' } = data;
+	const { fio = '', statusid = '', newdepart = '', newnameid = '', statustitle = '', cardvalidto = '', photofile = '' } = data;
 	const fioValue = fio ? fio : 'Выберите пользователя';
 	const fioClassView = fio ? 'select__value--selected-form' : '';
 	const reasonValue = statustitle ? statustitle : 'Выберите причину удаления';

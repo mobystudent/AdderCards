@@ -10,6 +10,7 @@ import { removeDepart } from '../components/settings/remove-depart.tpl.js';
 import { autoUpload } from '../components/settings/auto-upload.tpl.js';
 import { changeEmail } from '../components/settings/change-email.tpl.js';
 import { pageTitle } from '../components/page-title.tpl.js';
+import { select } from '../components/select.tpl.js';
 
 const departmentCollection = new Map();	// Коллекци подразделений
 const settingsObject = {
@@ -196,13 +197,15 @@ function contentScrollbar() {
 
 function setDepartInSelect() {
 	departmentCollection.forEach(({ nameid = '', longname = '' }) => {
-		const quoteName = longname.replace(/["']/g , '&quot;');
+		const quoteName = longname.replace(/["']/g, '&quot;');
+		const item = {
+			value: quoteName,
+			id: nameid,
+			type: 'settings',
+			dataid: 'removenameid'
+		};
 
-		$('.select[data-select="removenameid"] .select__list').append(`
-			<li class="select__item">
-				<span class="select__name select__name--settings" data-title="${quoteName}" data-removenameid="${nameid}">${quoteName}</span>
-			</li>
-		`);
+		$('.select[data-select="removenameid"] .select__list').append(select(item));
 	});
 
 	clickSelectItem();
@@ -228,7 +231,7 @@ function clickSelectItem(nameSection = '#settingsSection') {
 
 function setDataAttrSelectedItem(title, select, statusid) {
 	if (select === 'removenameid') {
-		settingsObject.removelongname = title.replace(/["']/g , '&quot;');
+		settingsObject.removelongname = title.replace(/["']/g, '&quot;');
 		settingsObject.removenameid = statusid;
 	} else if (select === 'autoupdate') {
 		settingsObject.autoupdatetitle = title;

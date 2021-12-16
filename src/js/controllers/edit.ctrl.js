@@ -10,6 +10,7 @@ import { form } from '../components/edit/form.tpl.js';
 import { count } from '../components/count.tpl.js';
 import { headerTable } from '../components/edit/header-table.tpl.js';
 import { pageTitle } from '../components/page-title.tpl.js';
+import { select } from '../components/select.tpl.js';
 
 const editCollection = new Map();
 const editObject = {
@@ -251,7 +252,7 @@ function showFieldsInHeaderTable(page = 'edit') {
 }
 
 function setUsersInSelect(users, nameForm = '#editForm') {
-	$(`${nameForm} .select[data-select="fio"]`).find('.select__list').html('');
+	$(`${nameForm} .select[data-select="fio"] .select__list`).html('');
 
 	if (editCollection.size) {
 		editCollection.forEach((elem) => {
@@ -260,13 +261,14 @@ function setUsersInSelect(users, nameForm = '#editForm') {
 	}
 
 	users.forEach(({ id = '', fio = '' }) => {
-		$(`${nameForm} .select[data-select="fio"]`).find('.select__list').append(`
-			<li class="select__item">
-				<span class="select__name select__name--form" data-title="${fio}" data-id="${id}">
-					${fio}
-				</span>
-			</li>
-		`);
+		const item = {
+			value: fio,
+			id,
+			type: 'form',
+			dataid: 'id'
+		};
+
+		$(`${nameForm} .select[data-select="fio"] .select__list`).append(select(item));
 	});
 
 	clickSelectItem();
@@ -466,7 +468,6 @@ function setAddUsersInDB(array, nameTable, action) {
 					user.newphotofile = currentTarget.result;
 
 					encodeArrayPhotoFile.push(user);
-					console.log(encodeArrayPhotoFile);
 				};
 				reader.readAsDataURL(user.newphotofile);
 			} else {
