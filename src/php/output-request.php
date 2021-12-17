@@ -1,6 +1,6 @@
 <?php
 
-	$mysqli = new mysqli("localhost", "root", "root", "security-system");
+	$mysqli = new mysqli('localhost', 'root', 'root', 'security-system', 3306);
 	$mysqli->query("SET NAMES 'utf8'");
 
 	$nameTable = $_POST['nameTable'];

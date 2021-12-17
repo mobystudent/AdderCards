@@ -62,6 +62,7 @@ $(window).on('load', () => {
 	submitIDinBD();
 	showDataFromStorage();
 	typeAssignCode();
+	renderSwitch();
 });
 
 function renderHeaderPage(page = 'qr') {
