@@ -8,7 +8,7 @@ import { settingsObject, sendUsers } from './settings.ctrl.js';
 
 import { table } from '../components/qr/table.tpl.js';
 import { headerTable } from '../components/qr/header-table.tpl.js';
-import { switchElem } from '../components/qr/switch.tpl.js';
+import { switchElem } from '../components/switch.tpl.js';
 import { count } from '../components/count.tpl.js';
 import { tabs } from '../components/tabs.tpl.js';
 import { qrItems } from '../components/qr/qr-items.tpl.js';
@@ -101,8 +101,26 @@ function renderQRItems(array) {
 
 function renderSwitch(page = 'qr') {
 	$(`.main__wrap-info--${page} .main__switchies`).html('');
+
 	for (let key in qrSwitch) {
-		$(`.main__wrap-info--${page} .main__switchies`).append(switchElem(qrSwitch[key]));
+		let switchText;
+		let tooltip;
+
+		if (qrSwitch[key].type === 'assign') {
+			switchText = qrSwitch[key].status ? 'Ручное присвоение' : 'Автоприсвоение';
+			tooltip = 'Если в данной опции выставлено автоприсвоение, тогда коды будут автоматически присвоены пользователям. Важно! При нехватке кодов для всех пользователей данная ф-я будет отключена. <br/> Если в данной опции выставлено ручное присваивание, тогда код будет присваеватся для каждого пользоватебя в отдельности.';
+		} else {
+			switchText = 'Автообновление';
+			tooltip = 'Если данная опция включена, тогда при поступлении новых данных, они автоматически отобразятся в таблице. Перезагружать страницу не нужно.<br/> Рекомендуется отключить данную функцию при работе с данными в таблице!';
+		}
+
+		const item = {
+			switchText,
+			tooltip,
+			key: qrSwitch[key]
+		};
+
+		$(`.main__wrap-info--${page} .main__switchies`).append(switchElem(item));
 	}
 
 	autoRefresh();
@@ -152,7 +170,7 @@ function userFromDB(array) {
 }
 
 function typeAssignCode(page = 'qr') {
-	$(`.switch--assign-${page}`).click(({ target }) => {
+	$(`.main__wrap-info--${page} .switch--assign`).click(({ target }) => {
 		if (!$(target).hasClass('switch__input')) return;
 
 		qrObject.statusmanual = $(target).prop('checked');
@@ -391,7 +409,7 @@ function resetControlSwitch() {
 function autoRefresh(page = 'qr') {
 	const timeReload = 60000 * settingsObject.autoupdatevalue;
 
-	$(`.switch--refresh-${page}`).click(({ target }) => {
+	$(`.main__wrap-info--${page} .switch--refresh`).click(({ target }) => {
 		if (!$(target).hasClass('switch__input')) return;
 
 		const statusSwitch = $(target).prop('checked');

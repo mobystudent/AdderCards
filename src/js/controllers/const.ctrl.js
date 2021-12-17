@@ -9,7 +9,7 @@ import { settingsObject, sendUsers } from './settings.ctrl.js';
 import { table } from '../components/const/table.tpl.js';
 import { headerTable } from '../components/const/header-table.tpl.js';
 import { tabs } from '../components/tabs.tpl.js';
-import { switchElem } from '../components/const/switch.tpl.js';
+import { switchElem } from '../components/switch.tpl.js';
 import { count } from '../components/count.tpl.js';
 import { pageTitle } from '../components/page-title.tpl.js';
 
@@ -84,8 +84,23 @@ function renderTable(status, page = 'const') {
 
 function renderSwitch(page = 'const') {
 	$(`.main__wrap-info--${page} .main__switchies`).html('');
+
 	for (let key in constSwitch) {
-		$(`.main__wrap-info--${page} .main__switchies`).append(switchElem(constSwitch[key]));
+		let switchText;
+		let tooltip;
+
+		if (constSwitch[key].type === 'refresh') {
+			switchText = 'Автообновление';
+			tooltip = 'Если данная опция включена, тогда при поступлении новых данных, они автоматически отобразятся в таблице. Перезагружать страницу не нужно.<br/> Рекомендуется отключить данную функцию при работе с данными в таблице!';
+		}
+
+		const item = {
+			switchText,
+			tooltip,
+			key: constSwitch[key]
+		};
+
+		$(`.main__wrap-info--${page} .main__switchies`).append(switchElem(item));
 	}
 
 	autoRefresh();
@@ -337,7 +352,7 @@ function checkInvalidValueCardID(page = 'const') {
 function autoRefresh(page = 'const') {
 	const timeReload = 60000 * settingsObject.autoupdatevalue;
 
-	$(`.switch--refresh-${page}`).click(({ target }) => {
+	$(`.main__wrap-info--${page} .switch--refresh`).click(({ target }) => {
 		if (!$(target).hasClass('switch__input')) return;
 
 		const statusSwitch = $(target).prop('checked');

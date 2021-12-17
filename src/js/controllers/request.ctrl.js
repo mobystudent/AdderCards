@@ -8,7 +8,7 @@ import { settingsObject, sendUsers } from './settings.ctrl.js';
 import { table } from '../components/request/table.tpl.js';
 import { tabs } from '../components/tabs.tpl.js';
 import { headerTable } from '../components/request/header-table.tpl.js';
-import { switchElem } from '../components/request/switch.tpl.js';
+import { switchElem } from '../components/switch.tpl.js';
 import { count } from '../components/count.tpl.js';
 import { pageTitle } from '../components/page-title.tpl.js';
 
@@ -83,8 +83,23 @@ function renderTable(status, page = 'request') {
 
 function renderSwitch(page = 'request') {
 	$(`.main__wrap-info--${page} .main__switchies`).html('');
+
 	for (let key in requestSwitch) {
-		$(`.main__wrap-info--${page} .main__switchies`).append(switchElem(requestSwitch[key]));
+		let switchText;
+		let tooltip;
+
+		if (requestSwitch[key].type === 'refresh') {
+			switchText = 'Автообновление';
+			tooltip = 'Если данная опция включена, тогда при поступлении новых данных, они автоматически отобразятся в таблице. Перезагружать страницу не нужно.<br/> Рекомендуется отключить данную функцию при работе с данными в таблице!';
+		}
+
+		const item = {
+			switchText,
+			tooltip,
+			key: requestSwitch[key]
+		};
+
+		$(`.main__wrap-info--${page} .main__switchies`).append(switchElem(item));
 	}
 
 	autoRefresh();
@@ -326,7 +341,7 @@ function resetControlBtns() {
 function autoRefresh(page = 'request') {
 	const timeReload = 60000 * settingsObject.autoupdatevalue;
 
-	$(`.switch--refresh-${page}`).click(({ target }) => {
+	$(`.main__wrap-info--${page} .switch--refresh`).click(({ target }) => {
 		if (!$(target).hasClass('switch__input')) return;
 
 		const statusSwitch = $(target).prop('checked');

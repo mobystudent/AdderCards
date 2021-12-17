@@ -9,7 +9,7 @@ import { settingsObject, sendUsers } from './settings.ctrl.js';
 import { table } from '../components/reject/table.tpl.js';
 import { form } from '../components/reject/form.tpl.js';
 import { headerTable } from '../components/reject/header-table.tpl.js';
-import { switchElem } from '../components/reject/switch.tpl.js';
+import { switchElem } from '../components/switch.tpl.js';
 import { count } from '../components/count.tpl.js';
 import { pageTitle } from '../components/page-title.tpl.js';
 
@@ -89,8 +89,23 @@ function renderForm(id, nameForm = '#rejectForm') {
 
 function renderSwitch(page = 'reject') {
 	$(`.main__wrap-info--${page} .main__switchies`).html('');
+
 	for (let key in rejectSwitch) {
-		$(`.main__wrap-info--${page} .main__switchies`).append(switchElem(rejectSwitch[key]));
+		let switchText;
+		let tooltip;
+
+		if (rejectSwitch[key].type === 'refresh') {
+			switchText = 'Автообновление';
+			tooltip = 'Если данная опция включена, тогда при поступлении новых данных, они автоматически отобразятся в таблице. Перезагружать страницу не нужно.<br/> Рекомендуется отключить данную функцию при работе с данными в таблице!';
+		}
+
+		const item = {
+			switchText,
+			tooltip,
+			key: rejectSwitch[key]
+		};
+
+		$(`.main__wrap-info--${page} .main__switchies`).append(switchElem(item));
 	}
 
 	autoRefresh();
@@ -276,7 +291,7 @@ function resendAllUsers(page = 'reject') {
 function autoRefresh(page = 'reject') {
 	const timeReload = 60000 * settingsObject.autoupdatevalue;
 
-	$(`.switch--refresh-${page}`).click(({ target }) => {
+	$(`.main__wrap-info--${page} .switch--refresh`).click(({ target }) => {
 		if (!$(target).hasClass('switch__input')) return;
 
 		const statusSwitch = $(target).prop('checked');
