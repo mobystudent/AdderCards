@@ -107,7 +107,7 @@ function renderTabs() {
 			return content;
 		}, '');
 	} else {
-		return;
+		return '';
 	}
 }
 
