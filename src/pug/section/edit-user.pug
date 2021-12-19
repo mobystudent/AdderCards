@@ -1,5 +1,5 @@
 main.main(data-name="edit")
-	.container
+	.container.container--edit
 		//- .main__title-wrap
 			h1.main__title
 				| Редактировать пользователя
@@ -71,16 +71,6 @@ main.main(data-name="edit")
 				| Ошибка! ФИО должно состоять хотя бы из двух слов.
 
 		.wrap.wrap--content.wrap--content-edit
-			.main__wrap-info.main__wrap-info--edit
-				.main__cards
-					//- p.main__count-wrap
-						span.main__count-text
-							| Количество редактируемых пользователей:&nbsp
-						span.main__count.main__count--all-edit
-							| 0
-			.wrap.wrap--table
-				header.tab.tab--edit
-				.table.table--edit
 		
 		.main__btns
 			button.btn#submitEditUser(type="button")
