@@ -47,7 +47,6 @@ const requestCount = {
 $(window).on('load', () => {
 	submitIDinBD();
 	showDataFromStorage();
-	renderSwitch();
 });
 
 function renderHeaderPage(page = 'request') {
@@ -78,38 +77,46 @@ function renderTable(status, page = 'request') {
 
 	clickAllowDisallowRequest();
 	confirmAllAllowDisallow();
-	renderCount();
 }
 
-function renderSwitch(page = 'request') {
-	$(`.main__wrap-info--${page} .main__switchies`).html('');
-
-	for (let key in requestSwitch) {
+function renderSwitch() {
+	return Object.values(requestSwitch).reduce((content, item) => {
 		let switchText;
 		let tooltip;
 
-		if (requestSwitch[key].type === 'refresh') {
+		if (item.type === 'refresh') {
 			switchText = 'Автообновление';
 			tooltip = 'Если данная опция включена, тогда при поступлении новых данных, они автоматически отобразятся в таблице. Перезагружать страницу не нужно.<br/> Рекомендуется отключить данную функцию при работе с данными в таблице!';
 		}
 
-		const item = {
+		const switchItem = {
 			switchText,
 			tooltip,
-			key: requestSwitch[key]
+			key: item
 		};
 
-		$(`.main__wrap-info--${page} .main__switchies`).append(switchElem(item));
-	}
+		content += switchElem(switchItem);
 
-	autoRefresh();
+		return content;
+	}, '');
 }
 
-function renderCount(page = 'request') {
-	$(`.main__wrap-info--${page} .main__cards`).html('');
-	for (let key in requestCount) {
-		$(`.main__wrap-info--${page} .main__cards`).append(count(requestCount[key]));
-	}
+function renderCount() {
+	return Object.values(requestCount).reduce((content, item) => {
+		content += count(item);
+
+		return content;
+	}, '');
+}
+
+function render(page = 'request') {
+	$(`.main__wrap-info--${page}`).html('');
+	$(`.main__wrap-info--${page}`).append(`
+		<div class="main__cards">${renderCount()}</div>
+		<div class="main__switchies">${renderSwitch()}</div>
+	`);
+
+	autoRefresh();
 }
 
 function userFromDB(array) {
@@ -163,6 +170,7 @@ function dataAdd(page = 'request') {
 	}
 
 	showActiveDataOnPage();
+	render();
 }
 
 function showDataFromStorage(page = 'request') {
@@ -365,7 +373,7 @@ function autoRefresh(page = 'request') {
 			localStorage.removeItem(page);
 		}
 
-		renderSwitch();
+		render();
 	});
 }
 
@@ -506,6 +514,7 @@ function changeTabs(page = 'request') {
 		addTabs();
 		renderTable('full');
 		showActiveDataOnPage();
+		render();
 
 		localStorage.removeItem(page); // в самом конце, т.к. функции выше записывают в localStorage
 	});
