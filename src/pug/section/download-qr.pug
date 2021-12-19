@@ -1,17 +1,12 @@
 main.main(data-name="download")
-	.container
+	.container.container--download
 		//- .main__title-wrap
 			h1.main__title
 				| Загрузка QR-кодов
 			
-		.wrap.wrap--content.wrap--content-download
+		.wrap.wrap--content.wrap--content-parse
 			.main__wrap-info.main__wrap-info--parse
 				.main__cards
-					//- p.main__count-wrap
-						span.main__count-text
-							| Количество загруженых qr-кодов:&nbsp
-						span.main__count.main__count--download
-							| 0
 							
 			form.form.form--download#downloadForm(action="#" method="GET")
 				.form__field
@@ -20,7 +15,7 @@ main.main(data-name="download")
 			.main__btns
 				button.btn#addQRCodes(type="button")
 					| Добавить
-					
+						
 			.info.info--page
 				p.info__item.info__item--warn.info__item--have
 					| Предупреждение! QR-код с такими данными уже сгенерирован!
@@ -38,16 +33,7 @@ main.main(data-name="download")
 				p.info__item.info__item--error.info__item--missed
 					| Ошибка! Пропущена одна из трех обязательных частей qr-кода, для конвертирования.
 				
-			.main__wrap-info.main__wrap-info--download
-				.main__cards
-					//- p.main__count-wrap
-						span.main__count-text
-							| Количество сгенерированных qr-кодов:&nbsp
-						span.main__count.main__count--all-download
-							| 0
-			.wrap.wrap--table
-				header.tab.tab--download
-				.table.table--download
+		.wrap.wrap--content.wrap--content-download
 
 		.main__btns
 			button.btn#submitDownloadQR(type='button')

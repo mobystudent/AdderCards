@@ -38,7 +38,6 @@ $(window).on('load', () => {
 	countQRCodes();
 	submitIDinBD();
 	showDataFromStorage();
-	renderTable('empty');
 });
 
 function renderHeaderPage(page = 'download') {
@@ -46,47 +45,46 @@ function renderHeaderPage(page = 'download') {
 	$(`.main[data-name=${page}] .container`).prepend(pageTitle(downloadObject));
 }
 
-function renderTable(status, page = 'download') {
-	let stateTable;
-
-	if (status == 'empty') {
-		stateTable = `<p class="table__nothing">Новых данных нет</p>`;
+function renderTable() {
+	if (!downloadCollection.size) {
+		return `<p class="table__nothing">Новых данных нет</p>`;
 	} else {
-		stateTable = [...downloadCollection.values()].reduce((content, item) => {
+		return [...downloadCollection.values()].reduce((content, item) => {
 			content += table(item);
 
 			return content;
 		}, '');
 	}
+}
 
-	$(`.table--${page}`).html('');
-	$(`.table--${page}`).append(`
-		<header class="table__header">${headerTable()}</header>
-		<div class="table__body">${stateTable}</div>
-		`);
-
-	deleteUser();
-	renderCount();
+function renderCountParse() {
+	$(`.main__wrap-info--parse .main__cards`).html('');
+	$(`.main__wrap-info--parse .main__cards`).append(count(parseCount.item));
 }
 
 function renderCount() {
-	const pageParts = [
-		{
-			type: 'download',
-			object: downloadCount
-		},
-		{
-			type: 'parse',
-			object: parseCount
-		}
-	];
+	return Object.values(downloadCount).reduce((content, item) => {
+		content += count(item);
 
-	pageParts.forEach((page) => {
-		$(`.main__wrap-info--${page.type} .main__cards`).html('');
-		for (let key in page.object) {
-			$(`.main__wrap-info--${page.type} .main__cards`).append(count(page.object[key]));
-		}
-	});
+		return content;
+	}, '');
+}
+
+function render(page = 'download') {
+	$(`.container--${page} .wrap--content-download`).html('');
+	$(`.container--${page} .wrap--content-download`).append(`
+		<div class="main__wrap-info">
+			<div class="main__cards">${renderCount()}</div>
+		</div>
+		<div class="wrap wrap--table">
+			<div class="table">
+				<header class="table__header">${headerTable()}</header>
+				<div class="table__body">${renderTable()}</div>
+			</div>
+		</div>
+	`);
+
+	deleteUser();
 }
 
 function countQRCodes(nameForm = '#downloadForm') {
@@ -98,7 +96,7 @@ function countQRCodes(nameForm = '#downloadForm') {
 			parseQRCollection.set(i, item.split(' '));
 		});
 
-		renderCount();
+		renderCountParse();
 	});
 }
 
@@ -160,13 +158,7 @@ function codeFromForm(page = 'download') {
 }
 
 function dataAdd() {
-	if (downloadCollection.size) {
-		renderTable('full');
-	} else {
-		renderTable('empty');
-
-		return;
-	}
+	render();
 }
 
 function showDataFromStorage(page = 'download') {
@@ -181,9 +173,9 @@ function showDataFromStorage(page = 'download') {
 
 			downloadCollection.set(itemID, item);
 		});
-
-		dataAdd();
 	}
+
+	dataAdd();
 }
 
 function setDataInStorage(page = 'download') {
@@ -193,7 +185,7 @@ function setDataInStorage(page = 'download') {
 }
 
 function deleteUser(page = 'download') {
-	$(`.table--${page} .table__body`).click(({ target }) => {
+	$(`.container--${page} .table__body`).click(({ target }) => {
 		if ($(target).parents('.table__btn--delete').length || $(target).hasClass('table__btn--delete')) {
 			const userID = $(target).closest('.table__row').data('id');
 
@@ -222,7 +214,7 @@ function clearFieldsForm(nameForm = '#downloadForm', page = 'download') {
 		$(`.main[data-name=${page}]`).find('.info__item--warn.info__item--contains').hide();
 	}, 5000);
 
-	renderCount();
+	renderCountParse();
 }
 
 function submitIDinBD(page = 'download') {
@@ -232,7 +224,7 @@ function submitIDinBD(page = 'download') {
 		setAddUsersInDB([...downloadCollection.values()], 'download', 'add');
 
 		downloadCollection.clear();
-		renderTable('empty');
+		render();
 
 		localStorage.removeItem(page);
 		counter = 0;
