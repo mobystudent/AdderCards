@@ -64,35 +64,24 @@ function renderHeaderPage(page = 'remove') {
 	$(`.main[data-name=${page}] .container`).prepend(pageTitle(removeObject));
 }
 
-function renderTable(status, page = 'remove') {
-	let stateTable;
-
-	if (status == 'empty') {
-		stateTable = `<p class="table__nothing">Не добавленно ни одного пользователя</p>`;
+function renderTable() {
+	if (!removeCollection.size) {
+		return `<p class="table__nothing">Не добавленно ни одного пользователя</p>`;
 	} else {
-		stateTable = [...removeCollection.values()].reduce((content, item) => {
+		return [...removeCollection.values()].reduce((content, item) => {
 			content += table(item, removeObject);
 
 			return content;
 		}, '');
 	}
-
-	$(`.table--${page}`).html('');
-	$(`.table--${page}`).append(`
-		<header class="table__header">${headerTable(removeObject)}</header>
-		<div class="table__body">${stateTable}</div>
-		`);
-
-	deleteUser();
-	editUser();
-	renderCount();
 }
 
-function renderCount(page = 'remove') {
-	$(`.main__wrap-info--${page} .main__cards`).html('');
-	for (let key in removeCount) {
-		$(`.main__wrap-info--${page} .main__cards`).append(count(removeCount[key]));
-	}
+function renderCount() {
+	return Object.values(removeCount).reduce((content, item) => {
+		content += count(item);
+
+		return content;
+	}, '');
 }
 
 function renderForm(nameForm = '#removeForm') {
@@ -103,6 +92,24 @@ function renderForm(nameForm = '#removeForm') {
 	getAddUsersInDB(); // вывести всех пользователей в селект 1
 	datepicker();
 	setDepartInSelect(); // 2
+}
+
+function render(page = 'remove') {
+	$(`.container--${page} .wrap--content`).html('');
+	$(`.container--${page} .wrap--content`).append(`
+		<div class="main__wrap-info">
+			<div class="main__cards">${renderCount()}</div>
+		</div>
+		<div class="wrap wrap--table">
+			<div class="table">
+				<header class="table__header">${headerTable(removeObject)}</header>
+				<div class="table__body">${renderTable()}</div>
+			</div>
+		</div>
+	`);
+
+	deleteUser();
+	editUser();
 }
 
 function addUser(page = 'remove') {
@@ -159,14 +166,8 @@ function userFromForm() {
 }
 
 function dataAdd() {
-	if (removeCollection.size) {
-		showFieldsInHeaderTable();
-		renderTable('full');
-	} else {
-		renderTable('empty');
-
-		return;
-	}
+	showFieldsInHeaderTable();
+	render();
 }
 
 function showDataFromStorage(page = 'remove') {
@@ -181,9 +182,9 @@ function showDataFromStorage(page = 'remove') {
 
 			removeCollection.set(itemID, item);
 		});
-
-		dataAdd();
 	}
+
+	dataAdd();
 }
 
 function setDataInStorage(page = 'remove') {
@@ -291,7 +292,7 @@ function setDataAttrSelectedItem(title, select, statusid) {
 
 function clearFieldsForm() {
 	for (const key in removeObject) {
-		if (key !== 'nameid' && key !== 'longname') {
+		if (key !== 'nameid' && key !== 'longname' && key !== 'page') {
 			removeObject[key] = '';
 		}
 	}
@@ -317,7 +318,7 @@ function datepicker() {
 }
 
 function deleteUser(page = 'remove') {
-	$(`.table--${page} .table__body`).click(({ target }) => {
+	$(`.container--${page} .table__body`).click(({ target }) => {
 		if ($(target).parents('.table__btn--delete').length || $(target).hasClass('table__btn--delete')) {
 			const userID = $(target).closest('.table__row').data('id');
 
@@ -338,7 +339,7 @@ function deleteUser(page = 'remove') {
 }
 
 function editUser(page = 'remove') {
-	$(`.table--${page} .table__body`).click(({ target }) => {
+	$(`.container--${page} .table__body`).click(({ target }) => {
 		if ($(target).parents('.table__btn--edit').length || $(target).hasClass('table__btn--edit')) {
 			const userID = $(target).closest('.table__row').data('id');
 
@@ -378,7 +379,7 @@ function submitIDinBD(page = 'remove') {
 		}
 
 		removeCollection.clear();
-		renderTable('empty');
+		render();
 
 		localStorage.removeItem(page);
 		counter = 0;
