@@ -54,13 +54,11 @@ function renderHeaderPage(page = 'request') {
 	$(`.main[data-name=${page}] .container`).prepend(pageTitle(requestObject));
 }
 
-function renderTable(status, page = 'request') {
-	let stateTable;
-
-	if (status == 'empty') {
-		stateTable = `<p class="table__nothing">Новых данных нет</p>`;
+function renderTable() {
+	if (!requestCollection.size) {
+		return `<p class="table__nothing">Новых данных нет</p>`;
 	} else {
-		stateTable = [...requestCollection.values()].reduce((content, item) => {
+		return [...requestCollection.values()].reduce((content, item) => {
 			if (item.nameid === requestObject.nameid) {
 				content += table(item);
 			}
@@ -68,15 +66,30 @@ function renderTable(status, page = 'request') {
 			return content;
 		}, '');
 	}
+}
 
-	$(`.table--${page}`).html('');
-	$(`.table--${page}`).append(`
-		<header class="table__header">${headerTable(requestObject)}</header>
-		<div class="table__body">${stateTable}</div>
-		`);
+function renderTabs() {
+	if (filterDepart().length > 1) {
+		return filterDepart().reduce((content, item) => {
+			let tabItem;
 
-	clickAllowDisallowRequest();
-	confirmAllAllowDisallow();
+			departmentCollection.forEach(({ nameid = '', shortname = '' }) => {
+				if (item === nameid) {
+					tabItem = {
+						nameid,
+						shortname,
+						status: requestObject.nameid === nameid
+					};
+				}
+			});
+
+			content += tabs(tabItem);
+
+			return content;
+		}, '');
+	} else {
+		return '';
+	}
 }
 
 function renderSwitch() {
@@ -110,13 +123,25 @@ function renderCount() {
 }
 
 function render(page = 'request') {
-	$(`.main__wrap-info--${page}`).html('');
-	$(`.main__wrap-info--${page}`).append(`
-		<div class="main__cards">${renderCount()}</div>
-		<div class="main__switchies">${renderSwitch()}</div>
+	$(`.container--${page} .wrap--content`).html('');
+	$(`.container--${page} .wrap--content`).append(`
+		<div class="main__wrap-info">
+			<div class="main__cards">${renderCount()}</div>
+			<div class="main__switchies">${renderSwitch()}</div>
+		</div>
+		<div class="wrap wrap--table">
+			<header class="tab">${renderTabs()}</header>
+			<div class="table">
+				<header class="table__header">${headerTable(requestObject)}</header>
+				<div class="table__body">${renderTable()}</div>
+			</div>
+		</div>
 	`);
 
 	autoRefresh();
+	clickAllowDisallowRequest();
+	confirmAllAllowDisallow();
+	if (filterDepart().length > 1) changeTabs();
 }
 
 function userFromDB(array) {
@@ -148,27 +173,10 @@ function userFromDB(array) {
 	dataAdd();
 }
 
-function dataAdd(page = 'request') {
-	const filterNameDepart = filterDepart();
-	requestObject.nameid = filterNameDepart[0];
+function dataAdd() {
+	requestObject.nameid = filterDepart()[0];
 
 	getDepartmentFromDB();
-
-	if (requestCollection.size) {
-		renderTable('full');
-	} else {
-		renderTable('empty');
-
-		return;
-	}
-
-	if (filterNameDepart.length > 1) {
-		addTabs();
-		changeTabs();
-	} else {
-		$(`.tab--${page}`).html('');
-	}
-
 	showActiveDataOnPage();
 	render();
 }
@@ -273,7 +281,7 @@ function clearObject() {
 }
 
 function clickAllowDisallowRequest(page = 'request') {
-	$(`.table--${page} .table__body`).click(({ target }) => {
+	$(`.container--${page} .table__body`).click(({ target }) => {
 		if (!$(target).hasClass('btn--allow') && !$(target).hasClass('btn--disallow')) return;
 
 		const userID = $(target).parents('.table__row').data('id');
@@ -299,12 +307,12 @@ function clickAllowDisallowRequest(page = 'request') {
 			setDataInStorage();
 		}
 
-		renderTable('full');
+		render();
 	});
 }
 
 function confirmAllAllowDisallow(page = 'request') {
-	$(`.table--${page} #allowAll, .table--${page} #disallowAll`).click(({ target }) => {
+	$(`.container--${page} #allowAll, .container--${page} #disallowAll`).click(({ target }) => {
 		const typeBtn = $(target).data('type');
 		const statusTypeBtn = typeBtn === 'allow' ? 'statusallow' : 'statusdisallow';
 		requestObject[statusTypeBtn] = requestObject[statusTypeBtn] ? false : true;
@@ -326,7 +334,7 @@ function confirmAllAllowDisallow(page = 'request') {
 			setDataInStorage();
 		}
 
-		renderTable('full');
+		render();
 	});
 }
 
@@ -349,7 +357,7 @@ function resetControlBtns() {
 function autoRefresh(page = 'request') {
 	const timeReload = 60000 * settingsObject.autoupdatevalue;
 
-	$(`.main__wrap-info--${page} .switch--refresh`).click(({ target }) => {
+	$(`.container--${page} .switch--refresh`).click(({ target }) => {
 		if (!$(target).hasClass('switch__input')) return;
 
 		const statusSwitch = $(target).prop('checked');
@@ -482,37 +490,13 @@ function sendMail(obj) {
 }
 
 // Общие функции с картами и кодами
-function addTabs(page = 'request') {
-	const filterNameDepart = filterDepart();
-
-	$(`.tab--${page}`).html('');
-
-	if (filterNameDepart.length > 1) {
-		filterNameDepart.forEach((item) => {
-			departmentCollection.forEach(({ nameid = '', shortname = '' }) => {
-				if (item === nameid) {
-					const tabItem = {
-						nameid,
-						shortname,
-						status: requestObject.nameid === nameid
-					};
-
-					$(`.tab--${page}`).append(tabs(tabItem));
-				}
-			});
-		});
-	}
-}
-
 function changeTabs(page = 'request') {
-	$(`.tab--${page}`).click(({ target }) => {
+	$(`.container--${page} .tab`).click(({ target }) => {
 		if (!$(target).parents('.tab__item').length && !$(target).hasClass('tab__item')) return;
 
 		requestObject.nameid = $(target).closest('.tab__item').data('depart');
 
 		resetControlBtns();
-		addTabs();
-		renderTable('full');
 		showActiveDataOnPage();
 		render();
 
