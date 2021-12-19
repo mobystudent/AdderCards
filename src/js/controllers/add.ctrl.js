@@ -65,28 +65,16 @@ function renderHeaderPage(page = 'add') {
 	$(`.main[data-name=${page}] .container`).prepend(pageTitle(addObject));
 }
 
-function renderTable(status, page = 'add') {
-	let stateTable;
-
-	if (status == 'empty') {
-		stateTable = `<p class="table__nothing">Не добавленно ни одного пользователя</p>`;
+function renderTable() {
+	if (!addCollection.size) {
+		return `<p class="table__nothing">Не добавленно ни одного пользователя</p>`;
 	} else {
-		stateTable = [...addCollection.values()].reduce((content, item) => {
+		return [...addCollection.values()].reduce((content, item) => {
 			content += table(item, addObject);
 
 			return content;
 		}, '');
 	}
-
-	$(`.table--${page}`).html('');
-	$(`.table--${page}`).append(`
-		<header class="table__header">${headerTable(addObject)}</header>
-		<div class="table__body">${stateTable}</div>
-		`);
-
-	deleteUser();
-	editUser();
-	renderCount();
 }
 
 function renderForm(nameForm = '#addForm') {
@@ -114,11 +102,30 @@ function renderModalContainsUser() {
 	modalActions();
 }
 
-function renderCount(page = 'add') {
-	$(`.main__wrap-info--${page} .main__cards`).html('');
-	for (let key in addCount) {
-		$(`.main__wrap-info--${page} .main__cards`).append(count(addCount[key]));
-	}
+function renderCount() {
+	return Object.values(addCount).reduce((content, item) => {
+		content += count(item);
+
+		return content;
+	}, '');
+}
+
+function render(page = 'add') {
+	$(`.container--${page} .wrap--content`).html('');
+	$(`.container--${page} .wrap--content`).append(`
+		<div class="main__wrap-info">
+			<div class="main__cards">${renderCount()}</div>
+		</div>
+		<div class="wrap wrap--table">
+			<div class="table">
+				<header class="table__header">${headerTable(addObject)}</header>
+				<div class="table__body">${renderTable()}</div>
+			</div>
+		</div>
+	`);
+
+	deleteUser();
+	editUser();
 }
 
 function modalActions() {
@@ -226,14 +233,8 @@ function userFromForm() {
 }
 
 function dataAdd() {
-	if (addCollection.size) {
-		showFieldsInHeaderTable();
-		renderTable('full');
-	} else {
-		renderTable('empty');
-
-		return;
-	}
+	showFieldsInHeaderTable();
+	render();
 }
 
 function showDataFromStorage(page = 'add') {
@@ -248,9 +249,9 @@ function showDataFromStorage(page = 'add') {
 
 			addCollection.set(itemID, item);
 		});
-
-		dataAdd();
 	}
+
+	dataAdd();
 }
 
 function setDataInStorage(page = 'add') {
@@ -324,7 +325,7 @@ function setDataAttrSelectedItem(title, select, statusid) {
 
 function clearFieldsForm() {
 	for (const key in addObject) {
-		if (key !== 'nameid' && key !== 'longname') {
+		if (key !== 'nameid' && key !== 'longname' && key !== 'page') {
 			addObject[key] = '';
 		}
 	}
@@ -391,7 +392,7 @@ function validPhotoExtention(photoName) {
 }
 
 function deleteUser(page = 'add') {
-	$(`.table--${page} .table__body`).click(({ target }) => {
+	$(`.container--${page} .table__body`).click(({ target }) => {
 		if ($(target).parents('.table__btn--delete').length || $(target).hasClass('table__btn--delete')) {
 			const userID = $(target).closest('.table__row').data('id');
 
@@ -412,7 +413,7 @@ function deleteUser(page = 'add') {
 }
 
 function editUser(page = 'add') {
-	$(`.table--${page} .table__body`).click(({ target }) => {
+	$(`.container--${page} .table__body`).click(({ target }) => {
 		if ($(target).parents('.table__btn--edit').length || $(target).hasClass('table__btn--edit')) {
 			const userID = $(target).closest('.table__row').data('id');
 
@@ -446,7 +447,7 @@ function submitIDinBD(page = 'add') {
 		setAddUsersInDB([...addCollection.values()], 'add', page);
 
 		addCollection.clear();
-		renderTable('empty');
+		render();
 
 		localStorage.removeItem(page);
 		counter = 0;
