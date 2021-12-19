@@ -48,7 +48,6 @@ $(window).on('load', () => {
 	submitIDinBD();
 	printReport();
 	showDataFromStorage();
-	renderSwitch();
 });
 
 function renderHeaderPage(page = 'const') {
@@ -79,38 +78,46 @@ function renderTable(status, page = 'const') {
 
 	convertCardIDInCardName();
 	clearNumberCard();
-	renderCount();
 }
 
-function renderSwitch(page = 'const') {
-	$(`.main__wrap-info--${page} .main__switchies`).html('');
-
-	for (let key in constSwitch) {
+function renderSwitch() {
+	return Object.values(constSwitch).reduce((content, item) => {
 		let switchText;
 		let tooltip;
 
-		if (constSwitch[key].type === 'refresh') {
+		if (item.type === 'refresh') {
 			switchText = 'Автообновление';
 			tooltip = 'Если данная опция включена, тогда при поступлении новых данных, они автоматически отобразятся в таблице. Перезагружать страницу не нужно.<br/> Рекомендуется отключить данную функцию при работе с данными в таблице!';
 		}
 
-		const item = {
+		const switchItem = {
 			switchText,
 			tooltip,
-			key: constSwitch[key]
+			key: item
 		};
 
-		$(`.main__wrap-info--${page} .main__switchies`).append(switchElem(item));
-	}
+		content += switchElem(switchItem);
 
-	autoRefresh();
+		return content;
+	}, '');
 }
 
-function renderCount(page = 'const') {
-	$(`.main__wrap-info--${page} .main__cards`).html('');
-	for (let key in constCount) {
-		$(`.main__wrap-info--${page} .main__cards`).append(count(constCount[key]));
-	}
+function renderCount() {
+	return Object.values(constCount).reduce((content, item) => {
+		content += count(item);
+
+		return content;
+	}, '');
+}
+
+function render(page = 'const') {
+	$(`.main__wrap-info--${page}`).html('');
+	$(`.main__wrap-info--${page}`).append(`
+		<div class="main__cards">${renderCount()}</div>
+		<div class="main__switchies">${renderSwitch()}</div>
+	`);
+
+	autoRefresh();
 }
 
 function userFromDB(array) {
@@ -168,6 +175,7 @@ function dataAdd(page = 'const') {
 	}
 
 	showActiveDataOnPage();
+	render();
 }
 
 function showDataFromStorage(page = 'const') {
@@ -374,7 +382,7 @@ function autoRefresh(page = 'const') {
 			localStorage.removeItem(page);
 		}
 
-		renderSwitch();
+		render();
 	});
 }
 
@@ -533,6 +541,7 @@ function changeTabs(page = 'const') {
 		addTabs();
 		renderTable('full');
 		showActiveDataOnPage();
+		render();
 
 		localStorage.removeItem(page); // в самом конце, т.к. функции выше записывают в localStorage
 	});

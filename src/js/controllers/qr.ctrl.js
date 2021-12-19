@@ -449,7 +449,7 @@ function autoRefresh(page = 'qr') {
 			localStorage.removeItem(page);
 		}
 
-		renderSwitch();
+		render();
 	});
 }
 
