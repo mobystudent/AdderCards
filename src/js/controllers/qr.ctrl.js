@@ -61,7 +61,6 @@ $(window).on('load', () => {
 	getGeneratedQRFromDB();
 	submitIDinBD();
 	showDataFromStorage();
-	typeAssignCode();
 });
 
 function renderHeaderPage(page = 'qr') {
@@ -69,13 +68,11 @@ function renderHeaderPage(page = 'qr') {
 	$(`.main[data-name=${page}] .container`).prepend(pageTitle(qrObject));
 }
 
-function renderTable(status, page = 'qr') {
-	let stateTable;
-
-	if (status == 'empty') {
-		stateTable = `<p class="table__nothing">Новых данных нет</p>`;
+function renderTable() {
+	if (!qrCollection.size) {
+		return `<p class="table__nothing">Новых данных нет</p>`;
 	} else {
-		stateTable = [...qrCollection.values()].reduce((content, item) => {
+		return [...qrCollection.values()].reduce((content, item) => {
 			if (item.nameid === qrObject.nameid) {
 				content += table(item, qrObject);
 			}
@@ -83,19 +80,35 @@ function renderTable(status, page = 'qr') {
 			return content;
 		}, '');
 	}
-
-	$(`.table--${page}`).html('');
-	$(`.table--${page}`).append(`
-		<header class="table__header">${headerTable(qrObject)}</header>
-		<div class="table__body">${stateTable}</div>
-		`);
-
-	assignAllQR();
 }
 
 function renderQRItems(array) {
 	$('.document').html('');
 	$('.document').append(qrItems(array, qrObject));
+}
+
+function renderTabs() {
+	if (filterDepart().length > 1) {
+		return filterDepart().reduce((content, item) => {
+			let tabItem;
+
+			departmentCollection.forEach(({ nameid = '', shortname = '' }) => {
+				if (item === nameid) {
+					tabItem = {
+						nameid,
+						shortname,
+						status: qrObject.nameid === nameid
+					};
+				}
+			});
+
+			content += tabs(tabItem);
+
+			return content;
+		}, '');
+	} else {
+		return;
+	}
 }
 
 function renderSwitch() {
@@ -132,14 +145,25 @@ function renderCount() {
 }
 
 function render(page = 'qr') {
-	$(`.main__wrap-info--${page}`).html('');
-	$(`.main__wrap-info--${page}`).append(`
-		<div class="main__cards">${renderCount()}</div>
-		<div class="main__switchies">${renderSwitch()}</div>
+	$(`.container--${page} .wrap--content`).html('');
+	$(`.container--${page} .wrap--content`).append(`
+		<div class="main__wrap-info">
+			<div class="main__cards">${renderCount()}</div>
+			<div class="main__switchies">${renderSwitch()}</div>
+		</div>
+		<div class="wrap wrap--table">
+			<header class="tab">${renderTabs()}</header>
+			<div class="table">
+				<header class="table__header">${headerTable(qrObject)}</header>
+				<div class="table__body">${renderTable()}</div>
+			</div>
+		</div>
 	`);
 
 	autoRefresh();
 	typeAssignCode();
+	assignAllQR();
+	if (filterDepart().length > 1) changeTabs();
 }
 
 function userFromDB(array) {
@@ -178,7 +202,7 @@ function userFromDB(array) {
 }
 
 function typeAssignCode(page = 'qr') {
-	$(`.main__wrap-info--${page} .switch--assign`).click(({ target }) => {
+	$(`.container--${page} .switch--assign`).click(({ target }) => {
 		if (!$(target).hasClass('switch__input')) return;
 
 		qrObject.statusmanual = $(target).prop('checked');
@@ -193,7 +217,6 @@ function typeAssignCode(page = 'qr') {
 		resetControlSwitch();
 		assignCodes();
 		showFieldsInHeaderTable();
-		renderTable('full');
 		render();
 	});
 }
@@ -225,26 +248,15 @@ function assignCodes(page = 'qr') {
 	}
 }
 
-function dataAdd(page = 'qr') {
-	const filterNameDepart = filterDepart();
-	qrObject.nameid = filterNameDepart[0];
+function dataAdd() {
+	qrObject.nameid = filterDepart()[0];
 
 	getDepartmentFromDB();
 
 	if (qrCollection.size) {
 		showFieldsInHeaderTable();
-		renderTable('full');
 	} else {
-		renderTable('empty');
-
 		return;
-	}
-
-	if (filterNameDepart.length > 1) {
-		addTabs();
-		changeTabs();
-	} else {
-		$(`.tab--${page}`).html('');
 	}
 
 	assignCodes();
@@ -364,7 +376,7 @@ function clearObject() {
 }
 
 function assignAllQR(page = 'qr') {
-	$(`.table--${page} #assignAll`).click(({ target }) => {
+	$(`.container--${page} #assignAll`).click(({ target }) => {
 		if (!$(target).hasClass('switch__input')) return;
 
 		const filterDepartCollection = [...qrCollection.values()].filter(({ nameid }) => nameid === qrObject.nameid);
@@ -399,7 +411,7 @@ function assignAllQR(page = 'qr') {
 			resetControlSwitch();
 		}
 
-		renderTable('full');
+		render();
 		setDataInStorage();
 	});
 }
@@ -418,7 +430,7 @@ function resetControlSwitch() {
 function autoRefresh(page = 'qr') {
 	const timeReload = 60000 * settingsObject.autoupdatevalue;
 
-	$(`.main__wrap-info--${page} .switch--refresh`).click(({ target }) => {
+	$(`.container--${page} .switch--refresh`).click(({ target }) => {
 		if (!$(target).hasClass('switch__input')) return;
 
 		const statusSwitch = $(target).prop('checked');
@@ -599,28 +611,10 @@ function sendMail(obj) {
 }
 
 // Общие функции с картами и кодами
-function addTabs(page = 'qr') {
-	const filterNameDepart = filterDepart();
 
-	$(`.tab--${page}`).html('');
-
-	filterNameDepart.forEach((item) => {
-		departmentCollection.forEach(({ nameid = '', shortname = '' }) => {
-			if (item === nameid) {
-				const tabItem = {
-					nameid,
-					shortname,
-					status: qrObject.nameid === nameid
-				};
-
-				$(`.tab--${page}`).append(tabs(tabItem));
-			}
-		});
-	});
-}
 
 function changeTabs(page = 'qr') {
-	$(`.tab--${page}`).click(({ target }) => {
+	$(`.container--${page} .tab`).click(({ target }) => {
 		if (!$(target).parents('.tab__item').length && !$(target).hasClass('tab__item')) return;
 
 		qrObject.nameid = $(target).closest('.tab__item').data('depart');
@@ -629,9 +623,7 @@ function changeTabs(page = 'qr') {
 			resetControlSwitch();
 		}
 
-		addTabs();
 		showActiveDataOnPage();
-		renderTable('full');
 		render();
 
 		localStorage.removeItem(page); // в самом конце, т.к. функции выше записывают в localStorage
