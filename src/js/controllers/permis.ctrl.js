@@ -47,7 +47,6 @@ const permisCount = {
 $(window).on('load', () => {
 	submitIDinBD();
 	showDataFromStorage();
-	renderSwitch();
 });
 
 function renderHeaderPage(page = 'permis') {
@@ -78,38 +77,46 @@ function renderTable(status, page = 'permis') {
 
 	clickAllowDisallowPermis();
 	confirmAllAllowDisallow();
-	renderCount();
 }
 
-function renderSwitch(page = 'permis') {
-	$(`.main__wrap-info--${page} .main__switchies`).html('');
-
-	for (let key in permisSwitch) {
+function renderSwitch() {
+	return Object.values(permisSwitch).reduce((content, item) => {
 		let switchText;
 		let tooltip;
 
-		if (permisSwitch[key].type === 'refresh') {
+		if (item.type === 'refresh') {
 			switchText = 'Автообновление';
 			tooltip = 'Если данная опция включена, тогда при поступлении новых данных, они автоматически отобразятся в таблице. Перезагружать страницу не нужно.<br/> Рекомендуется отключить данную функцию при работе с данными в таблице!';
 		}
 
-		const item = {
+		const switchItem = {
 			switchText,
 			tooltip,
-			key: permisSwitch[key]
+			key: item
 		};
 
-		$(`.main__wrap-info--${page} .main__switchies`).append(switchElem(item));
-	}
+		content += switchElem(switchItem);
 
-	autoRefresh();
+		return content;
+	}, '');
 }
 
-function renderCount(page = 'permis') {
-	$(`.main__wrap-info--${page} .main__cards`).html('');
-	for (let key in permisCount) {
-		$(`.main__wrap-info--${page} .main__cards`).append(count(permisCount[key]));
-	}
+function renderCount() {
+	return Object.values(permisCount).reduce((content, item) => {
+		content += count(item);
+
+		return content;
+	}, '');
+}
+
+function render(page = 'permis') {
+	$(`.main__wrap-info--${page}`).html('');
+	$(`.main__wrap-info--${page}`).append(`
+		<div class="main__cards">${renderCount()}</div>
+		<div class="main__switchies">${renderSwitch()}</div>
+	`);
+
+	autoRefresh();
 }
 
 function userFromDB(array) {
@@ -167,6 +174,7 @@ function dataAdd(page = 'permis') {
 	}
 
 	showActiveDataOnPage();
+	render();
 }
 
 function showDataFromStorage(page = 'permis') {
@@ -376,7 +384,7 @@ function autoRefresh(page = 'permis') {
 			localStorage.removeItem(page);
 		}
 
-		renderSwitch();
+		render();
 	});
 }
 
@@ -519,6 +527,7 @@ function changeTabs(page = 'permis') {
 		addTabs();
 		renderTable('full');
 		showActiveDataOnPage();
+		render();
 
 		localStorage.removeItem(page); // в самом конце, т.к. функции выше записывают в localStorage
 	});
