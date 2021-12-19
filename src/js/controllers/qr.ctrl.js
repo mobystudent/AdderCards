@@ -62,7 +62,6 @@ $(window).on('load', () => {
 	submitIDinBD();
 	showDataFromStorage();
 	typeAssignCode();
-	renderSwitch();
 });
 
 function renderHeaderPage(page = 'qr') {
@@ -92,7 +91,6 @@ function renderTable(status, page = 'qr') {
 		`);
 
 	assignAllQR();
-	renderCount();
 }
 
 function renderQRItems(array) {
@@ -100,39 +98,48 @@ function renderQRItems(array) {
 	$('.document').append(qrItems(array, qrObject));
 }
 
-function renderSwitch(page = 'qr') {
-	$(`.main__wrap-info--${page} .main__switchies`).html('');
-
-	for (let key in qrSwitch) {
+function renderSwitch() {
+	return Object.values(qrSwitch).reduce((content, item) => {
 		let switchText;
 		let tooltip;
 
-		if (qrSwitch[key].type === 'assign') {
-			switchText = qrSwitch[key].status ? 'Ручное присвоение' : 'Автоприсвоение';
+		if (item.type === 'assign') {
+			switchText = item.status ? 'Ручное присвоение' : 'Автоприсвоение';
 			tooltip = 'Если в данной опции выставлено автоприсвоение, тогда коды будут автоматически присвоены пользователям. Важно! При нехватке кодов для всех пользователей данная ф-я будет отключена. <br/> Если в данной опции выставлено ручное присваивание, тогда код будет присваеватся для каждого пользоватебя в отдельности.';
 		} else {
 			switchText = 'Автообновление';
 			tooltip = 'Если данная опция включена, тогда при поступлении новых данных, они автоматически отобразятся в таблице. Перезагружать страницу не нужно.<br/> Рекомендуется отключить данную функцию при работе с данными в таблице!';
 		}
 
-		const item = {
+		const switchItem = {
 			switchText,
 			tooltip,
-			key: qrSwitch[key]
+			key: item
 		};
 
-		$(`.main__wrap-info--${page} .main__switchies`).append(switchElem(item));
-	}
+		content += switchElem(switchItem);
+
+		return content;
+	}, '');
+}
+
+function renderCount() {
+	return Object.values(qrCount).reduce((content, item) => {
+		content += count(item);
+
+		return content;
+	}, '');
+}
+
+function render(page = 'qr') {
+	$(`.main__wrap-info--${page}`).html('');
+	$(`.main__wrap-info--${page}`).append(`
+		<div class="main__cards">${renderCount()}</div>
+		<div class="main__switchies">${renderSwitch()}</div>
+	`);
 
 	autoRefresh();
 	typeAssignCode();
-}
-
-function renderCount(page = 'qr') {
-	$(`.main__wrap-info--${page} .main__cards`).html('');
-	for (let key in qrCount) {
-		$(`.main__wrap-info--${page} .main__cards`).append(count(qrCount[key]));
-	}
 }
 
 function userFromDB(array) {
@@ -184,10 +191,10 @@ function typeAssignCode(page = 'qr') {
 		}
 
 		resetControlSwitch();
-		renderSwitch();
 		assignCodes();
 		showFieldsInHeaderTable();
 		renderTable('full');
+		render();
 	});
 }
 
@@ -242,6 +249,7 @@ function dataAdd(page = 'qr') {
 
 	assignCodes();
 	showActiveDataOnPage();
+	render();
 }
 
 function showDataFromStorage(page = 'qr') {
@@ -624,6 +632,7 @@ function changeTabs(page = 'qr') {
 		addTabs();
 		showActiveDataOnPage();
 		renderTable('full');
+		render();
 
 		localStorage.removeItem(page); // в самом конце, т.к. функции выше записывают в localStorage
 	});
