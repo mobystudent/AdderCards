@@ -55,13 +55,11 @@ function renderHeaderPage(page = 'const') {
 	$(`.main[data-name=${page}] .container`).prepend(pageTitle(constObject));
 }
 
-function renderTable(status, page = 'const') {
-	let stateTable;
-
-	if (status == 'empty') {
-		stateTable = `<p class="table__nothing">Новых данных нет</p>`;
+function renderTable() {
+	if (!constCollection.size) {
+		return `<p class="table__nothing">Новых данных нет</p>`;
 	} else {
-		stateTable = [...constCollection.values()].reduce((content, item) => {
+		return [...constCollection.values()].reduce((content, item) => {
 			if (item.nameid === constObject.nameid) {
 				content += table(item);
 			}
@@ -69,15 +67,30 @@ function renderTable(status, page = 'const') {
 			return content;
 		}, '');
 	}
+}
 
-	$(`.table--${page}`).html('');
-	$(`.table--${page}`).append(`
-		<header class="table__header">${headerTable()}</header>
-		<div class="table__body">${stateTable}</div>
-		`);
+function renderTabs() {
+	if (filterDepart().length > 1) {
+		return filterDepart().reduce((content, item) => {
+			let tabItem;
 
-	convertCardIDInCardName();
-	clearNumberCard();
+			departmentCollection.forEach(({ nameid = '', shortname = '' }) => {
+				if (item === nameid) {
+					tabItem = {
+						nameid,
+						shortname,
+						status: constObject.nameid === nameid
+					};
+				}
+			});
+
+			content += tabs(tabItem);
+
+			return content;
+		}, '');
+	} else {
+		return;
+	}
 }
 
 function renderSwitch() {
@@ -111,13 +124,25 @@ function renderCount() {
 }
 
 function render(page = 'const') {
-	$(`.main__wrap-info--${page}`).html('');
-	$(`.main__wrap-info--${page}`).append(`
-		<div class="main__cards">${renderCount()}</div>
-		<div class="main__switchies">${renderSwitch()}</div>
+	$(`.container--${page} .wrap--content`).html('');
+	$(`.container--${page} .wrap--content`).append(`
+		<div class="main__wrap-info">
+			<div class="main__cards">${renderCount()}</div>
+			<div class="main__switchies">${renderSwitch()}</div>
+		</div>
+		<div class="wrap wrap--table">
+			<header class="tab">${renderTabs()}</header>
+			<div class="table">
+				<header class="table__header">${headerTable()}</header>
+				<div class="table__body">${renderTable()}</div>
+			</div>
+		</div>
 	`);
 
 	autoRefresh();
+	convertCardIDInCardName();
+	clearNumberCard();
+	if (filterDepart().length > 1) changeTabs();
 }
 
 function userFromDB(array) {
@@ -152,28 +177,11 @@ function userFromDB(array) {
 	dataAdd();
 }
 
-function dataAdd(page = 'const') {
-	const filterNameDepart = filterDepart();
-	constObject.nameid = filterNameDepart[0];
+function dataAdd() {
+	constObject.nameid = filterDepart()[0];
 
 	getDepartmentFromDB();
 	getConstCardsFromDB();
-
-	if (constCollection.size) {
-		renderTable('full');
-	} else {
-		renderTable('empty');
-
-		return;
-	}
-
-	if (filterNameDepart.length > 1) {
-		addTabs();
-		changeTabs();
-	} else {
-		$(`.tab--${page}`).html('');
-	}
-
 	showActiveDataOnPage();
 	render();
 }
@@ -264,7 +272,7 @@ function clearObject() {
 }
 
 function clearNumberCard(page = 'const') {
-	$(`.table--${page} .table__body`).click(({ target }) => {
+	$(`.container--${page} .table__body`).click(({ target }) => {
 		if ($(target).parents('.table__btn--clear').length || $(target).hasClass('table__btn--clear')) {
 			const userID = $(target).parents('.table__row').data('id');
 			let collectionID;
@@ -281,7 +289,7 @@ function clearNumberCard(page = 'const') {
 }
 
 function convertCardIDInCardName(page = 'const') {
-	$(`.table--${page} .table__body`).click(({ target }) => {
+	$(`.container--${page} .table__body`).click(({ target }) => {
 		if (!$(target).hasClass('table__input')) return;
 
 		$(target).on('input', () => {
@@ -298,7 +306,7 @@ function convertCardIDInCardName(page = 'const') {
 			if (uniqueCardID) {
 				$(`.main[data-name=${page}]`).find('.info__item--warn.info__item--have').show();
 
-				renderTable();
+				render();
 				return;
 			} else {
 				$(`.main[data-name=${page}]`).find('.info__item--warn.info__item--have').hide();
@@ -307,7 +315,7 @@ function convertCardIDInCardName(page = 'const') {
 			if (containsCardID) {
 				$(`.main[data-name=${page}]`).find('.info__item--warn.info__item--contains').show();
 
-				renderTable();
+				render();
 				return;
 			} else {
 				$(`.main[data-name=${page}]`).find('.info__item--warn.info__item--contains').hide();
@@ -343,7 +351,7 @@ function setDataInTable(userID, cardObj, page = 'const') {
 	}
 
 	showActiveDataOnPage();
-	renderTable('full');
+	render();
 }
 
 function checkInvalidValueCardID(page = 'const') {
@@ -360,7 +368,7 @@ function checkInvalidValueCardID(page = 'const') {
 function autoRefresh(page = 'const') {
 	const timeReload = 60000 * settingsObject.autoupdatevalue;
 
-	$(`.main__wrap-info--${page} .switch--refresh`).click(({ target }) => {
+	$(`.container--${page} .switch--refresh`).click(({ target }) => {
 		if (!$(target).hasClass('switch__input')) return;
 
 		const statusSwitch = $(target).prop('checked');
@@ -512,34 +520,12 @@ function printReport(page = 'const') {
 	});
 }
 
-function addTabs(page = 'const') {
-	const filterNameDepart = filterDepart();
-
-	$(`.tab--${page}`).html('');
-
-	filterNameDepart.forEach((item) => {
-		departmentCollection.forEach(({ nameid = '', shortname = '' }) => {
-			if (item === nameid) {
-				const tabItem = {
-					nameid,
-					shortname,
-					status: constObject.nameid === nameid
-				};
-
-				$(`.tab--${page}`).append(tabs(tabItem));
-			}
-		});
-	});
-}
-
 function changeTabs(page = 'const') {
-	$(`.tab--${page}`).click(({ target }) => {
+	$(`.container--${page} .tab`).click(({ target }) => {
 		if (!$(target).parents('.tab__item').length && !$(target).hasClass('tab__item')) return;
 
 		constObject.nameid = $(target).closest('.tab__item').data('depart');
 
-		addTabs();
-		renderTable('full');
 		showActiveDataOnPage();
 		render();
 
