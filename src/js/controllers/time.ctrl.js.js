@@ -68,11 +68,9 @@ function renderCount(page = 'time') {
 	}
 }
 
-function itemUserInTable(id) {
-	const idUser = id ? id : 0;
-
-	timeCollection.set(idUser, {
-		id: idUser,
+function itemUserInTable() {
+	timeCollection.set(counter, {
+		id: counter,
 		fio: 'Временная карта',
 		statusid: 'timeCard',
 		statustitle: 'Временная карта',
@@ -80,14 +78,14 @@ function itemUserInTable(id) {
 		cardname: ''
 	});
 
-	dataAdd();
-
 	counter++;
+
+	dataAdd();
 }
 
 function addTimeCard() {
 	$('#addTimeCard').click(() => {
-		itemUserInTable(counter);
+		itemUserInTable();
 	});
 }
 
@@ -111,7 +109,7 @@ function showDataFromStorage(page = 'time') {
 
 		dataAdd();
 	} else {
-		itemUserInTable();
+		renderTable('empty');
 	}
 }
 
@@ -135,8 +133,6 @@ function submitIDinBD(page = 'time') {
 			setAddUsersInDB([...timeCollection.values()], 'time', 'report');
 
 			timeCollection.clear();
-			itemUserInTable();
-
 			localStorage.removeItem(page);
 			counter = 0;
 		} else {
@@ -169,32 +165,18 @@ function deleteTimeCard(page = 'time') {
 
 			[...timeCollection].forEach(([key, { id }]) => {
 				if (userID === +id) {
-					blockLastCard(key);
+					timeCollection.delete(key);
 				}
 			});
 
-			if (timeCollection.size === 1) {
+			setDataInStorage();
+			renderTable('full');
+
+			if (!timeCollection.size) {
 				localStorage.removeItem(page);
 			}
 		}
 	});
-}
-
-function blockLastCard(idRemove, page = 'time') {
-	if (timeCollection.size === 1) {
-		$(`.main[data-name="${page}"]`).find('.info__item--last').show();
-
-		setTimeout(() => {
-			$(`.main[data-name="${page}"]`).find('.info__item--last').hide();
-		}, 5000);
-
-		return;
-	} else {
-		timeCollection.delete(idRemove);
-
-		renderTable('full');
-		setDataInStorage();
-	}
 }
 
 function convertCardIDInCardName(page = 'time') {
