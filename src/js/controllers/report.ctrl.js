@@ -51,10 +51,7 @@ const reportCount = {
 
 $(window).on('load', () => {
 	renderHeaderPage();
-	toggleSelect();
 	getDataFromDB('report'); // 1
-	renderFilter(); // 2
-	datepicker();
 });
 
 function renderHeaderPage(page = 'report') {
@@ -62,35 +59,16 @@ function renderHeaderPage(page = 'report') {
 	$(`.main[data-name=${page}] .container`).prepend(pageTitle(reportObject));
 }
 
-function renderTable(status, page = 'report') {
-	let stateTable;
-
-	if (status == 'empty') {
-		stateTable = `<p class="table__nothing">Новых данных нет</p>`;
+function renderTable() {
+	if (!reportCollection.size) {
+		return `<p class="table__nothing">Новых данных нет</p>`;
 	} else {
-		stateTable = [...reportCollection.values()].reduce((content, item) => {
+		return [...reportCollection.values()].reduce((content, item) => {
 			content += table(item);
 
 			return content;
 		}, '');
 	}
-
-	$(`.table--${page}`).html('');
-	$(`.table--${page}`).append(`
-		<header class="table__header">${headerTable()}</header>
-		<div class="table__body">${stateTable}</div>
-		`);
-}
-
-function renderForm(nameForm = '#reportForm') {
-	$(`${nameForm} .form__wrap`).html('');
-	$(`${nameForm} .form__wrap`).append(form(reportObject));
-
-	filterUsersFromDB();
-	renderFilter();
-	resetFilters();
-	toggleSelect();
-	datepicker();
 }
 
 function renderSwitch() {
@@ -124,16 +102,28 @@ function renderCount() {
 }
 
 function render(page = 'report') {
-	$(`.main__wrap-info--${page}`).html('');
-	$(`.main__wrap-info--${page}`).append(`
-		<div class="main__cards">${renderCount()}</div>
-		<div class="main__switchies">${renderSwitch()}</div>
+	$(`.container--${page} .wrap--content`).html('');
+	$(`.container--${page} .wrap--content`).append(`
+		<form class="form form--filter" action="#" method="GET">${renderForm()}</form>
+		<div class="main__wrap-info">
+			<div class="main__cards">${renderCount()}</div>
+			<div class="main__switchies">${renderSwitch()}</div>
+		</div>
+		<div class="wrap wrap--table">
+			<div class="table">
+				<header class="table__header">${headerTable()}</header>
+				<div class="table__body">${renderTable()}</div>
+			</div>
+		</div>
 	`);
 
 	autoRefresh();
+	resetFilters();
+	toggleSelect();
+	datepicker();
 }
 
-function renderFilter(nameForm = '#reportForm') {
+function renderForm() {
 	const filters = [
 		{
 			select: 'post',
@@ -145,14 +135,17 @@ function renderFilter(nameForm = '#reportForm') {
 		}
 	];
 
-	$(`${nameForm} .select__list`).html('');
-	filters.forEach(({ select, array }) => {
-		array.forEach((item) => {
-			$(`${nameForm} .select[data-select=${select}] .select__list`).append(filter({ select, item }));
-		});
-	});
+	const stateForm = filters.reduce((contentObj, { select, array }) => {
+		contentObj[select] = array.reduce((content, item) => {
+			content += filter({ select, item });
 
-	clickSelectItem();
+			return content;
+		}, '');
+
+		return contentObj;
+	}, {});
+
+	return form(reportObject, stateForm);
 }
 
 function userFromDB(array, filter = '') {
@@ -171,27 +164,19 @@ function userFromDB(array, filter = '') {
 }
 
 function dataAdd() {
-	if (reportCollection.size) {
-		renderTable('full');
-	} else {
-		renderTable('empty');
-
-		return;
-	}
-
 	render();
 }
 
-function toggleSelect(nameForm = '#reportForm') {
-	$(`${nameForm} .select__header`).click(({ currentTarget }) => {
+function toggleSelect(page = 'report') {
+	$(`.container--${page} .select__header`).click(({ currentTarget }) => {
 		$(currentTarget).next().slideToggle().toggleClass('select__header--active');
 	});
 
 	clickSelectItem();
 }
 
-function clickSelectItem(nameForm = '#reportForm') {
-	$(`${nameForm} .select__item`).click(({ currentTarget }) => {
+function clickSelectItem(page = 'report') {
+	$(`.container--${page} .select__item`).click(({ currentTarget }) => {
 		const title = $(currentTarget).find('.select__name').data('title');
 		const select = $(currentTarget).parents('.select').data('select');
 		const statusid = $(currentTarget).find('.select__name').data(select);
@@ -210,7 +195,7 @@ function setDataAttrSelectedItem(title, select, statusid) {
 		reportObject.filters.statusid = statusid;
 	}
 
-	renderForm();
+	filterUsersFromDB();
 }
 
 function datepicker() {
@@ -229,14 +214,14 @@ function datepicker() {
 		reportObject.datetitle = dateValue;
 		reportObject.filters.date = dateValue;
 
-		renderForm();
+		filterUsersFromDB();
 	});
 }
 
 function autoRefresh(page = 'report') {
 	const timeReload = 60000 * settingsObject.autoupdatevalue;
 
-	$(`.main__wrap-info--${page} .switch--refresh`).click(({ target }) => {
+	$(`.container--${page} .switch--refresh`).click(({ target }) => {
 		if (!$(target).hasClass('switch__input')) return;
 
 		const statusSwitch = $(target).prop('checked');
@@ -257,13 +242,12 @@ function autoRefresh(page = 'report') {
 			reportSwitch.refresh.marker = false;
 		}
 
-		render();
 		clearFieldsForm();
 	});
 }
 
-function resetFilters(nameForm = '#reportForm') {
-	$(`${nameForm} .btn--cancel`).click(() => {
+function resetFilters(page = 'report') {
+	$(`.container--${page} .btn--cancel`).click(() => {
 		clearFieldsForm();
 	});
 }
@@ -279,7 +263,7 @@ function clearFieldsForm() {
 		}
 	}
 
-	renderForm();
+	render();
 }
 
 function filterUsersFromDB() {
@@ -305,7 +289,6 @@ function filterUsersFromDB() {
 	});
 }
 
-// Общие функции с картами и кодами
 function getDataFromDB(nameTable) {
 	$.ajax({
 		url: "./php/output-request.php",

@@ -1,43 +1,13 @@
 main.main(data-name="report")
-	.container
+	.container.container--report
 		//- .main__title-wrap
 			h1.main__title
 				| Отчёт по изменениям
 			span.main__depart.main__depart--report(data-depart="" data-id="")
 				
 		.wrap.wrap--content.wrap--content-report-item
-			form.form.form--filter#reportForm(action="#" method="GET")
-				.form__wrap.form__wrap--filter
-					.form__fields.form__fields--filter
-						.form__field.form__field--filter
-							span.form__name.form__name--form
-								| Фильтровать по должности
-							.select(data-select="post")
-								header.select__header.select__header--form
-									span.select__value.select__value--form(data-title="title")
-										| Выберите должность
-								ul.select__list.select__list--form
-						.form__field.form__field--filter
-							span.form__name.form__name--form
-								| Фильтровать по статусу
-							.select(data-select="statusid")
-								header.select__header.select__header--form
-									span.select__value.select__value--form(data-title="title")
-										| Выберите статус
-								ul.select__list.select__list--form
-						.form__field.form__field--filter
-							.form__label
-								span.form__name.form__name--form
-									| Фильтровать по дате
-								input.form__item.form__item--form#reportDatepicker(name="date" type="text" placeholder="Выберите дату" readonly="readonly")
-					button.btn.btn--cancel.btn--cancel-disabled(type="reset" disabled="disabled")
-						| Сбросить фильтры
 				
-			.main__wrap-info.main__wrap-info--report
-			.wrap.wrap--table
-				header.tab.tab--report
-				.table.table--report
-				//- .table__cell.table__cell--header.table__cell--department
-					span.table__text.table__text--header
-					| Подразделение/факультет
-					button.btn.btn--sort(type='button' data-direction='true')
+			//- .table__cell.table__cell--header.table__cell--department
+				span.table__text.table__text--header
+				| Подразделение/факультет
+				button.btn.btn--sort(type='button' data-direction='true')
