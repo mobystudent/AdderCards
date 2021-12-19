@@ -44,7 +44,6 @@ $(window).on('load', () => {
 	renderHeaderPage();
 	submitIDinBD();
 	showDataFromStorage();
-	renderSwitch();
 });
 
 function renderHeaderPage(page = 'reject') {
@@ -74,7 +73,6 @@ function renderTable(status, page = 'reject') {
 	resendAllUsers();
 	viewDataUser();
 	resendUsers();
-	renderCount();
 }
 
 function renderForm(id, nameForm = '#rejectForm') {
@@ -87,35 +85,44 @@ function renderForm(id, nameForm = '#rejectForm') {
 	});
 }
 
-function renderSwitch(page = 'reject') {
-	$(`.main__wrap-info--${page} .main__switchies`).html('');
-
-	for (let key in rejectSwitch) {
+function renderSwitch() {
+	return Object.values(rejectSwitch).reduce((content, item) => {
 		let switchText;
 		let tooltip;
 
-		if (rejectSwitch[key].type === 'refresh') {
+		if (item.type === 'refresh') {
 			switchText = 'Автообновление';
 			tooltip = 'Если данная опция включена, тогда при поступлении новых данных, они автоматически отобразятся в таблице. Перезагружать страницу не нужно.<br/> Рекомендуется отключить данную функцию при работе с данными в таблице!';
 		}
 
-		const item = {
+		const switchItem = {
 			switchText,
 			tooltip,
-			key: rejectSwitch[key]
+			key: item
 		};
 
-		$(`.main__wrap-info--${page} .main__switchies`).append(switchElem(item));
-	}
+		content += switchElem(switchItem);
 
-	autoRefresh();
+		return content;
+	}, '');
 }
 
-function renderCount(page = 'reject') {
-	$(`.main__wrap-info--${page} .main__cards`).html('');
-	for (let key in rejectCount) {
-		$(`.main__wrap-info--${page} .main__cards`).append(count(rejectCount[key]));
-	}
+function renderCount() {
+	return Object.values(rejectCount).reduce((content, item) => {
+		content += count(item);
+
+		return content;
+	}, '');
+}
+
+function render(page = 'reject') {
+	$(`.main__wrap-info--${page}`).html('');
+	$(`.main__wrap-info--${page}`).append(`
+		<div class="main__cards">${renderCount()}</div>
+		<div class="main__switchies">${renderSwitch()}</div>
+	`);
+
+	autoRefresh();
 }
 
 function userFromDB(array) {
@@ -157,6 +164,8 @@ function dataAdd() {
 
 		return;
 	}
+
+	render();
 }
 
 function showDataFromStorage(page = 'reject') {
@@ -314,7 +323,7 @@ function autoRefresh(page = 'reject') {
 			localStorage.removeItem(page);
 		}
 
-		renderSwitch();
+		render();
 	});
 }
 
