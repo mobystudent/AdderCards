@@ -55,7 +55,6 @@ $(window).on('load', () => {
 	getDataFromDB('report'); // 1
 	renderFilter(); // 2
 	datepicker();
-	renderSwitch();
 });
 
 function renderHeaderPage(page = 'report') {
@@ -81,8 +80,6 @@ function renderTable(status, page = 'report') {
 		<header class="table__header">${headerTable()}</header>
 		<div class="table__body">${stateTable}</div>
 		`);
-
-	renderCount();
 }
 
 function renderForm(nameForm = '#reportForm') {
@@ -96,35 +93,44 @@ function renderForm(nameForm = '#reportForm') {
 	datepicker();
 }
 
-function renderSwitch(page = 'report') {
-	$(`.main__wrap-info--${page} .main__switchies`).html('');
-
-	for (let key in reportSwitch) {
+function renderSwitch() {
+	return Object.values(reportSwitch).reduce((content, item) => {
 		let switchText;
 		let tooltip;
 
-		if (reportSwitch[key].type === 'refresh') {
+		if (item.type === 'refresh') {
 			switchText = 'Автообновление';
 			tooltip = 'Если данная опция включена, тогда при поступлении новых данных, они автоматически отобразятся в таблице. Перезагружать страницу не нужно.<br/> Рекомендуется отключить данную функцию при работе с данными в таблице!';
 		}
 
-		const item = {
+		const switchItem = {
 			switchText,
 			tooltip,
-			key: reportSwitch[key]
+			key: item
 		};
 
-		$(`.main__wrap-info--${page} .main__switchies`).append(switchElem(item));
-	}
+		content += switchElem(switchItem);
 
-	autoRefresh();
+		return content;
+	}, '');
 }
 
-function renderCount(page = 'report') {
-	$(`.main__wrap-info--${page} .main__cards`).html('');
-	for (let key in reportCount) {
-		$(`.main__wrap-info--${page} .main__cards`).append(count(reportCount[key]));
-	}
+function renderCount() {
+	return Object.values(reportCount).reduce((content, item) => {
+		content += count(item);
+
+		return content;
+	}, '');
+}
+
+function render(page = 'report') {
+	$(`.main__wrap-info--${page}`).html('');
+	$(`.main__wrap-info--${page}`).append(`
+		<div class="main__cards">${renderCount()}</div>
+		<div class="main__switchies">${renderSwitch()}</div>
+	`);
+
+	autoRefresh();
 }
 
 function renderFilter(nameForm = '#reportForm') {
@@ -172,6 +178,8 @@ function dataAdd() {
 
 		return;
 	}
+
+	render();
 }
 
 function toggleSelect(nameForm = '#reportForm') {
@@ -249,7 +257,7 @@ function autoRefresh(page = 'report') {
 			reportSwitch.refresh.marker = false;
 		}
 
-		renderSwitch();
+		render();
 		clearFieldsForm();
 	});
 }
@@ -265,7 +273,9 @@ function clearFieldsForm() {
 		if (key === 'filters') {
 			reportObject[key] = {};
 		} else {
-			reportObject[key] = '';
+			if (key !== 'nameid' && key !== 'longname') {
+				reportObject[key] = '';
+			}
 		}
 	}
 
