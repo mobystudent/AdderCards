@@ -27,7 +27,6 @@ let counter = 0;
 $(window).on('load', () => {
 	renderHeaderPage();
 	submitIDinBD();
-	addTimeCard();
 	showDataFromStorage();
 });
 
@@ -36,36 +35,50 @@ function renderHeaderPage(page = 'time') {
 	$(`.main[data-name=${page}] .container`).prepend(pageTitle(timeObject));
 }
 
-function renderTable(status, page = 'time') {
-	let stateTable;
-
-	if (status == 'empty') {
-		stateTable = `<p class="table__nothing">Новых данных нет</p>`;
+function renderTable() {
+	if (!timeCollection.size) {
+		return `<p class="table__nothing">Новых данных нет</p>`;
 	} else {
-		stateTable = [...timeCollection.values()].reduce((content, item) => {
+		return [...timeCollection.values()].reduce((content, item) => {
 			content += table(item);
 
 			return content;
 		}, '');
 	}
+}
 
-	$(`.table--${page}`).html('');
-	$(`.table--${page}`).append(`
-		<header class="table__header">${headerTable()}</header>
-		<div class="table__body">${stateTable}</div>
-		`);
+function renderCount() {
+	return Object.values(timeCount).reduce((content, item) => {
+		content += count(item);
 
+		return content;
+	}, '');
+}
+
+function render(page = 'time') {
+	$(`.container--${page} .wrap--content`).html('');
+	$(`.container--${page} .wrap--content`).append(`
+		<div class="main__wrap-info">
+			<div class="main__cards">${renderCount()}</div>
+			<button class="main__btn" id="addTimeCard" type="button">
+				<svg class="icon icon--plus">
+					<use class="icon__item" xlink:href="./images/sprite.svg#plus"></use>
+				</svg>
+				<span class="main__btn-text">Добавить карту</span>
+			</button>
+		</div>
+		<div class="wrap wrap--table">
+			<div class="table">
+				<header class="table__header">${headerTable()}</header>
+				<div class="table__body">${renderTable()}</div>
+			</div>
+		</div>
+	`);
+
+	addTimeCard();
 	convertCardIDInCardName();
 	deleteTimeCard();
 	clearNumberCard();
-	renderCount();
-}
-
-function renderCount(page = 'time') {
-	$(`.main__wrap-info--${page} .main__cards`).html('');
-	for (let key in timeCount) {
-		$(`.main__wrap-info--${page} .main__cards`).append(count(timeCount[key]));
-	}
 }
 
 function itemUserInTable() {
@@ -91,7 +104,7 @@ function addTimeCard() {
 
 function dataAdd() {
 	getTimeCardsFromDB();
-	renderTable('full');
+	render();
 }
 
 function showDataFromStorage(page = 'time') {
@@ -106,11 +119,9 @@ function showDataFromStorage(page = 'time') {
 
 			timeCollection.set(itemID, item);
 		});
-
-		dataAdd();
-	} else {
-		renderTable('empty');
 	}
+
+	dataAdd();
 }
 
 function setDataInStorage(page = 'time') {
@@ -133,6 +144,7 @@ function submitIDinBD(page = 'time') {
 			setAddUsersInDB([...timeCollection.values()], 'time', 'report');
 
 			timeCollection.clear();
+			render();
 			localStorage.removeItem(page);
 			counter = 0;
 		} else {
@@ -142,7 +154,7 @@ function submitIDinBD(page = 'time') {
 }
 
 function clearNumberCard(page = 'time') {
-	$(`.table--${page} .table__body`).click(({ target }) => {
+	$(`.container--${page} .table__body`).click(({ target }) => {
 		if ($(target).parents('.table__btn--clear').length || $(target).hasClass('table__btn--clear')) {
 			const userID = $(target).parents('.table__row').data('id');
 			let collectionID;
@@ -159,7 +171,7 @@ function clearNumberCard(page = 'time') {
 }
 
 function deleteTimeCard(page = 'time') {
-	$(`.table--${page} .table__body`).click(({ target }) => {
+	$(`.container--${page} .table__body`).click(({ target }) => {
 		if ($(target).parents('.table__btn--delete').length || $(target).hasClass('table__btn--delete')) {
 			const userID = $(target).closest('.table__row').data('id');
 
@@ -170,7 +182,7 @@ function deleteTimeCard(page = 'time') {
 			});
 
 			setDataInStorage();
-			renderTable('full');
+			render();
 
 			if (!timeCollection.size) {
 				localStorage.removeItem(page);
@@ -180,7 +192,7 @@ function deleteTimeCard(page = 'time') {
 }
 
 function convertCardIDInCardName(page = 'time') {
-	$(`.table--${page} .table__body`).click(({ target }) => {
+	$(`.container--${page} .table__body`).click(({ target }) => {
 		if (!$(target).hasClass('table__input')) return;
 
 		$(target).on('input', () => {
@@ -197,7 +209,7 @@ function convertCardIDInCardName(page = 'time') {
 			if (uniqueCardID) {
 				$(`.main[data-name=${page}]`).find('.info__item--warn.info__item--have').show();
 
-				renderTable();
+				render();
 				return;
 			} else {
 				$(`.main[data-name=${page}]`).find('.info__item--warn.info__item--have').hide();
@@ -206,7 +218,7 @@ function convertCardIDInCardName(page = 'time') {
 			if (containsCardID) {
 				$(`.main[data-name=${page}]`).find('.info__item--warn.info__item--contains').show();
 
-				renderTable();
+				render();
 				return;
 			} else {
 				$(`.main[data-name=${page}]`).find('.info__item--warn.info__item--contains').hide();
@@ -241,7 +253,7 @@ function setDataInTable(userID, cardObj, page = 'time') {
 		setDataInStorage();
 	}
 
-	renderTable('full');
+	render();
 }
 
 function checkInvalidValueCardID(page = 'time') {

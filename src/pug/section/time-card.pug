@@ -1,24 +1,10 @@
 main.main(data-name="time")
-	.container
+	.container.container--time
 		//- .main__title-wrap
 			h1.main__title
 				| Добавление временных карт
 			
 		.wrap.wrap--content.wrap--content-time
-			.main__wrap-info.main__wrap-info--time
-				.main__cards
-					//- p.main__count-wrap
-						span.main__count-text
-							| Количество карт:&nbsp
-						span.main__count.main__count--all-time
-							| 0
-				button.main__btn#addTimeCard(type="button")
-					svg.icon.icon--plus
-						use.icon__item(xlink:href="./images/sprite.svg#plus")
-					span.main__btn-text
-						| Добавить карту
-			.wrap.wrap--table
-				.table.table--time
 						
 		.info.info--page
 			p.info__item.info__item--warn.info__item--fields
