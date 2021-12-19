@@ -51,28 +51,16 @@ function renderHeaderPage(page = 'reject') {
 	$(`.main[data-name=${page}] .container`).prepend(pageTitle(rejectObject));
 }
 
-function renderTable(status, page = 'reject') {
-	let stateTable;
-
-	if (status == 'empty') {
-		stateTable = `<p class="table__nothing">Новых данных нет</p>`;
+function renderTable() {
+	if (!rejectCollection.size) {
+		return `<p class="table__nothing">Новых данных нет</p>`;
 	} else {
-		stateTable = [...rejectCollection.values()].reduce((content, item) => {
+		return [...rejectCollection.values()].reduce((content, item) => {
 			content += table(item);
 
 			return content;
 		}, '');
 	}
-
-	$(`.table--${page}`).html('');
-	$(`.table--${page}`).append(`
-		<header class="table__header">${headerTable(rejectObject)}</header>
-		<div class="table__body">${stateTable}</div>
-		`);
-
-	resendAllUsers();
-	viewDataUser();
-	resendUsers();
 }
 
 function renderForm(id, nameForm = '#rejectForm') {
@@ -116,13 +104,24 @@ function renderCount() {
 }
 
 function render(page = 'reject') {
-	$(`.main__wrap-info--${page}`).html('');
-	$(`.main__wrap-info--${page}`).append(`
-		<div class="main__cards">${renderCount()}</div>
-		<div class="main__switchies">${renderSwitch()}</div>
+	$(`.container--${page} .wrap--content`).html('');
+	$(`.container--${page} .wrap--content`).append(`
+		<div class="main__wrap-info">
+			<div class="main__cards">${renderCount()}</div>
+			<div class="main__switchies">${renderSwitch()}</div>
+		</div>
+		<div class="wrap wrap--table">
+			<div class="table">
+				<header class="table__header">${headerTable(rejectObject)}</header>
+				<div class="table__body">${renderTable()}</div>
+			</div>
+		</div>
 	`);
 
 	autoRefresh();
+	resendAllUsers();
+	viewDataUser();
+	resendUsers();
 }
 
 function userFromDB(array) {
@@ -157,14 +156,6 @@ function userFromDB(array) {
 }
 
 function dataAdd() {
-	if (rejectCollection.size) {
-		renderTable('full');
-	} else {
-		renderTable('empty');
-
-		return;
-	}
-
 	render();
 }
 
@@ -237,7 +228,7 @@ function clearObject() {
 }
 
 function viewDataUser(page = 'reject', nameForm = '#rejectForm') {
-	$(`.table--${page} .table__body`).click(({ target }) => {
+	$(`.container--${page} .table__body`).click(({ target }) => {
 		if ($(target).parents('.table__btn--view').length || $(target).hasClass('table__btn--view')) {
 			const userID = $(target).parents('.table__row').data('id');
 
@@ -250,7 +241,7 @@ function viewDataUser(page = 'reject', nameForm = '#rejectForm') {
 }
 
 function resendUsers(page = 'reject') {
-	$(`.table--${page} .table__body`).click(({ target }) => {
+	$(`.container--${page} .table__body`).click(({ target }) => {
 		if (!$(target).hasClass('btn--resend')) return;
 
 		const userID = $(target).parents('.table__row').data('id');
@@ -273,12 +264,12 @@ function resendUsers(page = 'reject') {
 			setDataInStorage();
 		}
 
-		renderTable('full');
+		render();
 	});
 }
 
 function resendAllUsers(page = 'reject') {
-	$('#resendAll').click(() => {
+	$(`.container--${page} #resendAll`).click(() => {
 		rejectObject.statusresend = rejectObject.statusresend ? false : true;
 
 		rejectCollection.forEach((item) => {
@@ -293,14 +284,14 @@ function resendAllUsers(page = 'reject') {
 			setDataInStorage();
 		}
 
-		renderTable('full');
+		render();
 	});
 }
 
 function autoRefresh(page = 'reject') {
 	const timeReload = 60000 * settingsObject.autoupdatevalue;
 
-	$(`.main__wrap-info--${page} .switch--refresh`).click(({ target }) => {
+	$(`.container--${page} .switch--refresh`).click(({ target }) => {
 		if (!$(target).hasClass('switch__input')) return;
 
 		const statusSwitch = $(target).prop('checked');
