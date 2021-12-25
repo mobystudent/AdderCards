@@ -55,6 +55,44 @@ function renderCount() {
 	}, '');
 }
 
+function renderInfo(errors = [], page = 'time') {
+	const info = [
+		{
+			type: 'warn',
+			title: 'fields',
+			message: 'Предупреждение! Не всем картам присвоен идентификатор.'
+		},
+		{
+			type: 'warn',
+			title: 'have',
+			message: 'Предупреждение! Карта с данным кодом уже присвоена!'
+		},
+		{
+			type: 'warn',
+			title: 'contains',
+			message: 'Предупреждение! Карта с данным кодом была присвоена ранее!'
+		},
+		{
+			type: 'error',
+			title: 'cardid',
+			message: 'Ошибка! Не правильно введен тип ID. Должно быть 10 цифр, без букв и символов!'
+		}
+	];
+
+	$(`.container--${page} .info`).html('');
+	info.forEach((item) => {
+		const { type, title, message } = item;
+
+		errors.forEach((error) => {
+			if (error === title) {
+				$(`.container--${page} .info`).append(`
+					<p class="info__item info__item--${type}">${message}</p>
+				`);
+			}
+		});
+	});
+}
+
 function render(page = 'time') {
 	$(`.container--${page} .wrap--content`).html('');
 	$(`.container--${page} .wrap--content`).append(`
@@ -135,7 +173,7 @@ function submitIDinBD(page = 'time') {
 		const checkedItems = [...timeCollection.values()].every(({ cardid }) => cardid);
 
 		if (checkedItems) {
-			$('.info__item--warn.info__item--fields').hide();
+			renderInfo();
 
 			timeCollection.forEach((item) => {
 				item.date = service.getCurrentDate();
@@ -148,7 +186,7 @@ function submitIDinBD(page = 'time') {
 			localStorage.removeItem(page);
 			counter = 0;
 		} else {
-			$('.info__item--warn.info__item--fields').show();
+			renderInfo(['fields']);
 		}
 	});
 }
@@ -207,27 +245,29 @@ function convertCardIDInCardName(page = 'time') {
 			const containsCardID = [...dbTimeCardsCollection.values()].some(({ cardid }) => cardIdVal === cardid);
 
 			if (uniqueCardID) {
-				$(`.main[data-name=${page}]`).find('.info__item--warn.info__item--have').show();
-
+				renderInfo(['have']);
 				render();
+
 				return;
 			} else {
-				$(`.main[data-name=${page}]`).find('.info__item--warn.info__item--have').hide();
+				renderInfo();
 			}
 
 			if (containsCardID) {
-				$(`.main[data-name=${page}]`).find('.info__item--warn.info__item--contains').show();
-
+				renderInfo(['contains']);
 				render();
+
 				return;
 			} else {
-				$(`.main[data-name=${page}]`).find('.info__item--warn.info__item--contains').hide();
+				renderInfo();
 			}
 
 			if (!convertNumCard) {
-				$(`.main[data-name=${page}]`).find('.info__item--error.info__item--fields').show();
+				renderInfo(['cardid']);
 
 				return;
+			} else {
+				renderInfo();
 			}
 
 			[...timeCollection].forEach(([key, { id }]) => {
@@ -256,13 +296,13 @@ function setDataInTable(userID, cardObj, page = 'time') {
 	render();
 }
 
-function checkInvalidValueCardID(page = 'time') {
+function checkInvalidValueCardID() {
 	const checkValueCard = [...timeCollection.values()].every(({ cardid }) => {
 		if (cardid) convert.convertCardId(cardid);
 	});
 
 	if (checkValueCard) {
-		$(`.main[data-name=${page}]`).find('.info__item--error').hide();
+		renderInfo();
 	}
 }
 
