@@ -123,6 +123,44 @@ function renderCount() {
 	}, '');
 }
 
+function renderInfo(errors = [], page = 'const') {
+	const info = [
+		{
+			type: 'warn',
+			title: 'fields',
+			message: 'Предупреждение! Не всем пользователям присвоен идентификатор.'
+		},
+		{
+			type: 'warn',
+			title: 'have',
+			message: 'Предупреждение! Карта с данным кодом уже присвоена!'
+		},
+		{
+			type: 'warn',
+			title: 'contains',
+			message: 'Предупреждение! Карта с данным кодом была присвоена ранее!'
+		},
+		{
+			type: 'error',
+			title: 'cardid',
+			message: 'Ошибка! Не правильно введен тип ID. Должно быть 10 цифр, без букв и символов!'
+		}
+	];
+
+	$(`.container--${page} .info`).html('');
+	info.forEach((item) => {
+		const { type, title, message } = item;
+
+		errors.forEach((error) => {
+			if (error === title) {
+				$(`.container--${page} .info`).append(`
+					<p class="info__item info__item--${type}">${message}</p>
+				`);
+			}
+		});
+	});
+}
+
 function render(page = 'const') {
 	$(`.container--${page} .wrap--content`).html('');
 	$(`.container--${page} .wrap--content`).append(`
@@ -232,7 +270,7 @@ function submitIDinBD(page = 'const') {
 		const checkedItems = filterDepartCollection.every(({ cardid }) => cardid);
 
 		if (checkedItems) {
-			$('.info__item--warn.info__item--fields').hide();
+			renderInfo();
 
 			constCollection.forEach((item) => {
 				if (item.nameid === constObject.nameid) {
@@ -260,7 +298,7 @@ function submitIDinBD(page = 'const') {
 
 			localStorage.removeItem(page);
 		} else {
-			$('.info__item--warn.info__item--fields').show();
+			renderInfo(['fields']);
 		}
 	});
 }
@@ -304,27 +342,29 @@ function convertCardIDInCardName(page = 'const') {
 			const containsCardID = [...dbConstCardsCollection.values()].some(({ cardid }) => cardIdVal === cardid);
 
 			if (uniqueCardID) {
-				$(`.main[data-name=${page}]`).find('.info__item--warn.info__item--have').show();
-
+				renderInfo(['have']);
 				render();
+
 				return;
 			} else {
-				$(`.main[data-name=${page}]`).find('.info__item--warn.info__item--have').hide();
+				renderInfo();
 			}
 
 			if (containsCardID) {
-				$(`.main[data-name=${page}]`).find('.info__item--warn.info__item--contains').show();
-
+				renderInfo(['contains']);
 				render();
+
 				return;
 			} else {
-				$(`.main[data-name=${page}]`).find('.info__item--warn.info__item--contains').hide();
+				renderInfo();
 			}
 
 			if (!convertNumCard) {
-				$(`.main[data-name=${page}]`).find('.info__item--error.info__item--fields').show();
+				renderInfo(['cardid']);
 
 				return;
+			} else {
+				renderInfo();
 			}
 
 			[...constCollection].forEach(([key, { id }]) => {
@@ -354,14 +394,14 @@ function setDataInTable(userID, cardObj, page = 'const') {
 	render();
 }
 
-function checkInvalidValueCardID(page = 'const') {
+function checkInvalidValueCardID() {
 	const filterDepartCollection = [...constCollection.values()].filter(({ nameid }) => nameid == constObject.nameid);
 	const checkValueCard = filterDepartCollection.every(({ cardid }) => {
 		if (cardid) convert.convertCardId(cardid);
 	});
 
 	if (checkValueCard) {
-		$(`.main[data-name=${page}]`).find('.info__item--error').hide();
+		renderInfo();
 	}
 }
 
