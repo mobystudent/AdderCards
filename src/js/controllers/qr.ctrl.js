@@ -144,6 +144,34 @@ function renderCount() {
 	}, '');
 }
 
+function renderInfo(errors = [], page = 'qr') {
+	const info = [
+		{
+			type: 'warn',
+			title: 'fields',
+			message: 'Предупреждение! Не всем пользователям присвоен идентификатор.'
+		},
+		{
+			type: 'warn',
+			title: 'deficit',
+			message: 'Предупреждение! Недостаточно qr-кодов для присвоения пользователям.'
+		}
+	];
+
+	$(`.container--${page} .info`).html('');
+	info.forEach((item) => {
+		const { type, title, message } = item;
+
+		errors.forEach((error) => {
+			if (error === title) {
+				$(`.container--${page} .info`).append(`
+					<p class="info__item info__item--${type}">${message}</p>
+				`);
+			}
+		});
+	});
+}
+
 function render(page = 'qr') {
 	$(`.container--${page} .wrap--content`).html('');
 	$(`.container--${page} .wrap--content`).append(`
@@ -221,13 +249,13 @@ function typeAssignCode(page = 'qr') {
 	});
 }
 
-function assignCodes(page = 'qr') {
+function assignCodes() {
 	if (qrCollection.size > generateCollection.size && !qrObject.statusmanual) {
-		$(`.main[data-name=${page}]`).find('.info__item--warn.info__item--deficit').show();
+		renderInfo(['deficit']);
 
 		return;
 	} else {
-		$(`.main[data-name=${page}]`).find('.info__item--warn.info__item--deficit').hide();
+		renderInfo();
 	}
 
 	if (!qrObject.statusmanual) {
@@ -323,7 +351,7 @@ function submitIDinBD(page = 'qr') {
 		const checkedItems = filterDepartCollection.every(({ cardid }) => cardid);
 
 		if (checkedItems) {
-			$(`.main[data-name=${page}]`).find('.info__item--warn.info__item--fields').hide();
+			renderInfo();
 
 			qrCollection.forEach((item) => {
 				if (item.nameid === qrObject.nameid) {
@@ -364,7 +392,7 @@ function submitIDinBD(page = 'qr') {
 
 			localStorage.removeItem(page);
 		} else {
-			$(`.main[data-name=${page}]`).find('.info__item--warn.info__item--fields').show();
+			renderInfo(['fields']);
 		}
 	});
 }
@@ -385,11 +413,11 @@ function assignAllQR(page = 'qr') {
 		if (filterDepartCollection.length > generateCollection.size) {
 			qrObject.statusassign = false;
 
-			$(`.main[data-name=${page}]`).find('.info__item--warn.info__item--deficit').show();
+			renderInfo(['deficit']);
 
 			return;
 		} else {
-			$(`.main[data-name=${page}]`).find('.info__item--warn.info__item--deficit').hide();
+			renderInfo();
 		}
 
 		if (qrObject.statusassign) {
