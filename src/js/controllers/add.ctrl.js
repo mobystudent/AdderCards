@@ -181,7 +181,7 @@ function renderInfo(errors = [], page = 'add') {
 			type: 'error',
 			title: 'short',
 			message: 'Ошибка! ФИО должно состоять хотя бы из двух слов.'
-		},
+		}
 	];
 
 	$(`.container--${page} .info`).html('');
@@ -231,7 +231,7 @@ function modalActions() {
 	});
 }
 
-function addUser(page = 'add') {
+function addUser() {
 	$('#addUser').click(() => {
 		if (addObject.cardvalidtoid !== 'date') {
 			delete addObject.cardvalidto;

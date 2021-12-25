@@ -138,6 +138,50 @@ function renderCount() {
 	}, '');
 }
 
+function renderInfo(errors = [], page = 'edit') {
+	const info = [
+		{
+			type: 'warn',
+			title: 'fields',
+			message: 'Предупреждение! Не все поля заполненны.'
+		},
+		{
+			type: 'error',
+			title: 'name',
+			message: 'Ошибка! Имя содержит недопустимые символы. Разрешены: кириллические буквы, дефис, точка, апостроф.'
+		},
+		{
+			type: 'error',
+			title: 'post',
+			message: 'Ошибка! Должность содержит недопустимые символы. Разрешены: кириллические буквы, цифры, дефис, точка, апостроф.'
+		},
+		{
+			type: 'error',
+			title: 'image',
+			message: 'Ошибка! Не правильный формат изображение. Допустимы: giff, png, jpg, jpeg.'
+		},
+		{
+			type: 'error',
+			title: 'short',
+			message: 'Ошибка! ФИО должно состоять хотя бы из двух слов.'
+		}
+	];
+
+	$(`.container--${page} .info`).html('');
+	info.forEach((item) => {
+		const { type, title, message } = item;
+
+		errors.forEach((error) => {
+			if (error === title) {
+				$(`.container--${page} .info`).append(`
+					<p class="info__item info__item--${type}">${message}</p>
+				`);
+			}
+		});
+	});
+}
+
+
 function render(page = 'edit') {
 	$(`.container--${page} .wrap--content`).html('');
 	$(`.container--${page} .wrap--content`).append(`
@@ -156,7 +200,7 @@ function render(page = 'edit') {
 	editUser();
 }
 
-function addUser(page = 'edit') {
+function addUser() {
 	$('#editUser').click(() => {
 		if (editObject.statusid !== 'changeFIO') {
 			delete editObject.newfio;
@@ -175,32 +219,26 @@ function addUser(page = 'edit') {
 		delete editObject.statusnewphotofile;
 
 		const validFields = Object.values(editObject).every((item) => item);
-		const statusMess = !validFields ? 'show' : 'hide';
-		let correctName = 'hide';
-		let correctPost = 'hide';
-		let countNameWords = 'hide';
+		const errorsArr = [];
+
+		if (!validFields) errorsArr.push('fields');
 
 		for (let key in editObject) {
 			if (key === 'newfio' && editObject[key]) {
 				const countWords = editObject[key].trim().split(' ');
 
-				correctName = editObject[key].match(/[^а-яА-ЯiIъїЁё.'-\s]/g) ? 'show' : 'hide';
-				countNameWords = countWords.length < 2 ? 'show' : 'hide';
+				if (editObject[key].match(/[^а-яА-ЯiIъїЁё.'-\s]/g)) errorsArr.push('name');
+				if (countWords.length < 2) errorsArr.push('short');
 			} else if (key === 'newpost' && editObject[key]) {
-				correctPost = editObject[key].match(/[^а-яА-ЯiIъїЁё0-9.'-\s]/g) ? 'show' : 'hide';
+				if (editObject[key].match(/[^а-яА-ЯiIъїЁё0-9.'-\s]/g)) errorsArr.push('post');
 			}
 		}
 
-		const valid = [statusMess, correctName, countNameWords, correctPost].every((mess) => mess === 'hide');
-
-		$(`.main[data-name=${page}]`).find('.info__item--warn.info__item--fields')[statusMess]();
-		$(`.main[data-name=${page}]`).find('.info__item--error.info__item--name')[correctName]();
-		$(`.main[data-name=${page}]`).find('.info__item--error.info__item--post')[correctPost]();
-		$(`.main[data-name=${page}]`).find('.info__item--error.info__item--short')[countNameWords]();
-
-		if (valid) {
+		if (!errorsArr.length) {
 			userFromForm();
 			clearFieldsForm();
+		} else {
+			renderInfo(errorsArr);
 		}
 	});
 }
@@ -404,7 +442,7 @@ function downloadFoto(nameForm = '#editForm', page = 'edit') {
 		const validPhotoName = validPhotoExtention(photoName);
 
 		if (!validPhotoName) {
-			$(`.main[data-name=${page}]`).find('.info__item--error.info__item--image').show();
+			renderInfo(['image']);
 
 			return;
 		}
