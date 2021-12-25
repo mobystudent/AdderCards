@@ -1,7 +1,8 @@
 'use strict';
 
-export const form = (data) => {
+export const form = (data, selects) => {
 	const { fio = '', statusid = '', newpost = '', newfio = '', statustitle = '', photofile = '', newphotourl = '' } = data;
+	const { changeList = '' } = selects;
 	const fioValue = fio ? fio : 'Выберите пользователя';
 	const fioClassView = fio ? 'select__value--selected-form' : '';
 	const changeValue = statustitle ? statustitle : 'Выберите тип изменения';
@@ -61,21 +62,7 @@ export const form = (data) => {
 						<span class="select__value select__value--form ${changeClassView}" data-title="${changeValue}" data-change="${statusid}">${changeValue}</span>
 					</header>
 					<ul class="select__list select__list--form">
-						<li class="select__item">
-							<span class="select__name select__name--form" data-title="Утеря пластиковой карты" data-change="changeCard">Утеря пластиковой карты</span>
-						</li>
-						<li class="select__item">
-							<span class="select__name select__name--form" data-title="Утеря QR-кода" data-change="changeQR">Утеря QR-кода</span>
-						</li>
-						<li class="select__item">
-							<span class="select__name select__name--form" data-title="Изменение ФИО" data-change="changeFIO">Изменение ФИО</span>
-						</li>
-						<li class="select__item">
-							<span class="select__name select__name--form" data-title="Изменение должности" data-change="changePost">Изменение должности</span>
-						</li>
-						<li class="select__item">
-							<span class="select__name select__name--form" data-title="Изменение фото" data-change="changeImage">Изменение фото</span>
-						</li>
+						${changeList}
 					</ul>
 				</div>
 			</div>

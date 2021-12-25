@@ -49,9 +49,6 @@ let counter = 0;
 $(window).on('load', () => {
 	renderHeaderPage();
 	submitIDinBD();
-	toggleSelect();
-	getAddUsersInDB();
-	addUser();
 	showDataFromStorage();
 });
 
@@ -72,14 +69,65 @@ function renderTable() {
 	}
 }
 
+function renderSelect(array) {
+	return array.reduce((content, item) => {
+		const { title, type, typevalue } = item;
+
+		content += `
+			<li class="select__item">
+				<span class="select__name select__name--form" data-title="${title}" data-${type}="${typevalue}">${title}</span>
+			</li>
+		`;
+
+		return content;
+	}, '');
+}
+
 function renderForm(nameForm = '#editForm') {
-	$(`${nameForm} .form__wrap`).html('');
-	$(`${nameForm} .form__wrap`).append(form(editObject));
+	const changeList = [
+		{
+			title: 'Утеря пластиковой карты',
+			type: 'change',
+			typevalue: 'changeCard'
+		},
+		{
+			title: 'Утеря QR-кода',
+			type: 'change',
+			typevalue: 'changeQR'
+		},
+		{
+			title: 'Изменение ФИО',
+			type: 'change',
+			typevalue: 'changeFIO'
+		},
+		{
+			title: 'Изменение должности',
+			type: 'change',
+			typevalue: 'changePost'
+		},
+		{
+			title: 'Изменение фото',
+			type: 'change',
+			typevalue: 'changeImage'
+		}
+	];
+	const selectList = {
+		changeList: renderSelect(changeList)
+	};
+
+	$(`${nameForm}`).html('');
+	$(`${nameForm}`).append(`
+		<div class="form__wrap form__wrap--user">${form(editObject, selectList)}</div>
+		<div class="main__btns">
+			<button class="btn" id="editUser" type="button" data-type="edit-user">Редактировать</button>
+		</div>
+	`);
 
 	toggleSelect();
 	getAddUsersInDB();
 	downloadFoto();
 	memberInputField();
+	addUser();
 }
 
 function renderCount() {
@@ -190,6 +238,7 @@ function userFromForm() {
 
 function dataAdd() {
 	showFieldsInHeaderTable();
+	renderForm();
 	render();
 }
 
