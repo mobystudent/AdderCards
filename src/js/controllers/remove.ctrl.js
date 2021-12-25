@@ -127,6 +127,29 @@ function renderForm(nameForm = '#removeForm') {
 	addUser();
 }
 
+function renderInfo(errors = [], page = 'remove') {
+	const info = [
+		{
+			type: 'warn',
+			title: 'fields',
+			message: 'Предупреждение! Не все поля заполненны.'
+		}
+	];
+
+	$(`.container--${page} .info`).html('');
+	info.forEach((item) => {
+		const { type, title, message } = item;
+
+		errors.forEach((error) => {
+			if (error === title) {
+				$(`.container--${page} .info`).append(`
+					<p class="info__item info__item--${type}">${message}</p>
+				`);
+			}
+		});
+	});
+}
+
 function render(page = 'remove') {
 	$(`.container--${page} .wrap--content`).html('');
 	$(`.container--${page} .wrap--content`).append(`
@@ -145,7 +168,7 @@ function render(page = 'remove') {
 	editUser();
 }
 
-function addUser(page = 'remove') {
+function addUser() {
 	$('#removeUser').click(() => {
 		if (removeObject.cardvalidto) {
 			delete removeObject.newnameid;
@@ -157,14 +180,16 @@ function addUser(page = 'remove') {
 		delete removeObject.statusnewdepart;
 		delete removeObject.statuscardvalidto;
 
-		const valid = Object.values(removeObject).every((item) => item);
-		const statusMess = !valid ? 'show' : 'hide';
+		const validFields = Object.values(removeObject).every((item) => item);
+		const errorsArr = [];
 
-		$(`.main[data-name=${page}]`).find('.info__item--warn.info__item--fields')[statusMess]();
+		if (!validFields) errorsArr.push('fields');
 
-		if (valid) {
+		if (!errorsArr.length) {
 			userFromForm();
 			clearFieldsForm();
+		} else {
+			renderInfo(errorsArr);
 		}
 	});
 }

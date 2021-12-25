@@ -432,7 +432,7 @@ function memberInputField() {
 	});
 }
 
-function downloadFoto(nameForm = '#editForm', page = 'edit') {
+function downloadFoto(nameForm = '#editForm') {
 	$(`${nameForm} .form__item--file`).change(({ target }) => {
 		const fileNameUrl = $(target).val();
 		const indexLastSlash = fileNameUrl.lastIndexOf('\\');
