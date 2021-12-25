@@ -122,6 +122,29 @@ function renderCount() {
 	}, '');
 }
 
+function renderInfo(errors = [], page = 'permis') {
+	const info = [
+		{
+			type: 'warn',
+			title: 'fields',
+			message: 'Предупреждение! Не все пользователи выбраны.'
+		}
+	];
+
+	$(`.container--${page} .info`).html('');
+	info.forEach((item) => {
+		const { type, title, message } = item;
+
+		errors.forEach((error) => {
+			if (error === title) {
+				$(`.container--${page} .info`).append(`
+					<p class="info__item info__item--${type}">${message}</p>
+				`);
+			}
+		});
+	});
+}
+
 function render(page = 'permis') {
 	$(`.container--${page} .wrap--content`).html('');
 	$(`.container--${page} .wrap--content`).append(`
@@ -238,7 +261,7 @@ function submitIDinBD(page = 'permis') {
 			const allowItems = filterDepartCollection.filter(({ statuspermis }) => statuspermis === 'allow');
 			const disallowItems = filterDepartCollection.filter(({ statuspermis }) => statuspermis === 'disallow');
 
-			$('.info__item--warn').hide();
+			renderInfo();
 
 			if (allowItems.length) {
 				delegationID(allowItems);
@@ -271,7 +294,7 @@ function submitIDinBD(page = 'permis') {
 
 			localStorage.removeItem(page);
 		} else {
-			$('.info__item--warn').show();
+			renderInfo('fields');
 		}
 	});
 }
