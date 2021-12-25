@@ -155,6 +155,49 @@ function renderCount() {
 	}, '');
 }
 
+function renderInfo(errors = [], page = 'add') {
+	const info = [
+		{
+			type: 'warn',
+			title: 'fields',
+			message: 'Предупреждение! Не все поля заполненны.'
+		},
+		{
+			type: 'warn',
+			title: 'have',
+			message: 'Предупреждение! Пользователь с таким именем уже добавлен!'
+		},
+		{
+			type: 'error',
+			title: 'name',
+			message: 'Ошибка! Имя содержит недопустимые символы. Разрешены: кириллические буквы, дефис, точка, апостроф.'
+		},
+		{
+			type: 'error',
+			title: 'image',
+			message: 'Ошибка! Не правильный формат изображение. Допустимы: giff, png, jpg, jpeg.'
+		},
+		{
+			type: 'error',
+			title: 'short',
+			message: 'Ошибка! ФИО должно состоять хотя бы из двух слов.'
+		},
+	];
+
+	$(`.container--${page} .info`).html('');
+	info.forEach((item) => {
+		const { type, title, message } = item;
+
+		errors.forEach((error) => {
+			if (error === title) {
+				$(`.container--${page} .info`).append(`
+					<p class="info__item info__item--${type}">${message}</p>
+				`);
+			}
+		});
+	});
+}
+
 function render(page = 'add') {
 	$(`.container--${page} .wrap--content`).html('');
 	$(`.container--${page} .wrap--content`).append(`
@@ -197,39 +240,35 @@ function addUser(page = 'add') {
 		delete addObject.statuscardvalidto;
 
 		const validFields = Object.values(addObject).every((item) => item);
-		const statusMess = !validFields ? 'show' : 'hide';
-		let correctName = 'hide';
-		let countNameWords = 'hide';
+		const errorsArr = [];
+
+		if (!validFields) errorsArr.push('fields');
 
 		for (let key in addObject) {
 			if (key === 'fio' && addObject[key]) {
 				const countWords = addObject[key].trim().split(' ');
 
-				correctName = addObject[key].match(/[^а-яА-ЯiIъїЁё.'-\s]/g) ? 'show' : 'hide';
-				countNameWords = countWords.length < 2 ? 'show' : 'hide';
+				if (addObject[key].match(/[^а-яА-ЯiIъїЁё.'-\s]/g)) errorsArr.push('name');
+				if (countWords.length < 2) errorsArr.push('short');
 			}
 		}
 
-		const valid = [statusMess, correctName, countNameWords].every((mess) => mess === 'hide');
-
-		$(`.main[data-name=${page}]`).find('.info__item--warn.info__item--fields')[statusMess]();
-		$(`.main[data-name=${page}]`).find('.info__item--error.info__item--name')[correctName]();
-		$(`.main[data-name=${page}]`).find('.info__item--error.info__item--short')[countNameWords]();
-
-		if (valid) {
+		if (!errorsArr.length) {
 			checkContainsUser();
+		} else {
+			renderInfo(errorsArr);
 		}
 	});
 }
 
-function checkContainsUser(page = 'add') {
+function checkContainsUser() {
 	const uniqueName = [...addCollection.values()].every(({ fio }) => fio !== addObject.fio);
 	const containsName = [...dbUserNamesCollection.values()].every(({ fio }) => fio !== addObject.fio);
 
 	if (uniqueName) {
-		$(`.main[data-name=${page}]`).find('.info__item--warn.info__item--have').hide();
+		renderInfo();
 	} else {
-		$(`.main[data-name=${page}]`).find('.info__item--warn.info__item--have').show();
+		renderInfo(['have']);
 
 		return;
 	}
@@ -405,7 +444,7 @@ function datepicker() {
 	});
 }
 
-function downloadFoto(nameForm = '#addForm', page = 'add') {
+function downloadFoto(nameForm = '#addForm') {
 	$(`${nameForm} .form__item--file`).change(({ target }) => {
 		const fileNameUrl = $(target).val();
 		const indexLastSlash = fileNameUrl.lastIndexOf('\\');
@@ -415,7 +454,7 @@ function downloadFoto(nameForm = '#addForm', page = 'add') {
 		const validPhotoName = validPhotoExtention(photoName);
 
 		if (!validPhotoName) {
-			$(`.main[data-name=${page}]`).find('.info__item--error.info__item--image').show();
+			renderInfo(['image']);
 
 			return;
 		}
