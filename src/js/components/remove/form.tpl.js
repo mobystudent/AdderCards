@@ -1,10 +1,11 @@
 'use strict';
 
-export const form = (data) => {
+export const form = (data, selects) => {
 	const { fio = '', statusid = '', newdepart = '', newnameid = '', statustitle = '', cardvalidto = '', photofile = '' } = data;
+	const { reasonList = '' } = selects;
 	const fioValue = fio ? fio : 'Выберите пользователя';
 	const fioClassView = fio ? 'select__value--selected-form' : '';
-	const reasonValue = statustitle ? statustitle : 'Выберите причину удаления';
+	const reasonValue = statustitle ? statustitle : 'Выберите причину удаления/отчисления';
 	const reasonClassView = statustitle ? 'select__value--selected-form' : '';
 	const photoUrl = photofile ? photofile : './images/avatar.svg';
 	const newdepartValue = newdepart ? newdepart : 'Выберите подразделение';
@@ -47,12 +48,7 @@ export const form = (data) => {
 						<span class="select__value select__value--form ${reasonClassView}" data-title="${reasonValue}" data-reason="${statusid}">${reasonValue}</span>
 					</header>
 					<ul class="select__list select__list--form">
-						<li class="select__item">
-							<span class="select__name select__name--form" data-title="Перевод в другое подразделение" data-reason="changeDepart">Перевод в другое подразделение</span>
-						</li>
-						<li class="select__item">
-							<span class="select__name select__name--form" data-title="Увольнение/отчисление" data-reason="remove">Увольнение/отчисление</span>
-						</li>
+						${reasonList}
 					</ul>
 				</div>
 			</div>

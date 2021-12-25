@@ -52,10 +52,7 @@ let counter = 0;
 $(window).on('load', () => {
 	renderHeaderPage();
 	submitIDinBD();
-	toggleSelect();
 	getDepartmentFromDB();
-	getAddUsersInDB();
-	addUser();
 	showDataFromStorage();
 });
 
@@ -84,14 +81,50 @@ function renderCount() {
 	}, '');
 }
 
+function renderSelect(array) {
+	return array.reduce((content, item) => {
+		const { title, type, typevalue } = item;
+
+		content += `
+			<li class="select__item">
+				<span class="select__name select__name--form" data-title="${title}" data-${type}="${typevalue}">${title}</span>
+			</li>
+		`;
+
+		return content;
+	}, '');
+}
+
 function renderForm(nameForm = '#removeForm') {
-	$(`${nameForm} .form__wrap`).html('');
-	$(`${nameForm} .form__wrap`).append(form(removeObject));
+	const reasonList = [
+		{
+			title: 'Перевод в другое подразделение',
+			type: 'reason',
+			typevalue: 'changeDepart'
+		},
+		{
+			title: 'Увольнение/отчисление',
+			type: 'reason',
+			typevalue: 'remove'
+		}
+	];
+	const selectList = {
+		reasonList: renderSelect(reasonList)
+	};
+
+	$(`${nameForm}`).html('');
+	$(`${nameForm}`).append(`
+		<div class="form__wrap form__wrap--user">${form(removeObject, selectList)}</div>
+		<div class="main__btns">
+			<button class="btn" id="removeUser" type="button" data-type="remove-user">Удалить</button>
+		</div>
+	`);
 
 	toggleSelect(); // 3
 	getAddUsersInDB(); // вывести всех пользователей в селект 1
 	datepicker();
 	setDepartInSelect(); // 2
+	addUser();
 }
 
 function render(page = 'remove') {
@@ -167,6 +200,7 @@ function userFromForm() {
 
 function dataAdd() {
 	showFieldsInHeaderTable();
+	renderForm();
 	render();
 }
 
