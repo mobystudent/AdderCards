@@ -1,7 +1,8 @@
 'use strict';
 
-export const form = (data) => {
+export const form = (data, selects) => {
 	const { fio = '', photourl = '', post = '', statusid = '', statustitle = '', cardvalidtotitle = '', cardvalidtoid = '', cardvalidto = '' } = data;
+	const { cardvalidtoList = '', typeList = '' } = selects;
 	const typeValue = statustitle ? statustitle : 'Выберите тип идентификатора';
 	const typeClassView = statustitle ? 'select__value--selected-form' : '';
 	const cardvalidtoValue = cardvalidtotitle ? cardvalidtotitle : 'Выберите окончание действия пропуска';
@@ -37,12 +38,7 @@ export const form = (data) => {
 						<span class="select__value select__value--form ${typeClassView}" data-title="${typeValue}" data-type="${statusid}">${typeValue}</span>
 					</header>
 					<ul class="select__list select__list--form">
-						<li class="select__item">
-							<span class="select__name select__name--form" data-title="Новая карта" data-type="newCard">Новая карта</span>
-						</li>
-						<li class="select__item">
-							<span class="select__name select__name--form" data-title="Новый QR-код" data-type="newQR">Новый QR-код</span>
-						</li>
+						${typeList}
 					</ul>
 				</div>
 			</div>
@@ -53,12 +49,7 @@ export const form = (data) => {
 						<span class="select__value select__value--form ${cardvalidtoClassView}" data-title="${cardvalidtoValue}" data-cardvalidto="${cardvalidtoid}">${cardvalidtoValue}</span>
 					</header>
 					<ul class="select__list select__list--form">
-						<li class="select__item">
-							<span class="select__name select__name--form" data-title="Ввести дату" data-cardvalidto="date">Ввести дату</span>
-						</li>
-						<li class="select__item">
-							<span class="select__name select__name--form" data-title="Безвременно" data-cardvalidto="infinite">Безвременно</span>
-						</li>
+						${cardvalidtoList}
 					</ul>
 				</div>
 			</div>

@@ -6,65 +6,6 @@ main.main(data-name="add")
 			span.main__depart.main__depart--add(data-depart="" data-id="")
 		
 		form.form.form--page#addForm(action="#" method="GET")
-			.form__wrap.form__wrap--user
-				.form__fields
-					.form__field
-						label.form__label
-							span.form__name.form__name--form
-								| Фамилия Имя Отчество
-							input.form__item.form__item--form(data-field="fio" name="fio" type="text" placeholder="Введите ФИО" required)
-					.form__field
-						label.form__label
-							span.form__name.form__name--form
-								| Должность
-							input.form__item.form__item--form(data-field="post" name="post" type="text" placeholder="Введите должность" required)
-					.form__field
-						span.form__name.form__name--form
-							| Тип идентификатора
-						.form__select.select.select--form(data-field="statustitle" data-type="statusid" data-select="type")
-							header.select__header.select__header--form
-								span.select__value.select__value--form(data-title="title" data-type="type")
-									| Выберите тип идентификатора
-							ul.select__list.select__list--form
-								li.select__item
-									span.select__name.select__name--form(data-title="Пластиковая карта" data-type="newCard")
-										| Пластиковая карта
-								li.select__item
-									span.select__name.select__name--form(data-title="QR-код" data-type="newQR")
-										| QR-код
-					.form__field
-						span.form__name.form__name--form
-							| Окончание действия пропуска
-						.form__select.select.select--form(data-field="cardvalidtotitle" data-type="statusсardvalidto" data-select="сardvalidto")
-							header.select__header.select__header--form
-								span.select__value.select__value--form(data-title="title" data-сardvalidto="сardvalidto")
-									| Выберите окончание действия пропуска
-							ul.select__list.select__list--form
-								li.select__item
-									span.select__name.select__name--form(data-title="Ввести дату" data-сardvalidto="date")
-										| Ввести дату
-								li.select__item
-									span.select__name.select__name--form(data-title="Безвременно" data-сardvalidto="infinite")
-										| Безвременно
-					//- .form__field.form__field--сardvalidto
-						label.form__label
-							span.form__name.form__name--form
-								| Дата окончания
-							input.form__item.form__item--form#addDatepicker(data-field="date" name="date" type="text" placeholder="Введите дату" readonly="readonly" required)
-				.form__aside
-					.form__img
-						img.img.img--form(src="./images/avatar.svg" alt="user avatar")
-					.form__field
-						input.form__item.form__item--file#addFile(name="photoname" type="file" required)
-						label.form__download(for="addFile")
-							svg.icon.icon--download
-								use(xlink:href="./images/sprite.svg#download")
-							span.form__title.form__title--page
-								| Загрузить фото
-									
-			.main__btns
-				button.btn#addUser(type="button" data-type="add-user")
-					| Добавить
 				
 		.info.info--page
 			p.info__item.info__item--warn.info__item--fields

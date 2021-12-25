@@ -52,10 +52,6 @@ let counter = 0;
 $(window).on('load', () => {
 	renderHeaderPage(); // 1
 	submitIDinBD(); // 1
-	toggleSelect(); // 1
-	downloadFoto(); // 1
-	memberInputField(); // 1
-	addUser(); // 2 без загрузки фото и загрузки селектов не пройдет валидация в addUser
 	showDataFromStorage(); // 1
 	getUserNamesFromDB();
 });
@@ -77,14 +73,63 @@ function renderTable() {
 	}
 }
 
+function renderSelect(array) {
+	return array.reduce((content, item) => {
+		const { title, type, typevalue } = item;
+
+		content += `
+			<li class="select__item">
+				<span class="select__name select__name--form" data-title="${title}" data-${type}="${typevalue}">${title}</span>
+			</li>
+		`;
+
+		return content;
+	}, '');
+}
+
 function renderForm(nameForm = '#addForm') {
-	$(`${nameForm} .form__wrap`).html('');
-	$(`${nameForm} .form__wrap`).append(form(addObject));
+	const cardvalidtoList = [
+		{
+			title: 'Ввести дату',
+			type: 'cardvalidto',
+			typevalue: 'date'
+		},
+		{
+			title: 'Безвременно',
+			type: 'cardvalidto',
+			typevalue: 'infinite'
+		}
+	];
+	const typeList = [
+		{
+			title: 'Новая карта',
+			type: 'type',
+			typevalue: 'newCard'
+		},
+		{
+			title: 'Новый QR-код',
+			type: 'type',
+			typevalue: 'newQR'
+		}
+	];
+	const selectList = {
+		cardvalidtoList: renderSelect(cardvalidtoList),
+		typeList: renderSelect(typeList)
+	};
+
+	$(`${nameForm}`).html('');
+	$(`${nameForm}`).append(`
+		<div class="form__wrap form__wrap--user">${form(addObject, selectList)}</div>
+		<div class="main__btns">
+			<button class="btn" id="addUser" type="button" data-type="add-user">Добавить</button>
+		</div>
+	`);
 
 	toggleSelect();
 	datepicker();
 	downloadFoto();
 	memberInputField();
+	addUser(); // 2 без загрузки фото и загрузки селектов не пройдет валидация в addUser
 }
 
 function renderModalContainsUser() {
@@ -234,6 +279,7 @@ function userFromForm() {
 
 function dataAdd() {
 	showFieldsInHeaderTable();
+	renderForm();
 	render();
 }
 
