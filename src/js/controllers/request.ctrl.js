@@ -122,6 +122,29 @@ function renderCount() {
 	}, '');
 }
 
+function renderInfo(errors = [], page = 'request') {
+	const info = [
+		{
+			type: 'warn',
+			title: 'fields',
+			message: 'Предупреждение! Не все пользователи выбраны.'
+		}
+	];
+
+	$(`.container--${page} .info`).html('');
+	info.forEach((item) => {
+		const { type, title, message } = item;
+
+		errors.forEach((error) => {
+			if (error === title) {
+				$(`.container--${page} .info`).append(`
+					<p class="info__item info__item--${type}">${message}</p>
+				`);
+			}
+		});
+	});
+}
+
 function render(page = 'request') {
 	$(`.container--${page} .wrap--content`).html('');
 	$(`.container--${page} .wrap--content`).append(`
@@ -234,7 +257,7 @@ function submitIDinBD(page = 'request') {
 			const allowItems = filterDepartCollection.filter(({ statusrequest }) => statusrequest === 'allow');
 			const disallowItems = filterDepartCollection.filter(({ statusrequest }) => statusrequest === 'disallow');
 
-			$('.info__item--warn').hide();
+			renderInfo();
 
 			if (allowItems.length) {
 				// Запрос в Uprox
@@ -269,7 +292,7 @@ function submitIDinBD(page = 'request') {
 
 			localStorage.removeItem(page);
 		} else {
-			$('.info__item--warn').show();
+			renderInfo(['fields']);
 		}
 	});
 }

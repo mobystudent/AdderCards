@@ -294,7 +294,7 @@ function submitIDinBD(page = 'permis') {
 
 			localStorage.removeItem(page);
 		} else {
-			renderInfo('fields');
+			renderInfo(['fields']);
 		}
 	});
 }

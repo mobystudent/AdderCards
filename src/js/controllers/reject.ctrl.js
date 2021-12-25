@@ -249,7 +249,7 @@ function submitIDinBD(page = 'reject') {
 			dataAdd();
 			localStorage.removeItem(page);
 		} else {
-			renderInfo('fields');
+			renderInfo(['fields']);
 		}
 	});
 }
