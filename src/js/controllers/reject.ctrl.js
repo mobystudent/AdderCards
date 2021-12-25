@@ -63,14 +63,22 @@ function renderTable() {
 	}
 }
 
-function renderForm(id, nameForm = '#rejectForm') {
-	$(`${nameForm} .form__wrap`).html('');
-
-	rejectCollection.forEach((item) => {
+function renderForm(id = '', nameForm = '#rejectForm') {
+	const formUser = [...rejectCollection.values()].find((item) => {
 		if (+item.id === id) {
-			$(`${nameForm} .form__wrap`).append(form(item));
+			return form(item);
 		}
 	});
+
+	$(`${nameForm}`).html('');
+
+	if (id) {
+		$(`${nameForm}`).append(`
+			<div class="form__wrap form__wrap--user">${form(formUser)}</div>
+		`);
+
+		closeRejectForm();
+	}
 }
 
 function renderSwitch() {
@@ -227,12 +235,10 @@ function clearObject() {
 	rejectObject.statusresend = '';
 }
 
-function viewDataUser(page = 'reject', nameForm = '#rejectForm') {
+function viewDataUser(page = 'reject') {
 	$(`.container--${page} .table__body`).click(({ target }) => {
 		if ($(target).parents('.table__btn--view').length || $(target).hasClass('table__btn--view')) {
 			const userID = $(target).parents('.table__row').data('id');
-
-			$(`${nameForm} .form__wrap`).removeClass('form__wrap--hide');
 
 			renderForm(userID);
 			Scrollbar.init($('.form__item--message').get(0));
@@ -285,6 +291,12 @@ function resendAllUsers(page = 'reject') {
 		}
 
 		render();
+	});
+}
+
+function closeRejectForm() {
+	$('#closeRejectForm').click(() => {
+		renderForm();
 	});
 }
 

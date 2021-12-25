@@ -31,5 +31,10 @@ export const form = (data) => {
 			<span class="form__name form__name--form">Причина отклонения</span>
 			<p class="form__item form__item--static form__item--message" data-field="reason">Не привлекательная внешность.</p>
 		</div>
+		<button class="form__btn-cancel" id="closeRejectForm" type="button">
+			<svg class="icon icon--delete icon--delete-white">
+				<use class="icon__item" xlink:href="./images/sprite.svg#delete"></use>
+			</svg>
+		</button>
 	`;
 };

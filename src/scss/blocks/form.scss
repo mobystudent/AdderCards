@@ -35,16 +35,13 @@
 			grid-template-rows: auto;
 			grid-auto-rows: 200px;
 			grid-gap: 20px;
+			position: relative;
 			margin-bottom: 30px;
 		}
 
 		&--filter {
 			display: flex;
 			align-items: flex-end;
-		}
-
-		&--hide {
-			display: none;
 		}
 	}
 
@@ -214,5 +211,13 @@
 		display: flex;
 		flex-flow: column;
 		grid-area: 2 / span 2;
+	}
+
+	&__btn-cancel {
+		display: flex;
+		position: absolute;
+		top: 0;
+		right: -20px;
+		padding: 5px;
 	}
 }
