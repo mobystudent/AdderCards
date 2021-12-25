@@ -70,6 +70,54 @@ function renderCount() {
 	}, '');
 }
 
+function renderInfo(errors = [], page = 'download') {
+	const info = [
+		{
+			type: 'warn',
+			title: 'have',
+			message: 'Предупреждение! QR-код с такими данными уже сгенерирован!'
+		},
+		{
+			type: 'warn',
+			title: 'contains',
+			message: 'Предупреждение! QR-код с такими данными был присвоена ранее!'
+		},
+		{
+			type: 'error',
+			title: 'codepicture',
+			message: 'Ошибка! Не верно введена строка с кодом для QR изображения. <br> Должен быть код для QR изображения. Например: N-9533263293161909169-16909647123891645267'
+		},
+		{
+			type: 'error',
+			title: 'cardid',
+			message: 'Ошибка! Не верно введена строка с кодом для QR ID. <br> Код из 10 цифр и букв. Например: 31788A8476'
+		},
+		{
+			type: 'error',
+			title: 'cardname',
+			message: 'Ошибка! Не верно введена строка с кодом для QR name. <br> Код из 16 цифр и букв. Например: E3918631788A8476'
+		},
+		{
+			type: 'error',
+			title: 'missed',
+			message: 'Ошибка! Пропущена одна из трех обязательных частей qr-кода, для конвертирования.'
+		}
+	];
+
+	$(`.container--${page} .info`).html('');
+	info.forEach((item) => {
+		const { type, title, message } = item;
+
+		errors.forEach((error) => {
+			if (error === title) {
+				$(`.container--${page} .info`).append(`
+					<p class="info__item info__item--${type}">${message}</p>
+				`);
+			}
+		});
+	});
+}
+
 function render(page = 'download') {
 	$(`.container--${page} .wrap--content-download`).html('');
 	$(`.container--${page} .wrap--content-download`).append(`
@@ -100,33 +148,30 @@ function countQRCodes(nameForm = '#downloadForm') {
 	});
 }
 
-function addQRCodesInTable(page = 'download') {
+function addQRCodesInTable() {
 	$('#addQRCodes').click(() => {
 		const correctCount = [...parseQRCollection.values()].every((code) => code.length >= 3);
 		const correctCodePicture = [...parseQRCollection.values()].every((code) => code.find((elem) => elem.includes('N-') && elem.length === 42));
 		const correctIDQR = [...parseQRCollection.values()].every((code) => code.find((elem) => elem.length === 10));
 		const correctNameQR = [...parseQRCollection.values()].every((code) => code.find((elem) => elem.length === 16));
-		const statusCount = !correctCount ? 'show' : 'hide';
-		const statusCodePicture = !correctCodePicture ? 'show' : 'hide';
-		const statusIDQR = !correctIDQR ? 'show' : 'hide';
-		const statusNameQR = !correctNameQR ? 'show' : 'hide';
+		const errorsArr = [];
 
-		const valid = [statusCount, statusCodePicture, statusIDQR, statusNameQR].every((mess) => mess === 'hide');
+		if (!correctCount) errorsArr.push('missed');
+		if (!correctCodePicture) errorsArr.push('codepicture');
+		if (!correctIDQR) errorsArr.push('cardid');
+		if (!correctNameQR) errorsArr.push('cardname');
 
-		$(`.main[data-name=${page}]`).find('.info__item--error.info__item--missed')[statusCount]();
-		$(`.main[data-name=${page}]`).find('.info__item--error.info__item--codepicture')[statusCodePicture]();
-		$(`.main[data-name=${page}]`).find('.info__item--error.info__item--cardid')[statusIDQR]();
-		$(`.main[data-name=${page}]`).find('.info__item--error.info__item--cardname')[statusNameQR]();
-
-		if (valid) {
+		if (!errorsArr.length) {
 			getQRCodesFromDB();
 			codeFromForm();
 			clearFieldsForm();
+		} else {
+			renderInfo(errorsArr);
 		}
 	});
 }
 
-function codeFromForm(page = 'download') {
+function codeFromForm() {
 	parseQRCollection.forEach((elem) => {
 		const codePicture = elem.find((obj) => obj.includes('N-') && obj.length === 42);
 		const idQR = elem.find((obj) => obj.length === 10);
@@ -135,12 +180,14 @@ function codeFromForm(page = 'download') {
 		const containsCode = [...dbQRCodesCollection.values()].some(({ cardid }) => idQR === cardid);
 
 		if (uniqueCode) {
-			$(`.main[data-name=${page}]`).find('.info__item--warn.info__item--have').show();
+			renderInfo(['have']);
+
 			return;
 		}
 
 		if (containsCode) {
-			$(`.main[data-name=${page}]`).find('.info__item--warn.info__item--contains').show();
+			renderInfo(['contains']);
+
 			return;
 		}
 
@@ -205,13 +252,12 @@ function deleteUser(page = 'download') {
 	});
 }
 
-function clearFieldsForm(nameForm = '#downloadForm', page = 'download') {
+function clearFieldsForm(nameForm = '#downloadForm') {
 	$(`${nameForm} .form__item--textarea`).val('');
 	parseQRCollection.clear();
 
 	setTimeout(() => {
-		$(`.main[data-name=${page}]`).find('.info__item--warn.info__item--have').hide();
-		$(`.main[data-name=${page}]`).find('.info__item--warn.info__item--contains').hide();
+		renderInfo();
 	}, 5000);
 
 	renderCountParse();
