@@ -111,6 +111,29 @@ function renderCount() {
 	}, '');
 }
 
+function renderInfo(errors = [], page = 'reject') {
+	const info = [
+		{
+			type: 'warn',
+			title: 'fields',
+			message: 'Предупреждение! Ни один пользователь не выбран.'
+		}
+	];
+
+	$(`.container--${page} .info`).html('');
+	info.forEach((item) => {
+		const { type, title, message } = item;
+
+		errors.forEach((error) => {
+			if (error === title) {
+				$(`.container--${page} .info`).append(`
+					<p class="info__item info__item--${type}">${message}</p>
+				`);
+			}
+		});
+	});
+}
+
 function render(page = 'reject') {
 	$(`.container--${page} .wrap--content`).html('');
 	$(`.container--${page} .wrap--content`).append(`
@@ -204,7 +227,7 @@ function submitIDinBD(page = 'reject') {
 		if (checkedItems) {
 			const resendItems = [...rejectCollection.values()].filter(({ statususer }) => statususer);
 
-			$('.info__item--warn').hide();
+			renderInfo();
 
 			resendItems.forEach((elem) => {
 				elem.nameid = settingsObject.nameid;
@@ -226,7 +249,7 @@ function submitIDinBD(page = 'reject') {
 			dataAdd();
 			localStorage.removeItem(page);
 		} else {
-			$('.info__item--warn').show();
+			renderInfo('fields');
 		}
 	});
 }
