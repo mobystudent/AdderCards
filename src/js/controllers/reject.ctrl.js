@@ -16,7 +16,9 @@ import { pageTitle } from '../components/page-title.tpl.js';
 const rejectCollection = new Map(); // БД отклоненных пользователей
 const rejectObject = {
 	page: 'Отклоненные пользователи',
+	id: '',
 	statusresend: '',
+	info: [],
 	get nameid() {
 		return settingsObject.nameid;
 	},
@@ -41,15 +43,8 @@ const rejectCount = {
 };
 
 $(window).on('load', () => {
-	renderHeaderPage();
-	submitIDinBD();
 	showDataFromStorage();
 });
-
-function renderHeaderPage(page = 'reject') {
-	$(`.main[data-name=${page}] .main__title-wrap`).html('');
-	$(`.main[data-name=${page}] .container`).prepend(pageTitle(rejectObject));
-}
 
 function renderTable() {
 	if (!rejectCollection.size) {
@@ -63,21 +58,17 @@ function renderTable() {
 	}
 }
 
-function renderForm(id = '', nameForm = '#rejectForm') {
-	const formUser = [...rejectCollection.values()].find((item) => {
-		if (+item.id === id) {
-			return form(item);
-		}
-	});
-
-	$(`${nameForm}`).html('');
+function renderForm() {
+	const { id } = rejectObject;
 
 	if (id) {
-		$(`${nameForm}`).append(`
-			<div class="form__wrap form__wrap--user">${form(formUser)}</div>
-		`);
-
-		closeRejectForm();
+		for (const item of rejectCollection.values()) {
+			if (+item.id === id) {
+				return form(item);
+			}
+		}
+	} else {
+		return '';
 	}
 }
 
@@ -111,7 +102,7 @@ function renderCount() {
 	}, '');
 }
 
-function renderInfo(errors = [], page = 'reject') {
+function renderInfo(errors) {
 	const info = [
 		{
 			type: 'warn',
@@ -120,32 +111,41 @@ function renderInfo(errors = [], page = 'reject') {
 		}
 	];
 
-	$(`.container--${page} .info`).html('');
-	info.forEach((item) => {
+	return info.reduce((content, item) => {
 		const { type, title, message } = item;
 
-		errors.forEach((error) => {
+		for (const error of errors) {
 			if (error === title) {
-				$(`.container--${page} .info`).append(`
-					<p class="info__item info__item--${type}">${message}</p>
-				`);
+				content += `<p class="info__item info__item--${type}">${message}</p>`;
 			}
-		});
-	});
+		}
+
+		return content;
+	}, '');
 }
 
 function render(page = 'reject') {
-	$(`.container--${page} .wrap--content`).html('');
-	$(`.container--${page} .wrap--content`).append(`
-		<div class="main__wrap-info">
-			<div class="main__cards">${renderCount()}</div>
-			<div class="main__switchies">${renderSwitch()}</div>
-		</div>
-		<div class="wrap wrap--table">
-			<div class="table">
-				<header class="table__header">${headerTable(rejectObject)}</header>
-				<div class="table__body">${renderTable()}</div>
+	$(`.main[data-name=${page}]`).html('');
+	$(`.main[data-name=${page}]`).append(`
+		${pageTitle(rejectObject)}
+		<form class="form form--page" action="#" method="GET">
+			<div class="form__wrap form__wrap--user">${renderForm()}</div>
+		</form>
+		<div class="wrap wrap--content wrap--content-reject">
+			<div class="main__wrap-info">
+				<div class="main__cards">${renderCount()}</div>
+				<div class="main__switchies">${renderSwitch()}</div>
 			</div>
+			<div class="wrap wrap--table">
+				<div class="table">
+					<header class="table__header">${headerTable(rejectObject)}</header>
+					<div class="table__body">${renderTable()}</div>
+				</div>
+			</div>
+		</div>
+		<div class="info info--page">${renderInfo(rejectObject.info)}</div>
+		<div class="main__btns">
+			<button class="btn btn--submit" type="button">Отправить</button>
 		</div>
 	`);
 
@@ -153,6 +153,12 @@ function render(page = 'reject') {
 	resendAllUsers();
 	viewDataUser();
 	resendUsers();
+	submitIDinBD();
+	closeRejectForm();
+
+	if ($('.form__item--message').length) {
+		Scrollbar.init($('.form__item--message').get(0));
+	}
 }
 
 function userFromDB(array) {
@@ -221,13 +227,13 @@ function setDataInStorage(page = 'reject') {
 }
 
 function submitIDinBD(page = 'reject') {
-	$('#submitReject').click(() => {
+	$('.btn--submit').click(() => {
 		const checkedItems = [...rejectCollection.values()].some(({ statususer }) => statususer);
 
 		if (checkedItems) {
 			const resendItems = [...rejectCollection.values()].filter(({ statususer }) => statususer);
 
-			renderInfo();
+			rejectObject.info = [];
 
 			resendItems.forEach((elem) => {
 				elem.nameid = settingsObject.nameid;
@@ -249,7 +255,8 @@ function submitIDinBD(page = 'reject') {
 			dataAdd();
 			localStorage.removeItem(page);
 		} else {
-			renderInfo(['fields']);
+			rejectObject.info = ['fields'];
+			render();
 		}
 	});
 }
@@ -259,18 +266,17 @@ function clearObject() {
 }
 
 function viewDataUser(page = 'reject') {
-	$(`.container--${page} .table__body`).click(({ target }) => {
+	$(`.main[data-name=${page}] .table__body`).click(({ target }) => {
 		if ($(target).parents('.table__btn--view').length || $(target).hasClass('table__btn--view')) {
-			const userID = $(target).parents('.table__row').data('id');
+			rejectObject.id = $(target).parents('.table__row').data('id');
 
-			renderForm(userID);
-			Scrollbar.init($('.form__item--message').get(0));
+			render();
 		}
 	});
 }
 
 function resendUsers(page = 'reject') {
-	$(`.container--${page} .table__body`).click(({ target }) => {
+	$(`.main[data-name=${page}] .table__body`).click(({ target }) => {
 		if (!$(target).hasClass('btn--resend')) return;
 
 		const userID = $(target).parents('.table__row').data('id');
@@ -298,7 +304,7 @@ function resendUsers(page = 'reject') {
 }
 
 function resendAllUsers(page = 'reject') {
-	$(`.container--${page} #resendAll`).click(() => {
+	$(`.main[data-name=${page}] #resendAll`).click(() => {
 		rejectObject.statusresend = rejectObject.statusresend ? false : true;
 
 		rejectCollection.forEach((item) => {
@@ -319,14 +325,16 @@ function resendAllUsers(page = 'reject') {
 
 function closeRejectForm() {
 	$('#closeRejectForm').click(() => {
-		renderForm();
+		rejectObject.id = '';
+
+		render();
 	});
 }
 
 function autoRefresh(page = 'reject') {
 	const timeReload = 60000 * settingsObject.autoupdatevalue;
 
-	$(`.container--${page} .switch--refresh`).click(({ target }) => {
+	$(`.main[data-name=${page}] .switch--refresh`).click(({ target }) => {
 		if (!$(target).hasClass('switch__input')) return;
 
 		const statusSwitch = $(target).prop('checked');
