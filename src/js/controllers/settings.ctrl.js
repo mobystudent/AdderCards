@@ -44,7 +44,7 @@ const sendUsers = {
 
 $(window).on('load', () => {
 	getNameDepartmentFromDB();
-	renderSection();
+	render();
 });
 
 function renderHeaderPage(page = 'settings') {
@@ -52,7 +52,7 @@ function renderHeaderPage(page = 'settings') {
 	$(`.main[data-name=${page}] .container`).prepend(pageTitle(settingsObject));
 }
 
-function render() {
+function renderSections() {
 	const { statuschangename, nameid, shortname, longname, statusadddepart, statusremovedepart, statustimeautoupdate, autoupdatetitle, autoupdatevalue, statuschangeemail, email } = settingsObject;
 	const changeNameBtnValue = statuschangename ? 'Отменить' : 'Изменить';
 	const changeNameBtnClass = statuschangename ? 'btn--settings-disabled' : '';
@@ -80,10 +80,7 @@ function render() {
 				<button class="btn btn--settings ${changeNameBtnClass}" data-name="changename" type="button">${changeNameBtnValue}</button>
 			</div>
 			${changeName(settingsObject)}
-			<div class="info info--settings">
-				<p class="info__item info__item--warn info__item--fields">Предупреждение! Не все поля заполнены.</p>
-				<p class="info__item info__item--error info__item--name">Ошибка! Имя содержит недопустимые символы. Разрешены: кириллические буквы, дефис, апостроф.</p>
-			</div>
+			<div class="info info--settings"></div>
 		</div>
 
 		<div class="settings__section" data-block="adddepart">
@@ -94,11 +91,7 @@ function render() {
 				<button class="btn btn--settings ${addDepartBtnClass}" data-name="adddepart" type="button">${addDepartBtnValue}</button>
 			</div>
 			${addDepart(settingsObject)}
-			<div class="info info--settings">
-				<p class="info__item info__item--warn info__item--fields">Предупреждение! Не все поля заполнены.</p>
-				<p class="info__item info__item--error info__item--name">Ошибка! Имя содержит недопустимые символы. Разрешены: кириллические буквы, дефис, апостроф.</p>
-				<p class="info__item info__item--error info__item--long">Ошибка! ID подразделения должно быть не более 9 символов.</p>
-			</div>
+			<div class="info info--settings"></div>
 		</div>
 
 		<div class="settings__section" data-block="removedepart">
@@ -109,9 +102,7 @@ function render() {
 				<button class="btn btn--settings ${removeDepartBtnClass}" data-name="removedepart" type="button">${removeDepartBtnValue}</button>
 			</div>
 			${removeDepart(settingsObject)}
-			<div class="info info--settings">
-				<p class="info__item info__item--warn info__item--fields">Предупреждение! Не выбрано подразделение.</p>
-			</div>
+			<div class="info info--settings"></div>
 		</div>
 
 		<div class="settings__section" data-block="timeautoupdate">
@@ -134,20 +125,60 @@ function render() {
 				<button class="btn btn--settings ${changeEmailBtnClass}" type="button" data-name="changeemail">${changeEmailBtnValue}</button>
 			</div>
 			${changeEmail(settingsObject)}
-			<div class="info info--settings">
-				<p class="info__item info__item--warn info__item--fields">Предупреждение! Не все поля заполнены.</p>
-				<p class="info__item info__item--error info__item--email">Ошибка! Некорректный email.</p>
-			</div>
+			<div class="info info--settings"></div>
 		</div>
 	`;
 }
 
-function renderSection(nameSection = '#settingsSection') {
+function renderInfo(section, errors = []) {
+	const info = [
+		{
+			type: 'warn',
+			title: 'fields',
+			message: 'Предупреждение! Не все поля заполнены.'
+		},
+		{
+			type: 'warn',
+			title: 'depart',
+			message: 'Предупреждение! Не выбрано подразделение.'
+		},
+		{
+			type: 'error',
+			title: 'name',
+			message: 'Ошибка! Имя содержит недопустимые символы. Разрешены: кириллические буквы, дефис, апостроф.'
+		},
+		{
+			type: 'error',
+			title: 'long',
+			message: 'Ошибка! ID подразделения должно быть не более 9 символов.'
+		},
+		{
+			type: 'error',
+			title: 'email',
+			message: 'Ошибка! Некорректный email.'
+		}
+	];
+
+	$(`.info`).html('');
+	info.forEach((item) => {
+		const { type, title, message } = item;
+
+		errors.forEach((error) => {
+			if (error === title) {
+				$(`.settings__section[data-block=${section}] .info`).append(`
+					<p class="info__item info__item--${type}">${message}</p>
+				`);
+			}
+		});
+	});
+}
+
+function render(nameSection = '#settingsSection') {
 	$(`${nameSection}`).html('');
 	$(`${nameSection}`).append(`
 		<div class="settings__content-wrap">
 			<div class="settings__content">
-				${render()}
+				${renderSections()}
 			</div>
 		</div>
 	`);
@@ -167,11 +198,11 @@ function showChangesFields() {
 
 		settingsObject[`status${typeBtn}`] = !$(`.btn--settings[data-name=${typeBtn}]`).hasClass('btn--settings-disabled');
 
-		renderSection();
+		render();
 	});
 }
 
-function applyFieldsChanges(page = 'settings') {
+function applyFieldsChanges() {
 	$('.btn--changes').click(() => {
 		if (!settingsObject.statustimeautoupdate) {
 			delete settingsObject.autoupdatetitle;
@@ -202,60 +233,76 @@ function applyFieldsChanges(page = 'settings') {
 		delete settingsObject.action;
 
 		const validFields = Object.values(settingsObject).every((item) => item);
-		const statusMess = !validFields ? 'show' : 'hide';
-		let correctName = 'hide';
-		let countNameidLetters = 'hide';
-		let nameBlock = '';
-		let correctEmail = 'hide';
+		const errorsArr = [];
+
 
 		if (settingsObject.statuschangename) {
-			nameBlock = 'changename';
 			settingsObject.action = 'change';
 
 			for (let key in settingsObject) {
-				if ((key == 'changelongname' || key == 'changeshortname') && settingsObject[key]) {
-					correctName = settingsObject[key].match(/[^а-яА-ЯiIъїЁё.'-\s]/g) ? 'show' : 'hide';
+				if ((key === 'changelongname' || key === 'changeshortname') && settingsObject[key]) {
+					if (settingsObject[key].match(/[^а-яА-ЯiIъїЁё.'-\s]/g)) errorsArr.push('name');
 				}
 			}
-		} else if (settingsObject.statusadddepart) {
-			nameBlock = 'adddepart';
+
+			if (!validFields) errorsArr.push('fields');
+
+			renderInfo('changename', errorsArr);
+
+			return;
+		}
+
+		if (settingsObject.statusadddepart) {
 			settingsObject.action = 'add';
 
 			for (let key in settingsObject) {
-				if ((key == 'addlongname' || key == 'addshortname') && settingsObject[key]) {
-					correctName = settingsObject[key].match(/[^а-яА-ЯiIъїЁё.'-\s]/g) ? 'show' : 'hide';
-				} else if (key == 'addnameid' && settingsObject[key]) {
-					const countLetters = settingsObject[key].trim().split(' ');
+				if ((key === 'addlongname' || key === 'addshortname') && settingsObject[key]) {
+					if (settingsObject[key].match(/[^а-яА-ЯiIъїЁё.'-\s]/g)) errorsArr.push('name');
+				} else if (key === 'addnameid' && settingsObject[key]) {
+					const countLetters = settingsObject[key].trim();
 
-					countNameidLetters = countLetters.length > 9 ? 'show' : 'hide';
+					if (countLetters.length > 9) errorsArr.push('long');
 				}
 			}
-		} else if (settingsObject.statusremovedepart) {
-			nameBlock = 'removedepart';
+
+			if (!validFields) errorsArr.push('fields');
+
+			renderInfo('adddepart', errorsArr);
+
+			return;
+		}
+
+		if (settingsObject.statusremovedepart) {
 			settingsObject.action = 'remove';
-		} else if (settingsObject.statustimeautoupdate) {
-			nameBlock = 'timeautoupdate';
+
+			if (!validFields) errorsArr.push('depart');
+
+			renderInfo('removedepart', errorsArr);
+
+			return;
+		}
+
+		if (settingsObject.statustimeautoupdate) {
 			settingsObject.action = 'autoupdate';
-		} else if (settingsObject.statuschangeemail) {
-			nameBlock = 'changeemail';
+		}
+
+		if (settingsObject.statuschangeemail) {
 			settingsObject.action = 'email';
 
 			for (let key in settingsObject) {
-				if (key == 'changeemail' && settingsObject[key]) {
-					correctEmail = !settingsObject[key].match(/^([a-z0-9_-]+\.)*[a-z0-9_-]+@[a-z0-9_-]+(\.[a-z0-9_-]+)*\.[a-z]{2,6}$/g) ? 'show' : 'hide';
+				if (key === 'changeemail' && settingsObject[key]) {
+					if (!settingsObject[key].match(/^([a-z0-9_-]+\.)*[a-z0-9_-]+@[a-z0-9_-]+(\.[a-z0-9_-]+)*\.[a-z]{2,6}$/g)) errorsArr.push('email');
 				}
 			}
+
+			if (!validFields) errorsArr.push('fields');
+
+			renderInfo('changeemail', errorsArr);
+
+			return;
 		}
 
-		const valid = [statusMess, correctName, countNameidLetters, correctEmail].every((mess) => mess === 'hide');
-
-		$('.info')[!valid ? 'show' : 'hide']();
-		$(`.main[data-name=${page}] .settings__section[data-block=${nameBlock}]`).find('.info__item--warn.info__item--fields')[statusMess]();
-		$(`.main[data-name=${page}] .settings__section[data-block=${nameBlock}]`).find('.info__item--error.info__item--name')[correctName]();
-		$(`.main[data-name=${page}] .settings__section[data-block=${nameBlock}]`).find('.info__item--error.info__item--long')[countNameidLetters]();
-		$(`.main[data-name=${page}] .settings__section[data-block=${nameBlock}]`).find('.info__item--error.info__item--email')[correctEmail]();
-
-		if (valid) {
+		if (!errorsArr.length) {
 			setNameDepartmentInDB([settingsObject], 'settings', settingsObject.action);
 			clearFieldsForm();
 			getNameDepartmentFromDB();
@@ -318,7 +365,7 @@ function setDataAttrSelectedItem(title, select, statusid) {
 		settingsObject.autoupdatevalue = statusid;
 	}
 
-	renderSection();
+	render();
 }
 
 function clearFieldsForm() {
@@ -326,7 +373,7 @@ function clearFieldsForm() {
 		settingsObject[key] = '';
 	}
 
-	renderSection();
+	render();
 }
 
 function memberInputField() {
@@ -348,7 +395,7 @@ function setNameDepartOnPage(settings) {
 	settingsObject.autoupdatevalue = autoupdatevalue;
 
 	renderHeaderPage();
-	renderSection();
+	render();
 }
 
 function getDepartmentFromDB() {
