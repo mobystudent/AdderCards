@@ -30,6 +30,10 @@ export const autoUpload = (data) => {
 		{
 			title: '1 час',
 			value: 60
+		},
+		{
+			title: 'отключить',
+			value: 'none'
 		}
 	];
 	const timeAutoUploadSelect = arrayTimeAutoUploadValues.reduce((select, { title, value }) => {
@@ -41,11 +45,10 @@ export const autoUpload = (data) => {
 
 		return select;
 	}, '');
-	const timeAutoUploadBtnValue = statustimeautoupdate ? 'Отменить' : 'Изменить';
-	const timeAutoUploadBtnClass = statustimeautoupdate ? 'btn--settings-disabled' : '';
 	const timeAutoUploadValue = autoupdatetitle ? autoupdatetitle : 'Выберите период автообновления';
 	const timeAutoUploadClassView = autoupdatetitle ? 'select__value--selected-settings' : '';
-	const timeAutoUploadView = statustimeautoupdate ? `
+
+	return statustimeautoupdate ? `
 		<form class="form form--settings" action="#" method="GET">
 			<div class="form__field">
 				<div class="form__item select select--settings" data-type="autoupdate" data-select="autoupdate">
@@ -54,29 +57,10 @@ export const autoUpload = (data) => {
 					</header>
 					<ul class="select__list select__list--settings">
 						${timeAutoUploadSelect}
-						<li class="select__item">
-							<span class="select__name select__name--settings" data-autoupdate="отключить" data-value="none">отключить</span>
-						</li>
 					</ul>
 				</div>
 			</div>
 			<button class="btn btn--changes" data-name="timeautoupdate" type="button">Подтвердить</button>
 		</form>
 	` : '';
-
-	return `
-		<div class="settings__section" data-block="timeautoupdate">
-			<div class="settings__wrap">
-				<h3 class="settings__title">Период автообновления данных в таблицах</h3>
-				<span class="settings__value settings__value--autoupdate" data-value="${autoupdatevalue}">${autoupdatetitle}</span>
-			</div>
-			<div class="settings__btn-wrap">
-				<button class="btn btn--settings ${timeAutoUploadBtnClass}" type="button" data-name="timeautoupdate">${timeAutoUploadBtnValue}</button>
-			</div>
-			${timeAutoUploadView}
-			<div class="info info--settings">
-				<p class="info__item info__item--warn info__item--fields">Предупреждение! Не выбрано время.</p>
-			</div>
-		</div>
-	`;
 };

@@ -143,7 +143,7 @@ function renderInfo(errors = [], page = 'edit') {
 		{
 			type: 'warn',
 			title: 'fields',
-			message: 'Предупреждение! Не все поля заполненны.'
+			message: 'Предупреждение! Не все поля заполнены.'
 		},
 		{
 			type: 'error',

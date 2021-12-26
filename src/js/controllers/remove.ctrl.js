@@ -132,7 +132,7 @@ function renderInfo(errors = [], page = 'remove') {
 		{
 			type: 'warn',
 			title: 'fields',
-			message: 'Предупреждение! Не все поля заполненны.'
+			message: 'Предупреждение! Не все поля заполнены.'
 		}
 	];
 

@@ -1,12 +1,11 @@
 'use strict';
 
 export const changeName = (data) => {
-	const { statuschangename, changelongname, changeshortname, nameid, shortname, longname } = data;
-	const changeNameBtnValue = statuschangename ? 'Отменить' : 'Изменить';
-	const changeNameBtnClass = statuschangename ? 'btn--settings-disabled' : '';
+	const { statuschangename, changelongname, changeshortname } = data;
 	const changeLongNameValue = changelongname ? changelongname : '';
 	const changeShortNameValue = changeshortname ? changeshortname : '';
-	const changeNameView = statuschangename ? `
+
+	return statuschangename ? `
 		<form class="form form--settings" action="#" method="GET">
 			<div class="form__field">
 				<label class="form__name form__name--settings" for="changelongname">Введите новое полное название</label>
@@ -24,25 +23,4 @@ export const changeName = (data) => {
 			<button class="btn btn--changes" data-name="changename" type="button">Подтвердить</button>
 		</form>
 	` : '';
-
-	return `
-		<div class="settings__section" data-block="changename">
-			<div class="settings__wrap">
-				<h3 class="settings__title">Название подразделения</h3>
-				<div class="settings__department" data-nameid="${nameid}" data-shortname="${shortname}" data-longname="${longname}">
-					<span class="settings__longname">${longname}</span>
-					<small class="settings__separ">/</small>
-					<span class="settings__shortname">${shortname}</span>
-				</div>
-			</div>
-			<div class="settings__btn-wrap">
-				<button class="btn btn--settings ${changeNameBtnClass}" data-name="changename" type="button">${changeNameBtnValue}</button>
-			</div>
-			${changeNameView}
-			<div class="info info--settings">
-				<p class="info__item info__item--warn info__item--fields">Предупреждение! Не все поля заполненны.</p>
-				<p class="info__item info__item--error info__item--name">Ошибка! Имя содержит недопустимые символы. Разрешены: кириллические буквы, дефис, апостроф.</p>
-			</div>
-		</div>
-	`;
 };

@@ -160,7 +160,7 @@ function renderInfo(errors = [], page = 'add') {
 		{
 			type: 'warn',
 			title: 'fields',
-			message: 'Предупреждение! Не все поля заполненны.'
+			message: 'Предупреждение! Не все поля заполнены.'
 		},
 		{
 			type: 'warn',

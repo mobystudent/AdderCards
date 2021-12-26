@@ -52,25 +52,105 @@ function renderHeaderPage(page = 'settings') {
 	$(`.main[data-name=${page}] .container`).prepend(pageTitle(settingsObject));
 }
 
-function templateSettingsForm() {
-	const changeNameTemplate = changeName(settingsObject);
-	const addDepartTemplate = addDepart(settingsObject);
-	const removeDepartTemplate = removeDepart(settingsObject);
-	const timeAutoUploadTemplate = autoUpload(settingsObject);
-	const changeEmailTemplate = changeEmail(settingsObject);
+function render() {
+	const { statuschangename, nameid, shortname, longname, statusadddepart, statusremovedepart, statustimeautoupdate, autoupdatetitle, autoupdatevalue, statuschangeemail, email } = settingsObject;
+	const changeNameBtnValue = statuschangename ? 'Отменить' : 'Изменить';
+	const changeNameBtnClass = statuschangename ? 'btn--settings-disabled' : '';
+	const addDepartBtnValue = statusadddepart ? 'Отменить' : 'Добавить';
+	const addDepartBtnClass = statusadddepart ? 'btn--settings-disabled' : '';
+	const removeDepartBtnValue = statusremovedepart ? 'Отменить' : 'Удалить';
+	const removeDepartBtnClass = statusremovedepart ? 'btn--settings-disabled' : '';
+	const timeAutoUploadBtnValue = statustimeautoupdate ? 'Отменить' : 'Изменить';
+	const timeAutoUploadBtnClass = statustimeautoupdate ? 'btn--settings-disabled' : '';
+	const changeEmailBtnValue = statuschangeemail ? 'Отменить' : 'Изменить';
+	const changeEmailBtnClass = statuschangeemail ? 'btn--settings-disabled' : '';
+	const emailValue = email ? email : 'Введите почту';
 
 	return `
-		${changeNameTemplate}
-		${addDepartTemplate}
-		${removeDepartTemplate}
-		${timeAutoUploadTemplate}
-		${changeEmailTemplate}
+		<div class="settings__section" data-block="changename">
+			<div class="settings__wrap">
+				<h3 class="settings__title">Название подразделения</h3>
+				<div class="settings__department" data-nameid="${nameid}" data-shortname="${shortname}" data-longname="${longname}">
+					<span class="settings__longname">${longname}</span>
+					<small class="settings__separ">/</small>
+					<span class="settings__shortname">${shortname}</span>
+				</div>
+			</div>
+			<div class="settings__btn-wrap">
+				<button class="btn btn--settings ${changeNameBtnClass}" data-name="changename" type="button">${changeNameBtnValue}</button>
+			</div>
+			${changeName(settingsObject)}
+			<div class="info info--settings">
+				<p class="info__item info__item--warn info__item--fields">Предупреждение! Не все поля заполнены.</p>
+				<p class="info__item info__item--error info__item--name">Ошибка! Имя содержит недопустимые символы. Разрешены: кириллические буквы, дефис, апостроф.</p>
+			</div>
+		</div>
+
+		<div class="settings__section" data-block="adddepart">
+			<div class="settings__wrap">
+				<h3 class="settings__title">Добавить подразделение</h3>
+			</div>
+			<div class="settings__btn-wrap">
+				<button class="btn btn--settings ${addDepartBtnClass}" data-name="adddepart" type="button">${addDepartBtnValue}</button>
+			</div>
+			${addDepart(settingsObject)}
+			<div class="info info--settings">
+				<p class="info__item info__item--warn info__item--fields">Предупреждение! Не все поля заполнены.</p>
+				<p class="info__item info__item--error info__item--name">Ошибка! Имя содержит недопустимые символы. Разрешены: кириллические буквы, дефис, апостроф.</p>
+				<p class="info__item info__item--error info__item--long">Ошибка! ID подразделения должно быть не более 9 символов.</p>
+			</div>
+		</div>
+
+		<div class="settings__section" data-block="removedepart">
+			<div class="settings__wrap">
+				<h3 class="settings__title">Удалить подразделение</h3>
+			</div>
+			<div class="settings__btn-wrap">
+				<button class="btn btn--settings ${removeDepartBtnClass}" data-name="removedepart" type="button">${removeDepartBtnValue}</button>
+			</div>
+			${removeDepart(settingsObject)}
+			<div class="info info--settings">
+				<p class="info__item info__item--warn info__item--fields">Предупреждение! Не выбрано подразделение.</p>
+			</div>
+		</div>
+
+		<div class="settings__section" data-block="timeautoupdate">
+			<div class="settings__wrap">
+				<h3 class="settings__title">Период автообновления данных в таблицах</h3>
+				<span class="settings__value settings__value--autoupdate" data-value="${autoupdatevalue}">${autoupdatetitle}</span>
+			</div>
+			<div class="settings__btn-wrap">
+				<button class="btn btn--settings ${timeAutoUploadBtnClass}" type="button" data-name="timeautoupdate">${timeAutoUploadBtnValue}</button>
+			</div>
+			${autoUpload(settingsObject)}
+		</div>
+
+		<div class="settings__section" data-block="changeemail">
+			<div class="settings__wrap">
+				<h3 class="settings__title">Email</h3>
+				<span class="settings__value">${emailValue}</span>
+			</div>
+			<div class="settings__btn-wrap">
+				<button class="btn btn--settings ${changeEmailBtnClass}" type="button" data-name="changeemail">${changeEmailBtnValue}</button>
+			</div>
+			${changeEmail(settingsObject)}
+			<div class="info info--settings">
+				<p class="info__item info__item--warn info__item--fields">Предупреждение! Не все поля заполнены.</p>
+				<p class="info__item info__item--error info__item--email">Ошибка! Некорректный email.</p>
+			</div>
+		</div>
 	`;
 }
 
 function renderSection(nameSection = '#settingsSection') {
-	$(`${nameSection} .settings__content`).html('');
-	$(`${nameSection} .settings__content`).append(templateSettingsForm());
+	$(`${nameSection}`).html('');
+	$(`${nameSection}`).append(`
+		<div class="settings__content-wrap">
+			<div class="settings__content">
+				${render()}
+			</div>
+		</div>
+	`);
 
 	contentScrollbar();
 	memberInputField();
