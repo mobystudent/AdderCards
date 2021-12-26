@@ -12,7 +12,8 @@ import { pageTitle } from '../components/page-title.tpl.js';
 const timeCollection = new Map(); // БД в которую будут добавляться карты при вводе и из неё будут выводиться данные в таблицу.
 const dbTimeCardsCollection = new Map();  // Коллекция всех добавленных карт
 const timeObject = {
-	page: 'Добавление временных карт'
+	page: 'Добавление временных карт',
+	info: []
 };
 const timeCount = {
 	item: {
@@ -25,15 +26,8 @@ const timeCount = {
 let counter = 0;
 
 $(window).on('load', () => {
-	renderHeaderPage();
-	submitIDinBD();
 	showDataFromStorage();
 });
-
-function renderHeaderPage(page = 'time') {
-	$(`.main[data-name=${page}] .main__title-wrap`).html('');
-	$(`.main[data-name=${page}] .container`).prepend(pageTitle(timeObject));
-}
 
 function renderTable() {
 	if (!timeCollection.size) {
@@ -55,7 +49,7 @@ function renderCount() {
 	}, '');
 }
 
-function renderInfo(errors = [], page = 'time') {
+function renderInfo(errors) {
 	const info = [
 		{
 			type: 'warn',
@@ -79,37 +73,43 @@ function renderInfo(errors = [], page = 'time') {
 		}
 	];
 
-	$(`.container--${page} .info`).html('');
-	info.forEach((item) => {
+	return info.reduce((content, item) => {
 		const { type, title, message } = item;
 
-		errors.forEach((error) => {
+		for (const error of errors) {
 			if (error === title) {
-				$(`.container--${page} .info`).append(`
-					<p class="info__item info__item--${type}">${message}</p>
-				`);
+				content += `<p class="info__item info__item--${type}">${message}</p>`;
 			}
-		});
-	});
+		}
+
+		return content;
+	}, '');
 }
 
 function render(page = 'time') {
-	$(`.container--${page} .wrap--content`).html('');
-	$(`.container--${page} .wrap--content`).append(`
-		<div class="main__wrap-info">
-			<div class="main__cards">${renderCount()}</div>
-			<button class="main__btn" id="addTimeCard" type="button">
-				<svg class="icon icon--plus">
-					<use class="icon__item" xlink:href="./images/sprite.svg#plus"></use>
-				</svg>
-				<span class="main__btn-text">Добавить карту</span>
-			</button>
-		</div>
-		<div class="wrap wrap--table">
-			<div class="table">
-				<header class="table__header">${headerTable()}</header>
-				<div class="table__body">${renderTable()}</div>
+	$(`.main[data-name=${page}]`).html('');
+	$(`.main[data-name=${page}]`).append(`
+		${pageTitle(timeObject)}
+		<div class="wrap wrap--content wrap--content-time">
+			<div class="main__wrap-info">
+				<div class="main__cards">${renderCount()}</div>
+				<button class="main__btn" id="addTimeCard" type="button">
+					<svg class="icon icon--plus">
+						<use class="icon__item" xlink:href="./images/sprite.svg#plus"></use>
+					</svg>
+					<span class="main__btn-text">Добавить карту</span>
+				</button>
 			</div>
+			<div class="wrap wrap--table">
+				<div class="table">
+					<header class="table__header">${headerTable()}</header>
+					<div class="table__body">${renderTable()}</div>
+				</div>
+			</div>
+		</div>
+		<div class="info info--page">${renderInfo(timeObject.info)}</div>
+		<div class="main__btns">
+			<button class="btn btn--submit" type="button">Добавить</button>
 		</div>
 	`);
 
@@ -117,6 +117,7 @@ function render(page = 'time') {
 	convertCardIDInCardName();
 	deleteTimeCard();
 	clearNumberCard();
+	submitIDinBD();
 }
 
 function itemUserInTable() {
@@ -169,11 +170,11 @@ function setDataInStorage(page = 'time') {
 }
 
 function submitIDinBD(page = 'time') {
-	$('#submitTimeCard').click(() => {
+	$('.btn--submit').click(() => {
 		const checkedItems = [...timeCollection.values()].every(({ cardid }) => cardid);
 
 		if (checkedItems) {
-			renderInfo();
+			timeObject.info = [];
 
 			timeCollection.forEach((item) => {
 				item.date = service.getCurrentDate();
@@ -186,13 +187,14 @@ function submitIDinBD(page = 'time') {
 			localStorage.removeItem(page);
 			counter = 0;
 		} else {
-			renderInfo(['fields']);
+			timeObject.info = ['fields'];
+			render();
 		}
 	});
 }
 
 function clearNumberCard(page = 'time') {
-	$(`.container--${page} .table__body`).click(({ target }) => {
+	$(`.main[data-name=${page}] .table__body`).click(({ target }) => {
 		if ($(target).parents('.table__btn--clear').length || $(target).hasClass('table__btn--clear')) {
 			const userID = $(target).parents('.table__row').data('id');
 			let collectionID;
@@ -209,7 +211,7 @@ function clearNumberCard(page = 'time') {
 }
 
 function deleteTimeCard(page = 'time') {
-	$(`.container--${page} .table__body`).click(({ target }) => {
+	$(`.main[data-name=${page}] .table__body`).click(({ target }) => {
 		if ($(target).parents('.table__btn--delete').length || $(target).hasClass('table__btn--delete')) {
 			const userID = $(target).closest('.table__row').data('id');
 
@@ -230,7 +232,7 @@ function deleteTimeCard(page = 'time') {
 }
 
 function convertCardIDInCardName(page = 'time') {
-	$(`.container--${page} .table__body`).click(({ target }) => {
+	$(`.main[data-name=${page}] .table__body`).click(({ target }) => {
 		if (!$(target).hasClass('table__input')) return;
 
 		$(target).on('input', () => {
@@ -245,29 +247,33 @@ function convertCardIDInCardName(page = 'time') {
 			const containsCardID = [...dbTimeCardsCollection.values()].some(({ cardid }) => cardIdVal === cardid);
 
 			if (uniqueCardID) {
-				renderInfo(['have']);
+				timeObject.info = ['have'];
+
 				render();
 
 				return;
 			} else {
-				renderInfo();
+				timeObject.info = [];
 			}
 
 			if (containsCardID) {
-				renderInfo(['contains']);
+				timeObject.info = ['contains'];
+
 				render();
 
 				return;
 			} else {
-				renderInfo();
+				timeObject.info = [];
 			}
 
 			if (!convertNumCard) {
-				renderInfo(['cardid']);
+				timeObject.info = ['cardid'];
+
+				render();
 
 				return;
 			} else {
-				renderInfo();
+				timeObject.info = [];
 			}
 
 			[...timeCollection].forEach(([key, { id }]) => {
@@ -302,7 +308,7 @@ function checkInvalidValueCardID() {
 	});
 
 	if (checkValueCard) {
-		renderInfo();
+		timeObject.info = [];
 	}
 }
 
