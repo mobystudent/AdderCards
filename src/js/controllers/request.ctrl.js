@@ -20,7 +20,8 @@ const requestObject = {
 	statusdisallow: '',
 	nameid: '',
 	longname: '',
-	shortname: ''
+	shortname: '',
+	info: []
 };
 const requestSwitch = {
 	refresh: {
@@ -45,14 +46,8 @@ const requestCount = {
 };
 
 $(window).on('load', () => {
-	submitIDinBD();
 	showDataFromStorage();
 });
-
-function renderHeaderPage(page = 'request') {
-	$(`.main[data-name=${page}] .main__title-wrap`).html('');
-	$(`.main[data-name=${page}] .container`).prepend(pageTitle(requestObject));
-}
 
 function renderTable() {
 	if (!requestCollection.size) {
@@ -122,7 +117,7 @@ function renderCount() {
 	}, '');
 }
 
-function renderInfo(errors = [], page = 'request') {
+function renderInfo(errors) {
 	const info = [
 		{
 			type: 'warn',
@@ -131,39 +126,47 @@ function renderInfo(errors = [], page = 'request') {
 		}
 	];
 
-	$(`.container--${page} .info`).html('');
-	info.forEach((item) => {
+	return info.reduce((content, item) => {
 		const { type, title, message } = item;
 
-		errors.forEach((error) => {
+		for (const error of errors) {
 			if (error === title) {
-				$(`.container--${page} .info`).append(`
-					<p class="info__item info__item--${type}">${message}</p>
-				`);
+				content += `<p class="info__item info__item--${type}">${message}</p>`;
 			}
-		});
-	});
+		}
+
+		return content;
+	}, '');
 }
 
 function render(page = 'request') {
-	$(`.container--${page} .wrap--content`).html('');
-	$(`.container--${page} .wrap--content`).append(`
-		<div class="main__wrap-info">
-			<div class="main__cards">${renderCount()}</div>
-			<div class="main__switchies">${renderSwitch()}</div>
-		</div>
-		<div class="wrap wrap--table">
-			<header class="tab">${renderTabs()}</header>
-			<div class="table">
-				<header class="table__header">${headerTable(requestObject)}</header>
-				<div class="table__body">${renderTable()}</div>
+	$(`.main[data-name=${page}]`).html('');
+	$(`.main[data-name=${page}]`).append(`
+		${pageTitle(requestObject)}
+		<div class="wrap wrap--content wrap--content-request">
+			<div class="main__wrap-info">
+				<div class="main__cards">${renderCount()}</div>
+				<div class="main__switchies">${renderSwitch()}</div>
 			</div>
+			<div class="wrap wrap--table">
+				<header class="tab">${renderTabs()}</header>
+				<div class="table">
+					<header class="table__header">${headerTable(requestObject)}</header>
+					<div class="table__body">${renderTable()}</div>
+				</div>
+			</div>
+		</div>
+		<div class="info info--page">${renderInfo(requestObject.info)}</div>
+		<div class="main__btns">
+			<button class="btn btn--submit" type="button">Применить</button>
 		</div>
 	`);
 
 	autoRefresh();
 	clickAllowDisallowRequest();
 	confirmAllAllowDisallow();
+	submitIDinBD();
+
 	if (filterDepart().length > 1) changeTabs();
 }
 
@@ -244,12 +247,10 @@ function showActiveDataOnPage() {
 			requestObject.longname = longname;
 		}
 	});
-
-	renderHeaderPage();
 }
 
 function submitIDinBD(page = 'request') {
-	$('#submitRequest').click(() => {
+	$('btn--submit').click(() => {
 		const filterDepartCollection = [...requestCollection.values()].filter(({ nameid }) => nameid === requestObject.nameid);
 		const checkedItems = filterDepartCollection.every(({ statusrequest }) => statusrequest);
 
@@ -257,7 +258,7 @@ function submitIDinBD(page = 'request') {
 			const allowItems = filterDepartCollection.filter(({ statusrequest }) => statusrequest === 'allow');
 			const disallowItems = filterDepartCollection.filter(({ statusrequest }) => statusrequest === 'disallow');
 
-			renderInfo();
+			requestObject.info = [];
 
 			if (allowItems.length) {
 				// Запрос в Uprox
@@ -286,13 +287,10 @@ function submitIDinBD(page = 'request') {
 			resetControlBtns();
 			dataAdd();
 
-			if (!requestCollection.size) {
-				renderHeaderPage();
-			}
-
 			localStorage.removeItem(page);
 		} else {
-			renderInfo(['fields']);
+			requestObject.info = ['fields'];
+			render();
 		}
 	});
 }
@@ -304,7 +302,7 @@ function clearObject() {
 }
 
 function clickAllowDisallowRequest(page = 'request') {
-	$(`.container--${page} .table__body`).click(({ target }) => {
+	$(`.main[data-name=${page}] .table__body`).click(({ target }) => {
 		if (!$(target).hasClass('btn--allow') && !$(target).hasClass('btn--disallow')) return;
 
 		const userID = $(target).parents('.table__row').data('id');
@@ -335,7 +333,7 @@ function clickAllowDisallowRequest(page = 'request') {
 }
 
 function confirmAllAllowDisallow(page = 'request') {
-	$(`.container--${page} #allowAll, .container--${page} #disallowAll`).click(({ target }) => {
+	$(`.main[data-name=${page}] #allowAll, .main[data-name=${page}] #disallowAll`).click(({ target }) => {
 		const typeBtn = $(target).data('type');
 		const statusTypeBtn = typeBtn === 'allow' ? 'statusallow' : 'statusdisallow';
 		requestObject[statusTypeBtn] = requestObject[statusTypeBtn] ? false : true;
@@ -380,7 +378,7 @@ function resetControlBtns() {
 function autoRefresh(page = 'request') {
 	const timeReload = 60000 * settingsObject.autoupdatevalue;
 
-	$(`.container--${page} .switch--refresh`).click(({ target }) => {
+	$(`.main[data-name=${page}] .switch--refresh`).click(({ target }) => {
 		if (!$(target).hasClass('switch__input')) return;
 
 		const statusSwitch = $(target).prop('checked');
@@ -514,7 +512,7 @@ function sendMail(obj) {
 
 // Общие функции с картами и кодами
 function changeTabs(page = 'request') {
-	$(`.container--${page} .tab`).click(({ target }) => {
+	$(`.main[data-name=${page}] .tab`).click(({ target }) => {
 		if (!$(target).parents('.tab__item').length && !$(target).hasClass('tab__item')) return;
 
 		requestObject.nameid = $(target).closest('.tab__item').data('depart');
