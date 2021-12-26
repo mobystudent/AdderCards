@@ -451,8 +451,8 @@
 		foreach ($array as $item) {
 			foreach ($item as $key => $value) {
 				if ($key === 'nameid') $nameid = $value;
-				if ($key === 'autoupdate') $autoupdatevalue = $value;
-				if ($key === 'timeautoupdate') $autoupdatetitle = $value;
+				if ($key === 'autoupdatevalue') $autoupdatevalue = $value;
+				if ($key === 'autoupdatetitle') $autoupdatetitle = $value;
 			}
 
 			$idDepart = strtolower($item['nameid']);

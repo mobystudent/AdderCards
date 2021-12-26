@@ -36,6 +36,12 @@ const settingsObject = {
 	statustimeautoupdate: '',
 	statuschangeemail: ''
 };
+const settingsInfo = {
+	changename: [],
+	adddepart: [],
+	removedepart: [],
+	changeemail: []
+};
 const sendUsers = {
 	manager: 'nnyviexworgdkmgzus@kvhrw.com',
 	secretary: 'dciiwjaficvlpmesij@nvhrw.com',
@@ -44,16 +50,11 @@ const sendUsers = {
 
 $(window).on('load', () => {
 	getNameDepartmentFromDB();
-	render();
 });
-
-function renderHeaderPage(page = 'settings') {
-	$(`.main[data-name=${page}] .main__title-wrap`).html('');
-	$(`.main[data-name=${page}] .container`).prepend(pageTitle(settingsObject));
-}
 
 function renderSections() {
 	const { statuschangename, nameid, shortname, longname, statusadddepart, statusremovedepart, statustimeautoupdate, autoupdatetitle, autoupdatevalue, statuschangeemail, email } = settingsObject;
+	const { changename, adddepart, removedepart, changeemail } = settingsInfo;
 	const changeNameBtnValue = statuschangename ? 'Отменить' : 'Изменить';
 	const changeNameBtnClass = statuschangename ? 'btn--settings-disabled' : '';
 	const addDepartBtnValue = statusadddepart ? 'Отменить' : 'Добавить';
@@ -80,7 +81,7 @@ function renderSections() {
 				<button class="btn btn--settings ${changeNameBtnClass}" data-name="changename" type="button">${changeNameBtnValue}</button>
 			</div>
 			${changeName(settingsObject)}
-			<div class="info info--settings"></div>
+			<div class="info info--settings">${renderInfo(changename)}</div>
 		</div>
 
 		<div class="settings__section" data-block="adddepart">
@@ -91,7 +92,7 @@ function renderSections() {
 				<button class="btn btn--settings ${addDepartBtnClass}" data-name="adddepart" type="button">${addDepartBtnValue}</button>
 			</div>
 			${addDepart(settingsObject)}
-			<div class="info info--settings"></div>
+			<div class="info info--settings">${renderInfo(adddepart)}</div>
 		</div>
 
 		<div class="settings__section" data-block="removedepart">
@@ -102,7 +103,7 @@ function renderSections() {
 				<button class="btn btn--settings ${removeDepartBtnClass}" data-name="removedepart" type="button">${removeDepartBtnValue}</button>
 			</div>
 			${removeDepart(settingsObject)}
-			<div class="info info--settings"></div>
+			<div class="info info--settings">${renderInfo(removedepart)}</div>
 		</div>
 
 		<div class="settings__section" data-block="timeautoupdate">
@@ -125,12 +126,12 @@ function renderSections() {
 				<button class="btn btn--settings ${changeEmailBtnClass}" type="button" data-name="changeemail">${changeEmailBtnValue}</button>
 			</div>
 			${changeEmail(settingsObject)}
-			<div class="info info--settings"></div>
+			<div class="info info--settings">${renderInfo(changeemail)}</div>
 		</div>
 	`;
 }
 
-function renderInfo(section, errors = []) {
+function renderInfo(errors = []) {
 	const info = [
 		{
 			type: 'warn',
@@ -159,28 +160,30 @@ function renderInfo(section, errors = []) {
 		}
 	];
 
-	$(`.info`).html('');
-	info.forEach((item) => {
+	return info.reduce((content, item) => {
 		const { type, title, message } = item;
 
-		errors.forEach((error) => {
+		for (const error of errors) {
 			if (error === title) {
-				$(`.settings__section[data-block=${section}] .info`).append(`
-					<p class="info__item info__item--${type}">${message}</p>
-				`);
+				content += `<p class="info__item info__item--${type}">${message}</p>`;
 			}
-		});
-	});
+		}
+
+		return content;
+	}, '');
 }
 
-function render(nameSection = '#settingsSection') {
-	$(`${nameSection}`).html('');
-	$(`${nameSection}`).append(`
-		<div class="settings__content-wrap">
-			<div class="settings__content">
-				${renderSections()}
+function render(page = 'settings') {
+	$(`.main[data-name=${page}]`).html('');
+	$(`.main[data-name=${page}]`).append(`
+		${pageTitle(settingsObject)}
+		<section class="settings" id="settingsSection">
+			<div class="settings__content-wrap">
+				<div class="settings__content">
+					${renderSections()}
+				</div>
 			</div>
-		</div>
+		</section>
 	`);
 
 	contentScrollbar();
@@ -233,10 +236,9 @@ function applyFieldsChanges() {
 		delete settingsObject.action;
 
 		const validFields = Object.values(settingsObject).every((item) => item);
-		const errorsArr = [];
-
 
 		if (settingsObject.statuschangename) {
+			const errorsArr = [];
 			settingsObject.action = 'change';
 
 			for (let key in settingsObject) {
@@ -247,12 +249,17 @@ function applyFieldsChanges() {
 
 			if (!validFields) errorsArr.push('fields');
 
-			renderInfo('changename', errorsArr);
+			if (errorsArr.length) {
+				settingsInfo.changename = errorsArr;
 
-			return;
+				render();
+
+				return;
+			}
 		}
 
 		if (settingsObject.statusadddepart) {
+			const errorsArr = [];
 			settingsObject.action = 'add';
 
 			for (let key in settingsObject) {
@@ -267,19 +274,28 @@ function applyFieldsChanges() {
 
 			if (!validFields) errorsArr.push('fields');
 
-			renderInfo('adddepart', errorsArr);
+			if (errorsArr.length) {
+				settingsInfo.adddepart = errorsArr;
 
-			return;
+				render();
+
+				return;
+			}
 		}
 
 		if (settingsObject.statusremovedepart) {
+			const errorsArr = [];
 			settingsObject.action = 'remove';
 
 			if (!validFields) errorsArr.push('depart');
 
-			renderInfo('removedepart', errorsArr);
+			if (errorsArr.length) {
+				settingsInfo.removedepart = errorsArr;
 
-			return;
+				render();
+
+				return;
+			}
 		}
 
 		if (settingsObject.statustimeautoupdate) {
@@ -287,6 +303,7 @@ function applyFieldsChanges() {
 		}
 
 		if (settingsObject.statuschangeemail) {
+			const errorsArr = [];
 			settingsObject.action = 'email';
 
 			for (let key in settingsObject) {
@@ -297,16 +314,18 @@ function applyFieldsChanges() {
 
 			if (!validFields) errorsArr.push('fields');
 
-			renderInfo('changeemail', errorsArr);
+			if (errorsArr.length) {
+				settingsInfo.changeemail = errorsArr;
 
-			return;
+				render();
+
+				return;
+			}
 		}
 
-		if (!errorsArr.length) {
-			setNameDepartmentInDB([settingsObject], 'settings', settingsObject.action);
-			clearFieldsForm();
-			getNameDepartmentFromDB();
-		}
+		setNameDepartmentInDB([settingsObject], 'settings', settingsObject.action);
+		clearFieldsForm();
+		getNameDepartmentFromDB();
 	});
 }
 
@@ -370,7 +389,13 @@ function setDataAttrSelectedItem(title, select, statusid) {
 
 function clearFieldsForm() {
 	for (const key in settingsObject) {
-		settingsObject[key] = '';
+		if (key !== 'page') {
+			settingsObject[key] = '';
+		}
+	}
+
+	for (const key in settingsInfo) {
+		settingsInfo[key] = '';
 	}
 
 	render();
@@ -394,7 +419,6 @@ function setNameDepartOnPage(settings) {
 	settingsObject.autoupdatetitle = autoupdatetitle;
 	settingsObject.autoupdatevalue = autoupdatevalue;
 
-	renderHeaderPage();
 	render();
 }
 
