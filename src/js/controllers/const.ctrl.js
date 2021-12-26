@@ -20,7 +20,8 @@ const constObject = {
 	page: 'Добавление карт пользователям',
 	nameid: '',
 	longname: '',
-	shortname: ''
+	shortname: '',
+	info: []
 };
 const constSwitch = {
 	refresh: {
@@ -45,15 +46,8 @@ const constCount = {
 };
 
 $(window).on('load', () => {
-	submitIDinBD();
-	printReport();
 	showDataFromStorage();
 });
-
-function renderHeaderPage(page = 'const') {
-	$(`.main[data-name=${page}] .main__title-wrap`).html('');
-	$(`.main[data-name=${page}] .container`).prepend(pageTitle(constObject));
-}
 
 function renderTable() {
 	if (!constCollection.size) {
@@ -123,7 +117,7 @@ function renderCount() {
 	}, '');
 }
 
-function renderInfo(errors = [], page = 'const') {
+function renderInfo(errors) {
 	const info = [
 		{
 			type: 'warn',
@@ -147,39 +141,49 @@ function renderInfo(errors = [], page = 'const') {
 		}
 	];
 
-	$(`.container--${page} .info`).html('');
-	info.forEach((item) => {
+	return info.reduce((content, item) => {
 		const { type, title, message } = item;
 
-		errors.forEach((error) => {
+		for (const error of errors) {
 			if (error === title) {
-				$(`.container--${page} .info`).append(`
-					<p class="info__item info__item--${type}">${message}</p>
-				`);
+				content += `<p class="info__item info__item--${type}">${message}</p>`;
 			}
-		});
-	});
+		}
+
+		return content;
+	}, '');
 }
 
 function render(page = 'const') {
-	$(`.container--${page} .wrap--content`).html('');
-	$(`.container--${page} .wrap--content`).append(`
-		<div class="main__wrap-info">
-			<div class="main__cards">${renderCount()}</div>
-			<div class="main__switchies">${renderSwitch()}</div>
-		</div>
-		<div class="wrap wrap--table">
-			<header class="tab">${renderTabs()}</header>
-			<div class="table">
-				<header class="table__header">${headerTable()}</header>
-				<div class="table__body">${renderTable()}</div>
+	$(`.main[data-name=${page}]`).html('');
+	$(`.main[data-name=${page}]`).append(`
+		${pageTitle(constObject)}
+		<div class="wrap wrap--content wrap--content-const">
+			<div class="main__wrap-info">
+				<div class="main__cards">${renderCount()}</div>
+				<div class="main__switchies">${renderSwitch()}</div>
 			</div>
+			<div class="wrap wrap--table">
+				<header class="tab">${renderTabs()}</header>
+				<div class="table">
+					<header class="table__header">${headerTable()}</header>
+					<div class="table__body">${renderTable()}</div>
+				</div>
+			</div>
+		</div>
+		<div class="info info--page">${renderInfo(constObject.info)}</div>
+		<div class="main__btns">
+			<button class="btn btn--submit" type="button">Добавить</button>
+			<button class="btn btn--print" type="button">Распечатать отчет</button>
 		</div>
 	`);
 
 	autoRefresh();
 	convertCardIDInCardName();
 	clearNumberCard();
+	submitIDinBD();
+	printReport();
+
 	if (filterDepart().length > 1) changeTabs();
 }
 
@@ -260,17 +264,15 @@ function showActiveDataOnPage() {
 			constObject.longname = longname;
 		}
 	});
-
-	renderHeaderPage();
 }
 
 function submitIDinBD(page = 'const') {
-	$('#submitConstCard').click(() => {
+	$('.btn--submit').click(() => {
 		const filterDepartCollection = [...constCollection.values()].filter(({ nameid }) => nameid == constObject.nameid);
 		const checkedItems = filterDepartCollection.every(({ cardid }) => cardid);
 
 		if (checkedItems) {
-			renderInfo();
+			constObject.info = [];
 
 			constCollection.forEach((item) => {
 				if (item.nameid === constObject.nameid) {
@@ -292,13 +294,10 @@ function submitIDinBD(page = 'const') {
 			clearObject();
 			dataAdd();
 
-			if (!constCollection.size) {
-				renderHeaderPage();
-			}
-
 			localStorage.removeItem(page);
 		} else {
-			renderInfo(['fields']);
+			constObject.info = ['fields'];
+			render();
 		}
 	});
 }
@@ -310,7 +309,7 @@ function clearObject() {
 }
 
 function clearNumberCard(page = 'const') {
-	$(`.container--${page} .table__body`).click(({ target }) => {
+	$(`.main[data-name=${page}] .table__body`).click(({ target }) => {
 		if ($(target).parents('.table__btn--clear').length || $(target).hasClass('table__btn--clear')) {
 			const userID = $(target).parents('.table__row').data('id');
 			let collectionID;
@@ -327,7 +326,7 @@ function clearNumberCard(page = 'const') {
 }
 
 function convertCardIDInCardName(page = 'const') {
-	$(`.container--${page} .table__body`).click(({ target }) => {
+	$(`.main[data-name=${page}] .table__body`).click(({ target }) => {
 		if (!$(target).hasClass('table__input')) return;
 
 		$(target).on('input', () => {
@@ -342,29 +341,33 @@ function convertCardIDInCardName(page = 'const') {
 			const containsCardID = [...dbConstCardsCollection.values()].some(({ cardid }) => cardIdVal === cardid);
 
 			if (uniqueCardID) {
-				renderInfo(['have']);
+				constObject.info = ['have'];
+
 				render();
 
 				return;
 			} else {
-				renderInfo();
+				constObject.info = [];
 			}
 
 			if (containsCardID) {
-				renderInfo(['contains']);
+				constObject.info = ['contains'];
+
 				render();
 
 				return;
 			} else {
-				renderInfo();
+				constObject.info = [];
 			}
 
 			if (!convertNumCard) {
-				renderInfo(['cardid']);
+				constObject.info = ['cardid'];
+
+				render();
 
 				return;
 			} else {
-				renderInfo();
+				constObject.info = [];
 			}
 
 			[...constCollection].forEach(([key, { id }]) => {
@@ -401,14 +404,14 @@ function checkInvalidValueCardID() {
 	});
 
 	if (checkValueCard) {
-		renderInfo();
+		constObject.info = [];
 	}
 }
 
 function autoRefresh(page = 'const') {
 	const timeReload = 60000 * settingsObject.autoupdatevalue;
 
-	$(`.container--${page} .switch--refresh`).click(({ target }) => {
+	$(`.main[data-name=${page}] .switch--refresh`).click(({ target }) => {
 		if (!$(target).hasClass('switch__input')) return;
 
 		const statusSwitch = $(target).prop('checked');
@@ -561,7 +564,7 @@ function printReport(page = 'const') {
 }
 
 function changeTabs(page = 'const') {
-	$(`.container--${page} .tab`).click(({ target }) => {
+	$(`.main[data-name=${page}] .tab`).click(({ target }) => {
 		if (!$(target).parents('.tab__item').length && !$(target).hasClass('tab__item')) return;
 
 		constObject.nameid = $(target).closest('.tab__item').data('depart');
