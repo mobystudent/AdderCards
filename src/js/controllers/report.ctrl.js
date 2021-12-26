@@ -165,7 +165,7 @@ function dataAdd() {
 }
 
 function toggleSelect(page = 'report') {
-	$(`.container--${page} .select__header`).click(({ currentTarget }) => {
+	$(`.main[data-name=${page}] .select__header`).click(({ currentTarget }) => {
 		$(currentTarget).next().slideToggle().toggleClass('select__header--active');
 	});
 
@@ -173,7 +173,7 @@ function toggleSelect(page = 'report') {
 }
 
 function clickSelectItem(page = 'report') {
-	$(`.container--${page} .select__item`).click(({ currentTarget }) => {
+	$(`.main[data-name=${page}] .select__item`).click(({ currentTarget }) => {
 		const title = $(currentTarget).find('.select__name').data('title');
 		const select = $(currentTarget).parents('.select').data('select');
 		const statusid = $(currentTarget).find('.select__name').data(select);
@@ -218,7 +218,7 @@ function datepicker() {
 function autoRefresh(page = 'report') {
 	const timeReload = 60000 * settingsObject.autoupdatevalue;
 
-	$(`.container--${page} .switch--refresh`).click(({ target }) => {
+	$(`.main[data-name=${page}] .switch--refresh`).click(({ target }) => {
 		if (!$(target).hasClass('switch__input')) return;
 
 		const statusSwitch = $(target).prop('checked');
@@ -244,7 +244,7 @@ function autoRefresh(page = 'report') {
 }
 
 function resetFilters(page = 'report') {
-	$(`.container--${page} .btn--cancel`).click(() => {
+	$(`.main[data-name=${page}] .btn--cancel`).click(() => {
 		clearFieldsForm();
 	});
 }

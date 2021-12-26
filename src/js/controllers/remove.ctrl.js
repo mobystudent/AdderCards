@@ -32,6 +32,7 @@ const removeObject = {
 	newdepart: '',
 	newnameid: '',
 	statusnewdepart: '',
+	info: [],
 	get nameid() {
 		return settingsObject.nameid;
 	},
@@ -50,16 +51,9 @@ const removeCount = {
 let counter = 0;
 
 $(window).on('load', () => {
-	renderHeaderPage();
-	submitIDinBD();
 	getDepartmentFromDB();
 	showDataFromStorage();
 });
-
-function renderHeaderPage(page = 'remove') {
-	$(`.main[data-name=${page}] .main__title-wrap`).html('');
-	$(`.main[data-name=${page}] .container`).prepend(pageTitle(removeObject));
-}
 
 function renderTable() {
 	if (!removeCollection.size) {
@@ -95,7 +89,7 @@ function renderSelect(array) {
 	}, '');
 }
 
-function renderForm(nameForm = '#removeForm') {
+function renderForm() {
 	const reasonList = [
 		{
 			title: 'Перевод в другое подразделение',
@@ -112,22 +106,10 @@ function renderForm(nameForm = '#removeForm') {
 		reasonList: renderSelect(reasonList)
 	};
 
-	$(`${nameForm}`).html('');
-	$(`${nameForm}`).append(`
-		<div class="form__wrap form__wrap--user">${form(removeObject, selectList)}</div>
-		<div class="main__btns">
-			<button class="btn" id="removeUser" type="button" data-type="remove-user">Удалить</button>
-		</div>
-	`);
-
-	toggleSelect(); // 3
-	getAddUsersInDB(); // вывести всех пользователей в селект 1
-	datepicker();
-	setDepartInSelect(); // 2
-	addUser();
+	return form(removeObject, selectList);
 }
 
-function renderInfo(errors = [], page = 'remove') {
+function renderInfo(errors) {
 	const info = [
 		{
 			type: 'warn',
@@ -136,36 +118,54 @@ function renderInfo(errors = [], page = 'remove') {
 		}
 	];
 
-	$(`.container--${page} .info`).html('');
-	info.forEach((item) => {
+	return info.reduce((content, item) => {
 		const { type, title, message } = item;
 
-		errors.forEach((error) => {
+		for (const error of errors) {
 			if (error === title) {
-				$(`.container--${page} .info`).append(`
-					<p class="info__item info__item--${type}">${message}</p>
-				`);
+				content += `<p class="info__item info__item--${type}">${message}</p>`;
 			}
-		});
-	});
+		}
+
+		return content;
+	}, '');
 }
 
 function render(page = 'remove') {
-	$(`.container--${page} .wrap--content`).html('');
-	$(`.container--${page} .wrap--content`).append(`
-		<div class="main__wrap-info">
-			<div class="main__cards">${renderCount()}</div>
-		</div>
-		<div class="wrap wrap--table">
-			<div class="table">
-				<header class="table__header">${headerTable(removeObject)}</header>
-				<div class="table__body">${renderTable()}</div>
+	$(`.main[data-name=${page}]`).html('');
+	$(`.main[data-name=${page}]`).append(`
+		${pageTitle(removeObject)}
+		<form class="form form--page" action="#" method="GET">
+			<div class="form__wrap form__wrap--user">${renderForm()}</div>
+			<div class="main__btns">
+				<button class="btn" id="removeUser" type="button" data-type="remove-user">Удалить</button>
 			</div>
+		</form>
+		<div class="info info--page">${renderInfo(removeObject.info)}</div>
+		<div class="${classHeaderTable()}">
+			<div class="main__wrap-info">
+				<div class="main__cards">${renderCount()}</div>
+			</div>
+			<div class="wrap wrap--table">
+				<div class="table">
+					<header class="table__header">${headerTable(removeObject)}</header>
+					<div class="table__body">${renderTable()}</div>
+				</div>
+			</div>
+		</div>
+		<div class="main__btns">
+			<button class="btn btn--submit" type="button">Подтвердить и отправить</button>
 		</div>
 	`);
 
 	deleteUser();
 	editUser();
+	toggleSelect(); // 3
+	getAddUsersInDB(); // вывести всех пользователей в селект 1
+	datepicker();
+	setDepartInSelect(); // 2
+	addUser();
+	submitIDinBD();
 }
 
 function addUser() {
@@ -189,8 +189,10 @@ function addUser() {
 			userFromForm();
 			clearFieldsForm();
 		} else {
-			renderInfo(errorsArr);
+			removeObject.info = errorsArr;
 		}
+
+		render();
 	});
 }
 
@@ -224,8 +226,6 @@ function userFromForm() {
 }
 
 function dataAdd() {
-	showFieldsInHeaderTable();
-	renderForm();
 	render();
 }
 
@@ -269,18 +269,17 @@ function setDepartInSelect() {
 	});
 }
 
-function showFieldsInHeaderTable(page = 'remove') {
+function classHeaderTable(page = 'remove') {
 	removeObject.statusnewdepart = [...removeCollection.values()].some(({ newdepart }) => newdepart);
 	removeObject.statuscardvalidto = [...removeCollection.values()].some(({ cardvalidto }) => cardvalidto);
 	const newdepartMod = removeObject.statusnewdepart ? '-newdepart' : '';
 	const cardvalidtoMod = removeObject.statuscardvalidto ? '-cardvalidto' : '';
-	const className = `wrap wrap--content wrap--content-${page}${newdepartMod}${cardvalidtoMod}`;
 
-	$(`.main[data-name="${page}"]`).find('.wrap--content').attr('class', className);
+	return `wrap wrap--content wrap--content-${page}${newdepartMod}${cardvalidtoMod}`;
 }
 
-function setUsersInSelect(users, nameForm = '#removeForm') {
-	$(`${nameForm} .select[data-select="fio"] .select__list`).html('');
+function setUsersInSelect(users, page = 'remove') {
+	$(`.main[data-name=${page}] .select[data-select="fio"] .select__list`).html('');
 
 	if (removeCollection.size) {
 		removeCollection.forEach((elem) => {
@@ -296,20 +295,20 @@ function setUsersInSelect(users, nameForm = '#removeForm') {
 			dataid: 'id'
 		};
 
-		$(`${nameForm} .select[data-select="fio"] .select__list`).append(select(item));
+		$(`.main[data-name=${page}] .select[data-select="fio"] .select__list`).append(select(item));
 	});
 
 	clickSelectItem();
 }
 
-function toggleSelect(nameForm = '#removeForm') {
-	$(`${nameForm} .select__header`).click(({ currentTarget }) => {
+function toggleSelect(page = 'remove') {
+	$(`.main[data-name=${page}] .select__header`).click(({ currentTarget }) => {
 		$(currentTarget).next().slideToggle().toggleClass('select__header--active');
 	});
 }
 
-function clickSelectItem(nameForm = '#removeForm') {
-	$(`${nameForm} .select__item`).click(({ currentTarget }) => {
+function clickSelectItem(page = 'remove') {
+	$(`.main[data-name=${page}] .select__item`).click(({ currentTarget }) => {
 		const title = $(currentTarget).find('.select__name').data('title');
 		const id = $(currentTarget).find('.select__name').data('id');
 		const select = $(currentTarget).parents('.select').data('select');
@@ -346,17 +345,19 @@ function setDataAttrSelectedItem(title, select, statusid) {
 		removeObject.newdepart = title.replace(/["']/g, '&quot;');
 	}
 
-	renderForm();
+	render();
 }
 
 function clearFieldsForm() {
+	const untouchable = ['nameid', 'longname', 'page', 'info'];
+
 	for (const key in removeObject) {
-		if (key !== 'nameid' && key !== 'longname' && key !== 'page') {
+		if (!untouchable.includes(key)) {
 			removeObject[key] = '';
 		}
 	}
 
-	renderForm();
+	render();
 }
 
 function datepicker() {
@@ -377,7 +378,7 @@ function datepicker() {
 }
 
 function deleteUser(page = 'remove') {
-	$(`.container--${page} .table__body`).click(({ target }) => {
+	$(`.main[data-name=${page}] .table__body`).click(({ target }) => {
 		if ($(target).parents('.table__btn--delete').length || $(target).hasClass('table__btn--delete')) {
 			const userID = $(target).closest('.table__row').data('id');
 
@@ -398,7 +399,7 @@ function deleteUser(page = 'remove') {
 }
 
 function editUser(page = 'remove') {
-	$(`.container--${page} .table__body`).click(({ target }) => {
+	$(`.main[data-name=${page}] .table__body`).click(({ target }) => {
 		if ($(target).parents('.table__btn--edit').length || $(target).hasClass('table__btn--edit')) {
 			const userID = $(target).closest('.table__row').data('id');
 
@@ -412,14 +413,13 @@ function editUser(page = 'remove') {
 				}
 			});
 
-			renderForm();
 			dataAdd();
 		}
 	});
 }
 
 function submitIDinBD(page = 'remove') {
-	$('#submitRemoveUser').click(() => {
+	$('.btn--submit').click(() => {
 		if (!removeCollection.size) return;
 
 		removeCollection.forEach((user) => {
@@ -490,7 +490,7 @@ function getAddUsersInDB(id = '') {
 				removeObject.id = id;
 				removeObject.photofile = photofile;
 
-				renderForm();
+				render();
 			} else {
 				setUsersInSelect(JSON.parse(data));
 			}
