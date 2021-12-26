@@ -34,13 +34,13 @@ const settingsObject = {
 	statusadddepart: '',
 	statusremovedepart: '',
 	statustimeautoupdate: '',
-	statuschangeemail: ''
-};
-const settingsInfo = {
-	changename: [],
-	adddepart: [],
-	removedepart: [],
-	changeemail: []
+	statuschangeemail: '',
+	info: {
+		changename: [],
+		adddepart: [],
+		removedepart: [],
+		changeemail: []
+	}
 };
 const sendUsers = {
 	manager: 'nnyviexworgdkmgzus@kvhrw.com',
@@ -54,7 +54,7 @@ $(window).on('load', () => {
 
 function renderSections() {
 	const { statuschangename, nameid, shortname, longname, statusadddepart, statusremovedepart, statustimeautoupdate, autoupdatetitle, autoupdatevalue, statuschangeemail, email } = settingsObject;
-	const { changename, adddepart, removedepart, changeemail } = settingsInfo;
+	const { changename, adddepart, removedepart, changeemail } = settingsObject.info;
 	const changeNameBtnValue = statuschangename ? 'Отменить' : 'Изменить';
 	const changeNameBtnClass = statuschangename ? 'btn--settings-disabled' : '';
 	const addDepartBtnValue = statusadddepart ? 'Отменить' : 'Добавить';
@@ -250,7 +250,7 @@ function applyFieldsChanges() {
 			if (!validFields) errorsArr.push('fields');
 
 			if (errorsArr.length) {
-				settingsInfo.changename = errorsArr;
+				settingsObject.info.changename = errorsArr;
 
 				render();
 
@@ -275,7 +275,7 @@ function applyFieldsChanges() {
 			if (!validFields) errorsArr.push('fields');
 
 			if (errorsArr.length) {
-				settingsInfo.adddepart = errorsArr;
+				settingsObject.info.adddepart = errorsArr;
 
 				render();
 
@@ -290,7 +290,7 @@ function applyFieldsChanges() {
 			if (!validFields) errorsArr.push('depart');
 
 			if (errorsArr.length) {
-				settingsInfo.removedepart = errorsArr;
+				settingsObject.info.removedepart = errorsArr;
 
 				render();
 
@@ -315,7 +315,7 @@ function applyFieldsChanges() {
 			if (!validFields) errorsArr.push('fields');
 
 			if (errorsArr.length) {
-				settingsInfo.changeemail = errorsArr;
+				settingsObject.info.changeemail = errorsArr;
 
 				render();
 
@@ -392,10 +392,6 @@ function clearFieldsForm() {
 		if (key !== 'page') {
 			settingsObject[key] = '';
 		}
-	}
-
-	for (const key in settingsInfo) {
-		settingsInfo[key] = '';
 	}
 
 	render();

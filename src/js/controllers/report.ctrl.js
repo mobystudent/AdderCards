@@ -50,14 +50,8 @@ const reportCount = {
 };
 
 $(window).on('load', () => {
-	renderHeaderPage();
 	getDataFromDB('report'); // 1
 });
-
-function renderHeaderPage(page = 'report') {
-	$(`.main[data-name=${page}] .main__title-wrap`).html('');
-	$(`.main[data-name=${page}] .container`).prepend(pageTitle(reportObject));
-}
 
 function renderTable() {
 	if (!reportCollection.size) {
@@ -102,17 +96,20 @@ function renderCount() {
 }
 
 function render(page = 'report') {
-	$(`.container--${page} .wrap--content`).html('');
-	$(`.container--${page} .wrap--content`).append(`
-		<form class="form form--filter" action="#" method="GET">${renderForm()}</form>
-		<div class="main__wrap-info">
-			<div class="main__cards">${renderCount()}</div>
-			<div class="main__switchies">${renderSwitch()}</div>
-		</div>
-		<div class="wrap wrap--table">
-			<div class="table">
-				<header class="table__header">${headerTable()}</header>
-				<div class="table__body">${renderTable()}</div>
+	$(`.main[data-name=${page}]`).html('');
+	$(`.main[data-name=${page}]`).append(`
+		${pageTitle(reportObject)}
+		<div class="wrap wrap--content wrap--content-report-item">
+			<form class="form form--filter" action="#" method="GET">${renderForm()}</form>
+			<div class="main__wrap-info">
+				<div class="main__cards">${renderCount()}</div>
+				<div class="main__switchies">${renderSwitch()}</div>
+			</div>
+			<div class="wrap wrap--table">
+				<div class="table">
+					<header class="table__header">${headerTable()}</header>
+					<div class="table__body">${renderTable()}</div>
+				</div>
 			</div>
 		</div>
 	`);
