@@ -32,6 +32,7 @@ const addObject = {
 	cardvalidtoid: '',
 	cardvalidtotitle: '',
 	statuscardvalidto: '',
+	info: [],
 	get nameid() {
 		return settingsObject.nameid;
 	},
@@ -50,16 +51,9 @@ const addCount = {
 let counter = 0;
 
 $(window).on('load', () => {
-	renderHeaderPage(); // 1
-	submitIDinBD(); // 1
 	showDataFromStorage(); // 1
 	getUserNamesFromDB();
 });
-
-function renderHeaderPage(page = 'add') {
-	$(`.main[data-name=${page}] .main__title-wrap`).html('');
-	$(`.main[data-name=${page}] .container`).prepend(pageTitle(addObject));
-}
 
 function renderTable() {
 	if (!addCollection.size) {
@@ -87,7 +81,7 @@ function renderSelect(array) {
 	}, '');
 }
 
-function renderForm(nameForm = '#addForm') {
+function renderForm() {
 	const cardvalidtoList = [
 		{
 			title: 'Ввести дату',
@@ -117,19 +111,7 @@ function renderForm(nameForm = '#addForm') {
 		typeList: renderSelect(typeList)
 	};
 
-	$(`${nameForm}`).html('');
-	$(`${nameForm}`).append(`
-		<div class="form__wrap form__wrap--user">${form(addObject, selectList)}</div>
-		<div class="main__btns">
-			<button class="btn" id="addUser" type="button" data-type="add-user">Добавить</button>
-		</div>
-	`);
-
-	toggleSelect();
-	datepicker();
-	downloadFoto();
-	memberInputField();
-	addUser(); // 2 без загрузки фото и загрузки селектов не пройдет валидация в addUser
+	return form(addObject, selectList);
 }
 
 function renderModalContainsUser() {
@@ -155,7 +137,7 @@ function renderCount() {
 	}, '');
 }
 
-function renderInfo(errors = [], page = 'add') {
+function renderInfo(errors) {
 	const info = [
 		{
 			type: 'warn',
@@ -184,36 +166,54 @@ function renderInfo(errors = [], page = 'add') {
 		}
 	];
 
-	$(`.container--${page} .info`).html('');
-	info.forEach((item) => {
+	return info.reduce((content, item) => {
 		const { type, title, message } = item;
 
-		errors.forEach((error) => {
+		for (const error of errors) {
 			if (error === title) {
-				$(`.container--${page} .info`).append(`
-					<p class="info__item info__item--${type}">${message}</p>
-				`);
+				content += `<p class="info__item info__item--${type}">${message}</p>`;
 			}
-		});
-	});
+		}
+
+		return content;
+	}, '');
 }
 
 function render(page = 'add') {
-	$(`.container--${page} .wrap--content`).html('');
-	$(`.container--${page} .wrap--content`).append(`
-		<div class="main__wrap-info">
-			<div class="main__cards">${renderCount()}</div>
-		</div>
-		<div class="wrap wrap--table">
-			<div class="table">
-				<header class="table__header">${headerTable(addObject)}</header>
-				<div class="table__body">${renderTable()}</div>
+	$(`.main[data-name=${page}]`).html('');
+	$(`.main[data-name=${page}]`).append(`
+		${pageTitle(addObject)}
+		<form class="form form--page" action="#" method="GET">
+			<div class="form__wrap form__wrap--user">${renderForm()}</div>
+			<div class="main__btns">
+				<button class="btn" id="addUser" type="button" data-type="add-user">Добавить</button>
 			</div>
+		</form>
+		<div class="info info--page">${renderInfo(addObject.info)}</div>
+		<div class="${classHeaderTable()}">
+			<div class="main__wrap-info">
+				<div class="main__cards">${renderCount()}</div>
+			</div>
+			<div class="wrap wrap--table">
+				<div class="table">
+					<header class="table__header">${headerTable(addObject)}</header>
+					<div class="table__body">${renderTable()}</div>
+				</div>
+			</div>
+		</div>
+		<div class="main__btns">
+			<button class="btn btn--submit" type="button">Подтвердить и отправить</button>
 		</div>
 	`);
 
 	deleteUser();
 	editUser();
+	toggleSelect();
+	datepicker();
+	downloadFoto();
+	memberInputField();
+	addUser(); // 2 без загрузки фото и загрузки селектов не пройдет валидация в addUser
+	submitIDinBD();
 }
 
 function modalActions() {
@@ -256,8 +256,10 @@ function addUser() {
 		if (!errorsArr.length) {
 			checkContainsUser();
 		} else {
-			renderInfo(errorsArr);
+			addObject.info = errorsArr;
 		}
+
+		render();
 	});
 }
 
@@ -266,9 +268,9 @@ function checkContainsUser() {
 	const containsName = [...dbUserNamesCollection.values()].every(({ fio }) => fio !== addObject.fio);
 
 	if (uniqueName) {
-		renderInfo();
+		addObject.info = [];
 	} else {
-		renderInfo(['have']);
+		addObject.info = ['have'];
 
 		return;
 	}
@@ -317,8 +319,6 @@ function userFromForm() {
 }
 
 function dataAdd() {
-	showFieldsInHeaderTable();
-	renderForm();
 	render();
 }
 
@@ -368,24 +368,23 @@ function setDataInStorage(page = 'add') {
 	});
 }
 
-function showFieldsInHeaderTable(page = 'add') {
+function classHeaderTable(page = 'add') {
 	addObject.statuscardvalidto = [...addCollection.values()].some(({ cardvalidtoid }) => cardvalidtoid === 'date');
 	const cardvalidtoMod = addObject.statuscardvalidto ? '-cardvalidto' : '';
-	const className = `wrap wrap--content wrap--content-${page}${cardvalidtoMod}`;
 
-	$(`.main[data-name="${page}"]`).find('.wrap--content').attr('class', className);
+	return `wrap wrap--content wrap--content-${page}${cardvalidtoMod}`;
 }
 
-function toggleSelect(nameForm = '#addForm') {
-	$(`${nameForm} .select__header`).click(({ currentTarget }) => {
+function toggleSelect(page = 'add') {
+	$(`.main[data-name=${page}] .select__header`).click(({ currentTarget }) => {
 		$(currentTarget).next().slideToggle().toggleClass('select__header--active');
 	});
 
 	clickSelectItem();
 }
 
-function clickSelectItem(nameForm = '#addForm') {
-	$(`${nameForm} .select__item`).click(({ currentTarget }) => {
+function clickSelectItem(page = 'add') {
+	$(`.main[data-name=${page}] .select__item`).click(({ currentTarget }) => {
 		const title = $(currentTarget).find('.select__name').data('title');
 		const select = $(currentTarget).parents('.select').data('select');
 		const statusid = $(currentTarget).find('.select__name').data(select);
@@ -405,17 +404,19 @@ function setDataAttrSelectedItem(title, select, statusid) {
 		addObject.statuscardvalidto = statusid === 'date' ? true : false;
 	}
 
-	renderForm();
+	render();
 }
 
 function clearFieldsForm() {
+	const untouchable = ['nameid', 'longname', 'page', 'info'];
+
 	for (const key in addObject) {
-		if (key !== 'nameid' && key !== 'longname' && key !== 'page') {
+		if (!untouchable.includes(key)) {
 			addObject[key] = '';
 		}
 	}
 
-	renderForm();
+	render();
 }
 
 function memberInputField() {
@@ -444,8 +445,8 @@ function datepicker() {
 	});
 }
 
-function downloadFoto(nameForm = '#addForm') {
-	$(`${nameForm} .form__item--file`).change(({ target }) => {
+function downloadFoto(page = 'add') {
+	$(`.main[data-name=${page}] .form__item--file`).change(({ target }) => {
 		const fileNameUrl = $(target).val();
 		const indexLastSlash = fileNameUrl.lastIndexOf('\\');
 		const photoName = fileNameUrl.slice(indexLastSlash + 1);
@@ -454,7 +455,7 @@ function downloadFoto(nameForm = '#addForm') {
 		const validPhotoName = validPhotoExtention(photoName);
 
 		if (!validPhotoName) {
-			renderInfo(['image']);
+			addObject.info = ['image'];
 
 			return;
 		}
@@ -463,7 +464,7 @@ function downloadFoto(nameForm = '#addForm') {
 		addObject.photofile = file;
 		addObject.photoname = photoName;
 
-		renderForm();
+		render();
 	});
 }
 
@@ -477,7 +478,7 @@ function validPhotoExtention(photoName) {
 }
 
 function deleteUser(page = 'add') {
-	$(`.container--${page} .table__body`).click(({ target }) => {
+	$(`.main[data-name=${page}] .table__body`).click(({ target }) => {
 		if ($(target).parents('.table__btn--delete').length || $(target).hasClass('table__btn--delete')) {
 			const userID = $(target).closest('.table__row').data('id');
 
@@ -498,7 +499,7 @@ function deleteUser(page = 'add') {
 }
 
 function editUser(page = 'add') {
-	$(`.container--${page} .table__body`).click(({ target }) => {
+	$(`.main[data-name=${page}] .table__body`).click(({ target }) => {
 		if ($(target).parents('.table__btn--edit').length || $(target).hasClass('table__btn--edit')) {
 			const userID = $(target).closest('.table__row').data('id');
 
@@ -514,14 +515,13 @@ function editUser(page = 'add') {
 				}
 			});
 
-			renderForm(); // 1
-			dataAdd(); // 2
+			dataAdd();
 		}
 	});
 }
 
 function submitIDinBD(page = 'add') {
-	$('#submitAddUser').click(() => {
+	$('.btn--submit').click(() => {
 		if (!addCollection.size) return;
 
 		addCollection.forEach((user) => {

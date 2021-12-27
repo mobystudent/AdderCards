@@ -239,6 +239,8 @@ function addUser() {
 		} else {
 			editObject.info = errorsArr;
 		}
+
+		render();
 	});
 }
 
