@@ -12,7 +12,9 @@ const downloadCollection = new Map(); // БД сформированных qr-к
 const parseQRCollection = new Map(); // БД загруженых qr-кодов
 const dbQRCodesCollection = new Map();  // Коллекция всех добавленных qr-кодов
 const downloadObject = {
-	page: 'Загрузка QR-кодов'
+	page: 'Загрузка QR-кодов',
+	textqr: '',
+	info: []
 };
 const parseCount = {
 	item: {
@@ -33,17 +35,8 @@ const downloadCount = {
 let counter = 0;
 
 $(window).on('load', () => {
-	renderHeaderPage();
-	addQRCodesInTable();
-	countQRCodes();
-	submitIDinBD();
 	showDataFromStorage();
 });
-
-function renderHeaderPage(page = 'download') {
-	$(`.main[data-name=${page}] .main__title-wrap`).html('');
-	$(`.main[data-name=${page}] .container`).prepend(pageTitle(downloadObject));
-}
 
 function renderTable() {
 	if (!downloadCollection.size) {
@@ -57,20 +50,15 @@ function renderTable() {
 	}
 }
 
-function renderCountParse() {
-	$(`.main__wrap-info--parse .main__cards`).html('');
-	$(`.main__wrap-info--parse .main__cards`).append(count(parseCount.item));
-}
-
-function renderCount() {
-	return Object.values(downloadCount).reduce((content, item) => {
+function renderCount(countObj) {
+	return Object.values(countObj).reduce((content, item) => {
 		content += count(item);
 
 		return content;
 	}, '');
 }
 
-function renderInfo(errors = [], page = 'download') {
+function renderInfo(errors) {
 	const info = [
 		{
 			type: 'warn',
@@ -90,7 +78,7 @@ function renderInfo(errors = [], page = 'download') {
 		{
 			type: 'error',
 			title: 'cardid',
-			message: 'Ошибка! Не верно введена строка с кодом для QR ID. <br> Код из 10 цифр и букв. Например: 31788A8476'
+			message: 'Ошибка! Не верно введена строка с кодом для QR ID. <br> Код должен состоять из 10 цифр и букв. Например: 31788A8476'
 		},
 		{
 			type: 'error',
@@ -104,47 +92,70 @@ function renderInfo(errors = [], page = 'download') {
 		}
 	];
 
-	$(`.container--${page} .info`).html('');
-	info.forEach((item) => {
+	return info.reduce((content, item) => {
 		const { type, title, message } = item;
 
-		errors.forEach((error) => {
+		for (const error of errors) {
 			if (error === title) {
-				$(`.container--${page} .info`).append(`
-					<p class="info__item info__item--${type}">${message}</p>
-				`);
+				content += `<p class="info__item info__item--${type}">${message}</p>`;
 			}
-		});
-	});
+		}
+
+		return content;
+	}, '');
 }
 
 function render(page = 'download') {
-	$(`.container--${page} .wrap--content-download`).html('');
-	$(`.container--${page} .wrap--content-download`).append(`
-		<div class="main__wrap-info">
-			<div class="main__cards">${renderCount()}</div>
-		</div>
-		<div class="wrap wrap--table">
-			<div class="table">
-				<header class="table__header">${headerTable()}</header>
-				<div class="table__body">${renderTable()}</div>
+	$(`.main[data-name=${page}]`).html('');
+	$(`.main[data-name=${page}]`).append(`
+		${pageTitle(downloadObject)}
+		<div class="wrap wrap--content wrap--content-parse">
+			<div class="main__wrap-info main__wrap-info--parse">
+				<div class="main__cards">${renderCount(parseCount)}</div>
 			</div>
+			<form class="form form--download" action="#" method="GET">
+				<div class="form__field">
+					<textarea class="form__item form__item--textarea" placeholder="Загрузите текстовые коды для конвертирования">${downloadObject.textqr}</textarea>
+				</div>
+			</form>
+		</div>
+		<div class="main__btns">
+			<button class="btn" id="addQRCodes" type="button">Добавить</button>
+		</div>
+		<div class="info info--page">${renderInfo(downloadObject.info)}</div>
+		<div class="wrap wrap--content wrap--content-download">
+			<div class="main__wrap-info">
+				<div class="main__cards">${renderCount(downloadCount)}</div>
+			</div>
+			<div class="wrap wrap--table">
+				<div class="table">
+					<header class="table__header">${headerTable()}</header>
+					<div class="table__body">${renderTable()}</div>
+				</div>
+			</div>
+		</div>
+		<div class="main__btns">
+			<button class="btn btn--submit" type="button">Присвоить</button>
 		</div>
 	`);
 
 	deleteUser();
+	countQRCodes();
+	addQRCodesInTable();
+	submitIDinBD();
 }
 
-function countQRCodes(nameForm = '#downloadForm') {
-	$(`${nameForm} .form__item--textarea`).bind('input', ({ target }) => {
-		const itemCodesContext = $(target).val();
+function countQRCodes(page = 'download') {
+	$(`.main[data-name=${page}] .form__item--textarea`).bind('input', ({ currentTarget }) => {
+		const itemCodesContext = $(currentTarget).val();
 		const itemCodes = itemCodesContext.split('\n');
+		downloadObject.textqr = itemCodesContext ? itemCodesContext : '';
 
 		itemCodes.filter((item) => item).forEach((item, i) => {
 			parseQRCollection.set(i, item.split(' '));
 		});
 
-		renderCountParse();
+		render();
 	});
 }
 
@@ -164,9 +175,10 @@ function addQRCodesInTable() {
 		if (!errorsArr.length) {
 			getQRCodesFromDB();
 			codeFromForm();
-			clearFieldsForm();
 		} else {
-			renderInfo(errorsArr);
+			downloadObject.info = errorsArr;
+
+			render();
 		}
 	});
 }
@@ -180,15 +192,23 @@ function codeFromForm() {
 		const containsCode = [...dbQRCodesCollection.values()].some(({ cardid }) => idQR === cardid);
 
 		if (uniqueCode) {
-			renderInfo(['have']);
+			downloadObject.info = ['have'];
+
+			render();
 
 			return;
+		} else {
+			downloadObject.info = [];
 		}
 
 		if (containsCode) {
-			renderInfo(['contains']);
+			downloadObject.info = ['contains'];
+
+			render();
 
 			return;
+		} else {
+			downloadObject.info = [];
 		}
 
 		downloadCollection.set(counter, {
@@ -197,11 +217,13 @@ function codeFromForm() {
 			cardid: idQR,
 			cardname: nameQR
 		});
-		counter++;
-	});
 
-	dataAdd();
-	setDataInStorage();
+		counter++;
+
+		dataAdd();
+		setDataInStorage();
+		clearFieldsForm();
+	});
 }
 
 function dataAdd() {
@@ -232,7 +254,7 @@ function setDataInStorage(page = 'download') {
 }
 
 function deleteUser(page = 'download') {
-	$(`.container--${page} .table__body`).click(({ target }) => {
+	$(`.main[data-name=${page}] .table__body`).click(({ target }) => {
 		if ($(target).parents('.table__btn--delete').length || $(target).hasClass('table__btn--delete')) {
 			const userID = $(target).closest('.table__row').data('id');
 
@@ -252,19 +274,19 @@ function deleteUser(page = 'download') {
 	});
 }
 
-function clearFieldsForm(nameForm = '#downloadForm') {
-	$(`${nameForm} .form__item--textarea`).val('');
+function clearFieldsForm() {
+	downloadObject.textqr = '';
 	parseQRCollection.clear();
 
 	setTimeout(() => {
-		renderInfo();
+		downloadObject.info = [];
 	}, 5000);
 
-	renderCountParse();
+	render();
 }
 
 function submitIDinBD(page = 'download') {
-	$('#submitDownloadQR').click(() => {
+	$('.btn--submit').click(() => {
 		if (!downloadCollection.size) return;
 
 		setAddUsersInDB([...downloadCollection.values()], 'download', 'add');
