@@ -29,6 +29,7 @@ const editObject = {
 	statusnewfio: '',
 	statusnewpost: '',
 	statusnewphotofile: '',
+	info: [],
 	get nameid() {
 		return settingsObject.nameid;
 	},
@@ -47,15 +48,8 @@ const editCount = {
 let counter = 0;
 
 $(window).on('load', () => {
-	renderHeaderPage();
-	submitIDinBD();
 	showDataFromStorage();
 });
-
-function renderHeaderPage(page = 'edit') {
-	$(`.main[data-name=${page}] .main__title-wrap`).html('');
-	$(`.main[data-name=${page}] .container`).prepend(pageTitle(editObject));
-}
 
 function renderTable() {
 	if (!editCollection.size) {
@@ -83,7 +77,7 @@ function renderSelect(array) {
 	}, '');
 }
 
-function renderForm(nameForm = '#editForm') {
+function renderForm() {
 	const changeList = [
 		{
 			title: 'Утеря пластиковой карты',
@@ -115,19 +109,7 @@ function renderForm(nameForm = '#editForm') {
 		changeList: renderSelect(changeList)
 	};
 
-	$(`${nameForm}`).html('');
-	$(`${nameForm}`).append(`
-		<div class="form__wrap form__wrap--user">${form(editObject, selectList)}</div>
-		<div class="main__btns">
-			<button class="btn" id="editUser" type="button" data-type="edit-user">Редактировать</button>
-		</div>
-	`);
-
-	toggleSelect();
-	getAddUsersInDB();
-	downloadFoto();
-	memberInputField();
-	addUser();
+	return form(editObject, selectList);
 }
 
 function renderCount() {
@@ -138,7 +120,7 @@ function renderCount() {
 	}, '');
 }
 
-function renderInfo(errors = [], page = 'edit') {
+function renderInfo(errors) {
 	const info = [
 		{
 			type: 'warn',
@@ -167,37 +149,54 @@ function renderInfo(errors = [], page = 'edit') {
 		}
 	];
 
-	$(`.container--${page} .info`).html('');
-	info.forEach((item) => {
+	return info.reduce((content, item) => {
 		const { type, title, message } = item;
 
-		errors.forEach((error) => {
+		for (const error of errors) {
 			if (error === title) {
-				$(`.container--${page} .info`).append(`
-					<p class="info__item info__item--${type}">${message}</p>
-				`);
+				content += `<p class="info__item info__item--${type}">${message}</p>`;
 			}
-		});
-	});
+		}
+
+		return content;
+	}, '');
 }
 
-
 function render(page = 'edit') {
-	$(`.container--${page} .wrap--content`).html('');
-	$(`.container--${page} .wrap--content`).append(`
-		<div class="main__wrap-info">
-			<div class="main__cards">${renderCount()}</div>
-		</div>
-		<div class="wrap wrap--table">
-			<div class="table">
-				<header class="table__header">${headerTable(editObject)}</header>
-				<div class="table__body">${renderTable()}</div>
+	$(`.main[data-name=${page}]`).html('');
+	$(`.main[data-name=${page}]`).append(`
+		${pageTitle(editObject)}
+		<form class="form form--page" action="#" method="GET">
+			<div class="form__wrap form__wrap--user">${renderForm()}</div>
+			<div class="main__btns">
+				<button class="btn" id="editUser" type="button" data-type="edit-user">Редактировать</button>
 			</div>
+		</form>
+		<div class="info info--page">${renderInfo(editObject.info)}</div>
+		<div class="${classHeaderTable()}">
+			<div class="main__wrap-info">
+				<div class="main__cards">${renderCount()}</div>
+			</div>
+			<div class="wrap wrap--table">
+				<div class="table">
+					<header class="table__header">${headerTable(editObject)}</header>
+					<div class="table__body">${renderTable()}</div>
+				</div>
+			</div>
+		</div>
+		<div class="main__btns">
+			<button class="btn btn--submit" type="button">Подтвердить и отправить</button>
 		</div>
 	`);
 
 	deleteUser();
 	editUser();
+	toggleSelect();
+	getAddUsersInDB();
+	downloadFoto();
+	memberInputField();
+	addUser();
+	submitIDinBD();
 }
 
 function addUser() {
@@ -238,7 +237,7 @@ function addUser() {
 			userFromForm();
 			clearFieldsForm();
 		} else {
-			renderInfo(errorsArr);
+			editObject.info = errorsArr;
 		}
 	});
 }
@@ -275,8 +274,6 @@ function userFromForm() {
 }
 
 function dataAdd() {
-	showFieldsInHeaderTable();
-	renderForm();
 	render();
 }
 
@@ -327,20 +324,19 @@ function setDataInStorage(page = 'edit') {
 	});
 }
 
-function showFieldsInHeaderTable(page = 'edit') {
+function classHeaderTable(page = 'edit') {
 	editObject.statusnewfio = [...editCollection.values()].some(({ newfio }) => newfio);
 	editObject.statusnewpost = [...editCollection.values()].some(({ newpost }) => newpost);
 	editObject.statusnewphotofile = [...editCollection.values()].some(({ newphotofile }) => newphotofile);
 	const newfioMod = editObject.statusnewfio ? '-newfio' : '';
 	const newpostMod = editObject.statusnewpost ? '-newpost' : '';
 	const photofileMod = editObject.statusnewphotofile ? '-photofile' : '';
-	const className = `wrap wrap--content wrap--content-${page}${newfioMod}${newpostMod}${photofileMod}`;
 
-	$(`.main[data-name="${page}"]`).find('.wrap--content').attr('class', className);
+	return `wrap wrap--content wrap--content-${page}${newfioMod}${newpostMod}${photofileMod}`;
 }
 
-function setUsersInSelect(users, nameForm = '#editForm') {
-	$(`${nameForm} .select[data-select="fio"] .select__list`).html('');
+function setUsersInSelect(users, page = 'edit') {
+	$(`.main[data-name=${page}] .select[data-select="fio"] .select__list`).html('');
 
 	if (editCollection.size) {
 		editCollection.forEach((elem) => {
@@ -356,20 +352,20 @@ function setUsersInSelect(users, nameForm = '#editForm') {
 			dataid: 'id'
 		};
 
-		$(`${nameForm} .select[data-select="fio"] .select__list`).append(select(item));
+		$(`.main[data-name=${page}] .select[data-select="fio"] .select__list`).append(select(item));
 	});
 
 	clickSelectItem();
 }
 
-function toggleSelect(nameForm = '#editForm') {
-	$(`${nameForm} .select__header`).click(({ currentTarget }) => {
+function toggleSelect(page = 'edit') {
+	$(`.main[data-name=${page}] .select__header`).click(({ currentTarget }) => {
 		$(currentTarget).next().slideToggle().toggleClass('select__header--active');
 	});
 }
 
-function clickSelectItem(nameForm = '#editForm') {
-	$(`${nameForm} .select__item`).click(({ currentTarget }) => {
+function clickSelectItem(page = 'edit') {
+	$(`.main[data-name=${page}] .select__item`).click(({ currentTarget }) => {
 		const title = $(currentTarget).find('.select__name').data('title');
 		const id = $(currentTarget).find('.select__name').data('id');
 		const select = $(currentTarget).parents('.select').data('select');
@@ -410,17 +406,19 @@ function setDataAttrSelectedItem(title, select, statusid) {
 		}
 	}
 
-	renderForm();
+	render();
 }
 
 function clearFieldsForm() {
+	const untouchable = ['nameid', 'longname', 'page', 'info'];
+
 	for (const key in editObject) {
-		if (key !== 'nameid' && key !== 'longname' && key !== 'page') {
+		if (!untouchable.includes(key)) {
 			editObject[key] = '';
 		}
 	}
 
-	renderForm();
+	render();
 }
 
 function memberInputField() {
@@ -432,8 +430,8 @@ function memberInputField() {
 	});
 }
 
-function downloadFoto(nameForm = '#editForm') {
-	$(`${nameForm} .form__item--file`).change(({ target }) => {
+function downloadFoto(page = 'edit') {
+	$(`.main[data-name=${page}] .form__item--file`).change(({ target }) => {
 		const fileNameUrl = $(target).val();
 		const indexLastSlash = fileNameUrl.lastIndexOf('\\');
 		const photoName = fileNameUrl.slice(indexLastSlash + 1);
@@ -442,7 +440,7 @@ function downloadFoto(nameForm = '#editForm') {
 		const validPhotoName = validPhotoExtention(photoName);
 
 		if (!validPhotoName) {
-			renderInfo(['image']);
+			editObject.info = ['image'];
 
 			return;
 		}
@@ -451,7 +449,7 @@ function downloadFoto(nameForm = '#editForm') {
 		editObject.newphotofile = file;
 		editObject.newphotoname = photoName;
 
-		renderForm();
+		render();
 	});
 }
 
@@ -465,7 +463,7 @@ function validPhotoExtention(photoName) {
 }
 
 function deleteUser(page = 'edit') {
-	$(`.container--${page} .table__body`).click(({ target }) => {
+	$(`.main[data-name=${page}] .table__body`).click(({ target }) => {
 		if ($(target).parents('.table__btn--delete').length || $(target).hasClass('table__btn--delete')) {
 			const userID = $(target).closest('.table__row').data('id');
 
@@ -486,7 +484,7 @@ function deleteUser(page = 'edit') {
 }
 
 function editUser(page = 'edit') {
-	$(`.container--${page} .table__body`).click(({ target }) => {
+	$(`.main[data-name=${page}] .table__body`).click(({ target }) => {
 		if ($(target).parents('.table__btn--edit').length || $(target).hasClass('table__btn--edit')) {
 			const userID = $(target).closest('.table__row').data('id');
 
@@ -500,14 +498,13 @@ function editUser(page = 'edit') {
 				}
 			});
 
-			renderForm();
 			dataAdd();
 		}
 	});
 }
 
 function submitIDinBD(page = 'edit') {
-	$('#submitEditUser').click(() => {
+	$('.btn--submit').click(() => {
 		if (!editCollection.size) return;
 
 		editCollection.forEach((elem) => {
@@ -611,7 +608,7 @@ function getAddUsersInDB(id = '') {
 				editObject.id = id;
 				editObject.photofile = photofile;
 
-				renderForm();
+				render();
 			} else {
 				setUsersInSelect(JSON.parse(data));
 			}
