@@ -3,8 +3,8 @@
 import $ from 'jquery';
 import datepickerFactory from 'jquery-datepicker';
 import datepickerRUFactory from 'jquery-datepicker/i18n/jquery.ui.datepicker-ru';
-import service from '../service.js';
-import messageMail from '../mail.js';
+import service from '../js/service.js';
+import messageMail from '../js/mail.js';
 import { settingsObject, sendUsers } from './settings.ctrl.js';
 
 import { table } from '../components/remove/table.tpl.js';

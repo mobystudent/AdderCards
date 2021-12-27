@@ -1,9 +1,9 @@
 'use strict';
 
 import $ from 'jquery';
-import convert from '../convert.js';
-import service from '../service.js';
-import messageMail from '../mail.js';
+import convert from '../js/convert.js';
+import service from '../js/service.js';
+import messageMail from '../js/mail.js';
 import { settingsObject, sendUsers } from './settings.ctrl.js';
 
 import { table } from '../components/const/table.tpl.js';

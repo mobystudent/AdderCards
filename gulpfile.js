@@ -9,7 +9,7 @@ const gulp = require('gulp'),
 	plumber = require('gulp-plumber'),
 	newer = require('gulp-newer'),
 	changed = require('gulp-changed');
-	// browserSync = require('browser-sync').create();
+// browserSync = require('browser-sync').create();
 
 /* styles */
 const autoprefixer = require('gulp-autoprefixer'),
@@ -77,7 +77,7 @@ const dirBuild = 'build',
 			imgBg: `${dirSrc}/images/backgrounds/*`,
 			imgPic: `${dirSrc}/images/pictures/*`,
 			imgSvg: `${dirSrc}/images/svg/*`,
-			js: `${dirSrc}/js/**/*.js`
+			js: [`${dirSrc}/js/**/*.js`, `${dirSrc}/components/**/*.js`, `${dirSrc}/controllers/**/*.js`, `${dirSrc}/models/**/*.js`]
 		}
 	};
 
@@ -92,11 +92,11 @@ function gulpSass() {
 		.pipe(sourcemaps.init())
 		.pipe(sassGlob())
 		.pipe(sass({
-				linefeed: 'crlf',
-				indentType: 'tab',
-				indentWidth: 1,
-				outputStyle: 'compressed'
-			})
+			linefeed: 'crlf',
+			indentType: 'tab',
+			indentWidth: 1,
+			outputStyle: 'compressed'
+		})
 			.on('error', sass.logError))
 		.pipe(groupcmq())
 		.pipe(autoprefixer({
@@ -244,7 +244,7 @@ function gulpImagesSVG() {
 				}
 			}
 		}))
-		.pipe(debug({title: 'svg:'}))
+		.pipe(debug({ title: 'svg:' }))
 		.pipe(gulp.dest(path.build.img));
 }
 

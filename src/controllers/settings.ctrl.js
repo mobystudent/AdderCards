@@ -2,7 +2,7 @@
 
 import $ from 'jquery';
 import Scrollbar from 'smooth-scrollbar';
-import service from '../service.js';
+import service from '../js/service.js';
 
 import { changeName } from '../components/settings/change-name.tpl.js';
 import { addDepart } from '../components/settings/add-depart.tpl.js';

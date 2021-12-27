@@ -1,8 +1,8 @@
 'use strict';
 
 import $ from 'jquery';
-import convert from '../convert.js';
-import service from '../service.js';
+import convert from '../js/convert.js';
+import service from '../js/service.js';
 
 import { table } from '../components/time/table.tpl.js';
 import { headerTable } from '../components/time/header-table.tpl.js';

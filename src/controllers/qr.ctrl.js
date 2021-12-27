@@ -2,8 +2,8 @@
 
 import $ from 'jquery';
 import QRCode from 'qrcode';
-import service from '../service.js';
-import messageMail from '../mail.js';
+import service from '../js/service.js';
+import messageMail from '../js/mail.js';
 import { settingsObject, sendUsers } from './settings.ctrl.js';
 
 import { table } from '../components/qr/table.tpl.js';

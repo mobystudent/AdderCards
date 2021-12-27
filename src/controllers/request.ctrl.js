@@ -1,21 +1,21 @@
 'use strict';
 
 import $ from 'jquery';
-import service from '../service.js';
-import messageMail from '../mail.js';
+import service from '../js/service.js';
+import messageMail from '../js/mail.js';
 import { settingsObject, sendUsers } from './settings.ctrl.js';
 
-import { table } from '../components/permis/table.tpl.js';
+import { table } from '../components/request/table.tpl.js';
 import { tabs } from '../components/tabs.tpl.js';
-import { headerTable } from '../components/permis/header-table.tpl.js';
+import { headerTable } from '../components/request/header-table.tpl.js';
 import { switchElem } from '../components/switch.tpl.js';
 import { count } from '../components/count.tpl.js';
 import { pageTitle } from '../components/page-title.tpl.js';
 
-const permissionCollection = new Map(); // БД пользователей при старте
+const requestCollection = new Map(); // БД отчета
 const departmentCollection = new Map();  // Коллекци подразделений
-const permisObject = {
-	page: 'Разрешение на добавление <br> идентификаторов пользователям',
+const requestObject = {
+	page: 'Запрос на изменение данных',
 	statusallow: '',
 	statusdisallow: '',
 	nameid: '',
@@ -23,26 +23,26 @@ const permisObject = {
 	shortname: '',
 	info: []
 };
-const permisSwitch = {
+const requestSwitch = {
 	refresh: {
 		type: 'refresh',
 		status: false,
 		marker: 0
 	}
 };
-const permisCount = {
+const requestCount = {
 	item: {
 		title: 'Количество пользователей:&nbsp',
 		get count() {
-			return [...permissionCollection.values()].filter(({ nameid }) => nameid === permisObject.nameid).length;
+			return [...requestCollection.values()].filter(({ nameid }) => nameid === requestObject.nameid).length;
 		}
 	},
 	all: {
 		title: 'Общее количество пользователей:&nbsp',
 		get count() {
-			return permissionCollection.size;
+			return requestCollection.size;
 		}
-	}
+	},
 };
 
 $(window).on('load', () => {
@@ -50,11 +50,11 @@ $(window).on('load', () => {
 });
 
 function renderTable() {
-	if (!permissionCollection.size) {
+	if (!requestCollection.size) {
 		return `<p class="table__nothing">Новых данных нет</p>`;
 	} else {
-		return [...permissionCollection.values()].reduce((content, item) => {
-			if (item.nameid === permisObject.nameid) {
+		return [...requestCollection.values()].reduce((content, item) => {
+			if (item.nameid === requestObject.nameid) {
 				content += table(item);
 			}
 
@@ -73,7 +73,7 @@ function renderTabs() {
 					tabItem = {
 						nameid,
 						shortname,
-						status: permisObject.nameid === nameid
+						status: requestObject.nameid === nameid
 					};
 				}
 			});
@@ -88,7 +88,7 @@ function renderTabs() {
 }
 
 function renderSwitch() {
-	return Object.values(permisSwitch).reduce((content, item) => {
+	return Object.values(requestSwitch).reduce((content, item) => {
 		let switchText;
 		let tooltip;
 
@@ -110,7 +110,7 @@ function renderSwitch() {
 }
 
 function renderCount() {
-	return Object.values(permisCount).reduce((content, item) => {
+	return Object.values(requestCount).reduce((content, item) => {
 		content += count(item);
 
 		return content;
@@ -139,11 +139,11 @@ function renderInfo(errors) {
 	}, '');
 }
 
-function render(page = 'permis') {
+function render(page = 'request') {
 	$(`.main[data-name=${page}]`).html('');
 	$(`.main[data-name=${page}]`).append(`
-		${pageTitle(permisObject)}
-		<div class="wrap wrap--content wrap--content-permis">
+		${pageTitle(requestObject)}
+		<div class="wrap wrap--content wrap--content-request">
 			<div class="main__wrap-info">
 				<div class="main__cards">${renderCount()}</div>
 				<div class="main__switchies">${renderSwitch()}</div>
@@ -151,19 +151,19 @@ function render(page = 'permis') {
 			<div class="wrap wrap--table">
 				<header class="tab">${renderTabs()}</header>
 				<div class="table">
-					<header class="table__header">${headerTable(permisObject)}</header>
+					<header class="table__header">${headerTable(requestObject)}</header>
 					<div class="table__body">${renderTable()}</div>
 				</div>
 			</div>
 		</div>
-		<div class="info info--page">${renderInfo(permisObject.info)}</div>
+		<div class="info info--page">${renderInfo(requestObject.info)}</div>
 		<div class="main__btns">
-			<button class="btn btn--submit" type="button">Подтвердить</button>
+			<button class="btn btn--submit" type="button">Применить</button>
 		</div>
 	`);
 
 	autoRefresh();
-	clickAllowDisallowPermis();
+	clickAllowDisallowRequest();
 	confirmAllAllowDisallow();
 	submitIDinBD();
 
@@ -176,14 +176,10 @@ function userFromDB(array) {
 		fio: '',
 		post: '',
 		nameid: '',
-		photofile: '',
-		photourl: '',
 		statusid: '',
 		statustitle: '',
 		department: '',
-		statususer: '',
-		сardvalidto: '',
-		statuspermis: ''
+		date: ''
 	};
 
 	array.forEach((elem, i) => {
@@ -197,48 +193,48 @@ function userFromDB(array) {
 			}
 		}
 
-		permissionCollection.set(i, itemObject);
+		requestCollection.set(i, itemObject);
 	});
 
 	dataAdd();
 }
 
 function dataAdd() {
-	permisObject.nameid = filterDepart()[0];
+	requestObject.nameid = filterDepart()[0];
 
 	getDepartmentFromDB();
 	showActiveDataOnPage();
 	render();
 }
 
-function showDataFromStorage(page = 'permis') {
+function showDataFromStorage(page = 'request') {
 	const storageCollection = JSON.parse(localStorage.getItem(page));
 
-	if (storageCollection && storageCollection.collection.length && !permissionCollection.size) {
+	if (storageCollection && storageCollection.collection.length && !requestCollection.size) {
 		const { statusallow, statusdisallow } = storageCollection.controls;
 		const { refresh } = storageCollection.settings;
 
 		storageCollection.collection.forEach((item, i) => {
 			const itemID = storageCollection.collection[i].id;
 
-			permissionCollection.set(itemID, item);
+			requestCollection.set(itemID, item);
 		});
 
-		permisObject.statusallow = statusallow;
-		permisObject.statusdisallow = statusdisallow;
-		permisSwitch.refresh = refresh;
+		requestObject.statusallow = statusallow;
+		requestObject.statusdisallow = statusdisallow;
+		requestSwitch.refresh = refresh;
 
 		dataAdd();
 	} else {
-		getDataFromDB('permis');
+		getDataFromDB('request');
 	}
 }
 
-function setDataInStorage(page = 'permis') {
+function setDataInStorage(page = 'request') {
 	localStorage.setItem(page, JSON.stringify({
-		settings: permisSwitch,
-		controls: permisObject,
-		collection: [...permissionCollection.values()]
+		settings: requestSwitch,
+		controls: requestObject,
+		collection: [...requestCollection.values()]
 	}));
 }
 
@@ -246,26 +242,26 @@ function showActiveDataOnPage() {
 	departmentCollection.forEach((depart) => {
 		const { nameid, shortname, longname } = depart;
 
-		if (nameid === permisObject.nameid) {
-			permisObject.shortname = shortname;
-			permisObject.longname = longname;
+		if (nameid === requestObject.nameid) {
+			requestObject.shortname = shortname;
+			requestObject.longname = longname;
 		}
 	});
 }
 
-function submitIDinBD(page = 'permis') {
+function submitIDinBD(page = 'request') {
 	$('btn--submit').click(() => {
-		const filterDepartCollection = [...permissionCollection.values()].filter(({ nameid }) => nameid === permisObject.nameid);
-		const checkedItems = filterDepartCollection.every(({ statuspermis }) => statuspermis);
+		const filterDepartCollection = [...requestCollection.values()].filter(({ nameid }) => nameid === requestObject.nameid);
+		const checkedItems = filterDepartCollection.every(({ statusrequest }) => statusrequest);
 
 		if (checkedItems) {
-			const allowItems = filterDepartCollection.filter(({ statuspermis }) => statuspermis === 'allow');
-			const disallowItems = filterDepartCollection.filter(({ statuspermis }) => statuspermis === 'disallow');
+			const allowItems = filterDepartCollection.filter(({ statusrequest }) => statusrequest === 'allow');
+			const disallowItems = filterDepartCollection.filter(({ statusrequest }) => statusrequest === 'disallow');
 
-			permisObject.info = [];
+			requestObject.info = [];
 
 			if (allowItems.length) {
-				delegationID(allowItems);
+				// Запрос в Uprox
 			}
 
 			if (disallowItems.length) {
@@ -273,13 +269,15 @@ function submitIDinBD(page = 'permis') {
 					item.date = service.getCurrentDate();
 				});
 
-				setAddUsersInDB(disallowItems, 'reject', 'add', 'permis');
+				setAddUsersInDB(disallowItems, 'reject', 'add', 'reject');
 			}
 
+			console.log(filterDepartCollection);
+
 			filterDepartCollection.forEach(({ id: userID }) => {
-				[...permissionCollection].forEach(([key, { id }]) => {
+				[...requestCollection].forEach(([key, { id }]) => {
 					if (userID === id) {
-						permissionCollection.delete(key);
+						requestCollection.delete(key);
 					}
 				});
 			});
@@ -291,49 +289,38 @@ function submitIDinBD(page = 'permis') {
 
 			localStorage.removeItem(page);
 		} else {
-			permisObject.info = ['fields'];
+			requestObject.info = ['fields'];
 			render();
 		}
 	});
 }
 
-function delegationID(users) {
-	const filterArrCards = users.filter(({ statusid }) => statusid === 'newCard' || statusid === 'changeCard');
-	const filterArrQRs = users.filter(({ statusid }) => statusid === 'newQR' || statusid === 'changeQR');
-
-	if (filterArrCards.length) {
-		setAddUsersInDB(filterArrCards, 'const', 'add', 'card');
-	}
-	if (filterArrQRs.length) {
-		setAddUsersInDB(filterArrQRs, 'const', 'add', 'qr');
-	}
-}
-
 function clearObject() {
-	permisObject.nameid = '';
-	permisObject.longname = '';
-	permisObject.shortname = '';
+	requestObject.nameid = '';
+	requestObject.longname = '';
+	requestObject.shortname = '';
 }
 
-function clickAllowDisallowPermis(page = 'permis') {
+function clickAllowDisallowRequest(page = 'request') {
 	$(`.main[data-name=${page}] .table__body`).click(({ target }) => {
 		if (!$(target).hasClass('btn--allow') && !$(target).hasClass('btn--disallow')) return;
 
 		const userID = $(target).parents('.table__row').data('id');
 		const typeBtn = $(target).data('type');
 
-		permissionCollection.forEach((item) => {
+		requestCollection.forEach((item) => {
 			if (+item.id === userID) {
 				const status = item[typeBtn] ? false : true;
-				item.statususer = status ? true : false;
-				item.statuspermis = typeBtn;
+
+				item.statususer = status;
+				item.statusrequest = typeBtn;
 				item[typeBtn] = status;
-				item.allowblock = typeBtn === 'disallow' && status ? true : false;
-				item.disallowblock = typeBtn === 'allow' && status ? true : false;
+				item.allowblock = typeBtn === 'disallow' && status;
+				item.disallowblock = typeBtn === 'allow' && status;
 			}
 		});
 
-		const allStatusUsers = [...permissionCollection.values()].some(({ statususer }) => statususer);
+		const allStatusUsers = [...requestCollection.values()].some(({ statususer }) => statususer);
 
 		if (!allStatusUsers) {
 			localStorage.removeItem(page);
@@ -345,24 +332,24 @@ function clickAllowDisallowPermis(page = 'permis') {
 	});
 }
 
-function confirmAllAllowDisallow(page = 'permis') {
+function confirmAllAllowDisallow(page = 'request') {
 	$(`.main[data-name=${page}] #allowAll, .main[data-name=${page}] #disallowAll`).click(({ target }) => {
 		const typeBtn = $(target).data('type');
 		const statusTypeBtn = typeBtn === 'allow' ? 'statusallow' : 'statusdisallow';
-		permisObject[statusTypeBtn] = permisObject[statusTypeBtn] ? false : true;
+		requestObject[statusTypeBtn] = requestObject[statusTypeBtn] ? false : true;
 
-		permissionCollection.forEach((item) => {
-			if (item.nameid === permisObject.nameid) {
-				item.statususer = permisObject[statusTypeBtn] ? true : false;
-				item.statuspermis = typeBtn;
+		requestCollection.forEach((item) => {
+			if (item.nameid === requestObject.nameid) {
+				item.statususer = requestObject[statusTypeBtn];
+				item.statusrequest = typeBtn;
 				item.allow = '';
 				item.disallow = '';
-				item.allowblock = permisObject[statusTypeBtn] ? true : false;
-				item.disallowblock = permisObject[statusTypeBtn] ? true : false;
+				item.allowblock = requestObject[statusTypeBtn];
+				item.disallowblock = requestObject[statusTypeBtn];
 			}
 		});
 
-		if (!permisObject.statusallow && !permisObject.statusdisallow) {
+		if (!requestObject.statusallow && !requestObject.statusdisallow) {
 			localStorage.removeItem(page);
 		} else {
 			setDataInStorage();
@@ -373,43 +360,45 @@ function confirmAllAllowDisallow(page = 'permis') {
 }
 
 function resetControlBtns() {
-	permisObject.statusallow = '';
-	permisObject.statusdisallow = '';
+	requestObject.statusallow = '';
+	requestObject.statusdisallow = '';
 
-	permissionCollection.forEach((item) => {
-		item.statususer = '';
-		item.statuspermis = '';
-		item.allow = '';
-		item.disallow = '';
-		item.allowblock = '';
-		item.disallowblock = '';
+	requestCollection.forEach((item) => {
+		if (item.nameid === requestObject.nameid) {
+			item.statususer = '';
+			item.statusrequest = '';
+			item.allow = '';
+			item.disallow = '';
+			item.allowblock = '';
+			item.disallowblock = '';
+		}
 	});
 }
 
-function autoRefresh(page = 'permis') {
+function autoRefresh(page = 'request') {
 	const timeReload = 60000 * settingsObject.autoupdatevalue;
 
 	$(`.main[data-name=${page}] .switch--refresh`).click(({ target }) => {
 		if (!$(target).hasClass('switch__input')) return;
 
 		const statusSwitch = $(target).prop('checked');
-		permisSwitch.refresh.status = statusSwitch;
+		requestSwitch.refresh.status = statusSwitch;
 
-		if (statusSwitch && !permisSwitch.refresh.marker) {
+		if (statusSwitch && !requestSwitch.refresh.marker) {
 			localStorage.removeItem(page);
-			permissionCollection.clear();
+			requestCollection.clear();
 
 			resetControlBtns(); // 1
-			getDataFromDB('permis'); // 2
+			getDataFromDB('request'); // 2
 			setDataInStorage();
 
-			permisSwitch.refresh.marker = setInterval(() => {
-				getDataFromDB('permis');
+			requestSwitch.refresh.marker = setInterval(() => {
+				getDataFromDB('request');
 			}, timeReload);
-		} else if (!statusSwitch && permisSwitch.refresh.marker) {
-			clearInterval(permisSwitch.refresh.marker);
+		} else if (!statusSwitch && requestSwitch.refresh.marker) {
+			clearInterval(requestSwitch.refresh.marker);
 
-			permisSwitch.refresh.marker = false;
+			requestSwitch.refresh.marker = false;
 			localStorage.removeItem(page);
 		}
 
@@ -430,12 +419,12 @@ function setAddUsersInDB(array, nameTable, action, typeTable) {
 			array
 		},
 		success: () => {
-			const title = nameTable === 'reject' ? 'Отклонено' : 'Добавить';
+			const title = nameTable === 'reject' ? 'Отклонено' : 'Изменено';
 
 			service.modal('success');
 
 			sendMail({
-				department: permisObject.longname,
+				department: requestObject.longname,
 				count: array.length,
 				title,
 				users: array
@@ -491,16 +480,14 @@ function getDepartmentFromDB() {
 
 function sendMail(obj) {
 	const { title = '' } = obj;
-	const sender = sendUsers.secretary;
+	const sender = sendUsers.operator;
+	const recipient = sendUsers.manager;
 	let subject;
-	let recipient;
 
 	if (title === 'Отклонено') {
-		recipient = sendUsers.manager;
-		subject = 'Отклонен запрос на добавление пользователей в БД';
+		subject = 'Отклонен запрос на изменение данных в БД';
 	} else {
-		recipient = sendUsers.operator;
-		subject = 'Запрос на добавление пользователей в БД';
+		subject = 'Успешно изменены данные о пользователях в БД';
 	}
 
 	$.ajax({
@@ -524,11 +511,11 @@ function sendMail(obj) {
 }
 
 // Общие функции с картами и кодами
-function changeTabs(page = 'permis') {
+function changeTabs(page = 'request') {
 	$(`.main[data-name=${page}] .tab`).click(({ target }) => {
 		if (!$(target).parents('.tab__item').length && !$(target).hasClass('tab__item')) return;
 
-		permisObject.nameid = $(target).closest('.tab__item').data('depart');
+		requestObject.nameid = $(target).closest('.tab__item').data('depart');
 
 		resetControlBtns();
 		showActiveDataOnPage();
@@ -539,10 +526,11 @@ function changeTabs(page = 'permis') {
 }
 
 function filterDepart() {
-	const arrayDepart = [...permissionCollection.values()].map(({ nameid }) => nameid);
+	const arrayDepart = [...requestCollection.values()].map(({ nameid }) => nameid);
 
 	return [...new Set(arrayDepart)];
 }
 
 export default {
+
 };

@@ -1,7 +1,7 @@
 'use strict';
 
 import $ from 'jquery';
-import service from '../service.js';
+import service from '../js/service.js';
 
 import { table } from '../components/download/table.tpl.js';
 import { headerTable } from '../components/download/header-table.tpl.js';
