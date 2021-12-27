@@ -23,7 +23,8 @@ const qrObject = {
 	longname: '',
 	shortname: '',
 	statusmanual: '',
-	statusassign: ''
+	statusassign: '',
+	info: []
 };
 const qrSwitch = {
 	refresh: {
@@ -58,15 +59,8 @@ const qrCount = {
 };
 
 $(window).on('load', () => {
-	getGeneratedQRFromDB();
-	submitIDinBD();
 	showDataFromStorage();
 });
-
-function renderHeaderPage(page = 'qr') {
-	$(`.main[data-name=${page}] .main__title-wrap`).html('');
-	$(`.main[data-name=${page}] .container`).prepend(pageTitle(qrObject));
-}
 
 function renderTable() {
 	if (!qrCollection.size) {
@@ -144,7 +138,7 @@ function renderCount() {
 	}, '');
 }
 
-function renderInfo(errors = [], page = 'qr') {
+function renderInfo(errors) {
 	const info = [
 		{
 			type: 'warn',
@@ -158,39 +152,48 @@ function renderInfo(errors = [], page = 'qr') {
 		}
 	];
 
-	$(`.container--${page} .info`).html('');
-	info.forEach((item) => {
+	return info.reduce((content, item) => {
 		const { type, title, message } = item;
 
-		errors.forEach((error) => {
+		for (const error of errors) {
 			if (error === title) {
-				$(`.container--${page} .info`).append(`
-					<p class="info__item info__item--${type}">${message}</p>
-				`);
+				content += `<p class="info__item info__item--${type}">${message}</p>`;
 			}
-		});
-	});
+		}
+
+		return content;
+	}, '');
 }
 
 function render(page = 'qr') {
-	$(`.container--${page} .wrap--content`).html('');
-	$(`.container--${page} .wrap--content`).append(`
-		<div class="main__wrap-info">
-			<div class="main__cards">${renderCount()}</div>
-			<div class="main__switchies">${renderSwitch()}</div>
-		</div>
-		<div class="wrap wrap--table">
-			<header class="tab">${renderTabs()}</header>
-			<div class="table">
-				<header class="table__header">${headerTable(qrObject)}</header>
-				<div class="table__body">${renderTable()}</div>
+	$(`.main[data-name=${page}]`).html('');
+	$(`.main[data-name=${page}]`).append(`
+		${pageTitle(qrObject)}
+		<div class="${classHeaderTable()}">
+			<div class="main__wrap-info">
+				<div class="main__cards">${renderCount()}</div>
+				<div class="main__switchies">${renderSwitch()}</div>
 			</div>
+			<div class="wrap wrap--table">
+				<header class="tab">${renderTabs()}</header>
+				<div class="table">
+					<header class="table__header">${headerTable(qrObject)}</header>
+					<div class="table__body">${renderTable()}</div>
+				</div>
+			</div>
+		</div>
+		<section class="document"></section>
+		<div class="info info--page">${renderInfo(qrObject.info)}</div>
+		<div class="main__btns">
+			<button class="btn btn--submit" type="button">Добавить</button>
 		</div>
 	`);
 
 	autoRefresh();
 	typeAssignCode();
 	assignAllQR();
+	submitIDinBD();
+
 	if (filterDepart().length > 1) changeTabs();
 }
 
@@ -230,7 +233,7 @@ function userFromDB(array) {
 }
 
 function typeAssignCode(page = 'qr') {
-	$(`.container--${page} .switch--assign`).click(({ target }) => {
+	$(`.main[data-name=${page}] .switch--assign`).click(({ target }) => {
 		if (!$(target).hasClass('switch__input')) return;
 
 		qrObject.statusmanual = $(target).prop('checked');
@@ -244,18 +247,17 @@ function typeAssignCode(page = 'qr') {
 
 		resetControlSwitch();
 		assignCodes();
-		showFieldsInHeaderTable();
 		render();
 	});
 }
 
 function assignCodes() {
 	if (qrCollection.size > generateCollection.size && !qrObject.statusmanual) {
-		renderInfo(['deficit']);
+		qrObject.info = ['deficit'];
 
 		return;
 	} else {
-		renderInfo();
+		qrObject.info = [];
 	}
 
 	if (!qrObject.statusmanual) {
@@ -279,14 +281,8 @@ function assignCodes() {
 function dataAdd() {
 	qrObject.nameid = filterDepart()[0];
 
+	getGeneratedQRFromDB();
 	getDepartmentFromDB();
-
-	if (qrCollection.size) {
-		showFieldsInHeaderTable();
-	} else {
-		return;
-	}
-
 	assignCodes();
 	showActiveDataOnPage();
 	render();
@@ -313,7 +309,6 @@ function showDataFromStorage(page = 'qr') {
 		dataAdd();
 	} else {
 		getDataFromDB('const', 'qr');
-		getGeneratedQRFromDB();
 	}
 }
 
@@ -325,11 +320,10 @@ function setDataInStorage(page = 'qr') {
 	}));
 }
 
-function showFieldsInHeaderTable(page = 'qr') {
+function classHeaderTable(page = 'qr') {
 	const assignMod = qrObject.statusmanual ? '-manual' : '';
-	const className = `wrap wrap--content wrap--content-${page}${assignMod}`;
 
-	$(`.main[data-name="${page}"]`).find('.wrap--content').attr('class', className);
+	return `wrap wrap--content wrap--content-${page}${assignMod}`;
 }
 
 function showActiveDataOnPage() {
@@ -341,17 +335,15 @@ function showActiveDataOnPage() {
 			qrObject.longname = longname;
 		}
 	});
-
-	renderHeaderPage();
 }
 
 function submitIDinBD(page = 'qr') {
-	$('#submitConstQR').click(() => {
+	$('.btn--submit').click(() => {
 		const filterDepartCollection = [...qrCollection.values()].filter(({ nameid }) => nameid == qrObject.nameid);
 		const checkedItems = filterDepartCollection.every(({ cardid }) => cardid);
 
 		if (checkedItems) {
-			renderInfo();
+			qrObject.info = [];
 
 			qrCollection.forEach((item) => {
 				if (item.nameid === qrObject.nameid) {
@@ -386,25 +378,27 @@ function submitIDinBD(page = 'qr') {
 			dataAdd();
 			typeAssignCode();
 
-			if (!qrCollection.size) {
-				renderHeaderPage();
-			}
-
 			localStorage.removeItem(page);
 		} else {
-			renderInfo(['fields']);
+			qrObject.info = ['fields'];
+
+			render();
 		}
 	});
 }
 
 function clearObject() {
+	const untouchable = ['page', 'info'];
+
 	for (const key in qrObject) {
-		qrObject[key] = '';
+		if (!untouchable.includes(key)) {
+			qrObject[key] = '';
+		}
 	}
 }
 
 function assignAllQR(page = 'qr') {
-	$(`.container--${page} #assignAll`).click(({ target }) => {
+	$(`.main[data-name=${page}] #assignAll`).click(({ target }) => {
 		if (!$(target).hasClass('switch__input')) return;
 
 		const filterDepartCollection = [...qrCollection.values()].filter(({ nameid }) => nameid === qrObject.nameid);
@@ -413,11 +407,11 @@ function assignAllQR(page = 'qr') {
 		if (filterDepartCollection.length > generateCollection.size) {
 			qrObject.statusassign = false;
 
-			renderInfo(['deficit']);
+			qrObject.info = ['deficit'];
 
 			return;
 		} else {
-			renderInfo();
+			qrObject.info = [];
 		}
 
 		if (qrObject.statusassign) {
@@ -458,7 +452,7 @@ function resetControlSwitch() {
 function autoRefresh(page = 'qr') {
 	const timeReload = 60000 * settingsObject.autoupdatevalue;
 
-	$(`.container--${page} .switch--refresh`).click(({ target }) => {
+	$(`.main[data-name=${page}] .switch--refresh`).click(({ target }) => {
 		if (!$(target).hasClass('switch__input')) return;
 
 		const statusSwitch = $(target).prop('checked');
@@ -470,12 +464,10 @@ function autoRefresh(page = 'qr') {
 			qrObject.statusassign = '';
 
 			getDataFromDB('const', 'qr');
-			getGeneratedQRFromDB();
 			assignCodes();
 
 			qrSwitch.refresh.marker = setInterval(() => {
 				getDataFromDB('const', 'qr');
-				getGeneratedQRFromDB();
 			}, timeReload);
 		} else if (!statusSwitch && qrSwitch.refresh.marker) {
 			clearInterval(qrSwitch.refresh.marker);
@@ -642,7 +634,7 @@ function sendMail(obj) {
 
 
 function changeTabs(page = 'qr') {
-	$(`.container--${page} .tab`).click(({ target }) => {
+	$(`.main[data-name=${page}] .tab`).click(({ target }) => {
 		if (!$(target).parents('.tab__item').length && !$(target).hasClass('tab__item')) return;
 
 		qrObject.nameid = $(target).closest('.tab__item').data('depart');
