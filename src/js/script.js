@@ -10,7 +10,6 @@ import '../controllers/qr.ctrl.js';
 import '../controllers/add.ctrl.js';
 import '../controllers/remove.ctrl.js';
 import '../controllers/edit.ctrl.js';
-import '../controllers/report.ctrl.js';
 import '../controllers/reject.ctrl.js';
 import '../controllers/request.ctrl.js';
 import '../controllers/settings.ctrl.js';
@@ -18,9 +17,13 @@ import './login.js';
 import service from './service.js';
 import './parts/renderheader.js';
 
+import Report from '../controllers/report.ctrl.js';
+
 $(window).on('load', () => {
 	// service.scrollbar();
 	service.showDataInTable();
+
+	new Report();
 });
 
 function focusFirstCell(nameTable) {
