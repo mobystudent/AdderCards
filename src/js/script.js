@@ -5,7 +5,6 @@ import $ from 'jquery';
 import '../controllers/time.ctrl.js';
 import '../controllers/const.ctrl.js';
 import '../controllers/download.ctrl.js';
-import '../controllers/permis.ctrl.js';
 import '../controllers/qr.ctrl.js';
 import '../controllers/add.ctrl.js';
 import '../controllers/remove.ctrl.js';
@@ -17,12 +16,14 @@ import './login.js';
 import service from './service.js';
 import './parts/renderheader.js';
 
+import Permis from '../controllers/permis.ctrl.js';
 import Report from '../controllers/report.ctrl.js';
 
 $(window).on('load', () => {
 	// service.scrollbar();
 	service.showDataInTable();
 
+	new Permis();
 	new Report();
 });
 

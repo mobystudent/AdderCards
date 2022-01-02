@@ -6,9 +6,13 @@ import { switchElem } from '../components/switch.tpl.js';
 class MainModel {
 	constructor(props) {
 		({
+			object: this.object = {},
+			checkNameId: this.checkNameId = false,
 			collection: this.collection = new Map(),
 			count: this.count = 0,
 			switchItem: this.switchItem,
+			info: this.info = [],
+			errors: this.errors = [],
 			table: this.table
 		} = props);
 	}
@@ -18,7 +22,13 @@ class MainModel {
 			return `<p class="table__nothing">Новых данных нет</p>`;
 		} else {
 			return [...this.collection.values()].reduce((content, item) => {
-				content += this.table(item);
+				if (this.checkNameId) {
+					if (item.nameid === this.object.nameid) {
+						content += this.table(item);
+					}
+				} else {
+					content += this.table(item);
+				}
 
 				return content;
 			}, '');
@@ -50,6 +60,20 @@ class MainModel {
 	renderCount() {
 		return Object.values(this.count).reduce((content, item) => {
 			content += count(item);
+
+			return content;
+		}, '');
+	}
+
+	renderInfo() {
+		return this.info.reduce((content, item) => {
+			const { type, title, message } = item;
+
+			for (const error of this.errors) {
+				if (error === title) {
+					content += `<p class="info__item info__item--${type}">${message}</p>`;
+				}
+			}
 
 			return content;
 		}, '');
