@@ -1,6 +1,5 @@
 'use strict';
 
-// import $ from '../../node_modules/jquery';
 import $ from 'jquery';
 import '../controllers/time.ctrl.js';
 import '../controllers/const.ctrl.js';
@@ -10,20 +9,21 @@ import '../controllers/add.ctrl.js';
 import '../controllers/remove.ctrl.js';
 import '../controllers/edit.ctrl.js';
 import '../controllers/reject.ctrl.js';
-import '../controllers/request.ctrl.js';
 import '../controllers/settings.ctrl.js';
 import './login.js';
 import service from './service.js';
 import './parts/renderheader.js';
 
-import Permis from '../controllers/permis.ctrl.js';
-import Report from '../controllers/report.ctrl.js';
+import Request from '../controllers/pages/request.ctrl.js';
+import Permis from '../controllers/pages/permis.ctrl.js';
+import Report from '../controllers/pages/report.ctrl.js';
 
 $(window).on('load', () => {
 	// service.scrollbar();
 	service.showDataInTable();
 
-	new Permis();
+	new Request({ page: 'request' });
+	new Permis({ page: 'permis' });
 	new Report();
 });
 

@@ -3,10 +3,10 @@
 import $ from 'jquery';
 import datepickerFactory from 'jquery-datepicker';
 import datepickerRUFactory from 'jquery-datepicker/i18n/jquery.ui.datepicker-ru';
-import service from '../js/service.js';
-import { settingsObject } from './settings.ctrl.js';
+import service from '../../js/service.js';
+import { settingsObject } from '../settings.ctrl.js';
 
-import ReportModel from '../models/pages/report.model.js';
+import ReportModel from '../../models/pages/report.model.js';
 
 datepickerFactory($);
 datepickerRUFactory($);
