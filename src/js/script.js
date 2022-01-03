@@ -5,7 +5,6 @@ import '../controllers/time.ctrl.js';
 import '../controllers/const.ctrl.js';
 import '../controllers/download.ctrl.js';
 import '../controllers/qr.ctrl.js';
-import '../controllers/add.ctrl.js';
 import '../controllers/remove.ctrl.js';
 import '../controllers/edit.ctrl.js';
 import '../controllers/settings.ctrl.js';
@@ -13,6 +12,7 @@ import './login.js';
 import service from './service.js';
 import './parts/renderheader.js';
 
+import Add from '../controllers/pages/add.ctrl.js';
 import Reject from '../controllers/pages/reject.ctrl.js';
 import Request from '../controllers/pages/request.ctrl.js';
 import Permis from '../controllers/pages/permis.ctrl.js';
@@ -22,6 +22,7 @@ $(window).on('load', () => {
 	// service.scrollbar();
 	service.showDataInTable();
 
+	new Add({ page: 'add' });
 	new Reject({ page: 'reject' });
 	new Request({ page: 'request' });
 	new Permis({ page: 'permis' });

@@ -7,27 +7,34 @@ class MainModel {
 	constructor(props) {
 		({
 			object: this.object = {},
-			checkNameId: this.checkNameId = false,
+			checkNameId: this.checkNameId = '',
 			collection: this.collection = new Map(),
 			count: this.count = 0,
 			switchItem: this.switch = {},
 			info: this.info = [],
 			errors: this.errors = [],
+			emptyMess: this.emptyMess = '',
 			table: this.table
 		} = props);
 	}
 
 	renderTable() {
 		if (!this.collection.size) {
-			return `<p class="table__nothing">Новых данных нет</p>`;
+			return `<p class="table__nothing">${this.emptyMess}</p>`;
 		} else {
 			return [...this.collection.values()].reduce((content, item) => {
-				if (this.checkNameId) {
-					if (item.nameid === this.object.nameid) {
+				switch (this.checkNameId) {
+					case 'check':
+						if (item.nameid === this.object.nameid) {
+							content += this.table(item);
+						}
+						break;
+					case 'double':
+						content += this.table(item, this.object);
+						break;
+					case 'single':
 						content += this.table(item);
-					}
-				} else {
-					content += this.table(item);
+						break;
 				}
 
 				return content;

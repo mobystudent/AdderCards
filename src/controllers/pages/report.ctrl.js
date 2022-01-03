@@ -61,6 +61,8 @@ class Report {
 			collection: this.collection,
 			switchItem: this.switch,
 			count: this.count,
+			checkNameId: 'single',
+			emptyMess: 'Новых данных нет',
 			filterArrs: {
 				posts: this.filterPosts(),
 				status: this.filterStatus()

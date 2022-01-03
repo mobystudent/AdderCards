@@ -77,9 +77,10 @@ class Permis extends Access {
 			departmentCollection: this.departmentCollection,
 			switchItem: this.switch,
 			count: this.count,
-			checkNameId: true,
+			checkNameId: 'check',
 			info: this.info,
 			errors: this.object.errors,
+			emptyMess: 'Новых данных нет',
 			filterArrs: {
 				departs: this.filterDepart()
 			}

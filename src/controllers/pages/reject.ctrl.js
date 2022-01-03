@@ -65,12 +65,13 @@ class Reject extends Main {
 	render() {
 		const rejectModel = new RejectModel({
 			object: this.object,
-			checkNameId: false,
+			checkNameId: 'single',
 			collection: this.collection,
 			count: this.count,
 			switchItem: this.switch,
 			info: this.info,
-			errors: this.object.errors
+			errors: this.object.errors,
+			emptyMess: 'Новых пользователей нет'
 		});
 
 		$(`.main[data-name=${this.page}]`).html('');

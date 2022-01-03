@@ -1,0 +1,509 @@
+'use strict';
+
+import $ from 'jquery';
+import datepickerFactory from 'jquery-datepicker';
+import datepickerRUFactory from 'jquery-datepicker/i18n/jquery.ui.datepicker-ru';
+import service from '../../js/service.js';
+import messageMail from '../../js/mail.js';
+import { settingsObject, sendUsers } from '../settings.ctrl.js';
+import { modalUser } from '../../components/add/modal-user.tpl.js';
+
+import Personnel from '../personnel.ctrl.js';
+import AddModel from '../../models/pages/add.model.js';
+
+datepickerFactory($);
+datepickerRUFactory($);
+
+class Add extends Personnel {
+	constructor(props) {
+		super(props);
+
+		({
+			page: this.page = ''
+		} = props);
+
+		this.dbUserNamesCollection = new Map();
+		this.object = {
+			page: 'Добавить новых пользователей',
+			fio: '',
+			post: '',
+			photofile: '',
+			photourl: '',
+			photoname: '',
+			statusid: '',
+			statustitle: '',
+			cardvalidto: '',
+			cardvalidtoid: '',
+			cardvalidtotitle: '',
+			statuscardvalidto: '',
+			errors: [],
+			get nameid() {
+				return settingsObject.nameid;
+			},
+			get longname() {
+				return settingsObject.longname;
+			}
+		};
+		this.count = {
+			item: {
+				title: 'Количество добавляемых пользователей:&nbsp',
+				get count() {
+					return this.collection.size;
+				},
+				set count({ collection }) {
+					this.collection = collection;
+				}
+			}
+		};
+		this.info = [
+			{
+				type: 'warn',
+				title: 'fields',
+				message: 'Предупреждение! Не все поля заполнены.'
+			},
+			{
+				type: 'warn',
+				title: 'have',
+				message: 'Предупреждение! Пользователь с таким именем уже добавлен!'
+			},
+			{
+				type: 'error',
+				title: 'name',
+				message: 'Ошибка! Имя содержит недопустимые символы. Разрешены: кириллические буквы, дефис, точка, апостроф.'
+			},
+			{
+				type: 'error',
+				title: 'image',
+				message: 'Ошибка! Не правильный формат изображение. Допустимы: giff, png, jpg, jpeg.'
+			},
+			{
+				type: 'error',
+				title: 'short',
+				message: 'Ошибка! ФИО должно состоять хотя бы из двух слов.'
+			}
+		];
+		this.counter = 0;
+
+		this.count.item.count = {
+			collection: this.collection
+		};
+
+		this.showDataFromStorage(); // 1
+		this.getUserNamesFromDB();
+	}
+
+	render() {
+		const addModel = new AddModel({
+			pageName: 'add',
+			object: this.object,
+			checkNameId: 'double',
+			collection: this.collection,
+			count: this.count,
+			info: this.info,
+			errors: this.object.errors,
+			emptyMess: 'Не добавленно ни одного пользователя'
+		});
+
+		$(`.main[data-name=${this.page}]`).html('');
+		$(`.main[data-name=${this.page}]`).append(addModel.render());
+
+		this.deleteUser();
+		this.editUser();
+		this.toggleSelect();
+		this.datepicker();
+		this.downloadFoto();
+		this.memberInputField();
+		this.addUser(); // 2 без загрузки фото и загрузки селектов не пройдет валидация в addUser
+		this.submitIDinBD();
+	}
+
+	renderModalContainsUser() {
+		$('.modal').addClass('modal--active');
+		$('.modal__item--user')
+			.html('')
+			.addClass('modal__item--active');
+
+		this.dbUserNamesCollection.forEach((item) => {
+			if (this.object.fio === item.fio) {
+				$('.modal__item--user').append(modalUser(item));
+			}
+		});
+
+		this.modalActions();
+	}
+
+	modalActions() {
+		$('.modal__btn').click(({ currentTarget }) => {
+			const btnName = $(currentTarget).data('name');
+
+			$('.modal').removeClass('modal--active');
+			$('.modal__item').removeClass('modal__item--active');
+
+			if (btnName === 'add') {
+				this.userFromForm();
+			}
+
+			this.clearFieldsForm();
+		});
+	}
+
+	addUser() {
+		$('#addUser').click(() => {
+			if (this.object.cardvalidtoid !== 'date') {
+				delete this.object.cardvalidto;
+			}
+
+			delete this.object.statuscardvalidto;
+
+			const validFields = Object.values(this.object).every((item) => item);
+			const errorsArr = [];
+
+			if (!validFields) errorsArr.push('fields');
+
+			for (let key in this.object) {
+				if (key === 'fio' && this.object[key]) {
+					const countWords = this.object[key].trim().split(' ');
+
+					if (this.object[key].match(/[^а-яА-ЯiIъїЁё.'-\s]/g)) errorsArr.push('name');
+					if (countWords.length < 2) errorsArr.push('short');
+				}
+			}
+
+			if (!errorsArr.length) {
+				this.checkContainsUser();
+			} else {
+				this.object.errors = errorsArr;
+			}
+
+			this.render();
+		});
+	}
+
+	checkContainsUser() {
+		const uniqueName = [...this.collection.values()].every(({ fio }) => fio !== this.object.fio);
+		const containsName = [...this.dbUserNamesCollection.values()].every(({ fio }) => fio !== this.object.fio);
+
+		if (uniqueName) {
+			this.object.errors = [];
+		} else {
+			this.object.errors = ['have'];
+
+			return;
+		}
+
+		if (!containsName) {
+			this.renderModalContainsUser();
+		}
+
+		if (uniqueName && containsName) {
+			this.userFromForm();
+			this.clearFieldsForm();
+		}
+	}
+
+	userFromForm() {
+		const objToCollection = {
+			id: '',
+			fio: '',
+			post: '',
+			photofile: '',
+			photourl: '',
+			photoname: '',
+			statusid: '',
+			statustitle: '',
+			cardvalidto: '',
+			cardvalidtoid: '',
+			cardvalidtotitle: ''
+		};
+		const itemObject = { ...objToCollection };
+
+		for (const itemField in itemObject) {
+			for (const key in this.object) {
+				if (itemField === key) {
+					itemObject[itemField] = this.object[key];
+				} else if (itemField === 'id') {
+					itemObject[itemField] = this.counter;
+				}
+			}
+		}
+
+		this.collection.set(this.counter, itemObject);
+		this.counter++;
+
+		this.setDataInStorage();
+		super.dataAdd();
+	}
+
+	setDataInStorage() {
+		new Promise((resolve) => {
+			const encodeArrayPhotoFile = [];
+			const reader = new FileReader();
+
+			this.collection.forEach((user) => {
+				if (typeof user.photofile === 'object') {
+					reader.onload = ({ currentTarget }) => {
+						user.photofile = currentTarget.result;
+
+						encodeArrayPhotoFile.push(user);
+					};
+					reader.readAsDataURL(user.photofile);
+				} else {
+					encodeArrayPhotoFile.push(user);
+				}
+			});
+			setTimeout(() => {
+				resolve(encodeArrayPhotoFile);
+			}, 0);
+		}).then((array) => {
+			setTimeout(() => {
+				localStorage.setItem(this.page, JSON.stringify({
+					collection: array
+				}));
+			}, 0);
+		});
+	}
+
+	setDataAttrSelectedItem(title, select, statusid) {
+		if (select === 'type') {
+			this.object.statusid = statusid;
+			this.object.statustitle = title;
+		} else {
+			this.object.cardvalidtoid = statusid;
+			this.object.cardvalidtotitle = title;
+			this.object.cardvalidto = statusid === 'date' ? this.object.cardvalidto : '';
+			this.object.statuscardvalidto = statusid === 'date';
+		}
+
+		this.render();
+	}
+
+	clearFieldsForm() {
+		const untouchable = ['nameid', 'longname', 'page', 'errors'];
+
+		for (const key in this.object) {
+			if (!untouchable.includes(key)) {
+				this.object[key] = '';
+			}
+		}
+
+		this.render();
+	}
+
+	memberInputField() {
+		$('.form__item').keyup(({ currentTarget }) => {
+			const nameField = $(currentTarget).data('field');
+			const fieldValue = $(currentTarget).val().trim();
+
+			this.object[nameField] = fieldValue ? fieldValue : '';
+		});
+	}
+
+	datepicker() {
+		$("#addDatepicker").datepicker({
+			changeMonth: true,
+			changeYear: true,
+			showOtherMonths: true,
+			selectOtherMonths: true,
+			minDate: "+1D",
+			maxViewMode: 10
+		});
+
+		$('#addDatepicker').change(({ currentTarget }) => {
+			const cardvalidtoValue = $(currentTarget).val();
+
+			this.object.cardvalidto = cardvalidtoValue;
+		});
+	}
+
+	downloadFoto() {
+		$(`.main[data-name=${this.page}] .form__item--file`).change(({ target }) => {
+			const fileNameUrl = $(target).val();
+			const indexLastSlash = fileNameUrl.lastIndexOf('\\');
+			const photoName = fileNameUrl.slice(indexLastSlash + 1);
+			const file = target.files[0];
+			const url = URL.createObjectURL(file);
+			const validPhotoName = this.validPhotoExtention(photoName);
+
+			if (!validPhotoName) {
+				this.object.errors = ['image'];
+
+				return;
+			}
+
+			this.object.photourl = url;
+			this.object.photofile = file;
+			this.object.photoname = photoName;
+
+			this.render();
+		});
+	}
+
+	validPhotoExtention(photoName) {
+		const extenName = photoName.lastIndexOf('.');
+		const extenImg = photoName.slice(extenName + 1);
+		const extentionArray = ['gif', 'png', 'jpg', 'jpeg'];
+		const validPhotoName = extentionArray.some((item) => item == extenImg) ? photoName : false;
+
+		return validPhotoName;
+	}
+
+	deleteUser() {
+		$(`.main[data-name=${this.page}] .table__body`).click(({ target }) => {
+			if ($(target).parents('.table__btn--delete').length || $(target).hasClass('table__btn--delete')) {
+				const userID = $(target).closest('.table__row').data('id');
+
+				this.collection.forEach(({ id }) => {
+					if (userID === id) {
+						this.collection.delete(userID);
+					}
+				});
+
+				this.setDataInStorage();
+				super.dataAdd();
+
+				if (!this.collection.size) {
+					localStorage.removeItem(this.page);
+				}
+			}
+		});
+	}
+
+	editUser() {
+		$(`.main[data-name=${this.page}] .table__body`).click(({ target }) => {
+			if ($(target).parents('.table__btn--edit').length || $(target).hasClass('table__btn--edit')) {
+				const userID = $(target).closest('.table__row').data('id');
+
+				this.collection.forEach((item) => {
+					if (userID === item.id) {
+						for (let key in item) {
+							if (key !== 'id') {
+								this.object[key] = item[key];
+							}
+						}
+
+						this.collection.delete(userID);
+					}
+				});
+
+				super.dataAdd();
+			}
+		});
+	}
+
+	submitIDinBD() {
+		$('.btn--submit').click(() => {
+			if (!this.collection.size) return;
+
+			this.collection.forEach((user) => {
+				user.nameid = settingsObject.nameid;
+				user.date = service.getCurrentDate();
+			});
+
+			this.setAddUsersInDB([...this.collection.values()], 'add', this.page);
+
+			this.collection.clear();
+			this.render();
+
+			localStorage.removeItem(this.page);
+			this.counter = 0;
+		});
+	}
+
+	setAddUsersInDB(array, nameTable, action) {
+		new Promise((resolve) => {
+			const encodeArrayPhotoFile = [];
+			const reader = new FileReader();
+
+			array.forEach((user) => {
+				if (typeof user.photofile === 'object') {
+					reader.onload = ({ currentTarget }) => {
+						user.photofile = currentTarget.result;
+
+						encodeArrayPhotoFile.push(user);
+					};
+					reader.readAsDataURL(user.photofile);
+				} else {
+					encodeArrayPhotoFile.push(user);
+				}
+			});
+
+			setTimeout(() => {
+				resolve(encodeArrayPhotoFile);
+			}, 0);
+		}).then((array) => {
+			$.ajax({
+				url: "./php/change-user-request.php",
+				method: "post",
+				dataType: "html",
+				data: {
+					action,
+					nameTable,
+					array
+				},
+				success: () => {
+					service.modal('success');
+
+					this.sendMail({
+						department: settingsObject.longname,
+						count: this.collection.size,
+						title: 'Добавлено',
+						users: [...this.collection.values()]
+					});
+				},
+				error: () => {
+					service.modal('error');
+				}
+			});
+		});
+	}
+
+	getUserNamesFromDB() {
+		$.ajax({
+			url: "./php/output-request.php",
+			method: "post",
+			dataType: "html",
+			async: false,
+			data: {
+				nameTable: 'names',
+				nameDepart: settingsObject.nameid
+			},
+			success: (data) => {
+				const dataFromDB = JSON.parse(data);
+
+				dataFromDB.forEach((item, i) => {
+					this.dbUserNamesCollection.set(i + 1, item);
+				});
+			},
+			error: () => {
+				service.modal('download');
+			}
+		});
+	}
+
+	sendMail(obj) {
+		const sender = sendUsers.manager;
+		const recipient = sendUsers.secretary;
+		const subject = 'Запрос на добавление пользователей в БД';
+
+		$.ajax({
+			url: "./php/mail.php",
+			method: "post",
+			dataType: "html",
+			async: false,
+			data: {
+				sender,
+				recipient,
+				subject,
+				message: messageMail(obj)
+			},
+			success: () => {
+				console.log('Email send is success');
+			},
+			error: () => {
+				service.modal('email');
+			}
+		});
+	}
+}
+
+export default Add;
