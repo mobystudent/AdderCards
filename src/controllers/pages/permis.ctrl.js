@@ -13,7 +13,7 @@ class Permis extends Access {
 		super(props);
 
 		this.object = {
-			page: 'Разрешение на добавление <br> идентификаторов пользователям',
+			title: 'Разрешение на добавление <br> идентификаторов пользователям',
 			statusallow: '',
 			statusdisallow: '',
 			nameid: '',

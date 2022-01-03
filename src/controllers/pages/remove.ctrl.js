@@ -18,9 +18,13 @@ class Remove extends Personnel {
 	constructor(props) {
 		super(props);
 
+		({
+			page: this.page = ''
+		} = props);
+
 		this.departmentCollection = new Map();  // Коллекция подразделений
 		this.object = {
-			page: 'Удаление пользователей',
+			title: 'Удаление пользователей',
 			id: '',
 			fio: '',
 			post: '',
@@ -68,7 +72,7 @@ class Remove extends Personnel {
 		this.showDataFromStorage();
 	}
 
-	render(page = 'remove') {
+	render() {
 		const removeModel = new RemoveModel({
 			pageName: 'remove',
 			object: this.object,
@@ -80,8 +84,8 @@ class Remove extends Personnel {
 			emptyMess: 'Не добавленно ни одного пользователя'
 		});
 
-		$(`.main[data-name=${page}]`).html('');
-		$(`.main[data-name=${page}]`).append(removeModel.render());
+		$(`.main[data-name=${this.page}]`).html('');
+		$(`.main[data-name=${this.page}]`).append(removeModel.render());
 
 		this.deleteUser();
 		this.editUser();
@@ -112,7 +116,7 @@ class Remove extends Personnel {
 
 			if (!errorsArr.length) {
 				this.userFromForm();
-				this.clearFieldsForm();
+				this.clearObject();
 			} else {
 				this.object.errors = errorsArr;
 			}
@@ -150,8 +154,8 @@ class Remove extends Personnel {
 		super.dataAdd();
 	}
 
-	setDataInStorage(page = 'remove') {
-		localStorage.setItem(page, JSON.stringify({
+	setDataInStorage() {
+		localStorage.setItem(this.page, JSON.stringify({
 			collection: [...this.collection.values()]
 		}));
 	}
@@ -173,8 +177,8 @@ class Remove extends Personnel {
 		});
 	}
 
-	setUsersInSelect(users, page = 'remove') {
-		$(`.main[data-name=${page}] .select[data-select="fio"] .select__list`).html('');
+	setUsersInSelect(users) {
+		$(`.main[data-name=${this.page}] .select[data-select="fio"] .select__list`).html('');
 
 		if (this.collection.size) {
 			this.collection.forEach((elem) => {
@@ -190,7 +194,7 @@ class Remove extends Personnel {
 				dataid: 'id'
 			};
 
-			$(`.main[data-name=${page}] .select[data-select="fio"] .select__list`).append(select(item));
+			$(`.main[data-name=${this.page}] .select[data-select="fio"] .select__list`).append(select(item));
 		});
 
 		this.clickSelectItem();
@@ -239,8 +243,8 @@ class Remove extends Personnel {
 		});
 	}
 
-	editUser(page = 'remove') {
-		$(`.main[data-name=${page}] .table__body`).click(({ target }) => {
+	editUser() {
+		$(`.main[data-name=${this.page}] .table__body`).click(({ target }) => {
 			if ($(target).parents('.table__btn--edit').length || $(target).hasClass('table__btn--edit')) {
 				const userID = $(target).closest('.table__row').data('id');
 
@@ -259,7 +263,7 @@ class Remove extends Personnel {
 		});
 	}
 
-	submitIDinBD(page = 'remove') {
+	submitIDinBD() {
 		$('.btn--submit').click(() => {
 			if (!this.collection.size) return;
 
@@ -281,7 +285,7 @@ class Remove extends Personnel {
 			this.collection.clear();
 			this.render();
 
-			localStorage.removeItem(page);
+			localStorage.removeItem(this.page);
 			this.counter = 0;
 		});
 	}

@@ -57,8 +57,8 @@ class Personnel {
 		});
 	}
 
-	clearFieldsForm() {
-		const untouchable = ['nameid', 'longname', 'page', 'errors'];
+	clearObject() {
+		const untouchable = ['nameid', 'longname', 'title', 'errors'];
 
 		for (const key in this.object) {
 			if (!untouchable.includes(key)) {

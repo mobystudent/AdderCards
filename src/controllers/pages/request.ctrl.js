@@ -12,8 +12,12 @@ class Request extends Access {
 	constructor(props) {
 		super(props);
 
+		({
+			page: this.page = ''
+		} = props);
+
 		this.object = {
-			page: 'Запрос на изменение данных',
+			title: 'Запрос на изменение данных',
 			statusallow: '',
 			statusdisallow: '',
 			nameid: '',
@@ -70,7 +74,7 @@ class Request extends Access {
 		this.showDataFromStorage();
 	}
 
-	render(page = 'request') {
+	render() {
 		const requestModel = new RequestModel({
 			object: this.object,
 			collection: this.collection,
@@ -86,8 +90,8 @@ class Request extends Access {
 			}
 		});
 
-		$(`.main[data-name=${page}]`).html('');
-		$(`.main[data-name=${page}]`).append(requestModel.render());
+		$(`.main[data-name=${this.page}]`).html('');
+		$(`.main[data-name=${this.page}]`).append(requestModel.render());
 
 		this.autoRefresh();
 		this.clickAllowDisallowItem();
@@ -130,7 +134,7 @@ class Request extends Access {
 		this.dataAdd();
 	}
 
-	submitIDinBD(page = 'request') {
+	submitIDinBD() {
 		$('.btn--submit').click(() => {
 			const filterDepartCollection = [...this.collection.values()].filter(({ nameid }) => nameid === this.object.nameid);
 			const checkedItems = filterDepartCollection.every(({ statusaccess }) => statusaccess);
@@ -166,7 +170,7 @@ class Request extends Access {
 				this.resetControlBtns();
 				this.dataAdd();
 
-				localStorage.removeItem(page);
+				localStorage.removeItem(this.page);
 			} else {
 				this.object.errors = ['fields'];
 				this.render();

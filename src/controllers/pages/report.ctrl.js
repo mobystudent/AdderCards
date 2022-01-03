@@ -6,17 +6,23 @@ import datepickerRUFactory from 'jquery-datepicker/i18n/jquery.ui.datepicker-ru'
 import service from '../../js/service.js';
 import { settingsObject } from '../settings.ctrl.js';
 
+import Personnel from '../personnel.ctrl.js';
 import ReportModel from '../../models/pages/report.model.js';
 
 datepickerFactory($);
 datepickerRUFactory($);
 
-class Report {
-	constructor() {
-		this.collection = new Map(); // БД отчета
+class Report extends Personnel {
+	constructor(props) {
+		super(props);
+
+		({
+			page: this.page = ''
+		} = props);
+
 		this.filterCollection = new Map(); // БД для вывода значений в фильтры
 		this.object = {
-			page: 'Отчёт по изменениям',
+			title: 'Отчёт по изменениям',
 			posttitle: '',
 			datetitle: '',
 			statusid: '',
@@ -52,10 +58,10 @@ class Report {
 			collection: this.collection
 		};
 
-		this.getDataFromDB('report');
+		this.getDataFromDB();
 	}
 
-	render(page = 'report') {
+	render() {
 		const reportModel = new ReportModel({
 			object: this.object,
 			collection: this.collection,
@@ -69,8 +75,8 @@ class Report {
 			}
 		});
 
-		$(`.main[data-name=${page}]`).html('');
-		$(`.main[data-name=${page}]`).append(reportModel.render());
+		$(`.main[data-name=${this.page}]`).html('');
+		$(`.main[data-name=${this.page}]`).append(reportModel.render());
 
 		this.autoRefresh();
 		this.resetFilters();
@@ -90,29 +96,7 @@ class Report {
 			});
 		}
 
-		this.dataAdd();
-	}
-
-	dataAdd() {
-		this.render();
-	}
-
-	toggleSelect(page = 'report') {
-		$(`.main[data-name=${page}] .select__header`).click(({ currentTarget }) => {
-			$(currentTarget).next().slideToggle().toggleClass('select__header--active');
-		});
-
-		this.clickSelectItem();
-	}
-
-	clickSelectItem(page = 'report') {
-		$(`.main[data-name=${page}] .select__item`).click(({ currentTarget }) => {
-			const title = $(currentTarget).find('.select__name').data('title');
-			const select = $(currentTarget).parents('.select').data('select');
-			const statusid = $(currentTarget).find('.select__name').data(select);
-
-			this.setDataAttrSelectedItem(title, select, statusid);
-		});
+		super.dataAdd();
 	}
 
 	setDataAttrSelectedItem(title, select, statusid) {
@@ -148,23 +132,23 @@ class Report {
 		});
 	}
 
-	autoRefresh(page = 'report') {
+	autoRefresh() {
 		const timeReload = 60000 * settingsObject.autoupdatevalue;
 
-		$(`.main[data-name=${page}] .switch--refresh`).click(({ target }) => {
+		$(`.main[data-name=${this.page}] .switch--refresh`).click(({ target }) => {
 			if (!$(target).hasClass('switch__input')) return;
 
 			const statusSwitch = $(target).prop('checked');
 			this.switch.refresh.status = statusSwitch;
 
 			if (statusSwitch && !this.switch.refresh.marker) {
-				localStorage.removeItem(page);
+				localStorage.removeItem(this.page);
 				this.collection.clear();
 
-				this.getDataFromDB('report');
+				this.getDataFromDB();
 
 				this.switch.refresh.marker = setInterval(() => {
-					this.getDataFromDB('report');
+					this.getDataFromDB();
 				}, timeReload);
 			} else if (!statusSwitch && this.switch.refresh.marker) {
 				clearInterval(this.switch.refresh.marker);
@@ -172,24 +156,24 @@ class Report {
 				this.switch.refresh.marker = false;
 			}
 
-			this.clearFieldsForm();
+			this.clearObject();
 		});
 	}
 
-	resetFilters(page = 'report') {
-		$(`.main[data-name=${page}] .btn--cancel`).click(() => {
-			this.clearFieldsForm();
+	resetFilters() {
+		$(`.main[data-name=${this.page}] .btn--cancel`).click(() => {
+			this.clearObject();
 		});
 	}
 
-	clearFieldsForm() {
+	clearObject() {
+		const untouchable = ['nameid', 'longname', 'title'];
+
 		for (const key in this.object) {
-			if (key === 'filters') {
+			if (!untouchable.includes(key)) {
+				this.object[key] = '';
+			} else if (key === 'filters') {
 				this.object[key] = {};
-			} else {
-				if (key !== 'nameid' && key !== 'longname') {
-					this.object[key] = '';
-				}
 			}
 		}
 
@@ -219,14 +203,14 @@ class Report {
 		});
 	}
 
-	getDataFromDB(nameTable) {
+	getDataFromDB() {
 		$.ajax({
 			url: "./php/output-request.php",
 			method: "post",
 			dataType: "html",
 			data: {
 				idDepart: settingsObject.nameid,
-				nameTable
+				nameTable: this.page
 			},
 			async: false,
 			success: (data) => {

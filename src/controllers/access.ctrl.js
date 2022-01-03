@@ -36,7 +36,7 @@ class Access extends Main {
 	}
 
 	clearObject() {
-		const untouchable = ['page', 'errors'];
+		const untouchable = ['title', 'errors'];
 
 		for (const key in this.object) {
 			if (!untouchable.includes(key)) {

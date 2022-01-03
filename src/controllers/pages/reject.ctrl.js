@@ -18,7 +18,7 @@ class Reject extends Main {
 		} = props);
 
 		this.object = {
-			page: 'Отклоненные пользователи',
+			title: 'Отклоненные пользователи',
 			id: '',
 			statusresend: '',
 			errors: [],
@@ -156,7 +156,7 @@ class Reject extends Main {
 	}
 
 	clearObject() {
-		const untouchable = ['nameid', 'longname', 'page', 'errors'];
+		const untouchable = ['nameid', 'longname', 'title', 'errors'];
 
 		for (const key in this.object) {
 			if (!untouchable.includes(key)) {

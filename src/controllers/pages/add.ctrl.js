@@ -24,7 +24,7 @@ class Add extends Personnel {
 
 		this.dbUserNamesCollection = new Map();
 		this.object = {
-			page: 'Добавить новых пользователей',
+			title: 'Добавить новых пользователей',
 			fio: '',
 			post: '',
 			photofile: '',

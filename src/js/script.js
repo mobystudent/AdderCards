@@ -27,7 +27,7 @@ $(window).on('load', () => {
 	new Reject({ page: 'reject' });
 	new Request({ page: 'request' });
 	new Permis({ page: 'permis' });
-	new Report();
+	new Report({ page: 'report' });
 });
 
 function focusFirstCell(nameTable) {
