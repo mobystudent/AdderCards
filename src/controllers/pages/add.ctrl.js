@@ -277,18 +277,6 @@ class Add extends Personnel {
 		this.render();
 	}
 
-	clearFieldsForm() {
-		const untouchable = ['nameid', 'longname', 'page', 'errors'];
-
-		for (const key in this.object) {
-			if (!untouchable.includes(key)) {
-				this.object[key] = '';
-			}
-		}
-
-		this.render();
-	}
-
 	memberInputField() {
 		$('.form__item').keyup(({ currentTarget }) => {
 			const nameField = $(currentTarget).data('field');
@@ -345,27 +333,6 @@ class Add extends Personnel {
 		const validPhotoName = extentionArray.some((item) => item == extenImg) ? photoName : false;
 
 		return validPhotoName;
-	}
-
-	deleteUser() {
-		$(`.main[data-name=${this.page}] .table__body`).click(({ target }) => {
-			if ($(target).parents('.table__btn--delete').length || $(target).hasClass('table__btn--delete')) {
-				const userID = $(target).closest('.table__row').data('id');
-
-				this.collection.forEach(({ id }) => {
-					if (userID === id) {
-						this.collection.delete(userID);
-					}
-				});
-
-				this.setDataInStorage();
-				super.dataAdd();
-
-				if (!this.collection.size) {
-					localStorage.removeItem(this.page);
-				}
-			}
-		});
 	}
 
 	editUser() {

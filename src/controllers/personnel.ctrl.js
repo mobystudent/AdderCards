@@ -8,6 +8,7 @@ class Personnel {
 			page: this.page = ''
 		} = props);
 
+		this.object = {};
 		this.collection = new Map(); // БД пользователей при старте
 	}
 
@@ -46,7 +47,46 @@ class Personnel {
 			const select = $(currentTarget).parents('.select').data('select');
 			const statusid = $(currentTarget).find('.select__name').data(select);
 
+			if (select === 'fio') {
+				const id = $(currentTarget).find('.select__name').data('id');
+
+				this.getAddUsersInDB(id); // вывести должность в скрытое поле
+			}
+
 			this.setDataAttrSelectedItem(title, select, statusid);
+		});
+	}
+
+	clearFieldsForm() {
+		const untouchable = ['nameid', 'longname', 'page', 'errors'];
+
+		for (const key in this.object) {
+			if (!untouchable.includes(key)) {
+				this.object[key] = '';
+			}
+		}
+
+		this.render();
+	}
+
+	deleteUser() {
+		$(`.main[data-name=${this.page}] .table__body`).click(({ target }) => {
+			if ($(target).parents('.table__btn--delete').length || $(target).hasClass('table__btn--delete')) {
+				const userID = $(target).closest('.table__row').data('id');
+
+				[...this.collection].forEach(([key, { id }]) => {
+					if (userID === +id) {
+						this.collection.delete(key);
+					}
+				});
+
+				this.setDataInStorage();
+				this.dataAdd();
+
+				if (!this.collection.size) {
+					localStorage.removeItem(this.page);
+				}
+			}
 		});
 	}
 }
