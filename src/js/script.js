@@ -8,12 +8,12 @@ import '../controllers/qr.ctrl.js';
 import '../controllers/add.ctrl.js';
 import '../controllers/remove.ctrl.js';
 import '../controllers/edit.ctrl.js';
-import '../controllers/reject.ctrl.js';
 import '../controllers/settings.ctrl.js';
 import './login.js';
 import service from './service.js';
 import './parts/renderheader.js';
 
+import Reject from '../controllers/pages/reject.ctrl.js';
 import Request from '../controllers/pages/request.ctrl.js';
 import Permis from '../controllers/pages/permis.ctrl.js';
 import Report from '../controllers/pages/report.ctrl.js';
@@ -22,6 +22,7 @@ $(window).on('load', () => {
 	// service.scrollbar();
 	service.showDataInTable();
 
+	new Reject({ page: 'reject' });
 	new Request({ page: 'request' });
 	new Permis({ page: 'permis' });
 	new Report();

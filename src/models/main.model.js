@@ -10,7 +10,7 @@ class MainModel {
 			checkNameId: this.checkNameId = false,
 			collection: this.collection = new Map(),
 			count: this.count = 0,
-			switchItem: this.switchItem,
+			switchItem: this.switch = {},
 			info: this.info = [],
 			errors: this.errors = [],
 			table: this.table
@@ -36,7 +36,7 @@ class MainModel {
 	}
 
 	renderSwitch() {
-		return Object.values(this.switchItem).reduce((content, item) => {
+		return Object.values(this.switch).reduce((content, item) => {
 			let switchText;
 			let tooltip;
 

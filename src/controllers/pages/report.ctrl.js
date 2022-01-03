@@ -13,7 +13,7 @@ datepickerRUFactory($);
 
 class Report {
 	constructor() {
-		this.reportCollection = new Map(); // БД отчета
+		this.collection = new Map(); // БД отчета
 		this.filterCollection = new Map(); // БД для вывода значений в фильтры
 		this.object = {
 			page: 'Отчёт по изменениям',
@@ -49,7 +49,7 @@ class Report {
 		};
 
 		this.count.item.count = {
-			collection: this.reportCollection
+			collection: this.collection
 		};
 
 		this.getDataFromDB('report');
@@ -58,7 +58,7 @@ class Report {
 	render(page = 'report') {
 		const reportModel = new ReportModel({
 			object: this.object,
-			collection: this.reportCollection,
+			collection: this.collection,
 			switchItem: this.switch,
 			count: this.count,
 			filterArrs: {
@@ -79,11 +79,11 @@ class Report {
 	userFromDB(array, filter = '') {
 		if (filter) {
 			array.forEach((item, i) => {
-				this.reportCollection.set(i, item);
+				this.collection.set(i, item);
 			});
 		} else {
 			array.forEach((item, i) => {
-				this.reportCollection.set(i, item);
+				this.collection.set(i, item);
 				this.filterCollection.set(i, item);
 			});
 		}
@@ -157,7 +157,7 @@ class Report {
 
 			if (statusSwitch && !this.switch.refresh.marker) {
 				localStorage.removeItem(page);
-				this.reportCollection.clear();
+				this.collection.clear();
 
 				this.getDataFromDB('report');
 
@@ -208,7 +208,7 @@ class Report {
 			success: (data) => {
 				const dataFromDB = JSON.parse(data);
 
-				this.reportCollection.clear();
+				this.collection.clear();
 				this.userFromDB(dataFromDB, 'filter');
 			},
 			error: () => {

@@ -2,15 +2,17 @@
 
 import $ from 'jquery';
 import service from '../js/service.js';
-import { settingsObject } from './settings.ctrl.js';
 
-class Access {
+import Main from './main.ctrl.js';
+
+class Access extends Main {
 	constructor(props) {
+		super({ ...props, mark: 'access' });
+
 		({
-			page: this.page = '',
+			page: this.page = ''
 		} = props);
 
-		this.collection = new Map(); // БД пользователей при старте
 		this.departmentCollection = new Map(); // Коллекция подразделений
 	}
 
@@ -19,38 +21,7 @@ class Access {
 
 		this.getDepartmentFromDB();
 		this.showActiveDataOnPage();
-		this.render();
-	}
-
-	showDataFromStorage() {
-		const storageCollection = JSON.parse(localStorage.getItem(this.page));
-
-		if (storageCollection && storageCollection.collection.length && !this.collection.size) {
-			const { statusallow, statusdisallow } = storageCollection.controls;
-			const { refresh } = storageCollection.settings;
-
-			storageCollection.collection.forEach((item, i) => {
-				const itemID = storageCollection.collection[i].id;
-
-				this.collection.set(itemID, item);
-			});
-
-			this.object.statusallow = statusallow;
-			this.object.statusdisallow = statusdisallow;
-			this.switch.refresh = refresh;
-
-			this.dataAdd();
-		} else {
-			this.getDataFromDB();
-		}
-	}
-
-	setDataInStorage() {
-		localStorage.setItem(this.page, JSON.stringify({
-			settings: this.switch,
-			controls: this.object,
-			collection: [...this.collection.values()]
-		}));
+		super.dataAdd();
 	}
 
 	showActiveDataOnPage() {
@@ -65,9 +36,15 @@ class Access {
 	}
 
 	clearObject() {
-		this.object.nameid = '';
-		this.object.longname = '';
-		this.object.shortname = '';
+		const untouchable = ['page', 'errors'];
+
+		for (const key in this.object) {
+			if (!untouchable.includes(key)) {
+				this.object[key] = '';
+			}
+		}
+
+		this.render();
 	}
 
 	clickAllowDisallowItem() {
@@ -140,57 +117,6 @@ class Access {
 				item.disallow = '';
 				item.allowblock = '';
 				item.disallowblock = '';
-			}
-		});
-	}
-
-	autoRefresh() {
-		const timeReload = 60000 * settingsObject.autoupdatevalue;
-
-		$(`.main[data-name=${this.page}] .switch--refresh`).click(({ target }) => {
-			if (!$(target).hasClass('switch__input')) return;
-
-			const statusSwitch = $(target).prop('checked');
-			this.switch.refresh.status = statusSwitch;
-
-			if (statusSwitch && !this.switch.refresh.marker) {
-				localStorage.removeItem(this.page);
-				this.collection.clear();
-
-				this.resetControlBtns(); // 1
-				this.getDataFromDB(); // 2
-				this.setDataInStorage();
-
-				this.switch.refresh.marker = setInterval(() => {
-					this.getDataFromDB();
-				}, timeReload);
-			} else if (!statusSwitch && this.switch.refresh.marker) {
-				clearInterval(this.switch.refresh.marker);
-
-				this.switch.refresh.marker = false;
-				localStorage.removeItem(this.page);
-			}
-
-			this.render();
-		});
-	}
-
-	getDataFromDB() {
-		$.ajax({
-			url: "./php/output-request.php",
-			method: "post",
-			dataType: "html",
-			data: {
-				nameTable: this.page
-			},
-			async: false,
-			success: (data) => {
-				const dataFromDB = JSON.parse(data);
-
-				this.userFromDB(dataFromDB);
-			},
-			error: () => {
-				service.modal('download');
 			}
 		});
 	}
