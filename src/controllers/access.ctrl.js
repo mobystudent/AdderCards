@@ -35,18 +35,6 @@ class Access extends Main {
 		});
 	}
 
-	clearObject() {
-		const untouchable = ['title', 'errors'];
-
-		for (const key in this.object) {
-			if (!untouchable.includes(key)) {
-				this.object[key] = '';
-			}
-		}
-
-		this.render();
-	}
-
 	clickAllowDisallowItem() {
 		$(`.main[data-name=${this.page}] .table__body`).click(({ target }) => {
 			if (!$(target).hasClass('btn--allow') && !$(target).hasClass('btn--disallow')) return;

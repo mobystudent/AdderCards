@@ -5,12 +5,12 @@ import '../controllers/time.ctrl.js';
 import '../controllers/const.ctrl.js';
 import '../controllers/download.ctrl.js';
 import '../controllers/qr.ctrl.js';
-import '../controllers/edit.ctrl.js';
 import '../controllers/settings.ctrl.js';
 import './login.js';
 import service from './service.js';
 import './parts/renderheader.js';
 
+import Edit from '../controllers/pages/edit.ctrl.js';
 import Remove from '../controllers/pages/remove.ctrl.js';
 import Add from '../controllers/pages/add.ctrl.js';
 import Reject from '../controllers/pages/reject.ctrl.js';
@@ -22,6 +22,7 @@ $(window).on('load', () => {
 	// service.scrollbar();
 	service.showDataInTable();
 
+	new Edit({ page: 'edit' });
 	new Remove({ page: 'remove' });
 	new Add({ page: 'add' });
 	new Reject({ page: 'reject' });

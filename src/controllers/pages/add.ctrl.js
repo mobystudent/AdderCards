@@ -25,6 +25,7 @@ class Add extends Personnel {
 		this.dbUserNamesCollection = new Map();
 		this.object = {
 			title: 'Добавить новых пользователей',
+			id: '',
 			fio: '',
 			post: '',
 			photofile: '',
@@ -82,6 +83,7 @@ class Add extends Personnel {
 				message: 'Ошибка! ФИО должно состоять хотя бы из двух слов.'
 			}
 		];
+		this.untouchable = ['nameid', 'longname', 'title', 'errors'];
 		this.counter = 0;
 
 		this.count.item.count = {
@@ -143,7 +145,7 @@ class Add extends Personnel {
 				this.userFromForm();
 			}
 
-			this.clearFieldsForm();
+			this.clearObject();
 		});
 	}
 
@@ -154,6 +156,8 @@ class Add extends Personnel {
 			}
 
 			delete this.object.statuscardvalidto;
+
+			this.object.id = `${this.counter}`;
 
 			const validFields = Object.values(this.object).every((item) => item);
 			const errorsArr = [];
@@ -197,7 +201,7 @@ class Add extends Personnel {
 
 		if (uniqueName && containsName) {
 			this.userFromForm();
-			this.clearFieldsForm();
+			this.clearObject();
 		}
 	}
 
@@ -333,28 +337,6 @@ class Add extends Personnel {
 		const validPhotoName = extentionArray.some((item) => item == extenImg) ? photoName : false;
 
 		return validPhotoName;
-	}
-
-	editUser() {
-		$(`.main[data-name=${this.page}] .table__body`).click(({ target }) => {
-			if ($(target).parents('.table__btn--edit').length || $(target).hasClass('table__btn--edit')) {
-				const userID = $(target).closest('.table__row').data('id');
-
-				this.collection.forEach((item) => {
-					if (userID === item.id) {
-						for (let key in item) {
-							if (key !== 'id') {
-								this.object[key] = item[key];
-							}
-						}
-
-						this.collection.delete(userID);
-					}
-				});
-
-				super.dataAdd();
-			}
-		});
 	}
 
 	submitIDinBD() {

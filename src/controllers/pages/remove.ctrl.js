@@ -62,6 +62,7 @@ class Remove extends Personnel {
 				message: 'Предупреждение! Не все поля заполнены.'
 			}
 		];
+		this.untouchable = ['nameid', 'longname', 'title', 'errors'];
 		this.counter = 0;
 
 		this.count.item.count = {
@@ -240,26 +241,6 @@ class Remove extends Personnel {
 			const cardvalidtoValue = $(currentTarget).val();
 
 			this.object.cardvalidto = cardvalidtoValue;
-		});
-	}
-
-	editUser() {
-		$(`.main[data-name=${this.page}] .table__body`).click(({ target }) => {
-			if ($(target).parents('.table__btn--edit').length || $(target).hasClass('table__btn--edit')) {
-				const userID = $(target).closest('.table__row').data('id');
-
-				[...this.collection].forEach(([keyCollection, item]) => {
-					if (userID === +item.id) {
-						for (const key in item) {
-							this.object[key] = item[key];
-						}
-
-						this.collection.delete(keyCollection);
-					}
-				});
-
-				super.dataAdd();
-			}
 		});
 	}
 

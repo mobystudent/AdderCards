@@ -54,6 +54,7 @@ class Reject extends Main {
 				message: 'Предупреждение! Ни один пользователь не выбран.'
 			}
 		];
+		this.untouchable = ['nameid', 'longname', 'title', 'errors'];
 
 		this.count.item.count = {
 			collection: this.collection
@@ -153,18 +154,6 @@ class Reject extends Main {
 				this.render();
 			}
 		});
-	}
-
-	clearObject() {
-		const untouchable = ['nameid', 'longname', 'title', 'errors'];
-
-		for (const key in this.object) {
-			if (!untouchable.includes(key)) {
-				this.object[key] = '';
-			}
-		}
-
-		this.render();
 	}
 
 	viewDataUser() {

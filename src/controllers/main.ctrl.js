@@ -88,6 +88,18 @@ class Main {
 		});
 	}
 
+	clearObject() {
+		for (const key in this.object) {
+			if (key === 'filters') {
+				this.object[key] = {};
+			} else if (!this.untouchable.includes(key)) {
+				this.object[key] = '';
+			}
+		}
+
+		this.render();
+	}
+
 	getDataFromDB() {
 		const data = {
 			idDepart: this.mark === 'reject' ? settingsObject.nameid : false,

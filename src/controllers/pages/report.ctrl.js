@@ -53,6 +53,7 @@ class Report extends Personnel {
 				}
 			}
 		};
+		this.untouchable = ['nameid', 'longname', 'title'];
 
 		this.count.item.count = {
 			collection: this.collection
@@ -164,20 +165,6 @@ class Report extends Personnel {
 		$(`.main[data-name=${this.page}] .btn--cancel`).click(() => {
 			this.clearObject();
 		});
-	}
-
-	clearObject() {
-		const untouchable = ['nameid', 'longname', 'title'];
-
-		for (const key in this.object) {
-			if (!untouchable.includes(key)) {
-				this.object[key] = '';
-			} else if (key === 'filters') {
-				this.object[key] = {};
-			}
-		}
-
-		this.render();
 	}
 
 	filterUsersFromDB() {

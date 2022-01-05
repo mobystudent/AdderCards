@@ -58,10 +58,10 @@ class Personnel {
 	}
 
 	clearObject() {
-		const untouchable = ['nameid', 'longname', 'title', 'errors'];
-
 		for (const key in this.object) {
-			if (!untouchable.includes(key)) {
+			if (key === 'filters') {
+				this.object[key] = {};
+			} else if (!this.untouchable.includes(key)) {
 				this.object[key] = '';
 			}
 		}
@@ -86,6 +86,26 @@ class Personnel {
 				if (!this.collection.size) {
 					localStorage.removeItem(this.page);
 				}
+			}
+		});
+	}
+
+	editUser() {
+		$(`.main[data-name=${this.page}] .table__body`).click(({ target }) => {
+			if ($(target).parents('.table__btn--edit').length || $(target).hasClass('table__btn--edit')) {
+				const userID = $(target).closest('.table__row').data('id');
+
+				[...this.collection].forEach(([keyCollection, item]) => {
+					if (userID === +item.id) {
+						for (const key in item) {
+							this.object[key] = item[key];
+						}
+
+						this.collection.delete(keyCollection);
+					}
+				});
+
+				this.dataAdd();
 			}
 		});
 	}

@@ -57,6 +57,7 @@ class Permis extends Access {
 				message: 'Предупреждение! Не все пользователи выбраны.'
 			}
 		];
+		this.untouchable = ['title', 'errors'];
 
 		this.count.item.count = {
 			collection: this.collection,
