@@ -43,8 +43,8 @@ const settingsObject = {
 	}
 };
 const sendUsers = {
-	manager: 'nnyviexworgdkmgzus@kvhrw.com',
-	secretary: 'dciiwjaficvlpmesij@nvhrw.com',
+	manager: 'sxuapokvrnjwaxagmm@kvhrs.com',
+	secretary: 'sxuapokvrnjwaxagmm@kvhrs.com',
 	operator: 'karazin.security@ukr.net'
 };
 

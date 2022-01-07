@@ -3,7 +3,6 @@
 import $ from 'jquery';
 import service from '../../js/service.js';
 import Scrollbar from 'smooth-scrollbar';
-import messageMail from '../../js/mail.js';
 import { settingsObject, sendUsers } from '../settings.ctrl.js';
 
 import Main from '../main.ctrl.js';
@@ -55,6 +54,12 @@ class Reject extends Main {
 			}
 		];
 		this.untouchable = ['nameid', 'longname', 'title', 'errors'];
+		this.mail = {
+			sender: sendUsers.manager,
+			recipient: sendUsers.secretary,
+			subject: 'Запрос на повторное добавление пользователей в БД',
+			objectData: {}
+		};
 
 		this.count.item.count = {
 			collection: this.collection
@@ -238,40 +243,17 @@ class Reject extends Main {
 			success: () => {
 				service.modal('success');
 
-				this.sendMail({
+				this.mail.objectData = {
 					department: settingsObject.longname,
 					count: this.collection.size,
 					title: 'Повторно добавить',
 					users: [...this.collection.values()]
-				});
+				};
+
+				this.sendMail();
 			},
 			error: () => {
 				service.modal('error');
-			}
-		});
-	}
-
-	sendMail(obj) {
-		const sender = sendUsers.manager;
-		const recipient = sendUsers.secretary;
-		const subject = 'Запрос на повторное добавление пользователей в БД';
-
-		$.ajax({
-			url: "./php/mail.php",
-			method: "post",
-			dataType: "html",
-			async: false,
-			data: {
-				sender,
-				recipient,
-				subject,
-				message: messageMail(obj)
-			},
-			success: () => {
-				console.log('Email send is success');
-			},
-			error: () => {
-				service.modal('email');
 			}
 		});
 	}

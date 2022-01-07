@@ -4,7 +4,6 @@ import $ from 'jquery';
 import datepickerFactory from 'jquery-datepicker';
 import datepickerRUFactory from 'jquery-datepicker/i18n/jquery.ui.datepicker-ru';
 import service from '../../js/service.js';
-import messageMail from '../../js/mail.js';
 import { settingsObject, sendUsers } from '../settings.ctrl.js';
 import { select } from '../../components/select.tpl.js';
 
@@ -63,6 +62,12 @@ class Remove extends Personnel {
 			}
 		];
 		this.untouchable = ['nameid', 'longname', 'title', 'errors'];
+		this.mail = {
+			sender: sendUsers.manager,
+			recipient: sendUsers.operator,
+			subject: 'Запрос на удаление пользователей из БД',
+			objectData: {}
+		};
 		this.counter = 0;
 
 		this.count.item.count = {
@@ -285,12 +290,14 @@ class Remove extends Personnel {
 			success: () => {
 				service.modal('success');
 
-				this.sendMail({
+				this.mail.objectData = {
 					department: settingsObject.longname,
 					count: this.collection.size,
 					title: 'Удалить',
 					users: [...this.collection.values()]
-				});
+				};
+
+				this.sendMail();
 			},
 			error: () => {
 				service.modal('error');
@@ -344,31 +351,6 @@ class Remove extends Personnel {
 			},
 			error: () => {
 				service.modal('download');
-			}
-		});
-	}
-
-	sendMail(obj) {
-		const sender = sendUsers.manager;
-		const recipient = sendUsers.operator;
-		const subject = 'Запрос на удаление пользователей из БД';
-
-		$.ajax({
-			url: "./php/mail.php",
-			method: "post",
-			dataType: "html",
-			async: false,
-			data: {
-				sender,
-				recipient,
-				subject,
-				message: messageMail(obj)
-			},
-			success: () => {
-				console.log('Email send is success');
-			},
-			error: () => {
-				service.modal('email');
 			}
 		});
 	}

@@ -2,6 +2,7 @@
 
 import $ from 'jquery';
 import service from '../js/service.js';
+import messageMail from './../js/mail.js';
 import { settingsObject } from './settings.ctrl.js';
 
 class Main {
@@ -11,6 +12,7 @@ class Main {
 			mark: this.mark = ''
 		} = props);
 
+		this.mail = {};
 		this.collection = new Map(); // БД пользователей при старте
 	}
 
@@ -119,6 +121,34 @@ class Main {
 			},
 			error: () => {
 				service.modal('download');
+			}
+		});
+	}
+
+	sendMail() {
+		const {
+			sender,
+			recipient,
+			subject,
+			objectData
+		} = this.mail;
+
+		$.ajax({
+			url: "./php/mail.php",
+			method: "post",
+			dataType: "html",
+			async: false,
+			data: {
+				sender,
+				recipient,
+				subject,
+				message: messageMail(objectData)
+			},
+			success: () => {
+				console.log('Email send is success');
+			},
+			error: () => {
+				service.modal('email');
 			}
 		});
 	}

@@ -2,7 +2,6 @@
 
 import $ from 'jquery';
 import service from '../../js/service.js';
-import messageMail from '../../js/mail.js';
 import { sendUsers } from '../settings.ctrl.js';
 
 import Access from '../access.ctrl.js';
@@ -58,6 +57,24 @@ class Permis extends Access {
 			}
 		];
 		this.untouchable = ['title', 'errors'];
+		this.mail = {
+			sender: sendUsers.secretary,
+			get recipient() {
+				if (this.objectData.title === 'Отклонено') {
+					return sendUsers.manager;
+				} else {
+					return sendUsers.operator;
+				}
+			},
+			get subject() {
+				if (this.objectData.title === 'Отклонено') {
+					return 'Отклонен запрос на добавление пользователей в БД';
+				} else {
+					return 'Запрос на добавление пользователей в БД';
+				}
+			},
+			objectData: {}
+		};
 
 		this.count.item.count = {
 			collection: this.collection,
@@ -204,49 +221,17 @@ class Permis extends Access {
 
 				service.modal('success');
 
-				this.sendMail({
+				this.mail.objectData = {
 					department: this.object.longname,
 					count: array.length,
 					title,
 					users: array
-				});
+				};
+
+				this.sendMail();
 			},
 			error: () => {
 				service.modal('error');
-			}
-		});
-	}
-
-	sendMail(obj) {
-		const { title = '' } = obj;
-		const sender = sendUsers.secretary;
-		let subject;
-		let recipient;
-
-		if (title === 'Отклонено') {
-			recipient = sendUsers.manager;
-			subject = 'Отклонен запрос на добавление пользователей в БД';
-		} else {
-			recipient = sendUsers.operator;
-			subject = 'Запрос на добавление пользователей в БД';
-		}
-
-		$.ajax({
-			url: "./php/mail.php",
-			method: "post",
-			dataType: "html",
-			async: false,
-			data: {
-				sender,
-				recipient,
-				subject,
-				message: messageMail(obj)
-			},
-			success: () => {
-				console.log('Email send is success');
-			},
-			error: () => {
-				service.modal('email');
 			}
 		});
 	}
