@@ -43,9 +43,8 @@ class Permis extends Access {
 				get count() {
 					return this.collection.size;
 				},
-				set count({ collection, object }) {
+				set count({ collection }) {
 					this.collection = collection;
-					this.object = object;
 				}
 			}
 		};
@@ -81,8 +80,7 @@ class Permis extends Access {
 			object: this.object
 		};
 		this.count.all.count = {
-			collection: this.collection,
-			object: this.object
+			collection: this.collection
 		};
 
 		this.showDataFromStorage();
@@ -145,7 +143,7 @@ class Permis extends Access {
 			this.collection.set(i, itemObject);
 		});
 
-		this.dataAdd();
+		super.dataAdd();
 	}
 
 	submitIDinBD(page = 'permis') {
@@ -182,7 +180,7 @@ class Permis extends Access {
 
 				this.clearObject();
 				this.resetControlBtns();
-				this.dataAdd();
+				super.dataAdd();
 
 				localStorage.removeItem(page);
 			} else {

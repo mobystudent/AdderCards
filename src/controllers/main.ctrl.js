@@ -104,9 +104,10 @@ class Main {
 
 	getDataFromDB() {
 		const data = {
-			idDepart: this.mark === 'reject' ? settingsObject.nameid : false,
 			nameTable: this.page
 		};
+		if (this.mark === 'reject') data.idDepart = settingsObject.nameid;
+		if (this.typeTable) data.typeTable = this.typeTable;
 
 		$.ajax({
 			url: "./php/output-request.php",
