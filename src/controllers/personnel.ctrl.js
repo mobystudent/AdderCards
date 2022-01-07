@@ -1,22 +1,19 @@
 'use strict';
 
 import $ from 'jquery';
-import service from './../js/service.js';
-import messageMail from './../js/mail.js';
 
-class Personnel {
+import Main from './main.ctrl.js';
+
+class Personnel extends Main {
 	constructor(props) {
+		super(props);
+
 		({
 			page: this.page = ''
 		} = props);
 
 		this.object = {};
-		this.mail = {};
 		this.collection = new Map(); // БД пользователей при старте
-	}
-
-	dataAdd() {
-		this.render();
 	}
 
 	showDataFromStorage() {
@@ -33,7 +30,7 @@ class Personnel {
 			});
 		}
 
-		this.dataAdd();
+		super.dataAdd();
 	}
 
 	toggleSelect() {
@@ -60,18 +57,6 @@ class Personnel {
 		});
 	}
 
-	clearObject() {
-		for (const key in this.object) {
-			if (key === 'filters') {
-				this.object[key] = {};
-			} else if (!this.untouchable.includes(key)) {
-				this.object[key] = '';
-			}
-		}
-
-		this.render();
-	}
-
 	deleteUser() {
 		$(`.main[data-name=${this.page}] .table__body`).click(({ target }) => {
 			if ($(target).parents('.table__btn--delete').length || $(target).hasClass('table__btn--delete')) {
@@ -84,7 +69,7 @@ class Personnel {
 				});
 
 				this.setDataInStorage();
-				this.dataAdd();
+				super.dataAdd();
 
 				if (!this.collection.size) {
 					localStorage.removeItem(this.page);
@@ -108,35 +93,7 @@ class Personnel {
 					}
 				});
 
-				this.dataAdd();
-			}
-		});
-	}
-
-	sendMail() {
-		const {
-			sender,
-			recipient,
-			subject,
-			objectData
-		} = this.mail;
-
-		$.ajax({
-			url: "./php/mail.php",
-			method: "post",
-			dataType: "html",
-			async: false,
-			data: {
-				sender,
-				recipient,
-				subject,
-				message: messageMail(objectData)
-			},
-			success: () => {
-				console.log('Email send is success');
-			},
-			error: () => {
-				service.modal('email');
+				super.dataAdd();
 			}
 		});
 	}
