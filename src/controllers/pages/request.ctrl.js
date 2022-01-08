@@ -87,11 +87,11 @@ class Request extends Access {
 	render() {
 		const requestModel = new RequestModel({
 			object: this.object,
+			checkNameId: 'check',
 			collection: this.collection,
 			departmentCollection: this.departmentCollection,
 			switchItem: this.switch,
 			count: this.count,
-			checkNameId: 'check',
 			info: this.info,
 			errors: this.object.errors,
 			emptyMess: 'Новых данных нет',

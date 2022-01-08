@@ -32,13 +32,26 @@ class Main {
 				this.collection.set(itemID, item);
 			});
 
-			if (this.mark === 'reject') {
-				const { statusresend } = storageCollection.controls;
-				this.object.statusresend = statusresend;
-			} else if (this.mark === 'access') {
-				const { statusallow, statusdisallow } = storageCollection.controls;
-				this.object.statusallow = statusallow;
-				this.object.statusdisallow = statusdisallow;
+			switch (this.mark) {
+				case 'reject': {
+					const { statusresend } = storageCollection.controls;
+					this.object.statusresend = statusresend;
+					break;
+				}
+				case 'access': {
+					const { statusallow, statusdisallow } = storageCollection.controls;
+					this.object.statusallow = statusallow;
+					this.object.statusdisallow = statusdisallow;
+					break;
+				}
+				case 'qr': {
+					const { statusmanual, statusassign } = storageCollection.controls;
+					const { assign } = storageCollection.settings;
+					this.object.statusassign = statusassign;
+					this.object.statusmanual = statusmanual;
+					this.switch.assign = assign;
+					break;
+				}
 			}
 
 			this.switch.refresh = refresh;
@@ -73,8 +86,14 @@ class Main {
 				if (this.mark === 'access') {
 					this.resetControlBtns(); // 1
 				}
+				if (this.mark === 'qr') {
+					this.object.statusassign = '';
+
+					this.assignCodes();
+				} else {
+					this.setDataInStorage();
+				}
 				this.getDataFromDB(); // 2
-				this.setDataInStorage();
 
 				this.switch.refresh.marker = setInterval(() => {
 					this.getDataFromDB();
@@ -83,7 +102,16 @@ class Main {
 				clearInterval(this.switch.refresh.marker);
 
 				this.switch.refresh.marker = false;
-				localStorage.removeItem(this.page);
+
+				if (this.mark === 'qr') {
+					if (this.switch.refresh.status || this.switch.assign.status) {
+						this.setDataInStorage();
+					} else {
+						localStorage.removeItem(this.page);
+					}
+				} else {
+					localStorage.removeItem(this.page);
+				}
 			}
 
 			this.render();
@@ -107,7 +135,6 @@ class Main {
 			nameTable: this.page
 		};
 		if (this.mark === 'reject') data.idDepart = settingsObject.nameid;
-		if (this.typeTable) data.typeTable = this.typeTable;
 
 		$.ajax({
 			url: "./php/output-request.php",

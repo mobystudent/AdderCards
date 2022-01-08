@@ -22,9 +22,15 @@
 			echo $mysqli->error;
 		}
 	} else if ($nameTable === 'const') {
-		$typeBDTable = 'const_'.$typeTable;
-
-		if($resultSet = $mysqli->query("SELECT * FROM `$typeBDTable`")) {
+		if($resultSet = $mysqli->query("SELECT * FROM const_card")) {
+			while ($result = $resultSet->fetch_assoc()) {
+				array_push($array, $result);
+			}
+		} else {
+			echo $mysqli->error;
+		}
+	} else if ($nameTable === 'qr') {
+		if($resultSet = $mysqli->query("SELECT * FROM const_qr")) {
 			while ($result = $resultSet->fetch_assoc()) {
 				array_push($array, $result);
 			}

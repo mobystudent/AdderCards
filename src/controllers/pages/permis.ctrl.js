@@ -89,11 +89,11 @@ class Permis extends Access {
 	render(page = 'permis') {
 		const permisModel = new PermisModel({
 			object: this.object,
+			checkNameId: 'check',
 			collection: this.collection,
 			departmentCollection: this.departmentCollection,
 			switchItem: this.switch,
 			count: this.count,
-			checkNameId: 'check',
 			info: this.info,
 			errors: this.object.errors,
 			emptyMess: 'Новых данных нет',

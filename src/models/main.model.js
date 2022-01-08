@@ -29,6 +29,11 @@ class MainModel {
 							content += this.table(item);
 						}
 						break;
+					case 'double-check':
+						if (item.nameid === this.object.nameid) {
+							content += this.table(item, this.object);
+						}
+						break;
 					case 'double':
 						content += this.table(item, this.object);
 						break;
@@ -47,7 +52,10 @@ class MainModel {
 			let switchText;
 			let tooltip;
 
-			if (item.type === 'refresh') {
+			if (item.type === 'assign') {
+				switchText = item.status ? 'Ручное присвоение' : 'Автоприсвоение';
+				tooltip = 'Если в данной опции выставлено автоприсвоение, тогда коды будут автоматически присвоены пользователям. Важно! При нехватке кодов для всех пользователей данная ф-я будет отключена. <br/> Если в данной опции выставлено ручное присваивание, тогда код будет присваеватся для каждого пользоватебя в отдельности.';
+			} else {
 				switchText = 'Автообновление';
 				tooltip = 'Если данная опция включена, тогда при поступлении новых данных, они автоматически отобразятся в таблице. Перезагружать страницу не нужно.<br/> Рекомендуется отключить данную функцию при работе с данными в таблице!';
 			}

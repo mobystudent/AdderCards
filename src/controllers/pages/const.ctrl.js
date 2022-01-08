@@ -4,10 +4,10 @@ import $ from 'jquery';
 import service from '../../js/service.js';
 import { sendUsers } from '../settings.ctrl.js';
 
-import ControlDepartment from '../controlDepartment.ctrl.js';
+import Cards from '../cards.ctrl.js';
 import ConstModel from '../../models/pages/const.model.js';
 
-class Const extends ControlDepartment {
+class Const extends Cards {
 	constructor(props) {
 		super({ ...props, mark: 'const' });
 
@@ -80,7 +80,6 @@ class Const extends ControlDepartment {
 			subject: 'Пользователи успешно добавлены в БД',
 			objectData: {}
 		};
-		this.typeTable = 'card';
 
 		this.count.item.count = {
 			collection: this.collection,
@@ -150,6 +149,11 @@ class Const extends ControlDepartment {
 			this.collection.set(i, itemObject);
 		});
 
+		this.dataAdd();
+	}
+
+	dataAdd() {
+		super.getCardsFromDB();
 		super.dataAdd();
 	}
 
@@ -186,7 +190,7 @@ class Const extends ControlDepartment {
 				filterDepartCollection.splice(0);
 
 				this.clearObject();
-				super.dataAdd();
+				this.dataAdd();
 
 				localStorage.removeItem(this.page);
 			} else {

@@ -4,9 +4,9 @@ import $ from 'jquery';
 import service from './../js/service.js';
 
 import Convert from './convert.ctrl.js';
-import Main from './main.ctrl.js';
+import ControlDepartment from './controlDepartment.ctrl.js';
 
-class Cards extends Main {
+class Cards extends ControlDepartment {
 	constructor(props) {
 		super(props);
 

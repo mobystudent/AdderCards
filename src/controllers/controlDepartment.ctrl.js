@@ -3,9 +3,9 @@
 import $ from 'jquery';
 import service from '../js/service.js';
 
-import Cards from './cards.ctrl.js';
+import Main from './main.ctrl.js';
 
-class ControlDepartment extends Cards {
+class ControlDepartment extends Main {
 	constructor(props) {
 		super(props);
 
@@ -21,9 +21,6 @@ class ControlDepartment extends Cards {
 
 		this.getDepartmentFromDB();
 		this.showActiveDataOnPage();
-		if (this.mark === 'const') {
-			super.getCardsFromDB();
-		}
 		super.dataAdd();
 	}
 
@@ -68,6 +65,8 @@ class ControlDepartment extends Cards {
 
 			if (this.mark === 'access') {
 				this.resetControlBtns();
+			} else if (this.mark === 'qr' && this.object.statusmanual) {
+				this.resetControlSwitch();
 			}
 			this.showActiveDataOnPage();
 			this.render();
