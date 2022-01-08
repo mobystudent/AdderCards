@@ -3,9 +3,9 @@
 import $ from 'jquery';
 import service from '../js/service.js';
 
-import Main from './main.ctrl.js';
+import Cards from './cards.ctrl.js';
 
-class ControlDepartment extends Main {
+class ControlDepartment extends Cards {
 	constructor(props) {
 		super(props);
 
@@ -21,8 +21,8 @@ class ControlDepartment extends Main {
 
 		this.getDepartmentFromDB();
 		this.showActiveDataOnPage();
-		if (this.mark === 'cards') {
-			this.getConstCardsFromDB();
+		if (this.mark === 'const') {
+			super.getCardsFromDB();
 		}
 		super.dataAdd();
 	}

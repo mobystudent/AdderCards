@@ -1,7 +1,6 @@
 'use strict';
 
 import $ from 'jquery';
-import convert from '../../js/convert.js';
 import service from '../../js/service.js';
 import { sendUsers } from '../settings.ctrl.js';
 
@@ -10,14 +9,13 @@ import ConstModel from '../../models/pages/const.model.js';
 
 class Const extends ControlDepartment {
 	constructor(props) {
-		super({ ...props, mark: 'cards' });
+		super({ ...props, mark: 'const' });
 
 		({
 			page: this.page = ''
 		} = props);
 
 		this.departmentCollection = new Map();  // Коллекция подразделений
-		this.dbConstCardsCollection = new Map();  // Коллекция всех добавленных карт
 		this.object = {
 			title: 'Добавление карт пользователям',
 			nameid: '',
@@ -115,8 +113,8 @@ class Const extends ControlDepartment {
 		$(`.main[data-name=${this.page}]`).append(constModel.render());
 
 		this.autoRefresh();
-		this.convertCardIDInCardName();
-		this.clearNumberCard();
+		super.convertCardIDInCardName();
+		super.clearNumberCard();
 		this.submitIDinBD();
 		this.printReport();
 
@@ -198,106 +196,6 @@ class Const extends ControlDepartment {
 		});
 	}
 
-	clearNumberCard() {
-		$(`.main[data-name=${this.page}] .table__body`).click(({ target }) => {
-			if ($(target).parents('.table__btn--clear').length || $(target).hasClass('table__btn--clear')) {
-				const userID = $(target).parents('.table__row').data('id');
-				let collectionID;
-
-				[...this.collection].forEach(([key, { id }]) => {
-					if (userID === +id) {
-						collectionID = key;
-					}
-				});
-
-				this.setDataInTable(collectionID);
-			}
-		});
-	}
-
-	convertCardIDInCardName() {
-		$(`.main[data-name=${this.page}] .table__body`).click(({ target }) => {
-			if (!$(target).hasClass('table__input')) return;
-
-			$(target).on('input', () => {
-				const cardIdVal = $(target).val().trim();
-				const convertNumCard = convert.convertCardId(cardIdVal);
-				const userID = $(target).parents('.table__row').data('id');
-				const cardObj = {
-					cardid: cardIdVal,
-					cardname: convertNumCard
-				};
-				const uniqueCardID = [...this.collection.values()].some(({ cardid }) => cardIdVal === cardid);
-				const containsCardID = [...this.dbConstCardsCollection.values()].some(({ cardid }) => cardIdVal === cardid);
-
-				if (uniqueCardID) {
-					this.object.errors = ['have'];
-
-					this.render();
-
-					return;
-				} else {
-					this.object.errors = [];
-				}
-
-				if (containsCardID) {
-					this.object.errors = ['contains'];
-
-					this.render();
-
-					return;
-				} else {
-					this.object.errors = [];
-				}
-
-				if (!convertNumCard) {
-					this.object.errors = ['cardid'];
-
-					this.render();
-
-					return;
-				} else {
-					this.object.errors = [];
-				}
-
-				[...this.collection].forEach(([key, { id }]) => {
-					if (userID === +id) {
-						this.setDataInTable(key, cardObj);
-					}
-				});
-
-				this.checkInvalidValueCardID();
-			});
-		});
-	}
-
-	setDataInTable(userID, cardObj) {
-		const user = this.collection.get(userID);
-		user.cardid = cardObj ? cardObj.cardid : '';
-		user.cardname = cardObj ? cardObj.cardname : '';
-		const allStatusUsers = [...this.collection.values()].some(({ cardid }) => cardid);
-
-		if (!allStatusUsers) {
-			localStorage.removeItem(this.page);
-		} else {
-			this.setDataInStorage();
-		}
-
-		this.showActiveDataOnPage();
-		this.render();
-	}
-
-	checkInvalidValueCardID() {
-		const filterDepartCollection = [...this.collection.values()].filter(({ nameid }) => nameid === this.object.nameid);
-		const checkValueCard = filterDepartCollection.every(({ cardid }) => {
-			if (cardid) convert.convertCardId(cardid);
-		});
-
-		if (checkValueCard) {
-			this.object.errors = [];
-		}
-	}
-
 	setAddUsersInDB(array, nameTable, action, typeTable) {
 		$.ajax({
 			url: "./php/change-user-request.php",
@@ -326,28 +224,6 @@ class Const extends ControlDepartment {
 			},
 			error: () => {
 				service.modal('error');
-			}
-		});
-	}
-
-	getConstCardsFromDB() {
-		$.ajax({
-			url: "./php/output-request.php",
-			method: "post",
-			dataType: "html",
-			async: false,
-			data: {
-				nameTable: 'contains-card'
-			},
-			success: (data) => {
-				const dataFromDB = JSON.parse(data);
-
-				dataFromDB.forEach((item, i) => {
-					this.dbConstCardsCollection.set(i + 1, item);
-				});
-			},
-			error: () => {
-				service.modal('download');
 			}
 		});
 	}
