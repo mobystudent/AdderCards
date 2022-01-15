@@ -3,7 +3,7 @@
 import $ from 'jquery';
 import service from '../js/service.js';
 import messageMail from './../js/mail.js';
-import { settingsObject } from './settings.ctrl.js';
+import Settings from './pages/settings.ctrl.js';
 
 class Main {
 	constructor(props) {
@@ -71,7 +71,7 @@ class Main {
 	}
 
 	autoRefresh() {
-		const timeReload = 60000 * settingsObject.autoupdatevalue;
+		const timeReload = 60000 * new Settings().object.autoupdatevalue;
 
 		$(`.main[data-name=${this.page}] .switch--refresh`).click(({ target }) => {
 			if (!$(target).hasClass('switch__input')) return;
@@ -134,7 +134,7 @@ class Main {
 		const data = {
 			nameTable: this.page
 		};
-		if (this.mark === 'reject') data.idDepart = settingsObject.nameid;
+		if (this.mark === 'reject') data.idDepart = new Settings().object.nameid;
 
 		$.ajax({
 			url: "./php/output-request.php",

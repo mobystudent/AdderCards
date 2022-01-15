@@ -2,7 +2,7 @@
 
 import $ from 'jquery';
 import service from '../../js/service.js';
-import { sendUsers } from '../settings.ctrl.js';
+import Settings from './settings.ctrl.js';
 
 import Access from '../access.ctrl.js';
 import RequestModel from '../../models/pages/request.model.js';
@@ -61,8 +61,8 @@ class Request extends Access {
 		];
 		this.untouchable = ['title', 'errors'];
 		this.mail = {
-			sender: sendUsers.operator,
-			recipient: sendUsers.manager,
+			sender: new Settings().sendUsers.operator,
+			recipient: new Settings().sendUsers.manager,
 			get subject() {
 				if (this.objectData.title === 'Отклонено') {
 					return 'Отклонен запрос на изменение данных в БД';

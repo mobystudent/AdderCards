@@ -3,7 +3,7 @@
 import $ from 'jquery';
 import service from '../../js/service.js';
 import Scrollbar from 'smooth-scrollbar';
-import { settingsObject, sendUsers } from '../settings.ctrl.js';
+import Settings from './settings.ctrl.js';
 
 import Main from '../main.ctrl.js';
 import RejectModel from '../../models/pages/reject.model.js';
@@ -22,10 +22,10 @@ class Reject extends Main {
 			statusresend: '',
 			errors: [],
 			get nameid() {
-				return settingsObject.nameid;
+				return new Settings().object.nameid;
 			},
 			get longname() {
-				return settingsObject.longname;
+				return new Settings().object.longname;
 			}
 		};
 		this.switch = {
@@ -55,8 +55,8 @@ class Reject extends Main {
 		];
 		this.untouchable = ['nameid', 'longname', 'title', 'errors'];
 		this.mail = {
-			sender: sendUsers.manager,
-			recipient: sendUsers.secretary,
+			sender: new Settings().sendUsers.manager,
+			recipient: new Settings().sendUsers.secretary,
 			subject: 'Запрос на повторное добавление пользователей в БД',
 			objectData: {}
 		};
@@ -136,8 +136,8 @@ class Reject extends Main {
 				this.object.errors = [];
 
 				resendItems.forEach((elem) => {
-					elem.nameid = settingsObject.nameid;
-					elem.department = settingsObject.longname;
+					elem.nameid = new Settings().object.nameid;
+					elem.department = new Settings().object.longname;
 				});
 
 				this.setAddUsersInDB(resendItems, 'permis', 'add');
@@ -244,7 +244,7 @@ class Reject extends Main {
 				service.modal('success');
 
 				this.mail.objectData = {
-					department: settingsObject.longname,
+					department: new Settings().object.longname,
 					count: this.collection.size,
 					title: 'Повторно добавить',
 					users: [...this.collection.values()]

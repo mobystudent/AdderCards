@@ -2,7 +2,7 @@
 
 import $ from 'jquery';
 import service from '../../js/service.js';
-import { sendUsers } from '../settings.ctrl.js';
+import Settings from './settings.ctrl.js';
 
 import Cards from '../cards.ctrl.js';
 import ConstModel from '../../models/pages/const.model.js';
@@ -75,8 +75,8 @@ class Const extends Cards {
 		];
 		this.untouchable = ['title', 'errors'];
 		this.mail = {
-			sender: sendUsers.operator,
-			recipient: sendUsers.manager,
+			sender: new Settings().sendUsers.operator,
+			recipient: new Settings().sendUsers.manager,
 			subject: 'Пользователи успешно добавлены в БД',
 			objectData: {}
 		};

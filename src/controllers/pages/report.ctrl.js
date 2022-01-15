@@ -4,7 +4,7 @@ import $ from 'jquery';
 import datepickerFactory from 'jquery-datepicker';
 import datepickerRUFactory from 'jquery-datepicker/i18n/jquery.ui.datepicker-ru';
 import service from '../../js/service.js';
-import { settingsObject } from '../settings.ctrl.js';
+import Settings from './settings.ctrl.js';
 
 import Personnel from '../personnel.ctrl.js';
 import ReportModel from '../../models/pages/report.model.js';
@@ -29,10 +29,10 @@ class Report extends Personnel {
 			statustitle: '',
 			filters: {},
 			get nameid() {
-				return settingsObject.nameid;
+				return new Settings().object.nameid;
 			},
 			get longname() {
-				return settingsObject.longname;
+				return new Settings().object.longname;
 			}
 		};
 		this.switch = {
@@ -134,7 +134,7 @@ class Report extends Personnel {
 	}
 
 	autoRefresh() {
-		const timeReload = 60000 * settingsObject.autoupdatevalue;
+		const timeReload = 60000 * new Settings().object.autoupdatevalue;
 
 		$(`.main[data-name=${this.page}] .switch--refresh`).click(({ target }) => {
 			if (!$(target).hasClass('switch__input')) return;
@@ -173,7 +173,7 @@ class Report extends Personnel {
 			method: "post",
 			dataType: "html",
 			data: {
-				nameDepart: settingsObject.nameid,
+				nameDepart: new Settings().object.nameid,
 				nameTable: 'filter',
 				options: this.object.filters
 			},
@@ -196,7 +196,7 @@ class Report extends Personnel {
 			method: "post",
 			dataType: "html",
 			data: {
-				idDepart: settingsObject.nameid,
+				idDepart: new Settings().object.nameid,
 				nameTable: this.page
 			},
 			async: false,

@@ -4,7 +4,7 @@ import $ from 'jquery';
 import datepickerFactory from 'jquery-datepicker';
 import datepickerRUFactory from 'jquery-datepicker/i18n/jquery.ui.datepicker-ru';
 import service from '../../js/service.js';
-import { settingsObject, sendUsers } from '../settings.ctrl.js';
+import Settings from './settings.ctrl.js';
 import { modalUser } from '../../components/add/modal-user.tpl.js';
 
 import Personnel from '../personnel.ctrl.js';
@@ -38,10 +38,10 @@ class Add extends Personnel {
 			statuscardvalidto: '',
 			errors: [],
 			get nameid() {
-				return settingsObject.nameid;
+				return new Settings().object.nameid;
 			},
 			get longname() {
-				return settingsObject.longname;
+				return new Settings().object.longname;
 			}
 		};
 		this.count = {
@@ -84,8 +84,8 @@ class Add extends Personnel {
 		];
 		this.untouchable = ['nameid', 'longname', 'title', 'errors'];
 		this.mail = {
-			sender: sendUsers.manager,
-			recipient: sendUsers.secretary,
+			sender: new Settings().sendUsers.manager,
+			recipient: new Settings().sendUsers.secretary,
 			subject: 'Запрос на добавление пользователей в БД',
 			objectData: {}
 		};
@@ -349,7 +349,7 @@ class Add extends Personnel {
 			if (!this.collection.size) return;
 
 			this.collection.forEach((user) => {
-				user.nameid = settingsObject.nameid;
+				user.nameid = new Settings().object.nameid;
 				user.date = service.getCurrentDate();
 			});
 
@@ -398,7 +398,7 @@ class Add extends Personnel {
 					service.modal('success');
 
 					this.mail.objectData = {
-						department: settingsObject.longname,
+						department: new Settings().object.longname,
 						count: this.collection.size,
 						title: 'Добавлено',
 						users: [...this.collection.values()]
@@ -421,7 +421,7 @@ class Add extends Personnel {
 			async: false,
 			data: {
 				nameTable: 'names',
-				nameDepart: settingsObject.nameid
+				nameDepart: new Settings().object.nameid
 			},
 			success: (data) => {
 				const dataFromDB = JSON.parse(data);

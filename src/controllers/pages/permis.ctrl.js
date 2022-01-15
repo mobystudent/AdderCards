@@ -2,7 +2,7 @@
 
 import $ from 'jquery';
 import service from '../../js/service.js';
-import { sendUsers } from '../settings.ctrl.js';
+import Settings from './settings.ctrl.js';
 
 import Access from '../access.ctrl.js';
 import PermisModel from '../../models/pages/permis.model.js';
@@ -57,12 +57,12 @@ class Permis extends Access {
 		];
 		this.untouchable = ['title', 'errors'];
 		this.mail = {
-			sender: sendUsers.secretary,
+			sender: new Settings().sendUsers.secretary,
 			get recipient() {
 				if (this.objectData.title === 'Отклонено') {
-					return sendUsers.manager;
+					return new Settings().sendUsers.manager;
 				} else {
-					return sendUsers.operator;
+					return new Settings().sendUsers.operator;
 				}
 			},
 			get subject() {

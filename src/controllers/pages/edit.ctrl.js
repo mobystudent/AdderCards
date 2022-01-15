@@ -2,7 +2,7 @@
 
 import $ from 'jquery';
 import service from '../../js/service.js';
-import { settingsObject, sendUsers } from '../settings.ctrl.js';
+import Settings from './settings.ctrl.js';
 import { select } from '../../components/select.tpl.js';
 
 import Personnel from '../personnel.ctrl.js';
@@ -34,10 +34,10 @@ class Edit extends Personnel {
 			statusnewphotofile: '',
 			errors: [],
 			get nameid() {
-				return settingsObject.nameid;
+				return new Settings().object.nameid;
 			},
 			get longname() {
-				return settingsObject.longname;
+				return new Settings().object.longname;
 			}
 		};
 		this.count = {
@@ -80,8 +80,8 @@ class Edit extends Personnel {
 		];
 		this.untouchable = ['nameid', 'longname', 'title', 'errors'];
 		this.mail = {
-			sender: sendUsers.manager,
-			recipient: sendUsers.operator,
+			sender: new Settings().sendUsers.manager,
+			recipient: new Settings().sendUsers.operator,
 			subject: 'Запрос на редактирование данных пользователей в БД',
 			objectData: {}
 		};
@@ -324,7 +324,7 @@ class Edit extends Personnel {
 			if (!this.collection.size) return;
 
 			this.collection.forEach((elem) => {
-				elem.nameid = settingsObject.nameid;
+				elem.nameid = new Settings().object.nameid;
 				elem.date = service.getCurrentDate();
 			});
 
@@ -393,7 +393,7 @@ class Edit extends Personnel {
 					service.modal('success');
 
 					this.mail.objectData = {
-						department: settingsObject.longname,
+						department: new Settings().object.longname,
 						count: this.collection.size,
 						title: 'Редактировать',
 						users: [...this.collection.values()]
@@ -415,7 +415,7 @@ class Edit extends Personnel {
 			dataType: "html",
 			data: {
 				id,
-				idDepart: settingsObject.nameid,
+				idDepart: new Settings().object.nameid,
 				nameTable: 'edit'
 			},
 			success: (data) => {

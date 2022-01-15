@@ -4,7 +4,7 @@ import $ from 'jquery';
 import datepickerFactory from 'jquery-datepicker';
 import datepickerRUFactory from 'jquery-datepicker/i18n/jquery.ui.datepicker-ru';
 import service from '../../js/service.js';
-import { settingsObject, sendUsers } from '../settings.ctrl.js';
+import Settings from './settings.ctrl.js';
 import { select } from '../../components/select.tpl.js';
 
 import Personnel from '../personnel.ctrl.js';
@@ -37,10 +37,10 @@ class Remove extends Personnel {
 			statusnewdepart: '',
 			errors: [],
 			get nameid() {
-				return settingsObject.nameid;
+				return new Settings().object.nameid;
 			},
 			get longname() {
-				return settingsObject.longname;
+				return new Settings().object.longname;
 			}
 		};
 		this.count = {
@@ -63,8 +63,8 @@ class Remove extends Personnel {
 		];
 		this.untouchable = ['nameid', 'longname', 'title', 'errors'];
 		this.mail = {
-			sender: sendUsers.manager,
-			recipient: sendUsers.operator,
+			sender: new Settings().sendUsers.manager,
+			recipient: new Settings().sendUsers.operator,
 			subject: 'Запрос на удаление пользователей из БД',
 			objectData: {}
 		};
@@ -170,7 +170,7 @@ class Remove extends Personnel {
 		this.departmentCollection.forEach(({ nameid = '', longname = '' }) => {
 			const quoteName = longname.replace(/["']/g, '&quot;');
 
-			if (nameid !== settingsObject.nameid) {
+			if (nameid !== new Settings().object.nameid) {
 				const item = {
 					value: quoteName,
 					id: nameid,
@@ -254,7 +254,7 @@ class Remove extends Personnel {
 			if (!this.collection.size) return;
 
 			this.collection.forEach((user) => {
-				user.nameid = settingsObject.nameid;
+				user.nameid = new Settings().object.nameid;
 				user.date = service.getCurrentDate();
 			});
 
@@ -291,7 +291,7 @@ class Remove extends Personnel {
 				service.modal('success');
 
 				this.mail.objectData = {
-					department: settingsObject.longname,
+					department: new Settings().object.longname,
 					count: this.collection.size,
 					title: 'Удалить',
 					users: [...this.collection.values()]
@@ -312,7 +312,7 @@ class Remove extends Personnel {
 			dataType: "html",
 			data: {
 				id,
-				idDepart: settingsObject.nameid,
+				idDepart: new Settings().object.nameid,
 				nameTable: 'remove'
 			},
 			success: (data) => {

@@ -3,7 +3,7 @@
 import $ from 'jquery';
 import QRCode from 'qrcode';
 import service from '../../js/service.js';
-import { sendUsers } from '../settings.ctrl.js';
+import Settings from './settings.ctrl.js';
 
 import ControlDepartment from '../controlDepartment.ctrl.js';
 import QRModel from '../../models/pages/qr.model.js';
@@ -81,8 +81,8 @@ class QR extends ControlDepartment {
 		];
 		this.untouchable = ['title', 'errors'];
 		this.mail = {
-			sender: sendUsers.operator,
-			recipient: sendUsers.manager,
+			sender: new Settings().sendUsers.operator,
+			recipient: new Settings().sendUsers.manager,
 			subject: 'Пользователи успешно добавлены в БД',
 			objectData: {}
 		};

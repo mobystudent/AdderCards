@@ -1,11 +1,11 @@
 'use strict';
 
 import $ from 'jquery';
-import '../controllers/settings.ctrl.js';
 import './login.js';
 import service from './service.js';
 import './parts/renderheader.js';
 
+import Settings from '../controllers/pages/settings.ctrl.js';
 import QR from '../controllers/pages/qr.ctrl.js';
 import Time from '../controllers/pages/time.ctrl.js';
 import Const from '../controllers/pages/const.ctrl.js';
@@ -22,6 +22,7 @@ $(window).on('load', () => {
 	// service.scrollbar();
 	service.showDataInTable();
 
+	new Settings({ page: 'settings' });
 	new QR({ page: 'qr' });
 	new Time({ page: 'time' });
 	new Const({ page: 'const' });
