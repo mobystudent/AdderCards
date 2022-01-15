@@ -1,5 +1,8 @@
 'use strict';
 
+import { cells } from '../../structure/permis.strt.js';
+import row from '../row.tpl';
+
 export const headerTable = (data) => {
 	const { statusallow, statusdisallow } = data;
 	const allowBtnValue = statusallow ? 'Отменить' : 'Разрешить все';
@@ -12,17 +15,7 @@ export const headerTable = (data) => {
 	const disallowBtnBlock = statusallow ? 'disabled="disabled"' : '';
 
 	return `
-		<div class="table__cell table__cell--header table__cell--fio">
-			<span class="table__text table__text--header">Фамилия Имя Отчество</span>
-			<button class="btn btn--sort" type="button" data-direction="true"></button>
-		</div>
-		<div class="table__cell table__cell--header table__cell--post">
-			<span class="table__text table__text--header">Должность</span>
-			<button class="btn btn--sort" type="button" data-direction="true"></button>
-		</div>
-		<div class="table__cell table__cell--header table__cell--statustitle">
-			<span class="table__text table__text--header">Статус</span>
-		</div>
+		${row(cells)}
 		<div class="table__cell table__cell--header table__cell--btn-permis">
 			<button class="btn btn--allow ${allowBtnClassView} ${allowDiffClassView}" id="allowAll" type="button" data-type="allow" ${allowBtnBlock}>
 				${allowBtnValue}

@@ -1,5 +1,8 @@
 'use strict';
 
+import { cells } from '../../structure/remove.strt.js';
+import row from '../row.tpl';
+
 export const headerTable = (data) => {
 	const { statusnewdepart, statuscardvalidto } = data;
 	const newDepartView = statusnewdepart ? `
@@ -14,16 +17,7 @@ export const headerTable = (data) => {
 	` : '';
 
 	return `
-		<div class="table__cell table__cell--header table__cell--fio">
-			<span class="table__text table__text--header">Фамилия Имя Отчество</span>
-			<button class="btn btn--sort" type="button" data-direction="true"></button>
-		</div>
-		<div class="table__cell table__cell--header table__cell--post">
-			<span class="table__text table__text--header">Должность</span>
-		</div>
-		<div class="table__cell table__cell--header table__cell--statustitle">
-			<span class="table__text table__text--header">Причина удаления</span>
-		</div>
+		${row(cells)}
 		${newDepartView}
 		${cardvalidtoView}
 		<div class="table__cell table__cell--header table__cell--edit">

@@ -1,5 +1,8 @@
 'use strict';
 
+import { cells } from '../../structure/add.strt.js';
+import row from '../row.tpl';
+
 export const headerTable = (data) => {
 	const { statuscardvalidto } = data;
 	const cardvalidtoView = statuscardvalidto ? `
@@ -9,19 +12,7 @@ export const headerTable = (data) => {
 	` : '';
 
 	return `
-		<div class="table__cell table__cell--header table__cell--fio">
-			<span class="table__text table__text--header">Фамилия Имя Отчество</span>
-			<button class="btn btn--sort" type="button" data-direction="true"></button>
-		</div>
-		<div class="table__cell table__cell--header table__cell--post">
-			<span class="table__text table__text--header">Должность</span>
-		</div>
-		<div class="table__cell table__cell--header table__cell--photoname">
-			<span class="table__text table__text--header">Фотография</span>
-		</div>
-		<div class="table__cell table__cell--header table__cell--statustitle">
-			<span class="table__text table__text--header">Идентификатор</span>
-		</div>
+		${row(cells)}
 		${cardvalidtoView}
 		<div class="table__cell table__cell--header table__cell--edit">
 			<svg class="icon icon--edit icon--edit-white">
