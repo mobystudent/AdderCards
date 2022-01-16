@@ -268,8 +268,20 @@ function gulpJS() {
 				commonjs(),
 				babel({
 					presets: [
-						"@babel/env"
-					]
+						'@babel/preset-env',
+					],
+					plugins: [
+						[
+							'@babel/plugin-transform-runtime',
+							{
+								corejs: false,
+								helpers: true,
+								regenerator: true,
+								useESModules: true
+							}
+						]
+					],
+					runtimeHelpers: true
 				}),
 				polyfills()
 			]

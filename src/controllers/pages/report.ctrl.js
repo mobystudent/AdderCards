@@ -14,7 +14,7 @@ datepickerRUFactory($);
 
 class Report extends Personnel {
 	constructor(props) {
-		super(props);
+		super({ ...props, mark: 'report' });
 
 		({
 			page: this.page = ''
@@ -133,34 +133,6 @@ class Report extends Personnel {
 		});
 	}
 
-	autoRefresh() {
-		const timeReload = 60000 * new Settings().object.autoupdatevalue;
-
-		$(`.main[data-name=${this.page}] .switch--refresh`).click(({ target }) => {
-			if (!$(target).hasClass('switch__input')) return;
-
-			const statusSwitch = $(target).prop('checked');
-			this.switch.refresh.status = statusSwitch;
-
-			if (statusSwitch && !this.switch.refresh.marker) {
-				localStorage.removeItem(this.page);
-				this.collection.clear();
-
-				this.getDataFromDB();
-
-				this.switch.refresh.marker = setInterval(() => {
-					this.getDataFromDB();
-				}, timeReload);
-			} else if (!statusSwitch && this.switch.refresh.marker) {
-				clearInterval(this.switch.refresh.marker);
-
-				this.switch.refresh.marker = false;
-			}
-
-			this.clearObject();
-		});
-	}
-
 	resetFilters() {
 		$(`.main[data-name=${this.page}] .btn--cancel`).click(() => {
 			this.clearObject();
@@ -183,27 +155,6 @@ class Report extends Personnel {
 
 				this.collection.clear();
 				this.userFromDB(dataFromDB, 'filter');
-			},
-			error: () => {
-				service.modal('download');
-			}
-		});
-	}
-
-	getDataFromDB() {
-		$.ajax({
-			url: "./php/output-request.php",
-			method: "post",
-			dataType: "html",
-			data: {
-				idDepart: new Settings().object.nameid,
-				nameTable: this.page
-			},
-			async: false,
-			success: (data) => {
-				const dataFromDB = JSON.parse(data);
-
-				this.userFromDB(dataFromDB);
 			},
 			error: () => {
 				service.modal('download');

@@ -90,7 +90,7 @@ class Main {
 					this.object.statusassign = '';
 
 					this.assignCodes();
-				} else {
+				} else if (this.mark !== 'report') {
 					this.setDataInStorage();
 				}
 				this.getDataFromDB(); // 2
@@ -109,6 +109,8 @@ class Main {
 					} else {
 						localStorage.removeItem(this.page);
 					}
+				} else if (this.mark === 'report') {
+					this.clearObject();
 				} else {
 					localStorage.removeItem(this.page);
 				}
@@ -134,7 +136,7 @@ class Main {
 		const data = {
 			nameTable: this.page
 		};
-		if (this.mark === 'reject') data.idDepart = new Settings().object.nameid;
+		if (this.mark === 'reject' || this.mark === 'report') data.idDepart = new Settings().object.nameid;
 
 		$.ajax({
 			url: "./php/output-request.php",
@@ -165,7 +167,6 @@ class Main {
 			url: "./php/mail.php",
 			method: "post",
 			dataType: "html",
-			async: false,
 			data: {
 				sender,
 				recipient,
