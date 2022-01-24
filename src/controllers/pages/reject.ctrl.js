@@ -140,20 +140,21 @@ class Reject extends Main {
 					elem.department = new Settings().object.longname;
 				});
 
-				this.setAddUsersInDB(resendItems, 'permis', 'add');
+				this.setAddUsersInDB(resendItems, 'permis', 'add')
+					.then(() => {
+						resendItems.forEach(({ id: userID }) => {
+							[...this.collection].forEach(([key, { id }]) => {
+								if (userID === id) {
+									this.collection.delete(key);
+								}
+							});
+						});
 
-				resendItems.forEach(({ id: userID }) => {
-					[...this.collection].forEach(([key, { id }]) => {
-						if (userID === id) {
-							this.collection.delete(key);
-						}
+						resendItems.splice(0);
+						super.clearObject();
+						super.dataAdd();
+						localStorage.removeItem(this.page);
 					});
-				});
-				resendItems.splice(0);
-
-				this.clearObject();
-				super.dataAdd();
-				localStorage.removeItem(this.page);
 			} else {
 				this.object.errors = ['fields'];
 				this.render();
@@ -229,12 +230,11 @@ class Reject extends Main {
 	}
 
 	// Общие функции с картами и кодами
-	setAddUsersInDB(array, nameTable, action) {
-		$.ajax({
+	async setAddUsersInDB(array, nameTable, action) {
+		await $.ajax({
 			url: "./php/change-user-request.php",
 			method: "post",
 			dataType: "html",
-			async: false,
 			data: {
 				action,
 				nameTable,
@@ -245,12 +245,12 @@ class Reject extends Main {
 
 				this.mail.objectData = {
 					department: new Settings().object.longname,
-					count: this.collection.size,
+					count: array.length,
 					title: 'Повторно добавить',
-					users: [...this.collection.values()]
+					users: array
 				};
 
-				this.sendMail();
+				super.sendMail();
 			},
 			error: () => {
 				service.modal('error');

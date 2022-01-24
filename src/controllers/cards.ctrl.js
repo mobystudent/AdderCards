@@ -123,12 +123,11 @@ class Cards extends ControlDepartment {
 		}
 	}
 
-	getCardsFromDB() {
-		$.ajax({
+	async getCardsFromDB() {
+		await $.ajax({
 			url: "./php/output-request.php",
 			method: "post",
 			dataType: "html",
-			async: false,
 			data: {
 				nameTable: 'contains-card'
 			},

@@ -155,32 +155,34 @@ class Request extends Access {
 
 				this.object.errors = [];
 
-				if (allowItems.length) {
-					// Запрос в Uprox
-				}
+				new Promise((resolve) => {
+					if (allowItems.length) {
+						// Запрос в Uprox
+					}
 
-				if (disallowItems.length) {
-					disallowItems.forEach((item) => {
-						item.date = service.getCurrentDate();
+					if (disallowItems.length) {
+						disallowItems.forEach((item) => {
+							item.date = service.getCurrentDate();
+						});
+
+						resolve(this.setAddUsersInDB(disallowItems, 'reject', 'add', 'reject'));
+					}
+				})
+				.then(() => {
+					filterDepartCollection.forEach(({ id: userID }) => {
+						[...this.collection].forEach(([key, { id }]) => {
+							if (userID === id) {
+								this.collection.delete(key);
+							}
+						});
 					});
 
-					this.setAddUsersInDB(disallowItems, 'reject', 'add', 'reject');
-				}
-
-				filterDepartCollection.forEach(({ id: userID }) => {
-					[...this.collection].forEach(([key, { id }]) => {
-						if (userID === id) {
-							this.collection.delete(key);
-						}
-					});
+					filterDepartCollection.splice(0);
+					super.clearObject();
+					super.resetControlBtns();
+					super.dataAdd();
+					localStorage.removeItem(this.page);
 				});
-				filterDepartCollection.splice(0);
-
-				this.clearObject();
-				this.resetControlBtns();
-				super.dataAdd();
-
-				localStorage.removeItem(this.page);
 			} else {
 				this.object.errors = ['fields'];
 				this.render();
@@ -188,12 +190,11 @@ class Request extends Access {
 		});
 	}
 
-	setAddUsersInDB(array, nameTable, action, typeTable) {
-		$.ajax({
+	async setAddUsersInDB(array, nameTable, action, typeTable) {
+		await $.ajax({
 			url: "./php/change-user-request.php",
 			method: "post",
 			dataType: "html",
-			async: false,
 			data: {
 				typeTable,
 				action,

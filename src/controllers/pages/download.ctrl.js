@@ -85,7 +85,7 @@ class Download extends Personnel {
 			collection: this.collection
 		};
 
-		this.showDataFromStorage();
+		super.showDataFromStorage();
 	}
 
 	render() {
@@ -137,8 +137,10 @@ class Download extends Personnel {
 			if (!correctNameQR) errorsArr.push('cardname');
 
 			if (!errorsArr.length) {
-				this.getQRCodesFromDB();
-				this.codeFromForm();
+				this.getQRCodesFromDB()
+					.then(() => {
+						this.codeFromForm();
+					});
 			} else {
 				this.object.errors = errorsArr;
 
@@ -201,22 +203,21 @@ class Download extends Personnel {
 		$('.btn--submit').click(() => {
 			if (!this.collection.size) return;
 
-			this.setAddUsersInDB([...this.collection.values()], 'download', 'add');
-
-			this.collection.clear();
-			this.render();
-
-			localStorage.removeItem(this.page);
-			this.counter = 0;
+			this.setAddUsersInDB([...this.collection.values()], 'download', 'add')
+				.then(() => {
+					this.collection.clear();
+					this.render();
+					localStorage.removeItem(this.page);
+					this.counter = 0;
+				});
 		});
 	}
 
-	setAddUsersInDB(array, nameTable, action) {
-		$.ajax({
+	async setAddUsersInDB(array, nameTable, action) {
+		await $.ajax({
 			url: "./php/change-user-request.php",
 			method: "post",
 			dataType: "html",
-			async: false,
 			data: {
 				action,
 				nameTable,
@@ -231,12 +232,11 @@ class Download extends Personnel {
 		});
 	}
 
-	getQRCodesFromDB() {
-		$.ajax({
+	async getQRCodesFromDB() {
+		await $.ajax({
 			url: "./php/output-request.php",
 			method: "post",
 			dataType: "html",
-			async: false,
 			data: {
 				nameTable: 'contains-qr'
 			},

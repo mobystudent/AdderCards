@@ -15,7 +15,6 @@ class Const extends Cards {
 			page: this.page = ''
 		} = props);
 
-		this.departmentCollection = new Map();  // Коллекция подразделений
 		this.object = {
 			title: 'Добавление карт пользователям',
 			nameid: '',
@@ -153,8 +152,10 @@ class Const extends Cards {
 	}
 
 	dataAdd() {
-		super.getCardsFromDB();
-		super.dataAdd();
+		super.getCardsFromDB()
+			.then(() => {
+				super.dataAdd();
+			});
 	}
 
 	setDataInStorage() {
@@ -178,21 +179,21 @@ class Const extends Cards {
 					}
 				});
 
-				this.setAddUsersInDB(filterDepartCollection, 'const', 'report', 'card');
+				this.setAddUsersInDB(filterDepartCollection, 'const', 'report', 'card')
+					.then(() => {
+						filterDepartCollection.forEach(({ id: userID }) => {
+							[...this.collection].forEach(([key, { id }]) => {
+								if (userID === id) {
+									this.collection.delete(key);
+								}
+							});
+						});
 
-				filterDepartCollection.forEach(({ id: userID }) => {
-					[...this.collection].forEach(([key, { id }]) => {
-						if (userID === id) {
-							this.collection.delete(key);
-						}
+						filterDepartCollection.splice(0);
+						super.clearObject();
+						this.dataAdd();
+						localStorage.removeItem(this.page);
 					});
-				});
-				filterDepartCollection.splice(0);
-
-				this.clearObject();
-				this.dataAdd();
-
-				localStorage.removeItem(this.page);
 			} else {
 				this.object.errors = ['fields'];
 				this.render();
@@ -200,20 +201,18 @@ class Const extends Cards {
 		});
 	}
 
-	setAddUsersInDB(array, nameTable, action, typeTable) {
-		$.ajax({
+	async setAddUsersInDB(array, nameTable, action, typeTable) {
+		await $.ajax({
 			url: "./php/change-user-request.php",
 			method: "post",
 			dataType: "html",
-			async: false,
 			data: {
 				typeTable,
 				action,
 				nameTable,
 				array
 			},
-			success: (data) => {
-				console.log(data);
+			success: () => {
 				window.print();
 				service.modal('success');
 

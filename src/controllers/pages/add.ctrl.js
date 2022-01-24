@@ -95,7 +95,7 @@ class Add extends Personnel {
 			collection: this.collection
 		};
 
-		this.showDataFromStorage(); // 1
+		super.showDataFromStorage(); // 1
 		this.getUserNamesFromDB();
 	}
 
@@ -150,7 +150,7 @@ class Add extends Personnel {
 				this.userFromForm();
 			}
 
-			this.clearObject();
+			super.clearObject();
 		});
 	}
 
@@ -206,7 +206,7 @@ class Add extends Personnel {
 
 		if (uniqueName && containsName) {
 			this.userFromForm();
-			this.clearObject();
+			super.clearObject();
 		}
 	}
 
@@ -353,18 +353,18 @@ class Add extends Personnel {
 				user.date = service.getCurrentDate();
 			});
 
-			this.setAddUsersInDB([...this.collection.values()], 'add', this.page);
-
-			this.collection.clear();
-			this.render();
-
-			localStorage.removeItem(this.page);
-			this.counter = 0;
+			this.setAddUsersInDB([...this.collection.values()], 'add', this.page)
+				.then(() => {
+					this.collection.clear();
+					this.render();
+					localStorage.removeItem(this.page);
+					this.counter = 0;
+				});
 		});
 	}
 
-	setAddUsersInDB(array, nameTable, action) {
-		new Promise((resolve) => {
+	async setAddUsersInDB(array, nameTable, action) {
+		await new Promise((resolve) => {
 			const encodeArrayPhotoFile = [];
 			const reader = new FileReader();
 
@@ -381,9 +381,7 @@ class Add extends Personnel {
 				}
 			});
 
-			setTimeout(() => {
-				resolve(encodeArrayPhotoFile);
-			}, 0);
+			resolve(encodeArrayPhotoFile);
 		}).then((array) => {
 			$.ajax({
 				url: "./php/change-user-request.php",
@@ -404,7 +402,7 @@ class Add extends Personnel {
 						users: [...this.collection.values()]
 					};
 
-					this.sendMail();
+					super.sendMail();
 				},
 				error: () => {
 					service.modal('error');
@@ -413,12 +411,11 @@ class Add extends Personnel {
 		});
 	}
 
-	getUserNamesFromDB() {
-		$.ajax({
+	async getUserNamesFromDB() {
+		await $.ajax({
 			url: "./php/output-request.php",
 			method: "post",
 			dataType: "html",
-			async: false,
 			data: {
 				nameTable: 'names',
 				nameDepart: new Settings().object.nameid

@@ -5,6 +5,8 @@ import QRCode from 'qrcode';
 import service from '../../js/service.js';
 import Settings from './settings.ctrl.js';
 
+import { qrItems } from '../../components/qr/qr-items.tpl.js';
+
 import ControlDepartment from '../controlDepartment.ctrl.js';
 import QRModel from '../../models/pages/qr.model.js';
 
@@ -129,6 +131,11 @@ class QR extends ControlDepartment {
 		if (this.filterDepart().length > 1) this.changeTabs();
 	}
 
+	renderQRItems(array) {
+		$('.document').html('');
+		$('.document').append(qrItems(array, this.object));
+	}
+
 	userFromDB(array) {
 		const objToCollection = {
 			id: '',
@@ -211,13 +218,11 @@ class QR extends ControlDepartment {
 	}
 
 	dataAdd() {
-		this.object.nameid = this.filterDepart()[0];
-
-		this.getGeneratedQRFromDB();
-		this.getDepartmentFromDB();
-		this.assignCodes();
-		this.showActiveDataOnPage();
 		super.dataAdd();
+		this.getGeneratedQRFromDB()
+			.then(() => {
+				this.assignCodes();
+			});
 	}
 
 	submitIDinBD() {
@@ -234,34 +239,34 @@ class QR extends ControlDepartment {
 					}
 				});
 
-				this.setAddUsersInDB(filterDepartCollection, 'const', 'report', 'qr');
+				this.setAddUsersInDB(filterDepartCollection, 'const', 'report', 'qr')
+					.then(() => {
+						filterDepartCollection.forEach(({ id: userID, codeid }) => {
+							[...this.collection].forEach(([key, { id }]) => {
+								if (userID === id) {
+									this.collection.delete(key);
+								}
+							});
+							[...this.generateCollection].forEach(([key, { id }]) => {
+								if (codeid === id) {
+									this.generateCollection.delete(key);
+								}
+							});
+						});
 
-				filterDepartCollection.forEach(({ id: userID, codeid }) => {
-					[...this.collection].forEach(([key, { id }]) => {
-						if (userID === id) {
-							this.collection.delete(key);
+						filterDepartCollection.splice(0);
+						super.clearObject(); // сначала сбрасываем объект потом проверка
+
+						if (!this.object.statusmanual) {
+							this.resetControlSwitch();
+						} else {
+							this.object.statusmanual = true;
 						}
+
+						this.dataAdd();
+						this.typeAssignCode();
+						localStorage.removeItem(this.page);
 					});
-					[...this.generateCollection].forEach(([key, { id }]) => {
-						if (codeid === id) {
-							this.generateCollection.delete(key);
-						}
-					});
-				});
-				filterDepartCollection.splice(0);
-
-				if (!this.object.statusmanual) {
-					this.clearObject();
-					this.resetControlSwitch();
-				} else {
-					this.clearObject();
-					this.object.statusmanual = true;
-				}
-
-				this.dataAdd();
-				this.typeAssignCode();
-
-				localStorage.removeItem(this.page);
 			} else {
 				this.object.errors = ['fields'];
 
@@ -322,8 +327,8 @@ class QR extends ControlDepartment {
 		});
 	}
 
-	setAddUsersInDB(array, nameTable, action, typeTable) {
-		new Promise((resolve) => {
+	async setAddUsersInDB(array, nameTable, action, typeTable) {
+		await new Promise((resolve) => {
 			const filterUsers = [];
 
 			this.collection.forEach((user) => {
@@ -341,11 +346,9 @@ class QR extends ControlDepartment {
 				}
 			});
 
-			setTimeout(() => {
-				resolve(filterUsers);
-			}, 0);
+			resolve(filterUsers);
 		}).then((array) => {
-			super.renderQRItems(array);
+			this.renderQRItems(array);
 		}).then(() => {
 			$.ajax({
 				url: "./php/change-user-request.php",
@@ -357,8 +360,7 @@ class QR extends ControlDepartment {
 					nameTable,
 					array
 				},
-				success: (data) => {
-					console.log(data);
+				success: () => {
 					// window.print();
 					service.modal('success');
 
@@ -378,12 +380,11 @@ class QR extends ControlDepartment {
 		});
 	}
 
-	getGeneratedQRFromDB() {
-		$.ajax({
+	async getGeneratedQRFromDB() {
+		await $.ajax({
 			url: "./php/output-request.php",
 			method: "post",
 			dataType: "html",
-			async: false,
 			data: {
 				nameTable: 'download'
 			},

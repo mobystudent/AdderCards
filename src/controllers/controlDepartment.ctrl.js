@@ -19,9 +19,11 @@ class ControlDepartment extends Main {
 	dataAdd() {
 		this.object.nameid = this.filterDepart()[0];
 
-		this.getDepartmentFromDB();
-		this.showActiveDataOnPage();
-		super.dataAdd();
+		this.getDepartmentFromDB()
+			.then(() => {
+				this.showActiveDataOnPage();
+				super.dataAdd();
+			});
 	}
 
 	showActiveDataOnPage() {
@@ -35,12 +37,11 @@ class ControlDepartment extends Main {
 		});
 	}
 
-	getDepartmentFromDB() {
-		$.ajax({
+	async getDepartmentFromDB() {
+		await $.ajax({
 			url: "./php/output-request.php",
 			method: "post",
 			dataType: "html",
-			async: false,
 			data: {
 				nameTable: 'department'
 			},

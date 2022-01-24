@@ -103,8 +103,10 @@ class Time extends Cards {
 	}
 
 	dataAdd() {
-		super.getCardsFromDB();
-		super.dataAdd();
+		super.getCardsFromDB()
+			.then(() => {
+				super.dataAdd();
+			});
 	}
 
 	showDataFromStorage() {
@@ -141,12 +143,13 @@ class Time extends Cards {
 					item.date = service.getCurrentDate();
 				});
 
-				this.setAddUsersInDB([...this.collection.values()], 'time', 'report');
-
-				this.collection.clear();
-				this.render();
-				localStorage.removeItem(this.page);
-				this.counter = 0;
+				this.setAddUsersInDB([...this.collection.values()], 'time', 'report')
+					.then(() => {
+						this.collection.clear();
+						this.render();
+						localStorage.removeItem(this.page);
+						this.counter = 0;
+					});
 			} else {
 				this.object.errors = ['fields'];
 				this.render();
@@ -175,12 +178,11 @@ class Time extends Cards {
 		});
 	}
 
-	setAddUsersInDB(array, nameTable, action) {
-		$.ajax({
+	async setAddUsersInDB(array, nameTable, action) {
+		await $.ajax({
 			url: "./php/change-user-request.php",
 			method: "post",
 			dataType: "html",
-			async: false,
 			data: {
 				action,
 				nameTable,
@@ -227,97 +229,97 @@ class Time extends Cards {
 		return resultAuthent;
 	}
 
-	createObjectForBD() {
-		const { UserSID = '', UserToken = 0 } = this.getData();
-
-		// console.log(UserSID);
-		// console.log(UserToken);
-		console.log(UserSID);
-
-		const object = {
-			"Language": "ua",
-			"UserSID": UserSID,
-			"ResultTokenRequired": true,
-			"AccessGroupInherited": true,
-			"AccessGroupToken": UserToken,
-			"AdditionalFields": [{
-				"Name": "",
-				"Value": ""
-			}],
-			"AdditionalFieldsChanged": true,
-			"FieldGroupToken": UserToken,
-			"Name": "Временная карта",
-			"NewCards": [{
-				"AntipassbackDisabled": true,
-				"Code": "",
-				"ConfirmationUrl": "",
-				"Disalarm": true,
-				"Email": "",
-				"EmailRequestCode": "",
-				"IdentifierType": 2147483647,
-				"Name": "",
-				"PIN": "",
-				"Security": true,
-				"Status": 2147483647,
-				"Token": UserToken,
-				"VIP": true,
-				"ValidTo": "\/Date(928135200000+0300)\/",
-				"ValidToUsed": true
-			}],
-			"OwnAccessRulesChanged": true,
-			"Token": UserToken,
-			"WorktimeInherited": true,
-			"CardCodes": [""],
-			"CardTokens": [UserToken],
-			"CardsChanged": true,
-			"DepartmentToken": UserToken,
-			"EmployeeNumber": "",
-			"NewBiometricIdentifiers": [{
-				"BiometricIndex": 2147483647,
-				"BiometricType": "",
-				"Data": "",
-				"Quality": 2147483647
-			}],
-			"PhotoBase64": "",
-			"PhotoChanged": true,
-			"PhotoFileExt": "",
-			"Post": "",
-			"OwnAccessRules": [{
-				"DoorToken": UserToken,
-				"PassCounter": 2147483647,
-				"ScheduleToken": UserToken
-			}]
-		};
-		// const fillOutObjectInBD = map.map((elem) => {
-		// 	const itemObject = Object.assign({}, object);
-		//
-		// 	for (const itemField in itemObject) {
-		// 		for (const key in elem) {
-		// 			if (itemField.toLocaleLowerCase() == key) {
-		// 				itemObject[itemField] = elem[key];
-		// 			}
-		// 		}
-		// 	}
-		//
-		// 	return itemObject;
-		// });
-
-		// console.log(object);
-		$.ajax({
-			url: "http://localhost:40001/json/EmployeeSet",
-			method: "post",
-			dataType: "json",
-			contentType: 'application/json',
-			data: JSON.stringify(object),
-			async: false,
-			success: (data) => {
-				console.log(data);
-			},
-			error: (data) => {
-				console.log(data);
-			}
-		});
-	}
+	// createObjectForBD() {
+	// 	const { UserSID = '', UserToken = 0 } = this.getData();
+	//
+	// 	// console.log(UserSID);
+	// 	// console.log(UserToken);
+	// 	console.log(UserSID);
+	//
+	// 	const object = {
+	// 		"Language": "ua",
+	// 		"UserSID": UserSID,
+	// 		"ResultTokenRequired": true,
+	// 		"AccessGroupInherited": true,
+	// 		"AccessGroupToken": UserToken,
+	// 		"AdditionalFields": [{
+	// 			"Name": "",
+	// 			"Value": ""
+	// 		}],
+	// 		"AdditionalFieldsChanged": true,
+	// 		"FieldGroupToken": UserToken,
+	// 		"Name": "Временная карта",
+	// 		"NewCards": [{
+	// 			"AntipassbackDisabled": true,
+	// 			"Code": "",
+	// 			"ConfirmationUrl": "",
+	// 			"Disalarm": true,
+	// 			"Email": "",
+	// 			"EmailRequestCode": "",
+	// 			"IdentifierType": 2147483647,
+	// 			"Name": "",
+	// 			"PIN": "",
+	// 			"Security": true,
+	// 			"Status": 2147483647,
+	// 			"Token": UserToken,
+	// 			"VIP": true,
+	// 			"ValidTo": "\/Date(928135200000+0300)\/",
+	// 			"ValidToUsed": true
+	// 		}],
+	// 		"OwnAccessRulesChanged": true,
+	// 		"Token": UserToken,
+	// 		"WorktimeInherited": true,
+	// 		"CardCodes": [""],
+	// 		"CardTokens": [UserToken],
+	// 		"CardsChanged": true,
+	// 		"DepartmentToken": UserToken,
+	// 		"EmployeeNumber": "",
+	// 		"NewBiometricIdentifiers": [{
+	// 			"BiometricIndex": 2147483647,
+	// 			"BiometricType": "",
+	// 			"Data": "",
+	// 			"Quality": 2147483647
+	// 		}],
+	// 		"PhotoBase64": "",
+	// 		"PhotoChanged": true,
+	// 		"PhotoFileExt": "",
+	// 		"Post": "",
+	// 		"OwnAccessRules": [{
+	// 			"DoorToken": UserToken,
+	// 			"PassCounter": 2147483647,
+	// 			"ScheduleToken": UserToken
+	// 		}]
+	// 	};
+	// 	// const fillOutObjectInBD = map.map((elem) => {
+	// 	// 	const itemObject = Object.assign({}, object);
+	// 	//
+	// 	// 	for (const itemField in itemObject) {
+	// 	// 		for (const key in elem) {
+	// 	// 			if (itemField.toLocaleLowerCase() == key) {
+	// 	// 				itemObject[itemField] = elem[key];
+	// 	// 			}
+	// 	// 		}
+	// 	// 	}
+	// 	//
+	// 	// 	return itemObject;
+	// 	// });
+	//
+	// 	// console.log(object);
+	// 	$.ajax({
+	// 		url: "http://localhost:40001/json/EmployeeSet",
+	// 		method: "post",
+	// 		dataType: "json",
+	// 		contentType: 'application/json',
+	// 		data: JSON.stringify(object),
+	// 		async: false,
+	// 		success: (data) => {
+	// 			console.log(data);
+	// 		},
+	// 		error: (data) => {
+	// 			console.log(data);
+	// 		}
+	// 	});
+	// }
 }
 
 export default Time;

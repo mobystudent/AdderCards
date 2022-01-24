@@ -7,7 +7,6 @@ import MainModel from '../main.model.js';
 import { table } from '../../components/qr/table.tpl.js';
 import { headerTable } from '../../components/qr/header-table.tpl.js';
 import { tabs } from '../../components/tabs.tpl.js';
-import { qrItems } from '../../components/qr/qr-items.tpl.js';
 import { pageTitle } from '../../components/page-title.tpl.js';
 
 class QRModel extends MainModel {
@@ -22,11 +21,6 @@ class QRModel extends MainModel {
 				departs: this.departs = []
 			} = {}
 		} = props);
-	}
-
-	renderQRItems(array) {
-		$('.document').html('');
-		$('.document').append(qrItems(array, this.object));
 	}
 
 	renderTabs() {

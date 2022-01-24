@@ -11,6 +11,10 @@ class Permis extends Access {
 	constructor(props) {
 		super(props);
 
+		({
+			page: this.page = ''
+		} = props);
+
 		this.object = {
 			title: 'Разрешение на добавление <br> идентификаторов пользователям',
 			statusallow: '',
@@ -86,7 +90,7 @@ class Permis extends Access {
 		this.showDataFromStorage();
 	}
 
-	render(page = 'permis') {
+	render() {
 		const permisModel = new PermisModel({
 			object: this.object,
 			checkNameId: 'check',
@@ -102,8 +106,8 @@ class Permis extends Access {
 			}
 		});
 
-		$(`.main[data-name=${page}]`).html('');
-		$(`.main[data-name=${page}]`).append(permisModel.render());
+		$(`.main[data-name=${this.page}]`).html('');
+		$(`.main[data-name=${this.page}]`).append(permisModel.render());
 
 		this.autoRefresh();
 		this.clickAllowDisallowItem();
@@ -146,7 +150,7 @@ class Permis extends Access {
 		super.dataAdd();
 	}
 
-	submitIDinBD(page = 'permis') {
+	submitIDinBD() {
 		$('.btn--submit').click(() => {
 			const filterDepartCollection = [...this.collection.values()].filter(({ nameid }) => nameid === this.object.nameid);
 			const checkedItems = filterDepartCollection.every(({ statusaccess }) => statusaccess);
@@ -157,32 +161,34 @@ class Permis extends Access {
 
 				this.object.errors = [];
 
-				if (allowItems.length) {
-					this.delegationID(allowItems);
-				}
+				new Promise((resolve) => {
+					if (allowItems.length) {
+						resolve(this.delegationID(allowItems));
+					}
 
-				if (disallowItems.length) {
-					disallowItems.forEach((item) => {
-						item.date = service.getCurrentDate();
+					if (disallowItems.length) {
+						disallowItems.forEach((item) => {
+							item.date = service.getCurrentDate();
+						});
+
+						resolve(this.setAddUsersInDB(disallowItems, 'reject', 'add', 'permis'));
+					}
+				})
+				.then(() => {
+					filterDepartCollection.forEach(({ id: userID }) => {
+						[...this.collection].forEach(([key, { id }]) => {
+							if (userID === id) {
+								this.collection.delete(key);
+							}
+						});
 					});
 
-					this.setAddUsersInDB(disallowItems, 'reject', 'add', 'permis');
-				}
-
-				filterDepartCollection.forEach(({ id: userID }) => {
-					[...this.collection].forEach(([key, { id }]) => {
-						if (userID === id) {
-							this.collection.delete(key);
-						}
-					});
+					filterDepartCollection.splice(0);
+					super.clearObject();
+					super.resetControlBtns();
+					super.dataAdd();
+					localStorage.removeItem(this.page);
 				});
-				filterDepartCollection.splice(0);
-
-				this.clearObject();
-				this.resetControlBtns();
-				super.dataAdd();
-
-				localStorage.removeItem(page);
 			} else {
 				this.object.errors = ['fields'];
 				this.render();
@@ -202,12 +208,11 @@ class Permis extends Access {
 		}
 	}
 
-	setAddUsersInDB(array, nameTable, action, typeTable) {
-		$.ajax({
+	async setAddUsersInDB(array, nameTable, action, typeTable) {
+		await $.ajax({
 			url: "./php/change-user-request.php",
 			method: "post",
 			dataType: "html",
-			async: false,
 			data: {
 				typeTable,
 				action,
@@ -226,7 +231,7 @@ class Permis extends Access {
 					users: array
 				};
 
-				this.sendMail();
+				super.sendMail();
 			},
 			error: () => {
 				service.modal('error');

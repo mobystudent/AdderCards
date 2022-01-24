@@ -75,7 +75,7 @@ class Remove extends Personnel {
 		};
 
 		this.getDepartmentFromDB();
-		this.showDataFromStorage();
+		super.showDataFromStorage();
 	}
 
 	render() {
@@ -122,7 +122,7 @@ class Remove extends Personnel {
 
 			if (!errorsArr.length) {
 				this.userFromForm();
-				this.clearObject();
+				super.clearObject();
 			} else {
 				this.object.errors = errorsArr;
 			}
@@ -261,27 +261,28 @@ class Remove extends Personnel {
 			const removeArray = [...this.collection.values()].filter(({ statusid }) => statusid === 'remove');
 			const changeDepartArray = [...this.collection.values()].filter(({ statusid }) => statusid === 'changeDepart');
 
-			if (removeArray.length) {
-				this.setAddUsersInDB(removeArray, 'add', 'remove');
-			}
-			if (changeDepartArray.length) {
-				this.setAddUsersInDB(changeDepartArray, 'add', 'transfer');
-			}
-
-			this.collection.clear();
-			this.render();
-
-			localStorage.removeItem(this.page);
-			this.counter = 0;
+			new Promise((resolve) => {
+				if (removeArray.length) {
+					resolve(this.setAddUsersInDB(removeArray, 'add', 'remove'));
+				}
+				if (changeDepartArray.length) {
+					resolve(this.setAddUsersInDB(changeDepartArray, 'add', 'transfer'));
+				}
+			})
+			.then(() => {
+				this.collection.clear();
+				this.render();
+				localStorage.removeItem(this.page);
+				this.counter = 0;
+			});
 		});
 	}
 
-	setAddUsersInDB(array, nameTable, action) {
-		$.ajax({
+	async setAddUsersInDB(array, nameTable, action) {
+		await $.ajax({
 			url: "./php/change-user-request.php",
 			method: "post",
 			dataType: "html",
-			async: false,
 			data: {
 				action,
 				nameTable,
@@ -290,14 +291,16 @@ class Remove extends Personnel {
 			success: () => {
 				service.modal('success');
 
-				this.mail.objectData = {
-					department: new Settings().object.longname,
-					count: this.collection.size,
-					title: 'Удалить',
-					users: [...this.collection.values()]
-				};
+				if (action === 'remove') {
+					this.mail.objectData = {
+						department: new Settings().object.longname,
+						count: array.length,
+						title: 'Удалить',
+						users: array
+					};
 
-				this.sendMail();
+					super.sendMail();
+				}
 			},
 			error: () => {
 				service.modal('error');

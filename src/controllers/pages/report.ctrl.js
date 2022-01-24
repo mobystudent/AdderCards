@@ -59,7 +59,7 @@ class Report extends Personnel {
 			collection: this.collection
 		};
 
-		this.getDataFromDB();
+		super.getDataFromDB();
 	}
 
 	render() {
@@ -135,7 +135,8 @@ class Report extends Personnel {
 
 	resetFilters() {
 		$(`.main[data-name=${this.page}] .btn--cancel`).click(() => {
-			this.clearObject();
+			super.clearObject();
+			this.filterUsersFromDB();
 		});
 	}
 
@@ -149,7 +150,6 @@ class Report extends Personnel {
 				nameTable: 'filter',
 				options: this.object.filters
 			},
-			async: false,
 			success: (data) => {
 				const dataFromDB = JSON.parse(data);
 

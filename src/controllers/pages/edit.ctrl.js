@@ -91,7 +91,7 @@ class Edit extends Personnel {
 			collection: this.collection
 		};
 
-		this.showDataFromStorage();
+		super.showDataFromStorage();
 	}
 
 	render() {
@@ -155,7 +155,7 @@ class Edit extends Personnel {
 
 			if (!errorsArr.length) {
 				this.userFromForm();
-				this.clearObject();
+				super.clearObject();
 			} else {
 				this.object.errors = errorsArr;
 			}
@@ -213,15 +213,11 @@ class Edit extends Personnel {
 				}
 			});
 
-			setTimeout(() => {
-				resolve(encodeArrayPhotoFile);
-			}, 0);
+			resolve(encodeArrayPhotoFile);
 		}).then((array) => {
-			setTimeout(() => {
-				localStorage.setItem(this.page, JSON.stringify({
-					collection: array
-				}));
-			}, 0);
+			localStorage.setItem(this.page, JSON.stringify({
+				collection: array
+			}));
 		});
 	}
 
@@ -334,32 +330,34 @@ class Edit extends Personnel {
 			const changePostArray = [...this.collection.values()].filter(({ statusid }) => statusid === 'changePost');
 			const changeImageArray = [...this.collection.values()].filter(({ statusid }) => statusid === 'changeImage');
 
-			if (changeCardArray.length) {
-				this.setAddUsersInDB(changeCardArray, 'permission', this.page);
-			}
-			if (changeQRArray.length) {
-				this.setAddUsersInDB(changeQRArray, 'permission', this.page);
-			}
-			if (changeFIOArray.length) {
-				this.setAddUsersInDB(changeFIOArray, 'add', this.page);
-			}
-			if (changePostArray.length) {
-				this.setAddUsersInDB(changePostArray, 'add', this.page);
-			}
-			if (changeImageArray.length) {
-				this.setAddUsersInDB(changeImageArray, 'add', this.page);
-			}
-
-			this.collection.clear();
-			this.render();
-
-			localStorage.removeItem(this.page);
-			this.counter = 0;
+			new Promise((resolve) => {
+				if (changeCardArray.length) {
+					resolve(this.setAddUsersInDB(changeCardArray, 'permission', this.page));
+				}
+				if (changeQRArray.length) {
+					resolve(this.setAddUsersInDB(changeQRArray, 'permission', this.page));
+				}
+				if (changeFIOArray.length) {
+					resolve(this.setAddUsersInDB(changeFIOArray, 'add', this.page));
+				}
+				if (changePostArray.length) {
+					resolve(this.setAddUsersInDB(changePostArray, 'add', this.page));
+				}
+				if (changeImageArray.length) {
+					resolve(this.setAddUsersInDB(changeImageArray, 'add', this.page));
+				}
+			})
+			.then(() => {
+				this.collection.clear();
+				this.render();
+				localStorage.removeItem(this.page);
+				this.counter = 0;
+			});
 		});
 	}
 
-	setAddUsersInDB(array, nameTable, action) {
-		new Promise((resolve) => {
+	async setAddUsersInDB(array, nameTable, action) {
+		await new Promise((resolve) => {
 			const encodeArrayPhotoFile = [];
 			const reader = new FileReader();
 
@@ -376,9 +374,7 @@ class Edit extends Personnel {
 				}
 			});
 
-			setTimeout(() => {
-				resolve(encodeArrayPhotoFile);
-			}, 0);
+			resolve(encodeArrayPhotoFile);
 		}).then((array) => {
 			$.ajax({
 				url: "./php/change-user-request.php",
@@ -392,14 +388,16 @@ class Edit extends Personnel {
 				success: () => {
 					service.modal('success');
 
-					this.mail.objectData = {
-						department: new Settings().object.longname,
-						count: this.collection.size,
-						title: 'Редактировать',
-						users: [...this.collection.values()]
-					};
+					if (nameTable === 'permission') {
+						this.mail.objectData = {
+							department: new Settings().object.longname,
+							count: array.length,
+							title: 'Редактировать',
+							users: array
+						};
 
-					this.sendMail();
+						this.sendMail();
+					}
 				},
 				error: () => {
 					service.modal('error');

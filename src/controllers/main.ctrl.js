@@ -143,7 +143,6 @@ class Main {
 			method: "post",
 			dataType: "html",
 			data: data,
-			async: false,
 			success: (data) => {
 				const dataFromDB = JSON.parse(data);
 
