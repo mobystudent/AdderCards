@@ -177,6 +177,44 @@
 				echo $mysqli->error;
 			}
 		}
+	} else if ($nameTable === 'all-report') {
+		$options = $_POST['options'];
+
+		if ($options) {
+			$filterContent = '';
+
+			foreach ($options as $key => $value) {
+				if ($filterContent === '') {
+					if ($key === 'date') {
+						$filterContent .= $key.' LIKE "%'.$value.'%"';
+					} else {
+						$filterContent .= $key.' = "'.$value.'"';
+					}
+				} else {
+					if ($key === 'date') {
+						$filterContent .= ' AND '.$key.' LIKE "%'.$value.'%"';
+					} else {
+						$filterContent .= ' AND '.$key.' = "'.$value.'"';
+					}
+				}
+			}
+
+			if($resultSet = $mysqli->query("SELECT * FROM report WHERE ".$filterContent."")) {
+				while ($result = $resultSet->fetch_assoc()) {
+					array_push($array, $result);
+				}
+			} else {
+				echo $mysqli->error;
+			}
+		} else {
+			if($resultSet = $mysqli->query("SELECT * FROM report")) {
+				while ($result = $resultSet->fetch_assoc()) {
+					array_push($array, $result);
+				}
+			} else {
+				echo $mysqli->error;
+			}
+		}
 	}
 
 	echo json_encode($array);

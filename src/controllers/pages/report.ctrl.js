@@ -86,16 +86,12 @@ class Report extends Personnel {
 	}
 
 	userFromDB(array, filter = '') {
-		if (filter) {
-			array.forEach((item, i) => {
-				this.collection.set(i, item);
-			});
-		} else {
-			array.forEach((item, i) => {
-				this.collection.set(i, item);
+		array.forEach((item, i) => {
+			this.collection.set(i, item);
+			if (!filter) {
 				this.filterCollection.set(i, item);
-			});
-		}
+			}
+		});
 
 		super.dataAdd();
 	}

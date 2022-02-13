@@ -1,0 +1,44 @@
+.diagrams {
+	display: flex;
+	justify-content: space-between;
+
+	&__item {
+		&--dynamic {
+			flex: 1 0 auto;
+			margin-right: 50px;
+		}
+
+		&--relation {
+			flex: 0 0 300px;
+			max-width: 300px;
+		}
+	}
+
+	&__canvas {
+		display: block;
+		width: 100%;
+		height: 300px;
+		margin-bottom: 30px;
+
+		&--relation {
+			transform: rotate(-90deg);
+		}
+
+		&--dynamic {
+			background: $white;
+		}
+	}
+
+	&__list {
+
+	}
+
+	&__li {
+		@extend %text--premedium;
+		color: $white;
+
+		&:not(:last-child) {
+			margin-bottom: 10px;
+		}
+	}
+}

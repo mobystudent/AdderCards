@@ -44,6 +44,10 @@ const pageItems = [
 		title: 'Запрос на изменение'
 	},
 	{
+		name: 'statis',
+		title: 'Статистика'
+	},
+	{
 		name: 'settings',
 		title: 'Настройки'
 	},
